@@ -470,6 +470,10 @@
         /* 3DGS 섹션 전용 스타일 */
         .portfolio-section {
             margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(120, 119, 198, 0.1);
         }
 
         .section-title {
@@ -479,6 +483,24 @@
             color: #7877c6;
             border-bottom: 2px solid #7877c6;
             padding-bottom: 10px;
+        }
+
+        .subsection {
+            margin: 1.5rem 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid #ff77c6;
+        }
+
+        .subsection-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff77c6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .work-item {
@@ -508,6 +530,8 @@
             line-height: 1.6;
             margin-bottom: 20px;
             opacity: 0.9;
+            word-break: keep-all;
+            word-wrap: break-word;
         }
 
         .file-info {
@@ -516,6 +540,8 @@
             border-radius: 8px;
             margin-bottom: 20px;
             border-left: 4px solid #7877c6;
+            word-break: keep-all;
+            word-wrap: break-word;
         }
 
         .file-size {
@@ -529,6 +555,9 @@
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
+            word-break: keep-all;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .instructions h4 {
@@ -539,10 +568,14 @@
         .instructions ol {
             margin-bottom: 0;
             color: #ffffff;
+            padding-left: 1.2rem;
         }
 
         .instructions li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+            word-break: keep-all;
+            word-wrap: break-word;
         }
 
         .button-group {
@@ -748,112 +781,104 @@
                 <p>차세대 게임 개발을 위한 AI 기술 연구</p>
             </div>
             <div class="modal-body">
-                <div class="modal-portfolio">
-                    <div class="portfolio-item">
-                        <div class="portfolio-image">📄 연구 논문</div>
-                        <div class="portfolio-info">
-                            <h4>NeRF 기반 3D 재구성 연구</h4>
-                            <p>한국컴퓨터그래픽학회 논문집 (2024)</p>
-                            <a href="./paper.pdf" target="_blank" style="display: inline-block; margin-top: 0.5rem; padding: 0.3rem 0.8rem; background: linear-gradient(45deg, #7877c6, #ff77c6); color: white; text-decoration: none; border-radius: 15px; font-size: 0.85rem;">📖 논문 보기</a>
+                <!-- AI 연구 대분류 -->
+                <div class="portfolio-section">
+                    <h3 class="section-title">🔬 AI 연구</h3>
+                    
+                    <!-- 연구 논문 소분류 -->
+                    <div class="subsection">
+                        <h4 class="subsection-title">📄 연구 논문</h4>
+                        <div class="modal-portfolio">
+                            <div class="portfolio-item">
+                                <div class="portfolio-image">📄 연구 논문</div>
+                                <div class="portfolio-info">
+                                    <h4>Photogrammetry와 NeRF의 비교분석을 통한 실사 오브젝트 제작 방식의 미래 방향성 제안</h4>
+                                    <p>한국컴퓨터그래픽학회 논문집 (2024)</p>
+                                    <a href="https://aryeon0228.github.io/Kim_SoYeon_NeRF_Research_2024.pdf" target="_blank" style="display: inline-block; margin-top: 0.5rem; padding: 0.3rem 0.8rem; background: linear-gradient(45deg, #7877c6, #ff77c6); color: white; text-decoration: none; border-radius: 15px; font-size: 0.85rem;">📖 논문 보기</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="portfolio-item">
-                        <div class="portfolio-image">🧠 AI 연구</div>
-                        <div class="portfolio-info">
-                            <h4>프로시더럴 에셋 생성</h4>
-                            <p>머신러닝을 활용한 게임 에셋 자동 생성 연구</p>
-                        </div>
-                    </div>
-                    <div class="portfolio-item">
-                        <div class="portfolio-image">🎨 AI 도구</div>
-                        <div class="portfolio-info">
-                            <h4>AI 텍스처 생성</h4>
-                            <p>Stable Diffusion을 활용한 게임 텍스처 제작 워크플로우</p>
+
+                    <!-- 3DGS 작업물 소분류 -->
+                    <div class="subsection">
+                        <h4 class="subsection-title">🌐 3D Gaussian Splatting (3DGS) 작업물</h4>
+                        <div class="work-item">
+                            <h5 class="work-title">고해상도 3DGS 씬 재구성</h5>
+                            <p class="work-description">
+                                Neural Radiance Fields (NeRF) 연구를 바탕으로 한 3D Gaussian Splatting 기법을 활용한 실시간 렌더링 가능한 3D 씬 재구성 작업입니다. 
+                                높은 품질의 포인트 클라우드 데이터로 사실적인 3D 환경을 구현했습니다.
+                            </p>
+                            
+                            <div class="file-info">
+                                <strong>파일 정보:</strong><br>
+                                • 형식: PLY (Point Cloud)<br>
+                                • 크기: <span class="file-size">449MB</span><br>
+                                • 포인트 수: 고밀도 포인트 클라우드<br>
+                                • 특징: 실시간 렌더링 최적화
+                            </div>
+
+                            <div class="instructions">
+                                <h4>📋 뷰어에서 확인하는 방법</h4>
+                                <ol>
+                                    <li>아래 '파일 다운로드' 버튼으로 PLY 파일을 다운로드합니다</li>
+                                    <li><strong>⚠️ 대용량 파일 주의:</strong><br>
+                                        구글 드라이브에서 "바이러스를 검사할 수 없습니다" 경고가 나타날 수 있습니다.<br>
+                                        <span style="color: #ff77c6; font-weight: bold;">"다운로드 계속"</span> 또는 
+                                        <span style="color: #ff77c6; font-weight: bold;">"다운로드"</span> 버튼을 클릭하여 진행하세요.</li>
+                                    <li>'Supersplat 에디터 열기' 버튼을 클릭하여 뷰어를 엽니다</li>
+                                    <li>에디터에서 다운로드한 PLY 파일을 업로드합니다</li>
+                                    <li>실시간으로 3D 씬을 탐색하고 다양한 각도에서 확인할 수 있습니다</li>
+                                </ol>
+                            </div>
+
+                            <div class="button-group">
+                                <a href="#" class="btn btn-primary" onclick="downloadFile()">
+                                    📥 파일 다운로드 (449MB)
+                                </a>
+                                <a href="https://superspl.at/editor" class="btn btn-secondary" target="_blank">
+                                    🚀 Supersplat 에디터 열기
+                                </a>
+                            </div>
+
+                            <div class="tech-tags">
+                                <span class="tech-tag">3D Gaussian Splatting</span>
+                                <span class="tech-tag">Point Cloud</span>
+                                <span class="tech-tag">Real-time Rendering</span>
+                                <span class="tech-tag">NeRF</span>
+                                <span class="tech-tag">PLY Format</span>
+                            </div>
+
+                            <div class="preview-note">
+                                💡 대용량 파일이므로 다운로드에 시간이 걸릴 수 있습니다.<br>
+                                Wi-Fi 환경에서 다운로드하시는 것을 권장합니다.
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3DGS 섹션 추가 -->
+                <!-- AI 도구 및 응용 대분류 -->
                 <div class="portfolio-section">
-                    <h3 class="section-title">3D Gaussian Splatting (3DGS) 작업물</h3>
-                    
-                    <div class="work-item">
-                        <h4 class="work-title">고해상도 3DGS 씬 재구성</h4>
-                        <p class="work-description">
-                            Neural Radiance Fields (NeRF) 연구를 바탕으로 한 3D Gaussian Splatting 기법을 활용한 실시간 렌더링 가능한 3D 씬 재구성 작업입니다. 
-                            높은 품질의 포인트 클라우드 데이터로 사실적인 3D 환경을 구현했습니다.
-                        </p>
-                        
-                        <div class="file-info">
-                            <strong>파일 정보:</strong><br>
-                            • 형식: PLY (Point Cloud)<br>
-                            • 크기: <span class="file-size">449MB</span><br>
-                            • 포인트 수: 고밀도 포인트 클라우드<br>
-                            • 특징: 실시간 렌더링 최적화
+                    <h3 class="section-title">🛠️ AI 도구 및 응용</h3>
+                    <div class="modal-portfolio">
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">🎨 AI 도구</div>
+                            <div class="portfolio-info">
+                                <h4>프로시더럴 에셋 생성</h4>
+                                <p>머신러닝을 활용한 게임 에셋 자동 생성 연구</p>
+                            </div>
                         </div>
-
-                        <div class="instructions">
-                            <h4>📋 뷰어에서 확인하는 방법</h4>
-                            <ol>
-                                <li>아래 '파일 다운로드' 버튼으로 PLY 파일을 다운로드합니다</li>
-                                <li><strong>⚠️ 대용량 파일 주의:</strong> 구글 드라이브에서 "바이러스를 검사할 수 없습니다" 경고가 나타날 수 있습니다. <br>
-                                    <span style="color: #ff77c6; font-weight: bold;">"다운로드 계속" 또는 "다운로드"</span> 버튼을 클릭하여 진행하세요.</li>
-                                <li>'Supersplat 에디터 열기' 버튼을 클릭하여 뷰어를 엽니다</li>
-                                <li>에디터에서 다운로드한 PLY 파일을 업로드합니다</li>
-                                <li>실시간으로 3D 씬을 탐색하고 다양한 각도에서 확인할 수 있습니다</li>
-                            </ol>
-                        </div>
-
-                        <div class="button-group">
-                            <a href="#" class="btn btn-primary" onclick="downloadFile()">
-                                📥 파일 다운로드 (449MB)
-                            </a>
-                            <a href="https://superspl.at/editor" class="btn btn-secondary" target="_blank">
-                                🚀 Supersplat 에디터 열기
-                            </a>
-                        </div>
-
-                        <div class="tech-tags">
-                            <span class="tech-tag">3D Gaussian Splatting</span>
-                            <span class="tech-tag">Point Cloud</span>
-                            <span class="tech-tag">Real-time Rendering</span>
-                            <span class="tech-tag">NeRF</span>
-                            <span class="tech-tag">PLY Format</span>
-                        </div>
-
-                        <div class="preview-note">
-                            💡 대용량 파일이므로 다운로드에 시간이 걸릴 수 있습니다. <br>
-                            Wi-Fi 환경에서 다운로드하시는 것을 권장합니다.
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">🎨 AI 텍스처</div>
+                            <div class="portfolio-info">
+                                <h4>AI 텍스처 생성</h4>
+                                <p>Stable Diffusion을 활용한 게임 텍스처 제작 워크플로우</p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="modal-description">
-                    <h3>전문 분야</h3>
-                    <p>대학원에서 AI를 전공하며 게임 개발에 머신러닝 기술을 접목하는 연구를 진행하고 있습니다. 특히 프로시더럴 콘텐츠 생성과 게임 에셋 자동화에 중점을 두고 있습니다.</p>
-                    
-                    <div class="skill-details">
-                        <h4>🔬 연구 영역</h4>
-                        <ul>
-                            <li>Neural Radiance Fields (NeRF) 및 3D Gaussian Splatting</li>
-                            <li>프로시더럴 콘텐츠 생성</li>
-                            <li>AI 기반 텍스처/에셋 자동화</li>
-                            <li>게임 밸런싱 최적화</li>
-                            <li>플레이어 행동 패턴 분석</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="skill-details">
-                        <h4>🛠️ 활용 기술</h4>
-                        <ul>
-                            <li>Python, TensorFlow, PyTorch</li>
-                            <li>3D Gaussian Splatting, NeRF</li>
-                            <li>Stable Diffusion, Midjourney</li>
-                            <li>Houdini PDG (프로시더럴)</li>
-                            <li>Unity ML-Agents</li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
