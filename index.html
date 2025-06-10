@@ -540,87 +540,173 @@
             transform: translateY(0);
         }
         
-        /* 스킬 정보 표시 영역 */
-        .skill-info-panel {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95), rgba(30, 30, 40, 0.95));
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(120, 119, 198, 0.3);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-            z-index: 3000;
-            box-shadow: 0 20px 60px rgba(120, 119, 198, 0.3);
+        /* 예쁜 모달 스타일 */
+        .modal {
             display: none;
-            animation: popIn 0.3s ease;
-        }
-        
-        @keyframes popIn {
-            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-        
-        .skill-info-overlay {
             position: fixed;
-            top: 0;
+            z-index: 2000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 2999;
-            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            animation: modalFadeIn 0.3s ease;
         }
         
-        .skill-info-title {
-            color: #7877c6;
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            position: relative;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2% auto;
+            padding: 0;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            background: linear-gradient(45deg, #7877c6, #ff77c6);
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
             text-align: center;
         }
         
-        .skill-info-content {
-            color: #ffffff;
-            line-height: 1.6;
-            font-size: 0.95rem;
+        .modal-header h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
         
-        .skill-info-close {
-            position: absolute;
-            top: 0.5rem;
-            right: 1rem;
-            color: #ff77c6;
-            font-size: 1.8rem;
-            font-weight: bold;
-            cursor: pointer;
+        .modal-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            margin: 0.5rem 0 0 0;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-portfolio {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .portfolio-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
         
-        .skill-info-close:hover {
-            color: #ffffff;
-            transform: scale(1.2);
+        .portfolio-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(120, 119, 198, 0.2);
         }
         
-        .skill-info-content ul {
+        .portfolio-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #7877c6, #ff77c6, #78dbe2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .portfolio-info {
+            padding: 1rem;
+        }
+        
+        .portfolio-info h4 {
+            color: #7877c6;
+            margin-bottom: 0.5rem;
+        }
+        
+        .portfolio-info p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-description {
+            color: white;
+        }
+        
+        .modal-description h3 {
+            color: #7877c6;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .modal-description p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .skill-details {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        .skill-details h4 {
+            color: #ff77c6;
+            margin-bottom: 0.8rem;
+        }
+        
+        .skill-details ul {
             list-style: none;
             padding: 0;
         }
         
-        .skill-info-content li {
-            margin: 0.5rem 0;
+        .skill-details li {
+            padding: 0.3rem 0;
             padding-left: 1rem;
             position: relative;
         }
         
-        .skill-info-content li::before {
+        .skill-details li::before {
             content: '▶';
             position: absolute;
             left: 0;
             color: #7877c6;
+        }
+        
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .close:hover {
+            color: #ff77c6;
+            transform: scale(1.2);
         }
     </style>
 </head>
@@ -646,19 +732,148 @@
         </div>
     </section>
 
-    <!-- 커스텀 모달창 -->
-    <div id="customModal" class="custom-modal">
-        <div class="custom-modal-content">
-            <span class="custom-modal-close" onclick="closeCustomModal()">&times;</span>
-            <div class="custom-modal-header" id="modalTitle">스킬 정보</div>
-            <div class="custom-modal-body" id="modalBody">정보를 로딩 중입니다...</div>
+    <!-- AI & Machine Learning 모달 -->
+    <div id="ai-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('ai-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>🤖 AI & Machine Learning</h2>
+                <p>차세대 게임 개발을 위한 AI 기술 연구</p>
+            </div>
+            <div class="modal-body">
+                <div class="skill-details">
+                    <h4>🎯 전문 분야</h4>
+                    <ul>
+                        <li>대학원 AI 전공 (현재 진행 중)</li>
+                        <li>NeRF 연구 논문 발표</li>
+                        <li>3D Gaussian Splatting 기법 연구</li>
+                        <li>프로시저럴 에셋 생성</li>
+                        <li>머신러닝 기반 게임 개발 적용</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Graphics 모달 -->
+    <div id="graphics-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('graphics-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>🔬 Advanced Graphics</h2>
+                <p>최신 렌더링 기술과 이론적 토대</p>
+            </div>
+            <div class="modal-body">
+                <div class="skill-details">
+                    <h4>🎯 핵심 기술</h4>
+                    <ul>
+                        <li>BRDF 이론 및 구현</li>
+                        <li>PBR 렌더링 파이프라인</li>
+                        <li>HLSL/GLSL 셰이더 프로그래밍</li>
+                        <li>Unity URP/HDRP 커스터마이징</li>
+                        <li>실시간 렌더링 최적화</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Modeling 모달 -->
+    <div id="3d-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('3d-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>🎨 3D Modeling & Texturing</h2>
+                <p>다양한 스타일의 3D 에셋 제작 전문성</p>
+            </div>
+            <div class="modal-body">
+                <div class="skill-details">
+                    <h4>🎯 전문 분야</h4>
+                    <ul>
+                        <li>3ds Max (15년 경험)</li>
+                        <li>ZBrush, Blender</li>
+                        <li>Substance 3D Painter</li>
+                        <li>하드서페이스 모델링 전문</li>
+                        <li>모바일/PC 플랫폼 최적화</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Development 모달 -->
+    <div id="gamedev-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('gamedev-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>⚙️ Game Development</h2>
+                <p>다양한 플랫폼과 엔진에서의 게임 개발</p>
+            </div>
+            <div class="modal-body">
+                <div class="skill-details">
+                    <h4>🎯 개발 경험</h4>
+                    <ul>
+                        <li>Unity (10년+ 경험)</li>
+                        <li>자체 엔진 개발 경험</li>
+                        <li>모바일 게임 최적화</li>
+                        <li>크로스 플랫폼 개발</li>
+                        <li>PBR 워크플로우</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Leadership 모달 -->
+    <div id="leadership-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('leadership-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>💼 Team Leadership</h2>
+                <p>팀을 이끌고 성장시키는 리더십</p>
+            </div>
+            <div class="modal-body">
+                <div class="skill-details">
+                    <h4>🎯 리더십 영역</h4>
+                    <ul>
+                        <li>아트 디렉터 경험</li>
+                        <li>청강대 겸임교수</li>
+                        <li>팀 관리 및 외주 관리</li>
+                        <li>신입 교육 및 멘토링</li>
+                        <li>프로젝트 총괄</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Pipeline 모달 -->
+    <div id="pipeline-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('pipeline-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>🛠️ Technical Pipeline</h2>
+                <p>효율적인 개발 워크플로우 구축</p>
+            </div>
+            <div class="modal-body">
+                <div class="skill-details">
+                    <h4>🎯 전문 분야</h4>
+                    <ul>
+                        <li>아트 파이프라인 구축</li>
+                        <li>Git/SVN 버전 관리</li>
+                        <li>자동화 스크립팅</li>
+                        <li>모바일 최적화 가이드</li>
+                        <li>워크플로우 개선</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
     
     <section id="skills" class="section">
         <h2 class="fade-in">보유 역량</h2>
         <div class="skills-grid">
-            <div class="skill-card fade-in" onclick="alert('🎨 3D Modeling & Texturing\n\n• 3ds Max (15년 경험)\n• ZBrush, Blender\n• Substance 3D Painter\n• 하드서페이스 모델링 전문\n• 모바일/PC 최적화')">
+            <div class="skill-card fade-in" onclick="openModal('3d-modal')">
                 <h3>🎨 3D Modeling & Texturing</h3>
                 <p>3D 모델링부터 텍스처링까지, 다양한 스타일의 게임 에셋 제작을 전문으로 합니다.</p>
                 <div class="skill-tags">
@@ -670,7 +885,7 @@
                 </div>
             </div>
             
-            <div class="skill-card fade-in" onclick="alert('⚙️ Game Development\n\n• Unity (10년+ 경험)\n• 자체 엔진 개발 경험\n• 모바일 게임 최적화\n• 크로스 플랫폼 개발\n• PBR 워크플로우')">
+            <div class="skill-card fade-in" onclick="openModal('gamedev-modal')">
                 <h3>⚙️ Game Development</h3>
                 <p>Unity부터 자체엔진까지, 다양한 플랫폼에서의 게임 개발 경험을 보유하고 있습니다.</p>
                 <div class="skill-tags">
@@ -681,7 +896,7 @@
                 </div>
             </div>
             
-            <div class="skill-card fade-in" onclick="alert('🤖 AI & Machine Learning\n\n• 대학원 AI 전공\n• NeRF 연구 논문 발표\n• 3D Gaussian Splatting\n• 프로시더럴 에셋 생성\n• 머신러닝 게임 적용')">
+            <div class="skill-card fade-in" onclick="openModal('ai-modal')">
                 <h3>🤖 AI & Machine Learning</h3>
                 <p>대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
                 <div class="skill-tags">
@@ -692,7 +907,7 @@
                 </div>
             </div>
             
-            <div class="skill-card fade-in" onclick="alert('🔬 Advanced Graphics\n\n• BRDF 이론 및 구현\n• PBR 렌더링\n• HLSL/GLSL 셰이더\n• Unity URP/HDRP\n• 실시간 렌더링 최적화')">
+            <div class="skill-card fade-in" onclick="openModal('graphics-modal')">
                 <h3>🔬 Advanced Graphics</h3>
                 <p>BRDF, PBR 등 고급 렌더링 이론과 실무 경험을 바탕으로 최신 그래픽 기술을 적용합니다.</p>
                 <div class="skill-tags">
@@ -703,7 +918,7 @@
                 </div>
             </div>
             
-            <div class="skill-card fade-in" onclick="alert('💼 Team Leadership\n\n• 아트 디렉터 경험\n• 청강대 겸임교수\n• 팀 관리 및 외주 관리\n• 신입 교육 및 멘토링\n• 프로젝트 총괄')">
+            <div class="skill-card fade-in" onclick="openModal('leadership-modal')">
                 <h3>💼 Team Leadership</h3>
                 <p>AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
                 <div class="skill-tags">
@@ -714,7 +929,7 @@
                 </div>
             </div>
             
-            <div class="skill-card fade-in" onclick="alert('🛠️ Technical Pipeline\n\n• 아트 파이프라인 구축\n• Git/SVN 버전 관리\n• 자동화 스크립팅\n• 모바일 최적화 가이드\n• 워크플로우 개선')">
+            <div class="skill-card fade-in" onclick="openModal('pipeline-modal')">
                 <h3>🛠️ Technical Pipeline</h3>
                 <p>아트와 기술의 경계를 넘나들며 효율적인 워크플로우를 구축합니다.</p>
                 <div class="skill-tags">
