@@ -3,102 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
     <title>김소연 - Technical Artist Portfolio</title>
-    
-    <script>
-        // 스킬 정보 표시 함수 (HTML 로드 전에 미리 정의)
-        function showSkillInfo(skillType) {
-            let message = '';
-            
-            switch(skillType) {
-                case '3d':
-                    message = '🎨 3D Modeling & Texturing\n\n' +
-                             '• 3ds Max (15년 경험)\n' +
-                             '• ZBrush, Blender\n' +
-                             '• Substance 3D Painter\n' +
-                             '• 하드서페이스 모델링 전문\n' +
-                             '• 모바일/PC 최적화';
-                    break;
-                case 'gamedev':
-                    message = '⚙️ Game Development\n\n' +
-                             '• Unity (10년+ 경험)\n' +
-                             '• 자체 엔진 개발 경험\n' +
-                             '• 모바일 게임 최적화\n' +
-                             '• 크로스 플랫폼 개발\n' +
-                             '• PBR 워크플로우';
-                    break;
-                case 'ai':
-                    message = '🤖 AI & Machine Learning\n\n' +
-                             '• 대학원 AI 전공\n' +
-                             '• NeRF 연구 논문 발표\n' +
-                             '• 3D Gaussian Splatting\n' +
-                             '• 프로시저럴 에셋 생성\n' +
-                             '• 머신러닝 게임 적용';
-                    break;
-                case 'graphics':
-                    message = '🔬 Advanced Graphics\n\n' +
-                             '• BRDF 이론 및 구현\n' +
-                             '• PBR 렌더링\n' +
-                             '• HLSL/GLSL 셰이더\n' +
-                             '• Unity URP/HDRP\n' +
-                             '• 실시간 렌더링 최적화';
-                    break;
-                case 'leadership':
-                    message = '💼 Team Leadership\n\n' +
-                             '• 아트 디렉터 경험\n' +
-                             '• 청강대 겸임교수\n' +
-                             '• 팀 관리 및 외주 관리\n' +
-                             '• 신입 교육 및 멘토링\n' +
-                             '• 프로젝트 총괄';
-                    break;
-                case 'pipeline':
-                    message = '🛠️ Technical Pipeline\n\n' +
-                             '• 아트 파이프라인 구축\n' +
-                             '• Git/SVN 버전 관리\n' +
-                             '• 자동화 스크립팅\n' +
-                             '• 모바일 최적화 가이드\n' +
-                             '• 워크플로우 개선';
-                    break;
-                default:
-                    message = '정보를 준비 중입니다.';
-            }
-            
-            alert(message);
-        }
-
-        // 네비게이션 함수
-        function showSection(sectionId) {
-            // 모든 섹션 숨기기
-            const sections = document.querySelectorAll('.section, .hero');
-            sections.forEach(section => {
-                section.style.display = 'none';
-                section.classList.remove('active');
-            });
-            
-            // 선택된 섹션 보이기
-            if (sectionId === 'home') {
-                document.querySelector('.hero').style.display = 'flex';
-            } else {
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) {
-                    targetSection.style.display = 'block';
-                    targetSection.classList.add('active');
-                    
-                    // 스킬 섹션인 경우 즉시 애니메이션 적용
-                    if (sectionId === 'skills') {
-                        setTimeout(() => {
-                            const fadeElements = targetSection.querySelectorAll('.fade-in');
-                            fadeElements.forEach(element => {
-                                element.classList.add('visible');
-                            });
-                        }, 50);
-                    }
-                }
-            }
-        }
-    </script>
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -190,7 +95,7 @@
             width: 100%;
         }
         
-        /* 메인 섹션 - 대문 복원 */
+        /* 메인 섹션 */
         .hero {
             height: 100vh;
             display: flex;
@@ -427,7 +332,6 @@
             font-weight: bold;
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
-            line-height: 1.2;
         }
         
         .detail-content {
@@ -551,7 +455,7 @@
             transform: translateY(0);
         }
         
-        /* 예쁜 모달 스타일 */
+        /* 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -614,95 +518,6 @@
             padding: 2rem;
         }
         
-        .modal-portfolio {
-            display: grid;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .portfolio-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .portfolio-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 25px rgba(120, 119, 198, 0.2);
-        }
-        
-        .portfolio-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6, #78dbe2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-        }
-        
-        .portfolio-info {
-            padding: 1rem;
-        }
-        
-        .portfolio-info h4 {
-            color: #7877c6;
-            margin-bottom: 0.5rem;
-        }
-        
-        .portfolio-info p {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: 0.5rem;
-        }
-        
-        .modal-description {
-            color: white;
-        }
-        
-        .modal-description h3 {
-            color: #7877c6;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .modal-description p {
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-        
-        .skill-details {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-        }
-        
-        .skill-details h4 {
-            color: #ff77c6;
-            margin-bottom: 0.8rem;
-        }
-        
-        .skill-details ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .skill-details li {
-            padding: 0.3rem 0;
-            padding-left: 1rem;
-            position: relative;
-        }
-        
-        .skill-details li::before {
-            content: '▶';
-            position: absolute;
-            left: 0;
-            color: #7877c6;
-        }
-        
         .close {
             position: absolute;
             top: 1rem;
@@ -742,144 +557,6 @@
             <a onclick="showSection('contact')" class="cta-button">연락하기</a>
         </div>
     </section>
-
-    <!-- AI & Machine Learning 모달 -->
-    <div id="ai-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('ai-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>🤖 AI & Machine Learning</h2>
-                <p>차세대 게임 개발을 위한 AI 기술 연구</p>
-            </div>
-            <div class="modal-body">
-                <div class="skill-details">
-                    <h4>🎯 전문 분야</h4>
-                    <ul>
-                        <li>대학원 AI 전공 (현재 진행 중)</li>
-                        <li>NeRF 연구 논문 발표</li>
-                        <li>3D Gaussian Splatting 기법 연구</li>
-                        <li>프로시저럴 에셋 생성</li>
-                        <li>머신러닝 기반 게임 개발 적용</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Advanced Graphics 모달 -->
-    <div id="graphics-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('graphics-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>🔬 Advanced Graphics</h2>
-                <p>최신 렌더링 기술과 이론적 토대</p>
-            </div>
-            <div class="modal-body">
-                <div class="skill-details">
-                    <h4>🎯 핵심 기술</h4>
-                    <ul>
-                        <li>BRDF 이론 및 구현</li>
-                        <li>PBR 렌더링 파이프라인</li>
-                        <li>HLSL/GLSL 셰이더 프로그래밍</li>
-                        <li>Unity URP/HDRP 커스터마이징</li>
-                        <li>실시간 렌더링 최적화</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3D Modeling 모달 -->
-    <div id="3d-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('3d-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>🎨 3D Modeling & Texturing</h2>
-                <p>다양한 스타일의 3D 에셋 제작 전문성</p>
-            </div>
-            <div class="modal-body">
-                <div class="skill-details">
-                    <h4>🎯 전문 분야</h4>
-                    <ul>
-                        <li>3ds Max (15년 경험)</li>
-                        <li>ZBrush, Blender</li>
-                        <li>Substance 3D Painter</li>
-                        <li>하드서페이스 모델링 전문</li>
-                        <li>모바일/PC 플랫폼 최적화</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Game Development 모달 -->
-    <div id="gamedev-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('gamedev-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>⚙️ Game Development</h2>
-                <p>다양한 플랫폼과 엔진에서의 게임 개발</p>
-            </div>
-            <div class="modal-body">
-                <div class="skill-details">
-                    <h4>🎯 개발 경험</h4>
-                    <ul>
-                        <li>Unity (10년+ 경험)</li>
-                        <li>자체 엔진 개발 경험</li>
-                        <li>모바일 게임 최적화</li>
-                        <li>크로스 플랫폼 개발</li>
-                        <li>PBR 워크플로우</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Team Leadership 모달 -->
-    <div id="leadership-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('leadership-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>💼 Team Leadership</h2>
-                <p>팀을 이끌고 성장시키는 리더십</p>
-            </div>
-            <div class="modal-body">
-                <div class="skill-details">
-                    <h4>🎯 리더십 영역</h4>
-                    <ul>
-                        <li>아트 디렉터 경험</li>
-                        <li>청강대 겸임교수</li>
-                        <li>팀 관리 및 외주 관리</li>
-                        <li>신입 교육 및 멘토링</li>
-                        <li>프로젝트 총괄</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Technical Pipeline 모달 -->
-    <div id="pipeline-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('pipeline-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>🛠️ Technical Pipeline</h2>
-                <p>효율적인 개발 워크플로우 구축</p>
-            </div>
-            <div class="modal-body">
-                <div class="skill-details">
-                    <h4>🎯 전문 분야</h4>
-                    <ul>
-                        <li>아트 파이프라인 구축</li>
-                        <li>Git/SVN 버전 관리</li>
-                        <li>자동화 스크립팅</li>
-                        <li>모바일 최적화 가이드</li>
-                        <li>워크플로우 개선</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <section id="skills" class="section">
         <h2 class="fade-in">보유 역량</h2>
@@ -1015,9 +692,7 @@
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">🏆 주요 성과 <span class="achievement-badge">🌟 우수강사</span></div>
-                            <div class="detail-content">
-                                전체 스쿨 기준 상위 10% 평점 달성
-                            </div>
+                            <div class="detail-content">전체 스쿨 기준 상위 10% 평점 달성</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">🛠️ 사용 스킬</div>
@@ -1099,12 +774,9 @@
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">🏆 주요 성과 <span class="achievement-badge">🏆 수상작</span></div>
-                            <div class="detail-content">
-                                Google Play 10만+ 다운로드
-                            </div>
+                            <div class="detail-content">Google Play 10만+ 다운로드</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-label">🎖️ 수상 내역</div>
                             <div class="detail-content">
                                 2018 BIC Excellence In Casual<br>
                                 2017 성남시 인디게임 공모전 최우수상
@@ -1248,47 +920,45 @@
     <script>
         // 네비게이션 함수
         function showSection(sectionId) {
-            // 모든 모달 닫기
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                modal.style.display = 'none';
-            });
-            document.body.style.overflow = 'auto';
-            
             // 모든 섹션 숨기기
             const sections = document.querySelectorAll('.section, .hero');
-            sections.forEach(section => section.classList.remove('active'));
+            sections.forEach(section => {
+                section.style.display = 'none';
+                section.classList.remove('active');
+            });
             
             // 선택된 섹션 보이기
             if (sectionId === 'home') {
                 document.querySelector('.hero').style.display = 'flex';
             } else {
-                document.querySelector('.hero').style.display = 'none';
-                document.getElementById(sectionId).classList.add('active');
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                    targetSection.classList.add('active');
+                }
             }
         }
 
         // 모달 함수
         function openModal(modalId) {
-            // 기본 모달창 (간단한 정보만 표시)
-            if (modalId === '3d-modal') {
-                alert('🎨 3D Modeling & Texturing\n\n• 3ds Max (15년 경험)\n• ZBrush, Blender\n• Substance 3D Painter\n• 하드서페이스 모델링 전문\n• 모바일/PC 최적화');
-            } else if (modalId === 'gamedev-modal') {
-                alert('⚙️ Game Development\n\n• Unity (10년+ 경험)\n• 자체 엔진 개발 경험\n• 모바일 게임 최적화\n• 크로스 플랫폼 개발\n• PBR 워크플로우');
-            } else if (modalId === 'ai-modal') {
-                alert('🤖 AI & Machine Learning\n\n• 대학원 AI 전공\n• NeRF 연구 논문 발표\n• 3D Gaussian Splatting\n• 프로시저럴 에셋 생성\n• 머신러닝 게임 적용');
-            } else if (modalId === 'graphics-modal') {
-                alert('🔬 Advanced Graphics\n\n• BRDF 이론 및 구현\n• PBR 렌더링\n• HLSL/GLSL 셰이더\n• Unity URP/HDRP\n• 실시간 렌더링 최적화');
-            } else if (modalId === 'leadership-modal') {
-                alert('💼 Team Leadership\n\n• 아트 디렉터 경험\n• 청강대 겸임교수\n• 팀 관리 및 외주 관리\n• 신입 교육 및 멘토링\n• 프로젝트 총괄');
-            } else if (modalId === 'pipeline-modal') {
-                alert('🛠️ Technical Pipeline\n\n• 아트 파이프라인 구축\n• Git/SVN 버전 관리\n• 자동화 스크립팅\n• 모바일 최적화 가이드\n• 워크플로우 개선');
+            // 간단한 정보 표시
+            const modalInfo = {
+                '3d-modal': '🎨 3D Modeling & Texturing\n\n• 3ds Max (15년 경험)\n• ZBrush, Blender\n• Substance 3D Painter\n• 하드서페이스 모델링 전문\n• 모바일/PC 최적화',
+                'gamedev-modal': '⚙️ Game Development\n\n• Unity (10년+ 경험)\n• 자체 엔진 개발 경험\n• 모바일 게임 최적화\n• 크로스 플랫폼 개발\n• PBR 워크플로우',
+                'ai-modal': '🤖 AI & Machine Learning\n\n• 대학원 AI 전공\n• NeRF 연구 논문 발표\n• 3D Gaussian Splatting\n• 프로시더럴 에셋 생성\n• 머신러닝 게임 적용',
+                'graphics-modal': '🔬 Advanced Graphics\n\n• BRDF 이론 및 구현\n• PBR 렌더링\n• HLSL/GLSL 셰이더\n• Unity URP/HDRP\n• 실시간 렌더링 최적화',
+                'leadership-modal': '💼 Team Leadership\n\n• 아트 디렉터 경험\n• 청강대 겸임교수\n• 팀 관리 및 외주 관리\n• 신입 교육 및 멘토링\n• 프로젝트 총괄',
+                'pipeline-modal': '🛠️ Technical Pipeline\n\n• 아트 파이프라인 구축\n• Git/SVN 버전 관리\n• 자동화 스크립팅\n• 모바일 최적화 가이드\n• 워크플로우 개선'
+            };
+            
+            const info = modalInfo[modalId];
+            if (info) {
+                alert(info);
             }
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            document.body.style.overflow = 'auto';
+            // 현재는 alert 사용이므로 자동으로 닫힘
         }
 
         // 스크롤 애니메이션
@@ -1304,13 +974,14 @@
             });
         }
 
-        window.addEventListener('scroll', handleScroll);
-
-        // 초기 로드시 홈 섹션 표시
-        document.addEventListener('DOMContentLoaded', function() {
+        // 페이지 로드 완료 후 실행
+        window.addEventListener('DOMContentLoaded', function() {
             showSection('home');
             handleScroll();
         });
+        
+        window.addEventListener('scroll', handleScroll);
     </script>
 </body>
 </html>
+                            
