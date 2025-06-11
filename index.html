@@ -422,18 +422,34 @@
             margin: 2rem 0;
         }
 
-        /* 기존 contact-links 스타일 제거 및 직접 텍스트 표시를 위한 스타일 추가 */
+        /* 연락처 정보 스타일 */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 중앙 정렬 */
+            gap: 1rem; /* 요소 간 간격 */
+        }
+
         .contact-info p {
             font-size: 1.2rem;
-            margin: 0.5rem 0;
+            margin: 0; /* 기본 마진 제거 */
             color: #ffffff;
         }
         /* 전화번호와 이메일 텍스트에 색상을 주기 위한 스타일 (클릭 방지) */
         .contact-info span.contact-text {
             color: #ff77c6; /* 이메일/전화번호 텍스트 색상 */
-            /* text-decoration: none; */ /* 이미 링크가 아니므로 필요 없음 */
         }
 
+        /* 연락처 내 사진 스타일 */
+        .contact-photo {
+            width: 150px; /* 고정 너비 */
+            height: 200px; /* 고정 높이 */
+            border-radius: 8px; /* 둥근 모서리 */
+            object-fit: cover; /* 이미지가 잘리지 않게 채움 */
+            margin-bottom: 1.5rem; /* 아래 여백 */
+            box-shadow: 0 0 10px rgba(120, 119, 198, 0.4); /* 그림자 추가 */
+            border: 2px solid #7877c6; /* 테두리 추가 */
+        }
 
         /* 반응형 */
         @media (max-width: 768px) {
@@ -1102,7 +1118,7 @@
                                 <div class="games-list">
                                     <span class="game-chip">
                                         Colorzzle
-                                        <a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="Steam에서 보기">💻</a>
+                                        <a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="PC에서 보기">💻</a>
                                         <a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&hl=ko" target="_blank" style="color: white; text-decoration: none; margin-left: 0.3rem;" title="Google Play에서 보기">📱</a>
                                     </span>
                                 </div>
@@ -1258,6 +1274,7 @@
         <div class="contact">
             <h2>연락처</h2>
             <div class="contact-info">
+                <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="이력서 사진" class="contact-photo">
                 <p>📧 이메일: <span class="contact-text">banakush@gmail.com</span></p>
                 <p>📱 전화: <span class="contact-text">010-9318-8528</span></p>
             </div>
@@ -1487,17 +1504,6 @@
                                 • 주요 문제: 용량 과다, 중복 파일, 비효율적 구조<br>
                                 • 해결 방법: AI 기반 데이터 시각화 및 분석<br>
                                 • 결과: 30-45% 용량 절약 방안 도출
-                            </div>
-
-                            <div class="instructions">
-                                <h4>🔍 분석 과정</h4>
-                                <ol>
-                                    <li><strong>데이터 수집:</strong> 폴더 구조와 용량 정보를 수동으로 정리</li>
-                                    <li><strong>AI 분석:</strong> Claude에게 로우 데이터를 제공하여 패턴 분석 요청</li>
-                                    <li><strong>시각화:</strong> 용량 분포를 차트로 시각화하여 문제점 파악</li>
-                                    <li><strong>최적화 제안:</strong> AI가 도출한 구체적인 개선 방안</li>
-                                    <li><strong>팀 공유:</strong> 시각적 자료로 팀에 효과적으로 전달</li>
-                                </ol>
                             </div>
 
                             <div class="button-group">
@@ -2008,6 +2014,14 @@
                     alert('다운로드가 시작되었습니다!\n\n완료 후:\n1. "Supersplat 에디터 열기" 버튼 클릭\n2. 다운로드한 PLY 파일을 에디터에 업로드\n3. 3D 씬을 자유롭게 탐색해보세요!');
                 }, 1000);
             }
+        }
+
+        // '연락하기' 버튼 클릭 시 연락처 섹션으로 이동하고 이력서 사진을 보여주는 함수
+        function showContactWithPhoto() {
+            showSection('contact'); // 연락처 섹션으로 이동
+
+            // 연락처 섹션으로 이동 후 스크롤이 완료될 때까지 기다릴 필요 없이 바로 이미지를 표시
+            // 이미지는 HTML에 이미 존재하므로, 단순히 보이게 하면 됨
         }
 
         // 모달 외부 클릭시 닫기
