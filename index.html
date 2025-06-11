@@ -421,29 +421,22 @@
             margin: 2rem 0;
         }
         
-        .contact-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 2rem;
+        /* 기존 contact-links 스타일 제거 및 직접 텍스트 표시를 위한 스타일 추가 */
+        .contact-info p {
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+            color: #ffffff;
         }
-        
-        .contact-link {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            color: white;
+        .contact-info a {
+            color: #ff77c6; /* 이메일/전화번호 링크 색상 */
             text-decoration: none;
             transition: all 0.3s ease;
         }
-        
-        .contact-link:hover {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            transform: translateY(-3px);
+        .contact-info a:hover {
+            color: #7877c6;
+            text-decoration: underline;
         }
-        
+
         /* 반응형 */
         @media (max-width: 768px) {
             .hero-content h1 { font-size: 2.5rem; }
@@ -1249,9 +1242,9 @@
     <section id="contact" class="section">
         <div class="contact">
             <h2>연락처</h2>
-            <div class="contact-links">
-                <a href="mailto:banakush@gmail.com" class="contact-link">📧 E-mail</a>
-                <a href="tel:+82-10-0000-0000" class="contact-link">📱 Phone</a>
+            <div class="contact-info">
+                <p>📧 이메일: <a href="mailto:banakush@gmail.com">banakush@gmail.com</a></p>
+                <p>📱 전화: <a href="tel:+82-10-9318-8528">010-9318-8528</a></p>
             </div>
         </div>
     </section>
@@ -1734,7 +1727,7 @@
                         <h4 class="subsection-title">색상, 명도, 채도를 활용한 화풍 가이드</h4>
                         <div class="work-item">
                             <p class="work-description">
-                                회사 아트팀에서 아트워크의 일관된 색감과 화풍을 유지하기 위해, 색상(Hue), 명도(Value), 채도(Saturation) 이론을 기반으로 시각 자료를 활용하여 팀원들에게 가이드라인을 제시했습니다. 다양한 레퍼런스 이미지를 통해 특정 색감이나 화풍을 어떻게 분석하고 재현하는지에 대한 이론적, 실용적 접근법을 공유하여 아트워크의 퀄리티와 통일성을 높였습니다.
+                                아트팀 리더로서 아트워크의 일관된 색감과 화풍을 유지하기 위해, 색상(Hue), 명도(Value), 채도(Saturation) 이론을 기반으로 시각 자료를 활용하여 팀원들에게 가이드라인을 제시했습니다. 다양한 레퍼런스 이미지를 통해 특정 색감이나 화풍을 어떻게 분석하고 재현하는지에 대한 이론적, 실용적 접근법을 공유하여 아트워크의 퀄리티와 통일성을 높였습니다.
                             </p>
                             <div class="file-info" style="background: rgba(120, 219, 226, 0.1); border-left: 4px solid #78dbe2;">
                                 <strong>주요 내용:</strong><br>
@@ -1753,6 +1746,9 @@
                                 </a>
                                 <a href="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401" target="_blank" class="btn btn-primary">
                                     🖼️ 예시 이미지 3
+                                </a>
+                                <a href="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F" target="_blank" class="btn btn-primary">
+                                    🖼️ 색의 특징 이미지
                                 </a>
                             </div>
                             <div class="tech-tags">
