@@ -412,36 +412,40 @@
             color: #78dbe2;
         }
 
-        /* 연락처 섹션 */
-        .contact {
+        /* 인적사항 섹션 (기존 연락처 섹션) */
+        .about-me { /* 클래스명 변경 */
             text-align: center;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 3rem;
-            margin: 2rem 0;
+            margin: 2rem auto; /* 중앙 정렬 */
+            max-width: 800px; /* 적절한 너비 제한 */
         }
 
-        /* 연락처 정보 스타일 */
-        .contact-info {
+        /* 인적사항 내 정보 스타일 */
+        .about-me-info {
             display: flex;
             flex-direction: column;
             align-items: center; /* 중앙 정렬 */
-            gap: 1rem; /* 요소 간 간격 */
+            gap: 0.8rem; /* 요소 간 간격 */
         }
-
-        .contact-info p {
-            font-size: 1.2rem;
+        .about-me-info p {
+            font-size: 1.1rem; /* 폰트 크기 약간 줄임 */
             margin: 0; /* 기본 마진 제거 */
             color: #ffffff;
+            display: flex; /* 아이콘과 텍스트 정렬을 위해 flex 사용 */
+            align-items: center;
+            gap: 0.5rem; /* 아이콘과 텍스트 간격 */
         }
-        /* 전화번호와 이메일 텍스트에 색상을 주기 위한 스타일 (클릭 방지) */
-        .contact-info span.contact-text {
-            color: #ff77c6; /* 이메일/전화번호 텍스트 색상 */
+        .about-me-info p strong {
+            color: #7877c6; /* 라벨 색상 강조 */
+            min-width: 80px; /* 라벨 최소 너비 지정 */
+            text-align: right; /* 라벨 오른쪽 정렬 */
         }
 
-        /* 연락처 내 사진 스타일 */
-        .contact-photo {
+        /* 인적사항 내 사진 스타일 */
+        .about-me-photo {
             width: 150px; /* 고정 너비 */
             height: 200px; /* 고정 높이 */
             border-radius: 8px; /* 둥근 모서리 */
@@ -451,12 +455,53 @@
             border: 2px solid #7877c6; /* 테두리 추가 */
         }
 
+        /* 학력 사항 세부 스타일 */
+        .education-details {
+            margin-top: 2rem;
+            text-align: left; /* 텍스트 왼쪽 정렬 */
+            padding-top: 1.5rem; /* 위쪽 여백 */
+            border-top: 1px solid rgba(255, 255, 255, 0.1); /* 구분선 */
+        }
+        .education-details h3 {
+            font-size: 1.5rem; /* 학력 제목 크기 */
+            color: #ff77c6; /* 학력 제목 색상 */
+            margin-bottom: 1.2rem; /* 아래 여백 */
+            text-align: center; /* 학력 제목 중앙 정렬 */
+        }
+        .education-details ul {
+            list-style: none; /* 기본 리스트 스타일 제거 */
+            padding: 0;
+            color: #ffffff;
+        }
+        .education-details li {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem; /* 각 항목 간 간격 */
+            position: relative;
+            padding-left: 1.5rem; /* 아이콘 공간 확보 */
+        }
+        .education-details li::before {
+            content: '📚'; /* 아이콘 추가 */
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #78dbe2; /* 아이콘 색상 */
+        }
+        .education-details .period {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-left: 0.5rem;
+        }
+
+
         /* 반응형 */
         @media (max-width: 768px) {
             .hero-content h1 { font-size: 2.5rem; }
             .hero-content p { font-size: 1.2rem; }
             .nav-links { display: none; }
-            .contact-links { flex-direction: column; }
+            .cta-button { font-size: 1rem; padding: 0.8rem 1.5rem; } /* 버튼 크기 조절 */
 
             /* 보유 역량 블럭 정렬 개선 (모바일) */
             .skills-grid {
@@ -475,19 +520,40 @@
             }
 
             .company-header {
-                flex-direction: row;
-                text-align: left;
-                gap: 1rem;
+                flex-direction: column; /* 모바일에서 회사 정보 세로 정렬 */
+                align-items: flex-start;
+            }
+            .company-info h3 {
+                font-size: 1.3rem !important; /* 회사 이름 크기 조절 */
+            }
+            .job-title, .timeline-period {
+                font-size: 0.85rem; /* 직책 및 기간 크기 조절 */
             }
 
-            .timeline-item {
-                padding: 1.5rem;
-            }
 
             /* 모바일에서 이미지 갤러리 조정 */
             .leadership-image-gallery .gallery-item {
                 flex: 0 0 calc(90% - 1rem); /* 모바일에서는 가로 90% 정도 차지 */
                 max-width: 90%;
+            }
+
+            /* 인적사항 섹션 모바일 조정 */
+            .about-me {
+                padding: 2rem 1rem; /* 모바일 패딩 조절 */
+            }
+            .about-me-info p {
+                font-size: 1rem;
+                flex-direction: column; /* 인적사항 텍스트 세로 정렬 (아이콘과 텍스트) */
+                align-items: center;
+                text-align: center;
+            }
+            .about-me-info p strong {
+                min-width: auto; /* 모바일에서 최소 너비 제한 해제 */
+                text-align: center;
+            }
+            .contact-photo {
+                width: 120px; /* 모바일에서 사진 크기 조절 */
+                height: 160px;
             }
         }
 
@@ -918,6 +984,7 @@
             <div class="logo">김소연 Portfolio</div>
             <ul class="nav-links">
                 <li><a onclick="showSection('home')">Home</a></li>
+                <li><a onclick="showSection('about-me')">인적사항</a></li>
             </ul>
         </nav>
     </header>
@@ -928,7 +995,7 @@
             <p>15년 경력의 게임 아티스트 & Technical Artist</p>
             <p class="sub-text">AI 연구와 고급 그래픽스를 겸비한 차세대 TA</p>
             <a onclick="showSection('skills')" class="cta-button">보유 역량 보기</a>
-            <a onclick="showSection('contact')" class="cta-button">연락하기</a>
+            <a onclick="showSection('about-me')" class="cta-button">인적사항</a>
         </div>
     </section>
 
@@ -1118,7 +1185,7 @@
                                 <div class="games-list">
                                     <span class="game-chip">
                                         Colorzzle
-                                        <a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="PC에서 보기">💻</a>
+                                        <a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="Steam에서 보기">💻</a>
                                         <a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&hl=ko" target="_blank" style="color: white; text-decoration: none; margin-left: 0.3rem;" title="Google Play에서 보기">📱</a>
                                     </span>
                                 </div>
@@ -1270,13 +1337,21 @@
         </div>
     </section>
 
-    <section id="contact" class="section">
-        <div class="contact">
-            <h2>연락처</h2>
-            <div class="contact-info">
-                <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="이력서 사진" class="contact-photo">
-                <p>📧 이메일: <span class="contact-text">banakush@gmail.com</span></p>
-                <p>📱 전화: <span class="contact-text">010-9318-8528</span></p>
+    <section id="about-me" class="section">
+        <div class="about-me"> <h2>인적사항</h2> <div class="about-me-info"> <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="김소연 증명사진" class="about-me-photo">
+                
+                <p><strong>성 명:</strong> 김소연</p>
+                <p><strong>거주지:</strong> 경기도 성남시 분당구</p>
+                <p><strong>전화번호:</strong> <span class="contact-text">010-9318-8528</span></p>
+                <p><strong>이메일:</strong> <span class="contact-text">banakush@gmail.com</span></p>
+            </div>
+
+            <div class="education-details">
+                <h3>학력 사항</h3>
+                <ul>
+                    <li>홍익대학교(세종) 애니메이션과 졸업 <span class="period">2003.03 - 2007.02</span></li>
+                    <li>마산 가포고등학교 졸업 <span class="period">2000.03 - 2003.02</span></li>
+                </ul>
             </div>
         </div>
     </section>
@@ -2014,14 +2089,6 @@
                     alert('다운로드가 시작되었습니다!\n\n완료 후:\n1. "Supersplat 에디터 열기" 버튼 클릭\n2. 다운로드한 PLY 파일을 에디터에 업로드\n3. 3D 씬을 자유롭게 탐색해보세요!');
                 }, 1000);
             }
-        }
-
-        // '연락하기' 버튼 클릭 시 연락처 섹션으로 이동하고 이력서 사진을 보여주는 함수
-        function showContactWithPhoto() {
-            showSection('contact'); // 연락처 섹션으로 이동
-
-            // 연락처 섹션으로 이동 후 스크롤이 완료될 때까지 기다릴 필요 없이 바로 이미지를 표시
-            // 이미지는 HTML에 이미 존재하므로, 단순히 보이게 하면 됨
         }
 
         // 모달 외부 클릭시 닫기
