@@ -632,69 +632,80 @@
             height: 100%;
             object-fit: cover; /* 이미지가 잘리지 않고 채워지도록 */
             transition: transform 0.3s ease;
+            cursor: pointer; /* 클릭 가능한 이미지임을 나타냄 */
         }
         .portfolio-image:hover img {
             transform: scale(1.05);
         }
 
-        .portfolio-info {
-            padding: 1rem;
+        /* 팀 리더십 모달 내의 이미지 갤러리 스타일 */
+        .leadership-image-gallery {
+            display: flex;
+            flex-wrap: wrap; /* 여러 줄로 감싸기 */
+            justify-content: center; /* 가운데 정렬 */
+            gap: 1rem; /* 이미지 간 간격 */
+            margin-top: 1.5rem;
         }
 
-        .portfolio-info h4 {
-            color: #7877c6;
-            margin-bottom: 0.5rem;
+        .leadership-image-gallery .gallery-item {
+            flex: 0 0 calc(40% - 1rem); /* 가로 40% 차지 (gap 고려) */
+            max-width: 40%; /* 최대 너비 제한 */
+            height: 150px; /* 고정 높이 */
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            background-color: rgba(255, 255, 255, 0.05);
+            display: flex; /* 이미지를 중앙에 배치하기 위함 */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .portfolio-info p {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: 0.5rem;
+        .leadership-image-gallery .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(120, 119, 198, 0.3);
         }
 
-        .modal-description {
-            color: white;
+        .leadership-image-gallery .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 이미지 전체가 보이도록 contain 사용 */
+            transition: transform 0.2s ease;
         }
 
-        .modal-description h3 {
-            color: #7877c6;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+        .leadership-image-gallery .gallery-item:hover img {
+            transform: scale(1.03);
         }
 
-        .modal-description p {
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .skill-details {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-        }
-
-        .skill-details h4 {
-            color: #ff77c6;
-            margin-bottom: 0.8rem;
-        }
-
-        .skill-details ul {
-            list-style: none;
+        /* 새로운 이미지 뷰어 모달 스타일 */
+        #image-viewer-modal .modal-content {
+            background: rgba(0, 0, 0, 0.9); /* 배경을 더 어둡게 */
+            max-width: 90vw; /* 뷰포트 너비의 90% */
+            max-height: 90vh; /* 뷰포트 높이의 90% */
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 0;
+            border: none;
+            overflow: hidden; /* 스크롤바 없앰 */
         }
 
-        .skill-details li {
-            padding: 0.3rem 0;
-            padding-left: 1rem;
-            position: relative;
+        #image-viewer-modal .modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* 이미지가 잘리지 않고 전체가 보이도록 */
+            display: block; /* 이미지 하단의 불필요한 여백 제거 */
         }
 
-        .skill-details li::before {
-            content: '▶';
-            position: absolute;
-            left: 0;
-            color: #7877c6;
+        #image-viewer-modal .close {
+            color: white;
+            opacity: 0.7;
+            text-shadow: 0 0 5px black;
+            transition: opacity 0.2s ease;
+        }
+        #image-viewer-modal .close:hover {
+            opacity: 1;
         }
 
         /* 3DGS 섹션 전용 스타일 */
@@ -1144,7 +1155,7 @@
                             <div class="detail-content">3D 배경모델링, 3D 캐릭터모델링, 이펙트, 라이팅, 최적화 etc.</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-label">🛠️ 사용 스킬</div>
+                            <div class="detail-label">🛠️ 사용 툴</div>
                             <div class="detail-content">
                                 <div class="tech-stack">
                                     <span class="tech-item">SVN</span>
@@ -1734,31 +1745,36 @@
                                 • **화풍 분석:** 특정 화풍(예: 캐주얼, 실사, 반실사)의 시각적 특징을 HVS 기반으로 해부.<br>
                                 • **실제 사례 분석:** 유사한 색감/화풍의 게임 아트워크 분석을 통해 적용 방안 제시.
                             </div>
-                            <div class="button-group">
-                                <div class="portfolio-image" style="height: 200px; margin-bottom: 1rem;">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29" alt="예시 이미지 1: 색상 이론 적용 예시">
+                            <div class="leadership-image-gallery"> <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29" alt="예시 이미지 1">
                                 </div>
-                                <div class="portfolio-image" style="height: 200px; margin-bottom: 1rem;">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115" alt="예시 이미지 2: 명도 대비 설명">
+                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115" alt="예시 이미지 2">
                                 </div>
-                                <div class="portfolio-image" style="height: 200px; margin-bottom: 1rem;">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401" alt="예시 이미지 3: 채도 활용 예시">
+                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401" alt="예시 이미지 3">
                                 </div>
-                                <div class="portfolio-image" style="height: 200px; margin-bottom: 1rem;">
+                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F')">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F" alt="색의 특징 이미지">
                                 </div>
                             </div>
-                            <div class="tech-tags">
-                                <span class="tech-tag">Art Direction</span>
+                            <div class="tech-tags" style="margin-top: 1rem;"> <span class="tech-tag">Art Direction</span>
                                 <span class="tech-tag">Color Theory</span>
                                 <span class="tech-tag">Hue-Value-Saturation</span>
-                                <span class="tag">Style Guide</span>
+                                <span class="tech-tag">Style Guide</span>
                                 <span class="tech-tag">Team Collaboration</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="image-viewer-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeImageViewer()">&times;</span>
+            <img id="full-image" src="" alt="확대 이미지">
         </div>
     </div>
 
@@ -1937,7 +1953,7 @@
         // 전역 변수로 스크롤바 너비 저장 (한 번만 계산)
         let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-        // 모달 함수
+        // 일반 모달 (스킬 모달 등) 열기/닫기 함수
         function openModal(modalId) {
             console.log('Opening modal:', modalId);
             const modal = document.getElementById(modalId);
@@ -1988,6 +2004,31 @@
             }
         }
 
+        // 이미지 뷰어 모달 열기/닫기 함수 (새로 추가)
+        function openImageViewer(imageUrl) {
+            const imageViewerModal = document.getElementById('image-viewer-modal');
+            const fullImage = document.getElementById('full-image');
+            
+            fullImage.src = imageUrl; // 클릭한 이미지의 URL을 설정
+            imageViewerModal.style.display = 'block';
+            setTimeout(() => {
+                imageViewerModal.classList.add('active-modal');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = scrollbarWidth + 'px';
+        }
+
+        function closeImageViewer() {
+            const imageViewerModal = document.getElementById('image-viewer-modal');
+            imageViewerModal.classList.remove('active-modal');
+            imageViewerModal.addEventListener('transitionend', function handler() {
+                imageViewerModal.style.display = 'none';
+                imageViewerModal.removeEventListener('transitionend', handler);
+            }, {once: true});
+            document.body.style.overflow = 'auto';
+            document.body.style.paddingRight = '0px';
+        }
+
         // 3DGS 파일 다운로드 함수
         function downloadFile() {
             const driveUrl = "https://drive.google.com/uc?export=download&id=1Z2vhQtjNUzsDM_xr6UUG4gM9VCQruuLI";
@@ -2006,7 +2047,12 @@
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
                 if (event.target === modal) {
-                    closeModal(modal.id); // 해당 모달 ID로 닫기 함수 호출
+                    // 이미지 뷰어 모달인 경우
+                    if (modal.id === 'image-viewer-modal') {
+                        closeImageViewer();
+                    } else { // 다른 일반 모달인 경우
+                        closeModal(modal.id);
+                    }
                 }
             });
         }
