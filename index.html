@@ -1,58 +1,20 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>김소연 - Technical Artist Portfolio</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
-        }
-
-        /* 배경 애니메이션 */
-        .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 80%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
-            z-index: -1;
-            animation: backgroundMove 20s ease-in-out infinite;
-        }
-
-        @keyframes backgroundMove {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* 헤더 */
+        /* 새로운 헤더 스타일 */
         header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             padding: 1rem 2rem;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
             transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 0.8rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
         }
 
         nav {
@@ -63,996 +25,232 @@
             margin: 0 auto;
         }
 
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
         .logo {
             font-size: 1.5rem;
-            font-weight: bold;
+            font-weight: 800;
             background: linear-gradient(45deg, #7877c6, #ff77c6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1;
+        }
+
+        .logo-subtitle {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .nav-links a:hover {
-            color: #7877c6;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* 메인 섹션 */
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-        }
-
-        .hero-content h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #7877c6, #ff77c6, #78dbe2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: titleGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            from { filter: drop-shadow(0 0 20px rgba(120, 119, 198, 0.5)); }
-            to { filter: drop-shadow(0 0 30px rgba(255, 119, 198, 0.7)); }
-        }
-
-        .hero-content p {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            opacity: 0.8;
-        }
-
-        .hero-content .sub-text {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.7;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border: none;
-            border-radius: 50px;
-            color: white;
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin: 0.5rem;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(120, 119, 198, 0.4);
-        }
-
-        /* 섹션 스타일 */
-        .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            display: none !important;
-            position: relative;
-        }
-
-        .section.active {
-            display: block !important;
-        }
-
-        /* 보유 역량, 경력 사항 폰트 디자인, 컬러, 위치 개선 */
-        .section h2 {
-            font-size: 3.5rem; /* 기존 3rem에서 약간 키움 */
-            text-align: center;
-            margin-bottom: 3.5rem; /* 여백 증가 */
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 10px rgba(120, 119, 198, 0.6), 0 0 20px rgba(255, 119, 198, 0.4); /* 그림자 추가 */
-            letter-spacing: -0.05rem; /* 글자 간격 조절 */
-            transition: all 0.5s ease-in-out; /* 부드러운 전환 효과 추가 */
-        }
-
-        /* 호버 효과 (선택 사항) */
-        .section h2:hover {
-            transform: translateY(-5px);
-            text-shadow: 0 0 15px rgba(120, 119, 198, 0.8), 0 0 25px rgba(255, 119, 198, 0.6);
-        }
-
-        /* 보유 역량 블럭 정렬 개선 */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2열 고정 */
-            gap: 2rem; /* 간격 유지 */
-            margin-top: 3rem;
-        }
-
-        .skill-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .skill-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(120, 119, 198, 0.2);
-            border-color: #7877c6;
-        }
-
-        .skill-card h3 {
-            color: #7877c6;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .skill-tags {
-            display: flex;
-            flex-wrap: wrap;
             gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .tag {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: white;
-        }
-
-        /* 경력 섹션 */
-        .experience-section {
-            margin-top: 5rem;
-        }
-
-        .section-divider {
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #7877c6, #ff77c6, transparent);
-            margin: 4rem 0 3rem 0;
-            border-radius: 2px;
-        }
-
-        .experience-timeline {
-            position: relative;
-            padding: 2rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            align-items: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .timeline-item {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s ease;
-            overflow: hidden;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 20px 20px 0 0;
-        }
-
-        .timeline-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(120, 119, 198, 0.3);
-        }
-
-        .company-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .company-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .company-info h3 {
-            color: #ffffff !important;
-            font-size: 1.5rem !important;
-            margin-bottom: 0.3rem !important;
-            font-weight: bold !important;
-            display: block !important;
-        }
-
-        .job-title {
-            color: #7877c6;
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-        }
-
-        .timeline-period {
-            color: #ff77c6;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .job-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .detail-item {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 1rem;
-            border-left: 3px solid #7877c6;
-        }
-
-        .detail-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #7877c6;
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .detail-content {
-            color: #ffffff;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .games-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .game-chip {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            color: white;
-            font-weight: 500;
-        }
-
-        .achievement-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
-            color: #2d3436;
-            padding: 0.4rem 0.9rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            font-family: 'Arial Black', 'Helvetica', sans-serif;
-            margin-left: 0.5rem;
-            text-align: center;
-            line-height: 1.1;
-            letter-spacing: -0.5px;
-            box-shadow: 0 2px 8px rgba(255, 234, 167, 0.3);
-            border: 1px solid rgba(253, 203, 110, 0.6);
-        }
-
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-        }
-
-        .tech-item {
-            background: rgba(120, 219, 226, 0.2);
-            border: 1px solid rgba(120, 219, 226, 0.4);
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            color: #78dbe2;
-        }
-
-        /* 인적사항 섹션 (기존 연락처 섹션) */
-        .about-me { /* 클래스명 변경 */
-            text-align: center;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 3rem;
-            margin: 2rem auto; /* 중앙 정렬 */
-            max-width: 800px; /* 적절한 너비 제한 */
-        }
-
-        /* 인적사항 내 정보 스타일 */
-        .about-me-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* 중앙 정렬 */
-            gap: 0.8rem; /* 요소 간 간격 */
-        }
-        .about-me-info p {
-            font-size: 1.1rem; /* 폰트 크기 약간 줄임 */
-            margin: 0; /* 기본 마진 제거 */
-            color: #ffffff;
-            display: flex; /* 아이콘과 텍스트 정렬을 위해 flex 사용 */
-            align-items: center;
-            gap: 0.5rem; /* 아이콘과 텍스트 간격 */
-        }
-        .about-me-info p strong {
-            color: #7877c6; /* 라벨 색상 강조 */
-            min-width: 80px; /* 라벨 최소 너비 지정 */
-            text-align: right; /* 라벨 오른쪽 정렬 */
-        }
-
-        /* 인적사항 내 사진 스타일 */
-        .about-me-photo {
-            width: 150px; /* 고정 너비 */
-            height: 200px; /* 고정 높이 */
-            border-radius: 8px; /* 둥근 모서리 */
-            object-fit: cover; /* 이미지가 잘리지 않게 채움 */
-            margin-bottom: 1.5rem; /* 아래 여백 */
-            box-shadow: 0 0 10px rgba(120, 119, 198, 0.4); /* 그림자 추가 */
-            border: 2px solid #7877c6; /* 테두리 추가 */
-        }
-
-        /* 학력 사항 세부 스타일 */
-        .education-details {
-            margin-top: 2rem;
-            text-align: left; /* 텍스트 왼쪽 정렬 */
-            padding-top: 1.5rem; /* 위쪽 여백 */
-            border-top: 1px solid rgba(255, 255, 255, 0.1); /* 구분선 */
-        }
-        .education-details h3 {
-            font-size: 1.5rem; /* 학력 제목 크기 */
-            color: #ff77c6; /* 학력 제목 색상 */
-            margin-bottom: 1.2rem; /* 아래 여백 */
-            text-align: center; /* 학력 제목 중앙 정렬 */
-        }
-        .education-details ul {
-            list-style: none; /* 기본 리스트 스타일 제거 */
-            padding: 0;
-            color: #ffffff;
-        }
-        .education-details li {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 0.8rem; /* 각 항목 간 간격 */
-            position: relative;
-            padding-left: 1.5rem; /* 아이콘 공간 확보 */
-        }
-        .education-details li::before {
-            content: '📚'; /* 아이콘 추가 */
-            position: absolute;
-            left: 0;
-            top: 0;
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: #78dbe2; /* 아이콘 색상 */
-        }
-        .education-details .period {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-left: 0.5rem;
-        }
-
-
-        /* 반응형 */
-        @media (max-width: 768px) {
-            .hero-content h1 { font-size: 2.5rem; }
-            .hero-content p { font-size: 1.2rem; }
-            .nav-links { display: none; }
-            .cta-button { font-size: 1rem; padding: 0.8rem 1.5rem; } /* 버튼 크기 조절 */
-
-            /* 보유 역량 블럭 정렬 개선 (모바일) */
-            .skills-grid {
-                grid-template-columns: 1fr; /* 모바일에서 1열로 변경 */
-            }
-
-            /* 폰트 개선 (모바일) */
-            .section h2 {
-                font-size: 2.5rem; /* 모바일에서 폰트 크기 조절 */
-                margin-bottom: 2.5rem;
-            }
-
-            .job-details {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .company-header {
-                flex-direction: column; /* 모바일에서 회사 정보 세로 정렬 */
-                align-items: flex-start;
-            }
-            .company-info h3 {
-                font-size: 1.3rem !important; /* 회사 이름 크기 조절 */
-            }
-            .job-title, .timeline-period {
-                font-size: 0.85rem; /* 직책 및 기간 크기 조절 */
-            }
-
-
-            /* 모바일에서 이미지 갤러리 조정 */
-            .leadership-image-gallery .gallery-item {
-                flex: 0 0 calc(90% - 1rem); /* 모바일에서는 가로 90% 정도 차지 */
-                max-width: 90%;
-            }
-
-            /* 인적사항 섹션 모바일 조정 */
-            .about-me {
-                padding: 2rem 1rem; /* 모바일 패딩 조절 */
-            }
-            .about-me-info p {
-                font-size: 1rem;
-                flex-direction: column; /* 인적사항 텍스트 세로 정렬 (아이콘과 텍스트) */
-                align-items: center;
-                text-align: center;
-            }
-            .about-me-info p strong {
-                min-width: auto; /* 모바일에서 최소 너비 제한 해제 */
-                text-align: center;
-            }
-            .contact-photo { /* 클래스명 변경에 따라 수정 */
-                width: 120px; /* 모바일에서 사진 크기 조절 */
-                height: 160px;
-            }
-        }
-
-        /* 스크롤 애니메이션 */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 모달 스타일 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            /* backdrop-filter는 JavaScript로 active-modal 클래스 추가 시 적용 */
-            opacity: 0; /* 초기 투명하게 설정 */
-            transition: opacity 0.2s ease-out; /* 페이드인/아웃 애니메이션 추가 */
-        }
-
-        .modal.active-modal { /* JavaScript에서 추가할 클래스 */
-            opacity: 1;
-            backdrop-filter: blur(5px); /* 활성화 시에만 블러 적용 */
-        }
-
-        .modal-content {
-            position: relative;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 2% auto;
-            padding: 0;
-            width: 90%;
-            max-width: 1000px;
-            border-radius: 20px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: translateY(-30px); /* 초기 위치 (위에서 아래로 내려오는 효과) */
-            opacity: 0; /* 초기 투명하게 설정 */
-            transition: opacity 0.2s ease-out, transform 0.2s ease-out; /* 애니메이션 시간 단축 */
-        }
-
-        .modal.active-modal .modal-content {
-            opacity: 1;
-            transform: translateY(0); /* 최종 위치 */
-        }
-
-        /* 커스텀 스크롤바 스타일 */
-        .modal-content::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        .modal-content::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .modal-content::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 10px;
-            border: 2px solid rgba(10, 10, 10, 0.95);
-            transition: all 0.3s ease;
-        }
-
-        .modal-content::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #8989d4, #ff88d4);
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(120, 119, 198, 0.5);
-        }
-
-        .modal-content::-webkit-scrollbar-thumb:active {
-            background: linear-gradient(45deg, #6666b8, #ee66b8);
-        }
-
-        /* Firefox 전용 스크롤바 스타일 */
-        .modal-content {
-            scrollbar-width: thin;
-            scrollbar-color: #7877c6 rgba(255, 255, 255, 0.05);
-        }
-
-        .modal-header {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            padding: 2rem;
-            border-radius: 20px 20px 0 0;
-            text-align: center;
-        }
-
-        .modal-header h2 {
-            color: white;
-            font-size: 2.5rem;
             margin: 0;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.2rem;
-            margin: 0.5rem 0 0 0;
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .close {
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-
-        .close:hover {
-            color: #ff77c6;
-            transform: scale(1.2);
-        }
-
-        /* 모달 내용 스타일 */
-        .modal-portfolio {
-            display: grid;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .portfolio-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .portfolio-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 25px rgba(120, 119, 198, 0.2);
-        }
-
-        .portfolio-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6, #78dbe2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            overflow: hidden; /* 이미지 오버플로우 숨김 */
-        }
-        .portfolio-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* 이미지가 잘리지 않고 채워지도록 */
-            transition: transform 0.3s ease;
-            cursor: pointer; /* 클릭 가능한 이미지임을 나타냄 */
-        }
-        .portfolio-image:hover img {
-            transform: scale(1.05);
-        }
-
-        /* 팀 리더십 모달 내의 이미지 갤러리 스타일 */
-        .leadership-image-gallery {
-            display: flex;
-            flex-wrap: wrap; /* 여러 줄로 감싸기 */
-            justify-content: center; /* 가운데 정렬 */
-            gap: 1rem; /* 이미지 간 간격 */
-            margin-top: 1.5rem;
-        }
-
-        .leadership-image-gallery .gallery-item {
-            flex: 0 0 calc(40% - 1rem); /* 가로 40% 차지 (gap 고려) */
-            max-width: 40%; /* 최대 너비 제한 */
-            height: 150px; /* 고정 높이 */
-            overflow: hidden;
-            border-radius: 8px;
-            border: 1px solid rgba(120, 119, 198, 0.3);
-            background-color: rgba(255, 255, 255, 0.05);
-            display: flex; /* 이미지를 중앙에 배치하기 위함 */
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .leadership-image-gallery .gallery-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(120, 119, 198, 0.3);
-        }
-
-        .leadership-image-gallery .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* 이미지 전체가 보이도록 contain 사용 */
-            transition: transform 0.2s ease;
-        }
-
-        .leadership-image-gallery .gallery-item:hover img {
-            transform: scale(1.03);
-        }
-
-        /* 새로운 이미지 뷰어 모달 스타일 */
-        #image-viewer-modal .modal-content {
-            background: rgba(0, 0, 0, 0.9); /* 배경을 더 어둡게 */
-            max-width: 90vw; /* 뷰포트 너비의 90% */
-            max-height: 90vh; /* 뷰포트 높이의 90% */
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 0;
-            border: none;
-            overflow: hidden; /* 스크롤바 없앰 */
         }
 
-        #image-viewer-modal .modal-content img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; /* 이미지가 잘리지 않고 전체가 보이도록 */
-            display: block; /* 이미지 하단의 불필요한 여백 제거 */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
         }
 
-        #image-viewer-modal .close {
-            color: white;
-            opacity: 0.7;
-            text-shadow: 0 0 5px black;
-            transition: opacity 0.2s ease;
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(120, 119, 198, 0.1), rgba(255, 119, 198, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        #image-viewer-modal .close:hover {
+
+        .nav-item:hover::before,
+        .nav-item.active::before {
             opacity: 1;
         }
 
-        /* 3DGS 섹션 전용 스타일 */
-        .portfolio-section {
-            margin: 2rem 0;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
-            padding: 1.5rem;
-            border: 1px solid rgba(120, 119, 198, 0.1);
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #7877c6;
-            border-bottom: 2px solid #7877c6;
-            padding-bottom: 10px;
-        }
-
-        .subsection {
-            margin: 1.5rem 0;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border-left: 4px solid #ff77c6;
-        }
-
-        .subsection-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #ff77c6;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .work-item {
-            background: linear-gradient(135deg, rgba(120, 119, 198, 0.1), rgba(255, 119, 198, 0.05));
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(120, 119, 198, 0.2);
-        }
-
-        .work-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(120, 119, 198, 0.3);
-        }
-
-        .work-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #7877c6;
-            margin-bottom: 10px;
-        }
-
-        .work-description {
+        .nav-item:hover,
+        .nav-item.active {
             color: #ffffff;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            opacity: 0.9;
-            word-break: keep-all;
-            word-wrap: break-word;
-        }
-
-        .file-info {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #7877c6;
-            word-break: keep-all;
-            word-wrap: break-word;
-        }
-
-        .file-size {
-            font-weight: bold;
-            color: #ff77c6;
-        }
-
-        .instructions {
-            background: rgba(255, 243, 205, 0.1);
-            border: 1px solid rgba(255, 234, 167, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            word-break: keep-all;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .instructions h4 {
-            margin-top: 0;
-            color: #ff77c6;
-        }
-
-        .instructions ol {
-            margin-bottom: 0;
-            color: #ffffff;
-            padding-left: 1.2rem;
-        }
-
-        .instructions li {
-            margin-bottom: 0.8rem;
-            line-height: 1.5;
-            word-break: keep-all;
-            word-wrap: break-word;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(245,87,108,0.4);
-        }
-
-        .tech-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .tech-tag {
-            background: #7877c6;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .preview-note {
-            text-align: center;
-            color: #ffffff;
-            font-style: italic;
-            margin-top: 15px;
-            padding: 10px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            opacity: 0.8;
+            border: 1px solid rgba(120, 119, 198, 0.3);
         }
-    </style>
-</head>
-<body>
-    <div class="background"></div>
 
-    <header>
-        <nav>
-            <div class="logo">김소연 Portfolio</div>
-            <ul class="nav-links">
-                <li><a onclick="showSection('home')">Home</a></li>
-                <li><a onclick="showSection('about-me')">인적사항</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>김소연</h1>
-            <p>15년 경력의 게임 아티스트 & Technical Artist</p>
-            <p class="sub-text">AI 연구와 고급 그래픽스를 겸비한 차세대 TA</p>
-            <a onclick="showSection('skills')" class="cta-button">보유 역량 보기</a>
-            <a onclick="showSection('about-me')" class="cta-button">인적사항</a>
+        .nav    <section id="skills" class="section">
+        <div class="section-intro fade-in">
+            <h2>보유 역량</h2>
+            <p class="section-subtitle">15년간 축적한 전문성과 최신 기술의 만남</p>
+            <div class="intro-stats">
+                <div class="intro-stat">
+                    <span class="stat-icon">🎨</span>
+                    <span class="stat-text">Creative Excellence</span>
+                </div>
+                <div class="intro-stat">
+                    <span class="stat-icon">⚡</span>
+                    <span class="stat-text">Technical Mastery</span>
+                </div>
+                <div class="intro-stat">
+                    <span class="stat-icon">🚀</span>
+                    <span class="stat-text">Innovation Drive</span>
+                </div>
+            </div>
         </div>
-    </section>
 
-    <section id="skills" class="section">
-        <h2 class="fade-in">보유 역량</h2>
-        <div class="skills-grid">
-            <div class="skill-card fade-in" onclick="openModal('3d-gamedev-modal')">
-                <h3>🎨 3D Art & Game Development</h3>
-                <p>3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
-                <div class="skill-tags">
-                    <span class="tag">3ds Max</span>
-                    <span class="tag">Unity</span>
-                    <span class="tag">ZBrush</span>
-                    <span class="tag">Substance 3D</span>
-                    <span class="tag">Mobile Optimization</span>
+        <div class="skills-showcase">
+            <div class="skill-card premium fade-in" onclick="openModal('3d-gamedev-modal')">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="skill-icon">🎨</div>
+                    <div class="skill-badge">CORE</div>
                 </div>
+                <div class="card-content">
+                    <h3>3D Art & Game Development</h3>
+                    <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
+                    
+                    <div class="skill-highlights">
+                        <div class="highlight-item">
+                            <span class="highlight-number">15+</span>
+                            <span class="highlight-label">Years</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-number">100K+</span>
+                            <span class="highlight-label">Downloads</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-tags">
+                        <span class="tag featured">3ds Max</span>
+                        <span class="tag">Unity</span>
+                        <span class="tag">ZBrush</span>
+                        <span class="tag">Substance 3D</span>
+                        <span class="tag">Mobile Optimization</span>
+                    </div>
+                </div>
+                <div class="card-arrow">→</div>
             </div>
 
-            <div class="skill-card fade-in" onclick="openModal('ai-modal')">
-                <h3>🤖 AI & Machine Learning</h3>
-                <p>대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
-                <div class="skill-tags">
-                    <span class="tag">Machine Learning</span>
-                    <span class="tag">AI Research</span>
-                    <span class="tag">Graduate Studies</span>
-                    <span class="tag">Procedural Generation</span>
+            <div class="skill-card innovative fade-in" onclick="openModal('ai-modal')">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="skill-icon">🤖</div>
+                    <div class="skill-badge">HOT</div>
                 </div>
+                <div class="card-content">
+                    <h3>AI & Machine Learning</h3>
+                    <p class="skill-description">대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
+                    
+                    <div class="skill-highlights">
+                        <div class="highlight-item">
+                            <span class="highlight-number">현재</span>
+                            <span class="highlight-label">Research</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-number">3DGS</span>
+                            <span class="highlight-label">Project</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-tags">
+                        <span class="tag featured">Machine Learning</span>
+                        <span class="tag">AI Research</span>
+                        <span class="tag">Graduate Studies</span>
+                        <span class="tag">Procedural Generation</span>
+                    </div>
+                </div>
+                <div class="card-arrow">→</div>
             </div>
 
-            <div class="skill-card fade-in" onclick="openModal('graphics-pipeline-modal')">
-                <h3>🔬 Advanced Graphics & Pipeline</h3>
-                <p>BRDF, PBR 등 고급 렌더링 이론과 효율적인 개발 파이프라인 구축 전문성을 보유하고 있습니다.</p>
-                <div class="skill-tags">
-                    <span class="tag">BRDF</span>
-                    <span class="tag">PBR Theory</span>
-                    <span class="tag">Shader Development</span>
-                    <span class="tag">Pipeline Optimization</span>
+            <div class="skill-card technical fade-in" onclick="openModal('graphics-pipeline-modal')">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="skill-icon">🔬</div>
+                    <div class="skill-badge">PRO</div>
                 </div>
+                <div class="card-content">
+                    <h3>Advanced Graphics & Pipeline</h3>
+                    <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론과 효율적인 개발 파이프라인 구축 전문성을 보유하고 있습니다.</p>
+                    
+                    <div class="skill-highlights">
+                        <div class="highlight-item">
+                            <span class="highlight-number">PBR</span>
+                            <span class="highlight-label">Expert</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-number">Pipeline</span>
+                            <span class="highlight-label">Optimization</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-tags">
+                        <span class="tag featured">BRDF</span>
+                        <span class="tag">PBR Theory</span>
+                        <span class="tag">Shader Development</span>
+                        <span class="tag">Pipeline Optimization</span>
+                    </div>
+                </div>
+                <div class="card-arrow">→</div>
             </div>
 
-            <div class="skill-card fade-in" onclick="openModal('leadership-modal')">
-                <h3>💼 Team Leadership</h3>
-                <p>AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
-                <div class="skill-tags">
-                    <span class="tag">Art Direction</span>
-                    <span class="tag">Team Management</span>
-                    <span class="tag">Education</span>
-                    <span class="tag">Mentoring</span>
+            <div class="skill-card leadership fade-in" onclick="openModal('leadership-modal')">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="skill-icon">💼</div>
+                    <div class="skill-badge">LEAD</div>
                 </div>
+                <div class="card-content">
+                    <h3>Team Leadership</h3>
+                    <p class="skill-description">AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
+                    
+                    <div class="skill-highlights">
+                        <div class="highlight-item">
+                            <span class="highlight-number">TOP10%</span>
+                            <span class="highlight-label">Rating</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-number">Team</span>
+                            <span class="highlight-label">Management</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-tags">
+                        <span class="tag featured">Art Direction</span>
+                        <span class="tag">Team Management</span>
+                        <span class="tag">Education</span>
+                        <span class="tag">Mentoring</span>
+                    </div>
+                </div>
+                <div class="card-arrow">→</div>
             </div>
         </div>
 
         <div class="experience-section">
             <div class="section-divider"></div>
-            <h2 class="fade-in">경력 사항</h2>
+            <div class="experience-intro fade-in">
+                <h2>경력 사항</h2>
+                <p class="section-subtitle">다양한 프로젝트를 통해 쌓은 실무 경험</p>
+            </div>
 
             <div class="experience-timeline">
+                <!-- 기존 타임라인 내용 유지 -->
                 <div class="timeline-item fade-in">
                     <div class="company-header">
                         <div class="company-icon">🚀</div>
@@ -1123,1012 +321,122 @@
                                 <div class="tech-stack">
                                     <span class="tech-item">교육</span>
                                     <span class="tech-item">멘토링</span>
-                                    <span class="tech-item">커리큘럼 개발</span>
-                                </div>
-                            </div>
+                                    <span    <section id="about-me" class="section">
+        <h2 class="fade-in">인적사항</h2>
+        
+        <!-- 메인 프로필 카드 -->
+        <div class="profile-hero fade-in">
+            <div class="profile-visual">
+                <div class="profile-image-container">
+                    <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="김소연 프로필" class="profile-image">
+                    <div class="image-glow"></div>
+                </div>
+                <div class="profile-badges">
+                    <span class="badge primary">🎨 Technical Artist</span>
+                    <span class="badge secondary">🎓 AI Research</span>
+                    <span class="badge accent">💼 15년 경력</span>
+                </div>
+            </div>
+            
+            <div class="profile-content">
+                <div class="name-section">
+                    <h3 class="profile-name">김소연</h3>
+                    <p class="profile-title">Technical Artist & AI Researcher</p>
+                </div>
+                
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <span class="contact-label">거주지</span>
+                            <span class="contact-value">경기도 성남시 분당구</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-details">
+                            <span class="contact-label">연락처</span>
+                            <span class="contact-value">010-9318-8528</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-details">
+                            <span class="contact-label">이메일</span>
+                            <span class="contact-value">banakush@gmail.com</span>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="timeline-item fade-in">
-                    <div class="company-header">
-                        <div class="company-icon">🥽</div>
-                        <div class="company-info">
-                            <h3>이한크리에이티브</h3>
-                            <div class="job-title">아트팀 AD</div>
-                            <div class="timeline-period">2021.09 ~ 2023.08</div>
-                        </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="detail-item">
-                            <div class="detail-label">🎮 개발 분야</div>
-                            <div class="detail-content">
-                                <div class="games-list">
-                                    <span class="game-chip">AR 게임</span>
-                                    <span class="game-chip">VR 게임</span>
-                                    <span class="game-chip">메타버스</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">⚙️ 사용 엔진</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">Unity</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">💼 주요 업무</div>
-                            <div class="detail-content">프로젝트 총괄, 외주 관리, 3D 배경모델링, 3D 캐릭터모델링, 이펙트, 애니메이션, 최적화</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🏢 주요 클라이언트</div>
-                            <div class="detail-content">롯데월드, 롯데백화점, 경기도, 성남시</div>
+        <!-- 학력 사항 카드 -->
+        <div class="education-card fade-in">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <span class="title-icon">🎓</span>
+                    학력 사항
+                </h3>
+            </div>
+            
+            <div class="education-timeline">
+                <div class="education-item current">
+                    <div class="timeline-dot"></div>
+                    <div class="education-content">
+                        <h4 class="education-degree">석사과정 재학 중</h4>
+                        <p class="education-school">홍익대학교 영상커뮤니케이션 대학원</p>
+                        <span class="education-period">2024.03 - 현재</span>
+                        <div class="education-tags">
+                            <span class="edu-tag">AI Research</span>
+                            <span class="edu-tag">Computer Graphics</span>
                         </div>
                     </div>
                 </div>
+                
+                <div class="education-item">
+                    <div class="timeline-dot"></div>
+                    <div class="education-content">
+                        <h4 class="education-degree">학사 졸업</h4>
+                        <p class="education-school">홍익대학교(세종) 애니메이션과</p>
+                        <span class="education-period">2003.03 - 2007.02</span>
+                        <div class="education-tags">
+                            <span class="edu-tag">3D Animation</span>
+                            <span class="edu-tag">Digital Art</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="education-item">
+                    <div class="timeline-dot"></div>
+                    <div class="education-content">
+                        <h4 class="education-degree">고등학교 졸업</h4>
+                        <p class="education-school">마산 가포고등학교</p>
+                        <span class="education-period">2000.03 - 2003.02</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="timeline-item fade-in">
-                    <div class="company-header">
-                        <div class="company-icon">🏆</div>
-                        <div class="company-info">
-                            <h3>다롱스튜디오</h3>
-                            <div class="job-title">AD</div>
-                            <div class="timeline-period">2018.01 ~ 2021.08</div>
-                        </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="detail-item">
-                            <div class="detail-label">🎮 개발 게임</div>
-                            <div class="detail-content">
-                                <div class="games-list">
-                                    <span class="game-chip">
-                                        Colorzzle
-                                        <a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="Steam에서 보기">💻</a>
-                                        <a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&hl=ko" target="_blank" style="color: white; text-decoration: none; margin-left: 0.3rem;" title="Google Play에서 보기">📱</a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">⚙️ 사용 엔진</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">Unity</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🏆 주요 성과 <span class="achievement-badge">🏆 수상작</span></div>
-                            <div class="detail-content">Google Play 10만+ 다운로드</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-content">
-                                2018 BIC Excellence In Casual<br>
-                                2017 성남시 인디게임 공모전 최우수상
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item fade-in">
-                    <div class="company-header">
-                        <div class="company-icon">🎯</div>
-                        <div class="company-info">
-                            <h3>네오위즈</h3>
-                            <div class="job-title">AD</div>
-                            <div class="timeline-period">2013.10 ~ 2017.01</div>
-                        </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="detail-item">
-                            <div class="detail-label">🎮 개발 게임</div>
-                            <div class="detail-content">
-                                <div class="games-list">
-                                    <span class="game-chip">와일드기어</span>
-                                    <span class="game-chip">탭소닉 애니멀심포니</span>
-                                    <span class="game-chip">탭소닉 TOP</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">⚙️ 사용 엔진</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">Unity</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">💼 주요 업무</div>
-                            <div class="detail-content">3D 배경모델링, 3D 캐릭터모델링, 이펙트, 라이팅, 최적화 etc.</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🛠️ 사용 툴</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">SVN</span>
-                                    <span class="tech-item">Confluence Wiki</span>
-                                    <span class="tech-item">외주 관리</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item fade-in">
-                    <div class="company-header">
-                        <div class="company-icon">⚔️</div>
-                        <div class="company-info">
-                            <h3>웹젠</h3>
-                            <div class="job-title">대리</div>
-                            <div class="timeline-period">2011.10 ~ 2013.06</div>
-                        </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="detail-item">
-                            <div class="detail-label">🎮 개발 게임</div>
-                            <div class="detail-content">
-                                <div class="games-list">
-                                    <span class="game-chip">
-                                        R2
-                                        <a href="https://r2.webzen.co.kr/Main/" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="PC에서 보기">💻</a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">⚙️ 사용 엔진</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">자체 엔진</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">💼 주요 업무</div>
-                            <div class="detail-content">3D 배경모델링, 레벨 제작, 라이팅</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🎭 게임 장르</div>
-                            <div class="detail-content">반실사 스타일 MMORPG</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item fade-in">
-                    <div class="company-header">
-                        <div class="company-icon">🗡️</div>
-                        <div class="company-info">
-                            <h3>이야소프트</h3>
-                            <div class="job-title">사원</div>
-                            <div class="timeline-period">2009.01 ~ 2011.09</div>
-                        </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="detail-item">
-                            <div class="detail-label">🎮 개발 게임</div>
-                            <div class="detail-content">
-                                <div class="games-list">
-                                    <span class="game-chip">에다전설</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">⚙️ 사용 엔진</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">자체 엔진</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">💼 주요 업무</div>
-                            <div class="detail-content">3D 배경모델링, 레벨 제작, 라이팅, 애니메이션, 이펙트</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🎭 게임 장르</div>
-                            <div class="detail-content">캐주얼 스타일 쿼터뷰 MMORPG</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- 추가 정보 카드들 -->
+        <div class="info-cards-grid fade-in">
+            <div class="info-card">
+                <div class="info-icon">🎯</div>
+                <h4>전문 분야</h4>
+                <p>3D Art, Technical Art,<br>AI & Machine Learning</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">🏆</div>
+                <h4>주요 성과</h4>
+                <p>Google Play 10만+ DL<br>BIC Excellence 수상</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">💡</div>
+                <h4>현재 관심사</h4>
+                <p>3D Gaussian Splatting<br>NeRF Technology</p>
             </div>
         </div>
     </section>
-
-    <section id="about-me" class="section">
-        <div class="about-me"> <h2>인적사항</h2> <div class="about-me-info"> <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="김소연 증명사진" class="about-me-photo">
-
-                <p><strong>성 명:</strong> 김소연</p>
-                <p><strong>거주지:</strong> 경기도 성남시 분당구</p>
-                <p><strong>전화번호:</strong> <span class="contact-text">010-9318-8528</span></p>
-                <p><strong>이메일:</strong> <span class="contact-text">banakush@gmail.com</span></p>
-            </div>
-
-            <div class="education-details">
-                <h3>학력 사항</h3>
-                <ul>
-                    <li>홍익대학교 영상커뮤니케이션 대학원 석사과정 재학 중 <span class="period">2024.03 - 현재</span></li>
-                    <li>홍익대학교(세종) 애니메이션과 졸업 <span class="period">2003.03 - 2007.02</span></li>
-                    <li>마산 가포고등학교 졸업 <span class="period">2000.03 - 2003.02</span></li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <div id="3d-gamedev-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <h2>🎨 3D Art & Game Development</h2>
-                <p>아트와 기술을 아우르는 종합적인 게임 제작 전문성</p>
-            </div>
-            <div class="modal-body">
-                <div class="portfolio-section">
-                    <h3 class="section-title">🎯 3D 아트 전문성</h3>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">🏰 배경 아트</h4>
-                        <div class="work-item">
-                            <h5 class="work-title">3D 배경 모델링</h5> <p class="work-description">
-                                하드서페이스와 오가닉 모델링을 모두 아우르는 환경 에셋 제작 전문성.
-                                건물, 소품, 자연물까지 다양한 스타일의 3D 환경을 구현합니다.
-                            </p>
-
-                            <div class="skill-details">
-                                <h4>🛠️ 주요 기술</h4>
-                                <ul>
-                                    <li>하드서페이스 모델링 (건축물, 기계류)</li>
-                                    <li>오가닉 모델링 (지형, 식물, 자연물)</li>
-                                    <li>모듈러 에셋 시스템 구축</li>
-                                    <li>레벨 디자인 및 씬 구성</li>
-                                </ul>
-                            </div>
-                             <div class="leadership-image-gallery">
-                                </div>
-                        </div>
-                    </div>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">👤 캐릭터 아트</h4>
-                        <div class="work-item">
-                            <h5 class="work-title">3D 캐릭터 모델링</h5>
-                            <p class="work-description">
-                                게임에 최적화된 3D 캐릭터 제작. 컨셉부터 리깅까지 캐릭터 제작 파이프라인 전반을 담당합니다.
-                            </p>
-
-                            <div class="skill-details">
-                                <h4>🛠️ 주요 기술</h4>
-                                <ul>
-                                    <li>Low-poly 캐릭터 모델링</li>
-                                    <li>UV 맵핑 및 텍스처링</li>
-                                    <li>리깅 및 애니메이션 준비</li>
-                                    <li>다양한 아트 스타일 적용</li>
-                                </ul>
-                            </div>
-                            <div class="leadership-image-gallery">
-                                </div>
-                        </div>
-                    </div>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">🎨 텍스처링 & 머티리얼</h4>
-                        <div class="work-item">
-                            <h5 class="work-title">PBR 워크플로우</h5>
-                            <p class="work-description">
-                                Physically Based Rendering을 기반으로 한 사실적인 머티리얼 제작.
-                                Substance 3D를 활용한 고품질 텍스처 파이프라인을 구축합니다.
-                            </p>
-
-                            <div class="skill-details">
-                                <h4>🛠️ 주요 기술</h4>
-                                <ul>
-                                    <li>PBR Metallic-Roughness 워크플로우</li>
-                                    <li>Substance Painter를 활용한 텍스처링</li>
-                                    <li>프로시저럴 머티리얼 제작</li>
-                                    <li>모바일 최적화 텍스처 압축</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="portfolio-section">
-                    <h3 class="section-title">🛠️ 기술 스택 & 도구</h3>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">🔧 주요 도구</h4>
-                        <div class="tech-stack" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">3D 모델링</strong><br>
-                                <span style="font-size: 0.9rem;">3ds Max (15년), ZBrush, Blender</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">텍스처링</strong><br>
-                                <span style="font-size: 0.9rem;">Substance 3D Painter, Photoshop</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">게임 엔진</strong><br>
-                                <span style="font-size: 0.9rem;">Unity, 자체 엔진</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">협업 도구</strong><br>
-                                <span style="font-size: 0.9rem;">Git/SVN, Jira, Confluence</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="ai-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <h2>🤖 AI & Machine Learning</h2>
-                <p>차세대 게임 개발을 위한 AI 기술 연구</p>
-            </div>
-            <div class="modal-body">
-                <div class="portfolio-section">
-                    <h3 class="section-title">🔬 AI 연구</h3>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">📄 연구 논문</h4>
-                        <div class="work-item">
-                            <h5 class="work-title">Photogrammetry와 NeRF의 비교분석을 통한 실사 오브젝트 제작 방식의 미래 방향성 제안</h5>
-                            <p class="work-description">
-                                한국컴퓨터그래픽학회 논문집 (2024)
-                            </p>
-
-                            <div class="file-info" style="background: linear-gradient(135deg, rgba(120, 119, 198, 0.1), rgba(255, 119, 198, 0.05)); border-left: 4px solid #ff77c6;">
-                                <strong>논문 개요:</strong><br>
-                                • 발표 학회: 한국컴퓨터그래픽학회<br>
-                                • 발표 연도: 2024년<br>
-                                • 연구 분야: Computer Vision, 3D Reconstruction<br>
-                                • 주요 키워드: Photogrammetry, NeRF, 3D Asset Creation
-                            </div>
-
-                            <div class="button-group">
-                                <a href="https://aryeon0228.github.io/Kim_SoYeon_NeRF_Research_2024.pdf" target="_blank" class="btn btn-primary">
-                                    📖 논문 전문 보기
-                                </a>
-                            </div>
-
-                            <div class="tech-tags">
-                                <span class="tech-tag">Photogrammetry</span>
-                                <span class="tech-tag">NeRF</span>
-                                <span class="tech-tag">3D Reconstruction</span>
-                                <span class="tech-tag">Computer Vision</span>
-                                <span class="tech-tag">Research Paper</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">🌐 3D Gaussian Splatting (3DGS) 작업물</h4>
-                        <div class="work-item">
-                            <h5 class="work-title">고해상도 3DGS 씬 재구성</h5>
-                            <p class="work-description">
-                                Neural Radiance Fields (NeRF) 연구를 바탕으로 한 3D Gaussian Splatting 기법을 활용한 실시간 렌더링 가능한 3D 씬 재구성 작업입니다.
-                                높은 품질의 포인트 클라우드 데이터로 사실적인 3D 환경을 구현했습니다.
-                            </p>
-
-                            <div class="file-info">
-                                <strong>파일 정보:</strong><br>
-                                • 형식: PLY (Point Cloud)<br>
-                                • 크기: <span class="file-size">449MB</span><br>
-                                • 포인트 수: 고밀도 포인트 클라우드<br>
-                                • 특징: 실시간 렌더링 최적화
-                            </div>
-
-                            <div class="button-group">
-                                <a href="#" class="btn btn-primary" onclick="downloadFile()">
-                                    📥 파일 다운로드 (449MB)
-                                </a>
-                                <a href="https://superspl.at/editor" class="btn btn-secondary" target="_blank">
-                                    🚀 Supersplat 에디터 열기
-                                </a>
-                            </div>
-
-                            <div class="tech-tags">
-                                <span class="tech-tag">3D Gaussian Splatting</span>
-                                <span class="tech-tag">Point Cloud</span>
-                                <span class="tech-tag">Real-time Rendering</span>
-                                <span class="tech-tag">NeRF</span>
-                                <span class="tech-tag">PLY Format</span>
-                            </div>
-
-                            <div class="preview-note">
-                                💡 대용량 파일이므로 다운로드에 시간이 걸릴 수 있습니다.<br>
-                                Wi-Fi 환경에서 다운로드하시는 것을 권장합니다.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="portfolio-section">
-                    <h3 class="section-title">🛠️ AI 도구 및 응용</h3>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">📊 AI 기반 데이터 분석</h4>
-                        <div class="work-item">
-                            <h5 class="work-title">Art 폴더 용량 최적화 프로젝트</h5>
-                            <p class="work-description">
-                                회사 프로젝트에서 Art 폴더 용량이 과도하게 증가하여 최적화가 필요한 상황에서
-                                Claude AI를 활용한 데이터 분석으로 효율적인 해결책을 도출한 실무 사례입니다.
-                            </p>
-
-                            <div class="file-info">
-                                <strong>프로젝트 개요:</strong><br>
-                                • 분석 대상: Art 폴더 (총 2.65GB)<br>
-                                • 주요 문제: 용량 과다, 중복 파일, 비효율적 구조<br>
-                                • 해결 방법: AI 기반 데이터 시각화 및 분석<br>
-                                • 결과: 30-45% 용량 절약 방안 도출
-                            </div>
-
-                            <div class="button-group">
-                                <a href="#" class="btn btn-primary" onclick="showAnalysisChart()">
-                                    📈 분석 결과 차트 보기
-                                </a>
-                            </div>
-
-                            <div id="analysisChartContainer" style="display: none; margin-top: 20px;">
-                                <div style="background: rgba(255, 255, 255, 0.02); border-radius: 15px; padding: 20px; border: 1px solid rgba(120, 119, 198, 0.2);">
-                                    <h4 style="color: #7877c6; text-align: center; margin-bottom: 20px;">📊 Art 폴더 용량 분석 결과</h4>
-
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                                        <div style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
-                                            <canvas id="miniMainChart" style="max-height: 250px;"></canvas>
-                                        </div>
-                                        <div style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
-                                            <canvas id="miniCharacterChart" style="max-height: 250px;"></canvas>
-                                        </div>
-                                    </div>
-
-                                    <div style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
-                                        <canvas id="miniPcChart" style="max-height: 300px;"></canvas>
-                                    </div>
-
-                                    <div style="margin-top: 20px; padding: 15px; background: rgba(120, 219, 226, 0.1); border-radius: 10px; border-left: 4px solid #78dbe2;">
-                                        <h5 style="color: #78dbe2; margin: 0 0 10px 0;">🎯 AI 분석 핵심 결과</h5>
-                                        <ul style="margin: 0; color: #ffffff; font-size: 0.9rem;">
-                                            <li>Character 폴더가 <strong style="color: #ff77c6;">60.3% (1.6GB)</strong> 차지</li>
-                                            <li>Basebody가 <strong style="color: #ff77c6;">886MB</strong>로 최대 용량</li>
-                                            <li>최적화 시 <strong style="color: #ff77c6;">800MB-1.2GB</strong> 절약 가능</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="skill-details" style="margin-top: 20px;">
-                                <h4>🎯 주요 성과</h4>
-                                <ul>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">Character 폴더 60.3% 점유</span> - 최우선 최적화 대상 식별</li>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">중복 파일 패턴 발견</span> - Materials, Textures 폴더 정리 방향 제시</li>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">800MB-1.2GB 절약 가능</span> - 구체적 최적화 효과 예측</li>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">팀 생산성 향상</span> - 시각적 자료로 빠른 의사결정 지원</li>
-                                </ul>
-                            </div>
-
-                            <div class="tech-tags">
-                                <span class="tech-tag">Data Analysis</span>
-                                <span class="tech-tag">Claude AI</span>
-                                <span class="tech-tag">Chart.js</span>
-                                <span class="tech-tag">Asset Optimization</span>
-                                <span class="tech-tag">Team Collaboration</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="subsection">
-                        <h4 class="subsection-title">🎨 AI 창작 도구</h4>
-                        <div class="modal-portfolio">
-                            <div class="portfolio-item">
-                                <div class="portfolio-image">🎨 AI 도구</div>
-                                <div class="portfolio-info">
-                                    <h4>프로시더럴 에셋 생성</h4>
-                                    <p>머신러닝을 활용한 게임 에셋 자동 생성 연구</p>
-                                </div>
-                            </div>
-                            <div class="portfolio-item">
-                                <div class="portfolio-image">🎨 AI 텍스처</div>
-                                <div class="portfolio-info">
-                                    <h4>AI 텍스처 생성</h4>
-                                    <p>Stable Diffusion을 활용한 게임 텍스처 제작 워크플로우</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="graphics-pipeline-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <h2>🔬 Advanced Graphics & Pipeline</h2>
-                <p>고급 렌더링 기술과 효율적인 파이프라인 구축</p>
-            </div>
-            <div class="modal-body">
-                <div class="modal-portfolio">
-                    <div class="portfolio-item">
-                        <div class="portfolio-image">⚡ PBR 셰이더</div>
-                        <div class="portfolio-info">
-                            <h4>실시간 PBR 구현</h4>
-                            <p>Metallic-Roughness 워크플로우 기반 PBR 셰이더 개발</p>
-                        </div>
-                    </div>
-                    <div class="portfolio-item">
-                        <div class="portfolio-image">🔧 파이프라인</div>
-                        <div class="portfolio-info">
-                            <h4>아트 파이프라인 구축</h4>
-                            <p>3D 에셋 제작부터 게임 내 구현까지의 효율적인 워크플로우</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-description">
-                    <h3>고급 그래픽스 & 파이프라인 전문성</h3>
-                    <p>BRDF, PBR 등 고급 렌더링 이론을 깊이 이해하고, 이를 실제 프로덕션에 적용하는 동시에 팀의 생산성을 극대화하는 효율적인 파이프라인을 구축합니다.</p>
-
-                    <div class="skill-details">
-                        <h4>🔬 고급 그래픽스 기술</h4>
-                        <ul>
-                            <li>PBR Metallic-Roughness 워크플로우</li>
-                            <li>BRDF 함수 이론 및 구현</li>
-                            <li>HLSL/GLSL 셰이더 프로그래밍</li>
-                            <li>Unity URP/HDRP 커스터마이징</li>
-                        </ul>
-                    </div>
-
-                    <div class="skill-details">
-                        <h4>🛠️ 파이프라인 & 최적화</h4>
-                        <ul>
-                            <li>아트 에셋 파이프라인 구축</li>
-                            <li>모바일 최적화 가이드라인 수립</li>
-                            <li>자동화 스크립트 개발 (Python)</li>
-                            <li>버전 관리 시스템 구축 (Git/SVN)</li>
-                        </ul>
-                    </div>
-
-                    <div class="skill-details">
-                        <h4>⚙️ 기술 스택 & 도구</h4>
-                        <ul>
-                            <li>Substance Designer (고급 활용)</li>
-                            <li>Unity Build Pipeline</li>
-                            <li>Jira/Asana (프로젝트 관리)</li>
-                            <li>실시간 렌더링 최적화</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="leadership-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <h2>💼 Team Leadership</h2>
-                <p>팀 성장을 이끄는 리더십</p>
-            </div>
-            <div class="modal-body">
-                <div class="modal-description">
-                    <h3>리더십 경험</h3>
-                    <p>다년간의 아트 디렉팅 경험을 통해 팀원들의 잠재력을 끌어내고, 프로젝트의 성공적인 완수를 이끌었습니다. 명확한 비전 제시와 효과적인 커뮤니케이션으로 팀워크를 강화하고 생산성을 극대화합니다.</p>
-
-                    <div class="skill-details">
-                        <h4>🎯 주요 리더십 역량</h4>
-                        <ul>
-                            <li>아트팀 관리 및 방향성 제시</li>
-                            <li>프로젝트 일정 및 리소스 분배</li>
-                            <li>팀원 역량 강화 및 멘토링</li>
-                            <li>외주 업체 관리 및 품질 관리</li>
-                            <li>효과적인 의사소통 및 협업 환경 조성</li>
-                        </ul>
-                    </div>
-
-                    <div class="skill-details">
-                        <h4>🛠️ 활용 도구 및 방식</h4>
-                        <ul>
-                            <li>Jira (프로젝트 및 작업 관리)</li>
-                            <li>Confluence (팀 지식 공유 및 문서화)</li>
-                            <li>Git/SVN (버전 관리 및 코드 리뷰)</li>
-                            <li>정기적인 팀 회의 및 1:1 피드백</li>
-                            <li>워크플로우 최적화 및 자동화 도입</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="portfolio-section">
-                    <h3 class="section-title">✨ 아트 디렉션 & 스타일 가이드</h3>
-                    <div class="subsection">
-                        <h4 class="subsection-title">색상, 명도, 채도를 활용한 화풍 가이드</h4>
-                        <div class="work-item">
-                            <p class="work-description">
-                                아트팀 리더로서 아트워크의 일관된 색감과 화풍을 유지하기 위해, 색상(Hue), 명도(Value), 채도(Saturation) 이론을 기반으로 시각 자료를 활용하여 팀원들에게 가이드라인을 제시했습니다. 다양한 레퍼런스 이미지를 통해 특정 색감이나 화풍을 어떻게 분석하고 재현하는지에 대한 이론적, 실용적 접근법을 공유하여 아트워크의 퀄리티와 통일성을 높였습니다.
-                            </p>
-                            <div class="file-info" style="background: rgba(120, 219, 226, 0.1); border-left: 4px solid #78dbe2;">
-                                <p style="font-size: 0.95rem; margin-bottom: 0.5rem; color: #ffffff;">
-                                    <strong style="color: #ff77c6;">주요 내용:</strong>
-                                </p>
-                                <ul style="list-style: disc; padding-left: 1.2rem; margin-top: 0.5rem; color: #ffffff; line-height: 1.5;">
-                                    <li><strong style="color: #ff77c6;">색상 이론 적용:</strong> 아트워크에 적용할 주된 색상 팔레트와 보조 색상 사용 가이드.</li>
-                                    <li><strong style="color: #ff77c6;">명도 대비:</strong> 오브젝트의 입체감을 살리고 시선을 유도하는 명도(밝기) 조절 전략.</li>
-                                    <li><strong style="color: #ff77c6;">채도 활용:</strong> 아트워크의 분위기와 감정을 조절하는 채도(색의 순도) 운용 방안.</li>
-                                    <li><strong style="color: #ff77c6;">화풍 분석:</strong> 특정 화풍(예: 캐주얼, 실사, 반실사)의 시각적 특징을 HVS 기반으로 해부.</li>
-                                    <li><strong style="color: #ff77c6;">실제 사례 분석:</strong> 유사한 색감/화풍의 게임 아트워크 분석을 통해 적용 방안 제시.</li>
-                                </ul>
-                            </div>
-                            <div class="leadership-image-gallery"> <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29" alt="예시 이미지 1">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115" alt="예시 이미지 2">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401" alt="예시 이미지 3">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F" alt="색의 특징 이미지">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F213B443651ACB1F635')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F213B443651ACB1F635" alt="색감 스터디 1">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F0326114551AB3C2325')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F0326114551AB3C2325" alt="색감 스터디 2">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2312543C51AB0E2504')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2312543C51AB0E2504" alt="색감 스터디 3">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F017C4B4E51A62F3634')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F017C4B4E51A62F3634" alt="색감 스터디 4">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F245AF242519E21B928')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F245AF242519E21B928" alt="색감 스터디 5">
-                                </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F244E9C40519B8C4025')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F244E9C40519B8C4025" alt="색감 스터디 6">
-                                </div>
-                            </div>
-                            <div class="tech-tags" style="margin-top: 1rem;"> <span class="tech-tag">Art Direction</span>
-                                <span class="tech-tag">Color Theory</span>
-                                <span class="tech-tag">Hue-Value-Saturation</span>
-                                <span class="tech-tag">Style Guide</span>
-                                <span class="tech-tag">Team Collaboration</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="image-viewer-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeImageViewer()">&times;</span>
-            <img id="full-image" src="" alt="확대 이미지">
-        </div>
-    </div>
-
-    <script>
-        // 분석 차트 보기 함수 (인라인 방식)
-        function showAnalysisChart() {
-            const container = document.getElementById('analysisChartContainer');
-
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                // Chart.js가 <head>에서 이미 로드되므로, 동적 로딩 로직 제거
-                initializeCharts();
-            } else {
-                container.style.display = 'none';
-            }
-        }
-
-        // 차트 초기화 함수
-        function initializeCharts() {
-            // 메인 카테고리 차트
-            const miniMainCtx = document.getElementById('miniMainChart').getContext('2d');
-            new Chart(miniMainCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Character', 'Environments', 'Animation', 'UI', 'App Icon'],
-                    datasets: [{
-                        data: [1638.4, 648.0, 374.0, 55.2, 0.7],
-                        backgroundColor: ['#7877c6', '#ff77c6', '#78dbe2', '#ffd93d', '#6bcf7f'],
-                        borderWidth: 2,
-                        borderColor: '#0a0a0a'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#ffffff', padding: 10, font: { size: 10 } }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const value = context.parsed;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return context.label + ': ' + value.toFixed(1) + 'MB (' + percentage + '%)';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Character 폴더 차트
-            const miniCharacterCtx = document.getElementById('miniCharacterChart').getContext('2d');
-            new Chart(miniCharacterCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['PC', 'AirDrop/Materials', 'Item', 'Vehicle'],
-                    datasets: [{
-                        data: [1617.9, 373.0, 16.2, 0.7],
-                        backgroundColor: ['#7877c6', '#9999d6', '#bbbbee', '#ddddff'],
-                        borderWidth: 2,
-                        borderColor: '#0a0a0a'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#ffffff', padding: 8, font: { size: 9 } }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.parsed.toFixed(1) + 'MB';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // PC Character 상세 차트
-            const miniPcCtx = document.getElementById('miniPcChart').getContext('2d');
-            new Chart(miniPcCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Basebody', 'head', 'demo', 'body', 'back', 'face', 'mocaverse', 'hand'],
-                    datasets: [{
-                        label: '용량 (MB)',
-                        data: [886.0, 203.0, 174.0, 166.0, 56.5, 52.0, 45.4, 39.2],
-                        backgroundColor: ['#7877c6', '#8989d4', '#9999dd', '#aaaaee', '#bbbbf0', '#ccccf5', '#ddddfa', '#eeeeff'],
-                        borderWidth: 1,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.parsed.y.toFixed(1) + 'MB';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#ffffff',
-                                font: { size: 10 },
-                                callback: function(value) { return value + 'MB'; }
-                            },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#ffffff',
-                                font: { size: 9 },
-                                maxRotation: 45
-                            },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 네비게이션 함수
-        function showSection(sectionId) {
-            console.log('Opening section:', sectionId);
-            // 모든 섹션 숨기기
-            const sections = document.querySelectorAll('.section, .hero');
-            sections.forEach(section => section.classList.remove('active'));
-
-            // 선택된 섹션 보이기
-            if (sectionId === 'home') {
-                document.querySelector('.hero').style.display = 'flex';
-            } else {
-                document.querySelector('.hero').style.display = 'none';
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) {
-                    targetSection.classList.add('active');
-                    // 페이지 맨 위로 스크롤
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                    // fade-in 애니메이션 초기화 및 순차 실행
-                    setTimeout(() => {
-                        triggerSequentialFadeIn();
-                    }, 100);
-                }
-            }
-        }
-
-        // 순차적 fade-in 애니메이션 함수
-        function triggerSequentialFadeIn() {
-            const fadeElements = document.querySelectorAll('.section.active .fade-in');
-            fadeElements.forEach((element, index) => {
-                element.classList.remove('visible');
-                setTimeout(() => {
-                    element.classList.add('visible');
-                }, index * 150); // 150ms 간격으로 순차 등장
-            });
-        }
-
-        // 전역 변수로 스크롤바 너비 저장 (한 번만 계산)
-        let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-        // 일반 모달 (스킬 모달 등) 열기/닫기 함수
-        function openModal(modalId) {
-            console.log('Opening modal:', modalId);
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'block';
-                setTimeout(() => { // 애니메이션 적용을 위해 약간의 딜레이
-                    modal.classList.add('active-modal');
-                }, 10);
-                document.body.style.overflow = 'hidden';
-                // 스크롤바 제거로 인한 레이아웃 점프 방지
-                document.body.style.paddingRight = scrollbarWidth + 'px';
-            } else {
-                console.error('Modal not found:', modalId);
-            }
-        }
-
-        function closeModal(modalId) {
-            console.log('Closing modal:', modalId);
-            let targetModal;
-            if (modalId) {
-                targetModal = document.getElementById(modalId);
-            } else {
-                // 만약 modalId가 없으면 현재 열려있는 모달 찾기
-                targetModal = document.querySelector('.modal.active-modal');
-            }
-
-            if (targetModal) {
-                targetModal.classList.remove('active-modal'); // backdrop-filter 제거
-                // 애니메이션 완료 후 display: none 처리
-                targetModal.addEventListener('transitionend', function handler() {
-                    targetModal.style.display = 'none';
-                    targetModal.removeEventListener('transitionend', handler); // 이벤트 리스너 제거
-                }, {once: true}); // 한 번만 실행되도록 설정
-
-                document.body.style.overflow = 'auto';
-                document.body.style.paddingRight = '0px'; // 패딩 제거
-            } else if (!modalId) { // 모든 모달 닫기 요청 시
-                const allModals = document.querySelectorAll('.modal');
-                allModals.forEach(m => {
-                    m.classList.remove('active-modal');
-                    m.addEventListener('transitionend', function handler() {
-                        m.style.display = 'none';
-                        m.removeEventListener('transitionend', handler);
-                    }, {once: true});
-                });
-                document.body.style.overflow = 'auto';
-                document.body.style.paddingRight = '0px';
-            }
-        }
-
-        // 이미지 뷰어 모달 열기/닫기 함수 (새로 추가)
-        function openImageViewer(imageUrl) {
-            const imageViewerModal = document.getElementById('image-viewer-modal');
-            const fullImage = document.getElementById('full-image');
-
-            fullImage.src = imageUrl; // 클릭한 이미지의 URL을 설정
-            imageViewerModal.style.display = 'block';
-            setTimeout(() => {
-                imageViewerModal.classList.add('active-modal');
-            }, 10);
-            document.body.style.overflow = 'hidden';
-            document.body.style.paddingRight = scrollbarWidth + 'px';
-        }
-
-        function closeImageViewer() {
-            const imageViewerModal = document.getElementById('image-viewer-modal');
-            imageViewerModal.classList.remove('active-modal');
-            imageViewerModal.addEventListener('transitionend', function handler() {
-                imageViewerModal.style.display = 'none';
-                imageViewerModal.removeEventListener('transitionend', handler);
-            }, {once: true});
-            document.body.style.overflow = 'auto';
-            document.body.style.paddingRight = '0px';
-        }
-
-        // 3DGS 파일 다운로드 함수
-        function downloadFile() {
-            const driveUrl = "https://drive.google.com/uc?export=download&id=1Z2vhQtjNUzsDM_xr6UUG4gM9VCQruuLI";
-
-            if (confirm('449MB 파일을 다운로드하시겠습니까?\n다운로드 완료 후 Supersplat 에디터에서 파일을 업로드하여 확인하실 수 있습니다.')) {
-                window.open(driveUrl, '_blank');
-
-                setTimeout(() => {
-                    alert('다운로드가 시작되었습니다!\n\n완료 후:\n1. "Supersplat 에디터 열기" 버튼 클릭\n2. 다운로드한 PLY 파일을 에디터에 업로드\n3. 3D 씬을 자유롭게 탐색해보세요!');
-                }, 1000);
-            }
-        }
-
-        // 모달 외부 클릭시 닫기
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    // 이미지 뷰어 모달인 경우
-                    if (modal.id === 'image-viewer-modal') {
-                        closeImageViewer();
-                    } else { // 다른 일반 모달인 경우
-                        closeModal(modal.id);
-                    }
-                }
-            });
-        }
-
-        // 스크롤 애니메이션
-        function handleScroll() {
-            const elements = document.querySelectorAll('.fade-in');
-            elements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-
-                if (elementTop < window.innerHeight - elementVisible) {
-                    element.classList.add('visible');
-                }
-            });
-        }
-
-        // 초기 로드시 홈 섹션 표시
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded');
-
-            // 홈 섹션만 표시
-            const heroSection = document.querySelector('.hero');
-            if (heroSection) {
-                heroSection.style.display = 'flex';
-            }
-
-            // 스크롤 애니메이션 처리
-            handleScroll();
-        });
-
-        // 페이지 로드 완료 후에도 한번 더 실행 (안전장치)
-        window.addEventListener('load', function() {
-            const heroSection = document.querySelector('.hero');
-            if (heroSection) {
-                heroSection.style.display = 'flex';
-            }
-        });
-
-        window.addEventListener('scroll', handleScroll);
-    </script>
-</body>
-</html>
