@@ -3139,8 +3139,10 @@
                 // DOM 업데이트 후 정확한 offsetTop 값을 얻기 위해 작은 딜레이를 줌
                 setTimeout(() => {
                     const headerHeight = document.querySelector('header').offsetHeight;
+                    const rect = targetSection.getBoundingClientRect();
+                    const offset = rect.top + window.pageYOffset - headerHeight;
                     window.scrollTo({
-                        top: targetSection.offsetTop - headerHeight,
+                        top: offset,
                         behavior: 'smooth'
                     });
                 }, 50); // 짧은 딜레이 추가
