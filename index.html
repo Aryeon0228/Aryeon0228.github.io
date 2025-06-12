@@ -1,3 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>김소연 포트폴리오</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for easier theme management */
+        :root {
+            --primary-gradient: linear-gradient(45deg, #7877c6, #ff77c6);
+            --text-color-light: rgba(255, 255, 255, 0.8);
+            --text-color-muted: rgba(255, 255, 255, 0.6);
+            --bg-dark-opac: rgba(10, 10, 10, 0.85);
+            --bg-dark-scrolled: rgba(10, 10, 10, 0.95);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --hover-bg: rgba(255, 255, 255, 0.05);
+            --hover-border: rgba(120, 119, 198, 0.3);
+        }
+
+        /* Base styles for the document body */
+        body {
+            font-family: 'Pretendard', sans-serif;
+            margin: 0;
+            padding-top: 80px; /* Adjust based on header height */
+            background-color: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
         /* 새로운 헤더 스타일 */
         header {
             position: fixed;
@@ -5,16 +38,16 @@
             left: 0;
             width: 100%;
             padding: 1rem 2rem;
-            background: rgba(10, 10, 10, 0.85);
+            background: var(--bg-dark-opac);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
             z-index: 1000;
             transition: all 0.3s ease;
         }
 
         header.scrolled {
             padding: 0.8rem 2rem;
-            background: rgba(10, 10, 10, 0.95);
+            background: var(--bg-dark-scrolled);
         }
 
         nav {
@@ -34,7 +67,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 800;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -43,7 +76,7 @@
 
         .logo-subtitle {
             font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-color-muted);
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.1em;
@@ -61,7 +94,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--text-color-light);
             text-decoration: none;
             padding: 0.8rem 1.2rem;
             border-radius: 25px;
@@ -91,352 +124,1288 @@
         .nav-item:hover,
         .nav-item.active {
             color: #ffffff;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(120, 119, 198, 0.3);
+            background: var(--hover-bg);
+            border: 1px solid var(--hover-border);
+        }
+        
+        /* General Section Styling */
+        .section {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 2rem;
         }
 
-        .nav    <section id="skills" class="section">
-        <div class="section-intro fade-in">
-            <h2>보유 역량</h2>
-            <p class="section-subtitle">15년간 축적한 전문성과 최신 기술의 만남</p>
-            <div class="intro-stats">
-                <div class="intro-stat">
-                    <span class="stat-icon">🎨</span>
-                    <span class="stat-text">Creative Excellence</span>
-                </div>
-                <div class="intro-stat">
-                    <span class="stat-icon">⚡</span>
-                    <span class="stat-text">Technical Mastery</span>
-                </div>
-                <div class="intro-stat">
-                    <span class="stat-icon">🚀</span>
-                    <span class="stat-text">Innovation Drive</span>
-                </div>
-            </div>
-        </div>
+        .section-intro {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
 
-        <div class="skills-showcase">
-            <div class="skill-card premium fade-in" onclick="openModal('3d-gamedev-modal')">
-                <div class="card-glow"></div>
-                <div class="card-header">
-                    <div class="skill-icon">🎨</div>
-                    <div class="skill-badge">CORE</div>
-                </div>
-                <div class="card-content">
-                    <h3>3D Art & Game Development</h3>
-                    <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
-                    
-                    <div class="skill-highlights">
-                        <div class="highlight-item">
-                            <span class="highlight-number">15+</span>
-                            <span class="highlight-label">Years</span>
-                        </div>
-                        <div class="highlight-item">
-                            <span class="highlight-number">100K+</span>
-                            <span class="highlight-label">Downloads</span>
-                        </div>
-                    </div>
+        .section-intro h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-                    <div class="skill-tags">
-                        <span class="tag featured">3ds Max</span>
-                        <span class="tag">Unity</span>
-                        <span class="tag">ZBrush</span>
-                        <span class="tag">Substance 3D</span>
-                        <span class="tag">Mobile Optimization</span>
-                    </div>
-                </div>
-                <div class="card-arrow">→</div>
-            </div>
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-color-muted);
+            margin-bottom: 2rem;
+        }
 
-            <div class="skill-card innovative fade-in" onclick="openModal('ai-modal')">
-                <div class="card-glow"></div>
-                <div class="card-header">
-                    <div class="skill-icon">🤖</div>
-                    <div class="skill-badge">HOT</div>
-                </div>
-                <div class="card-content">
-                    <h3>AI & Machine Learning</h3>
-                    <p class="skill-description">대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
-                    
-                    <div class="skill-highlights">
-                        <div class="highlight-item">
-                            <span class="highlight-number">현재</span>
-                            <span class="highlight-label">Research</span>
-                        </div>
-                        <div class="highlight-item">
-                            <span class="highlight-number">3DGS</span>
-                            <span class="highlight-label">Project</span>
-                        </div>
-                    </div>
+        .intro-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
 
-                    <div class="skill-tags">
-                        <span class="tag featured">Machine Learning</span>
-                        <span class="tag">AI Research</span>
-                        <span class="tag">Graduate Studies</span>
-                        <span class="tag">Procedural Generation</span>
-                    </div>
-                </div>
-                <div class="card-arrow">→</div>
-            </div>
+        .intro-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            color: var(--text-color-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-            <div class="skill-card technical fade-in" onclick="openModal('graphics-pipeline-modal')">
-                <div class="card-glow"></div>
-                <div class="card-header">
-                    <div class="skill-icon">🔬</div>
-                    <div class="skill-badge">PRO</div>
-                </div>
-                <div class="card-content">
-                    <h3>Advanced Graphics & Pipeline</h3>
-                    <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론과 효율적인 개발 파이프라인 구축 전문성을 보유하고 있습니다.</p>
-                    
-                    <div class="skill-highlights">
-                        <div class="highlight-item">
-                            <span class="highlight-number">PBR</span>
-                            <span class="highlight-label">Expert</span>
-                        </div>
-                        <div class="highlight-item">
-                            <span class="highlight-number">Pipeline</span>
-                            <span class="highlight-label">Optimization</span>
-                        </div>
-                    </div>
+        .stat-icon {
+            font-size: 1.2rem;
+        }
 
-                    <div class="skill-tags">
-                        <span class="tag featured">BRDF</span>
-                        <span class="tag">PBR Theory</span>
-                        <span class="tag">Shader Development</span>
-                        <span class="tag">Pipeline Optimization</span>
-                    </div>
-                </div>
-                <div class="card-arrow">→</div>
-            </div>
+        /* Skills Showcase */
+        .skills-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
 
-            <div class="skill-card leadership fade-in" onclick="openModal('leadership-modal')">
-                <div class="card-glow"></div>
-                <div class="card-header">
-                    <div class="skill-icon">💼</div>
-                    <div class="skill-badge">LEAD</div>
-                </div>
-                <div class="card-content">
-                    <h3>Team Leadership</h3>
-                    <p class="skill-description">AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
-                    
-                    <div class="skill-highlights">
-                        <div class="highlight-item">
-                            <span class="highlight-number">TOP10%</span>
-                            <span class="highlight-label">Rating</span>
-                        </div>
-                        <div class="highlight-item">
-                            <span class="highlight-number">Team</span>
-                            <span class="highlight-label">Management</span>
-                        </div>
-                    </div>
+        .skill-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-                    <div class="skill-tags">
-                        <span class="tag featured">Art Direction</span>
-                        <span class="tag">Team Management</span>
-                        <span class="tag">Education</span>
-                        <span class="tag">Mentoring</span>
-                    </div>
-                </div>
-                <div class="card-arrow">→</div>
-            </div>
-        </div>
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(120, 119, 198, 0.05), rgba(255, 119, 198, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
 
-        <div class="experience-section">
-            <div class="section-divider"></div>
-            <div class="experience-intro fade-in">
-                <h2>경력 사항</h2>
-                <p class="section-subtitle">다양한 프로젝트를 통해 쌓은 실무 경험</p>
-            </div>
+        .skill-card:hover::before {
+            opacity: 1;
+        }
 
-            <div class="experience-timeline">
-                <!-- 기존 타임라인 내용 유지 -->
-                <div class="timeline-item fade-in">
-                    <div class="company-header">
-                        <div class="company-icon">🚀</div>
-                        <div class="company-info">
-                            <h3>Animoca games (구. NWay Korea)</h3>
-                            <div class="job-title">아트팀 사원</div>
-                            <div class="timeline-period">2023.08 ~ 현재</div>
-                        </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="detail-item">
-                            <div class="detail-label">🎮 개발 게임</div>
-                            <div class="detail-content">
-                                <div class="games-list">
-                                    <span class="game-chip">
-                                        Cosmic Bomber
-                                        <a href="https://www.mocaverse.xyz/cosmic-club/cosmic-bomber" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="PC에서 보기">💻</a>
-                                        <a href="https://cosmicbomberk.xyz/" target="_blank" style="color: white; text-decoration: none; margin-left: 0.3rem;" title="모바일에서 보기">📱</a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">⚙️ 사용 엔진</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">Unity</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">💼 주요 업무</div>
-                            <div class="detail-content">3D 배경모델링, 3D 캐릭터모델링, 이펙트, 애니메이션, 최적화, 2D 버전 컨버팅 etc.</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🛠️ 사용 툴</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">Git</span>
-                                    <span class="tech-item">Jira</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        .skill-card:hover {
+            border-color: rgba(120, 119, 198, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
 
-                <div class="timeline-item fade-in">
-                    <div class="company-header">
-                        <div class="company-icon">🎓</div>
-                        <div class="company-info">
-                            <h3>청강문화산업대학교</h3>
-                            <div class="job-title">외래교수/겸임교수</div>
-                            <div class="timeline-period">2022.03 ~ 2023.08</div>
-                        </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="detail-item">
-                            <div class="detail-label">📚 담당 과목</div>
-                            <div class="detail-content">졸업작품 크리틱, 3D기초그래픽, Substance 3D Designer 특강</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🏆 주요 성과 <span class="achievement-badge">🌟 우수강사</span></div>
-                            <div class="detail-content">전체 스쿨 기준 상위 10% 평점 달성</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">🛠️ 사용 스킬</div>
-                            <div class="detail-content">
-                                <div class="tech-stack">
-                                    <span class="tech-item">교육</span>
-                                    <span class="tech-item">멘토링</span>
-                                    <span    <section id="about-me" class="section">
-        <h2 class="fade-in">인적사항</h2>
+        .card-glow {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(120, 119, 198, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .skill-card:hover .card-glow {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .skill-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .skill-card.premium .skill-badge { background-color: #8a2be2; } /* Purple */
+        .skill-card.innovative .skill-badge { background-color: #ff4500; } /* OrangeRed */
+        .skill-card.technical .skill-badge { background-color: #00bfff; } /* DeepSkyBlue */
+        .skill-card.leadership .skill-badge { background-color: #ffd700; } /* Gold */
+
+        .card-content h3 {
+            font-size: 1.6rem;
+            margin-bottom: 0.8rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .skill-description {
+            font-size: 0.95rem;
+            color: var(--text-color-muted);
+            margin-bottom: 1.5rem;
+            min-height: 4em; /* Ensure consistent card height */
+        }
+
+        .skill-highlights {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .highlight-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .highlight-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #a797ff, #ff87d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .highlight-label {
+            font-size: 0.8rem;
+            color: var(--text-color-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-color-light);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tag.featured {
+            background: linear-gradient(90deg, #7877c6, #ff77c6);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .card-arrow {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--text-color-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .skill-card:hover .card-arrow {
+            transform: translateX(5px);
+        }
+
+        /* Experience Section */
+        .experience-section {
+            padding-top: 3rem;
+            margin-top: 4rem;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+            margin: 4rem 0;
+        }
+
+        .experience-intro {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .experience-intro h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .experience-timeline {
+            position: relative;
+            padding: 20px 0;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            margin-left: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            padding-left: 40px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -11px; /* Adjust to align with border-left */
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #7877c6, #ff77c6);
+            border: 3px solid #0a0a0a; /* Match body background */
+            z-index: 1;
+        }
+
+        .company-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .company-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .company-info h3 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .job-title {
+            font-size: 1rem;
+            color: var(--text-color-muted);
+            margin-top: 0.3rem;
+        }
+
+        .timeline-period {
+            font-size: 0.9rem;
+            color: var(--text-color-muted);
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        .job-details {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+        }
+
+        .detail-item {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: flex-start; /* Align label and content */
+            gap: 1rem; /* Space between label and content */
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-color-light);
+            min-width: 80px; /* Adjust as needed for alignment */
+        }
+
+        .detail-content {
+            color: var(--text-color-muted);
+            flex-grow: 1; /* Allows content to take up remaining space */
+        }
+
+        .games-list, .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .game-chip, .tech-item {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap; /* Prevent breaking */
+        }
         
-        <!-- 메인 프로필 카드 -->
-        <div class="profile-hero fade-in">
-            <div class="profile-visual">
-                <div class="profile-image-container">
-                    <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="김소연 프로필" class="profile-image">
-                    <div class="image-glow"></div>
-                </div>
-                <div class="profile-badges">
-                    <span class="badge primary">🎨 Technical Artist</span>
-                    <span class="badge secondary">🎓 AI Research</span>
-                    <span class="badge accent">💼 15년 경력</span>
-                </div>
+        .game-chip a {
+            color: white;
+            text-decoration: none;
+            margin-left: 0.5rem;
+            transition: color 0.2s ease;
+        }
+
+        .game-chip a:hover {
+            color: #a797ff; /* Highlight on hover */
+        }
+
+        .achievement-badge {
+            background-color: #ffd700;
+            color: #333;
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+
+        /* About Me Section */
+        #about-me {
+            text-align: center;
+        }
+
+        #about-me h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .profile-visual {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #7877c6;
+            box-shadow: 0 0 20px rgba(120, 119, 198, 0.5);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 30px 10px rgba(120, 119, 198, 0.3), 0 0 60px 20px rgba(255, 119, 198, 0.2);
+            opacity: 0.8;
+            filter: blur(15px);
+            z-index: -1;
+        }
+
+        .profile-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .badge.primary { background-color: #7877c6; color: #fff; }
+        .badge.secondary { background-color: #ff77c6; color: #fff; }
+        .badge.accent { background-color: #ffd700; color: #333; }
+
+        .profile-content {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .name-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-title {
+            font-size: 1.1rem;
+            color: var(--text-color-muted);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .contact-icon {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .contact-details {
+            text-align: left;
+        }
+
+        .contact-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-color-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .contact-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-color-light);
+        }
+
+        /* Education Card */
+        .education-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+
+        .education-card .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .education-card .card-title {
+            font-size: 1.8rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .education-card .title-icon {
+            font-size: 2rem;
+        }
+
+        .education-timeline {
+            position: relative;
+            padding-left: 30px;
+            border-left: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .education-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        .education-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -10px; /* Adjust to align with border */
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #7877c6;
+            border: 3px solid #0a0a0a; /* Match body background */
+            z-index: 1;
+        }
+
+        .education-item.current .timeline-dot {
+            background: #ff77c6;
+            box-shadow: 0 0 15px rgba(255, 119, 198, 0.7);
+        }
+
+        .education-content {
+            margin-left: 10px;
+        }
+
+        .education-degree {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #fff;
+        }
+
+        .education-school {
+            font-size: 1rem;
+            color: var(--text-color-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .education-period {
+            font-size: 0.9rem;
+            color: var(--text-color-muted);
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.8rem;
+        }
+
+        .education-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .edu-tag {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color-light);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        /* Additional Info Cards Grid */
+        .info-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-icon {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .info-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            color: var(--text-color-muted);
+            line-height: 1.4;
+        }
+
+        /* Fade-in Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1001; /* Higher than header */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7); /* Dark overlay */
+            display: flex; /* Centering content */
+            align-items: center; /* Centering content */
+            justify-content: center; /* Centering content */
+            padding: 1rem; /* Add some padding for smaller screens */
+        }
+
+        .modal-content {
+            background-color: #1a1a1a;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%; /* Could be responsive */
+            max-width: 700px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform: scale(0.9); /* Initial state for animation */
+            opacity: 0; /* Initial state for animation */
+            transition: all 0.3s ease-out; /* Smooth transition */
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1); /* Final state for animation */
+            opacity: 1; /* Final state for animation */
+        }
+
+        .close-button {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute; /* Position relative to modal-content */
+            top: 15px;
+            right: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 0.3rem;
+            }
+
+            .nav-item {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .section {
+                padding: 1rem;
+                margin: 2rem auto;
+            }
+
+            .section-intro h2, .experience-intro h2, #about-me h2 {
+                font-size: 2rem;
+            }
+
+            .skills-showcase {
+                grid-template-columns: 1fr; /* Stack cards on small screens */
+            }
+
+            .profile-hero {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .education-card {
+                padding: 1.5rem;
+            }
+
+            .education-degree {
+                font-size: 1.1rem;
+            }
+
+            .info-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo-container">
+                <div class="logo">KIMSoyeon</div>
+                <div class="logo-subtitle">Portfolio</div>
             </div>
+            <ul class="nav-links">
+                <li class="nav-item active">
+                    <span class="icon">✨</span> About
+                </li>
+                <li class="nav-item">
+                    <span class="icon">🚀</span> Skills
+                </li>
+                <li class="nav-item">
+                    <span class="icon">💼</span> Experience
+                </li>
+                <li class="nav-item">
+                    <span class="icon">📚</span> Projects
+                </li>
+                <li class="nav-item">
+                    <span class="icon">✉️</span> Contact
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="about-me" class="section">
+            <h2 class="fade-in">인적사항</h2>
             
-            <div class="profile-content">
-                <div class="name-section">
-                    <h3 class="profile-name">김소연</h3>
-                    <p class="profile-title">Technical Artist & AI Researcher</p>
+            <div class="profile-hero fade-in">
+                <div class="profile-visual">
+                    <div class="profile-image-container">
+                        <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="김소연 프로필 사진" class="profile-image">
+                        <div class="image-glow"></div>
+                    </div>
+                    <div class="profile-badges">
+                        <span class="badge primary">🎨 Technical Artist</span>
+                        <span class="badge secondary">🎓 AI Research</span>
+                        <span class="badge accent">💼 15년 경력</span>
+                    </div>
                 </div>
                 
-                <div class="contact-grid">
-                    <div class="contact-item">
-                        <div class="contact-icon">📍</div>
-                        <div class="contact-details">
-                            <span class="contact-label">거주지</span>
-                            <span class="contact-value">경기도 성남시 분당구</span>
+                <div class="profile-content">
+                    <div class="name-section">
+                        <h3 class="profile-name">김소연</h3>
+                        <p class="profile-title">Technical Artist & AI Researcher</p>
+                    </div>
+                    
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div class="contact-details">
+                                <span class="contact-label">거주지</span>
+                                <span class="contact-value">경기도 성남시 분당구</span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">📱</div>
+                            <div class="contact-details">
+                                <span class="contact-label">연락처</span>
+                                <span class="contact-value">010-9318-8528</span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">✉️</div>
+                            <div class="contact-details">
+                                <span class="contact-label">이메일</span>
+                                <span class="contact-value">banakush@gmail.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="education-card fade-in">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <span class="title-icon">🎓</span>
+                        학력 사항
+                    </h3>
+                </div>
+                
+                <div class="education-timeline">
+                    <div class="education-item current">
+                        <div class="timeline-dot"></div>
+                        <div class="education-content">
+                            <h4 class="education-degree">석사과정 재학 중</h4>
+                            <p class="education-school">홍익대학교 영상커뮤니케이션 대학원</p>
+                            <span class="education-period">2024.03 - 현재</span>
+                            <div class="education-tags">
+                                <span class="edu-tag">AI Research</span>
+                                <span class="edu-tag">Computer Graphics</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="contact-item">
-                        <div class="contact-icon">📱</div>
-                        <div class="contact-details">
-                            <span class="contact-label">연락처</span>
-                            <span class="contact-value">010-9318-8528</span>
+                    <div class="education-item">
+                        <div class="timeline-dot"></div>
+                        <div class="education-content">
+                            <h4 class="education-degree">학사 졸업</h4>
+                            <p class="education-school">홍익대학교(세종) 애니메이션과</p>
+                            <span class="education-period">2003.03 - 2007.02</span>
+                            <div class="education-tags">
+                                <span class="edu-tag">3D Animation</span>
+                                <span class="edu-tag">Digital Art</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="contact-item">
-                        <div class="contact-icon">✉️</div>
-                        <div class="contact-details">
-                            <span class="contact-label">이메일</span>
-                            <span class="contact-value">banakush@gmail.com</span>
+                    <div class="education-item">
+                        <div class="timeline-dot"></div>
+                        <div class="education-content">
+                            <h4 class="education-degree">고등학교 졸업</h4>
+                            <p class="education-school">마산 가포고등학교</p>
+                            <span class="education-period">2000.03 - 2003.02</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 학력 사항 카드 -->
-        <div class="education-card fade-in">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <span class="title-icon">🎓</span>
-                    학력 사항
-                </h3>
-            </div>
-            
-            <div class="education-timeline">
-                <div class="education-item current">
-                    <div class="timeline-dot"></div>
-                    <div class="education-content">
-                        <h4 class="education-degree">석사과정 재학 중</h4>
-                        <p class="education-school">홍익대학교 영상커뮤니케이션 대학원</p>
-                        <span class="education-period">2024.03 - 현재</span>
-                        <div class="education-tags">
-                            <span class="edu-tag">AI Research</span>
-                            <span class="edu-tag">Computer Graphics</span>
-                        </div>
-                    </div>
+            <div class="info-cards-grid fade-in">
+                <div class="info-card">
+                    <div class="info-icon">🎯</div>
+                    <h4>전문 분야</h4>
+                    <p>3D Art, Technical Art,<br>AI & Machine Learning</p>
                 </div>
                 
-                <div class="education-item">
-                    <div class="timeline-dot"></div>
-                    <div class="education-content">
-                        <h4 class="education-degree">학사 졸업</h4>
-                        <p class="education-school">홍익대학교(세종) 애니메이션과</p>
-                        <span class="education-period">2003.03 - 2007.02</span>
-                        <div class="education-tags">
-                            <span class="edu-tag">3D Animation</span>
-                            <span class="edu-tag">Digital Art</span>
-                        </div>
-                    </div>
+                <div class="info-card">
+                    <div class="info-icon">🏆</div>
+                    <h4>주요 성과</h4>
+                    <p>Google Play 10만+ DL<br>BIC Excellence 수상</p>
                 </div>
                 
-                <div class="education-item">
-                    <div class="timeline-dot"></div>
-                    <div class="education-content">
-                        <h4 class="education-degree">고등학교 졸업</h4>
-                        <p class="education-school">마산 가포고등학교</p>
-                        <span class="education-period">2000.03 - 2003.02</span>
+                <div class="info-card">
+                    <div class="info-icon">💡</div>
+                    <h4>현재 관심사</h4>
+                    <p>3D Gaussian Splatting<br>NeRF Technology</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section">
+            <div class="section-intro fade-in">
+                <h2>보유 역량</h2>
+                <p class="section-subtitle">15년간 축적한 전문성과 최신 기술의 만남</p>
+                <div class="intro-stats">
+                    <div class="intro-stat">
+                        <span class="stat-icon">🎨</span>
+                        <span class="stat-text">Creative Excellence</span>
+                    </div>
+                    <div class="intro-stat">
+                        <span class="stat-icon">⚡</span>
+                        <span class="stat-text">Technical Mastery</span>
+                    </div>
+                    <div class="intro-stat">
+                        <span class="stat-icon">🚀</span>
+                        <span class="stat-text">Innovation Drive</span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 추가 정보 카드들 -->
-        <div class="info-cards-grid fade-in">
-            <div class="info-card">
-                <div class="info-icon">🎯</div>
-                <h4>전문 분야</h4>
-                <p>3D Art, Technical Art,<br>AI & Machine Learning</p>
+            <div class="skills-showcase">
+                <div class="skill-card premium fade-in" data-modal-target="3d-gamedev-modal">
+                    <div class="card-glow"></div>
+                    <div class="card-header">
+                        <div class="skill-icon">🎨</div>
+                        <div class="skill-badge">CORE</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>3D Art & Game Development</h3>
+                        <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
+                        
+                        <div class="skill-highlights">
+                            <div class="highlight-item">
+                                <span class="highlight-number">15+</span>
+                                <span class="highlight-label">Years</span>
+                            </div>
+                            <div class="highlight-item">
+                                <span class="highlight-number">100K+</span>
+                                <span class="highlight-label">Downloads</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-tags">
+                            <span class="tag featured">3ds Max</span>
+                            <span class="tag">Unity</span>
+                            <span class="tag">ZBrush</span>
+                            <span class="tag">Substance 3D</span>
+                            <span class="tag">Mobile Optimization</span>
+                        </div>
+                    </div>
+                    <div class="card-arrow">→</div>
+                </div>
+
+                <div class="skill-card innovative fade-in" data-modal-target="ai-modal">
+                    <div class="card-glow"></div>
+                    <div class="card-header">
+                        <div class="skill-icon">🤖</div>
+                        <div class="skill-badge">HOT</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>AI & Machine Learning</h3>
+                        <p class="skill-description">대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
+                        
+                        <div class="skill-highlights">
+                            <div class="highlight-item">
+                                <span class="highlight-number">현재</span>
+                                <span class="highlight-label">Research</span>
+                            </div>
+                            <div class="highlight-item">
+                                <span class="highlight-number">3DGS</span>
+                                <span class="highlight-label">Project</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-tags">
+                            <span class="tag featured">Machine Learning</span>
+                            <span class="tag">AI Research</span>
+                            <span class="tag">Graduate Studies</span>
+                            <span class="tag">Procedural Generation</span>
+                        </div>
+                    </div>
+                    <div class="card-arrow">→</div>
+                </div>
+
+                <div class="skill-card technical fade-in" data-modal-target="graphics-pipeline-modal">
+                    <div class="card-glow"></div>
+                    <div class="card-header">
+                        <div class="skill-icon">🔬</div>
+                        <div class="skill-badge">PRO</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>Advanced Graphics & Pipeline</h3>
+                        <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론과 효율적인 개발 파이프라인 구축 전문성을 보유하고 있습니다.</p>
+                        
+                        <div class="skill-highlights">
+                            <div class="highlight-item">
+                                <span class="highlight-number">PBR</span>
+                                <span class="highlight-label">Expert</span>
+                            </div>
+                            <div class="highlight-item">
+                                <span class="highlight-number">Pipeline</span>
+                                <span class="highlight-label">Optimization</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-tags">
+                            <span class="tag featured">BRDF</span>
+                            <span class="tag">PBR Theory</span>
+                            <span class="tag">Shader Development</span>
+                            <span class="tag">Pipeline Optimization</span>
+                        </div>
+                    </div>
+                    <div class="card-arrow">→</div>
+                </div>
+
+                <div class="skill-card leadership fade-in" data-modal-target="leadership-modal">
+                    <div class="card-glow"></div>
+                    <div class="card-header">
+                        <div class="skill-icon">💼</div>
+                        <div class="skill-badge">LEAD</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>Team Leadership</h3>
+                        <p class="skill-description">AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
+                        
+                        <div class="skill-highlights">
+                            <div class="highlight-item">
+                                <span class="highlight-number">TOP10%</span>
+                                <span class="highlight-label">Rating</span>
+                            </div>
+                            <div class="highlight-item">
+                                <span class="highlight-number">Team</span>
+                                <span class="highlight-label">Management</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-tags">
+                            <span class="tag featured">Art Direction</span>
+                            <span class="tag">Team Management</span>
+                            <span class="tag">Education</span>
+                            <span class="tag">Mentoring</span>
+                        </div>
+                    </div>
+                    <div class="card-arrow">→</div>
+                </div>
             </div>
-            
-            <div class="info-card">
-                <div class="info-icon">🏆</div>
-                <h4>주요 성과</h4>
-                <p>Google Play 10만+ DL<br>BIC Excellence 수상</p>
+
+            <div class="experience-section">
+                <div class="section-divider"></div>
+                <div class="experience-intro fade-in">
+                    <h2>경력 사항</h2>
+                    <p class="section-subtitle">다양한 프로젝트를 통해 쌓은 실무 경험</p>
+                </div>
+
+                <div class="experience-timeline">
+                    <div class="timeline-item fade-in">
+                        <div class="company-header">
+                            <div class="company-icon">🚀</div>
+                            <div class="company-info">
+                                <h3>Animoca games (구. NWay Korea)</h3>
+                                <div class="job-title">아트팀 사원</div>
+                                <div class="timeline-period">2023.08 ~ 현재</div>
+                            </div>
+                        </div>
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <div class="detail-label">🎮 개발 게임</div>
+                                <div class="detail-content">
+                                    <div class="games-list">
+                                        <span class="game-chip">
+                                            Cosmic Bomber
+                                            <a href="https://www.mocaverse.xyz/cosmic-club/cosmic-bomber" target="_blank" title="PC에서 보기" aria-label="Cosmic Bomber PC 버전 링크">💻</a>
+                                            <a href="https://cosmicbomberk.xyz/" target="_blank" title="모바일에서 보기" aria-label="Cosmic Bomber 모바일 버전 링크">📱</a>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">⚙️ 사용 엔진</div>
+                                <div class="detail-content">
+                                    <div class="tech-stack">
+                                        <span class="tech-item">Unity</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">💼 주요 업무</div>
+                                <div class="detail-content">3D 배경모델링, 3D 캐릭터모델링, 이펙트, 애니메이션, 최적화, 2D 버전 컨버팅 etc.</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">🛠️ 사용 툴</div>
+                                <div class="detail-content">
+                                    <div class="tech-stack">
+                                        <span class="tech-item">Git</span>
+                                        <span class="tech-item">Jira</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item fade-in">
+                        <div class="company-header">
+                            <div class="company-icon">🎓</div>
+                            <div class="company-info">
+                                <h3>청강문화산업대학교</h3>
+                                <div class="job-title">외래교수/겸임교수</div>
+                                <div class="timeline-period">2022.03 ~ 2023.08</div>
+                            </div>
+                        </div>
+                        <div class="job-details">
+                            <div class="detail-item">
+                                <div class="detail-label">📚 담당 과목</div>
+                                <div class="detail-content">졸업작품 크리틱, 3D기초그래픽, Substance 3D Designer 특강</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">🏆 주요 성과 <span class="achievement-badge">🌟 우수강사</span></div>
+                                <div class="detail-content">전체 스쿨 기준 상위 10% 평점 달성</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">🛠️ 사용 스킬</div>
+                                <div class="detail-content">
+                                    <div class="tech-stack">
+                                        <span class="tech-item">교육</span>
+                                        <span class="tech-item">멘토링</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
             </div>
-            
-            <div class="info-card">
-                <div class="info-icon">💡</div>
-                <h4>현재 관심사</h4>
-                <p>3D Gaussian Splatting<br>NeRF Technology</p>
-            </div>
+        </section>
+    </main>
+
+    <div id="3d-gamedev-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>3D Art & Game Development Details</h3>
+            <p>Detailed information about 3D Art & Game Development skills.</p>
+            <p>여기에 3D 아트 및 게임 개발에 대한 상세 정보를 추가하세요.</p>
         </div>
-    </section>
+    </div>
+    <div id="ai-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>AI & Machine Learning Details</h3>
+            <p>Detailed information about AI & Machine Learning research.</p>
+            <p>여기에 AI 및 머신러닝 연구에 대한 상세 정보를 추가하세요.</p>
+        </div>
+    </div>
+    <div id="graphics-pipeline-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Advanced Graphics & Pipeline Details</h3>
+            <p>Detailed information about advanced graphics and pipeline expertise.</p>
+            <p>여기에 고급 그래픽스 및 파이프라인 전문성에 대한 상세 정보를 추가하세요.</p>
+        </div>
+    </div>
+    <div id="leadership-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Team Leadership Details</h3>
+            <p>Detailed information about team leadership experience.</p>
+            <p>여기에 팀 리더십 경험에 대한 상세 정보를 추가하세요.</p>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation (if you add internal links)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Fade-in on scroll animation
+        const faders = document.querySelectorAll('.fade-in');
+
+        const appearOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px" // Start fading in when 50px from bottom of viewport
+        };
+
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('appear');
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+
+        // Modal functionality (updated)
+        const skillCards = document.querySelectorAll('.skill-card');
+        const modals = document.querySelectorAll('.modal');
+        const closeButtons = document.querySelectorAll('.close-button');
+
+        skillCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const modalId = this.dataset.modalTarget;
+                const targetModal = document.getElementById(modalId);
+                if (targetModal) {
+                    targetModal.style.display = 'flex'; // Use flex to center content
+                    // Add a small delay to allow display property to apply before animation
+                    setTimeout(() => {
+                        targetModal.classList.add('show');
+                    }, 10);
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+                }
+            });
+        });
+
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                if (modal) {
+                    modal.classList.remove('show');
+                    // Wait for the animation to complete before hiding
+                    modal.addEventListener('transitionend', function handler() {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = ''; // Restore scrolling
+                        modal.removeEventListener('transitionend', handler); // Remove listener after execution
+                    });
+                }
+            });
+        });
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            modals.forEach(modal => {
+                // Check if the click is directly on the modal overlay (not its content)
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                    modal.addEventListener('transitionend', function handler() {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                        modal.removeEventListener('transitionend', handler);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
