@@ -3139,10 +3139,15 @@
                 // DOM 업데이트 후 정확한 offsetTop 값을 얻기 위해 작은 딜레이를 줌
                 setTimeout(() => {
                     const headerHeight = document.querySelector('header').offsetHeight;
+                    const rect = targetSection.getBoundingClientRect();
+                    const offset = rect.top + window.pageYOffset - headerHeight;
                     window.scrollTo({
-                        top: targetSection.offsetTop - headerHeight,
+                        top: offset,
                         behavior: 'smooth'
                     });
+
+                    // 스크롤 후 페이드인 애니메이션 트리거
+                    triggerSequentialFadeIn(targetSection);
                 }, 50); // 짧은 딜레이 추가
 
                 // 내비게이션 바 항목의 active 상태 업데이트
@@ -3161,8 +3166,6 @@
                     navToggle.classList.remove('active');
                 }
 
-                // 새로운 섹션의 fade-in 요소들 애니메이션 재트리거
-                triggerSequentialFadeIn(targetSection);
             }
         }
 
@@ -3463,14 +3466,16 @@
             const fadeElements = targetSection.querySelectorAll('.fade-in');
             fadeElements.forEach((element) => {
                 element.classList.remove('visible'); // 먼저 visible 클래스 제거
-                element.style.opacity = '0'; 
+                element.style.opacity = '0';
                 element.style.transform = 'translateY(30px)';
 
-                // DOM 업데이트 후 Intersection Observer가 다시 감지할 수 있도록 잠시 대기
-                setTimeout(() => {
-                    appearOnScroll.unobserve(element); // 기존 관찰 중지
-                    appearOnScroll.observe(element); // 다시 관찰 시작
-                }, 50); // 짧은 딜레이
+                appearOnScroll.unobserve(element); // 기존 관찰 중지
+                appearOnScroll.observe(element); // 다시 관찰 시작
+
+                // 이미 뷰포트 안에 있는 요소는 즉시 보여주기
+                if (element.getBoundingClientRect().top < window.innerHeight) {
+                    element.classList.add('visible');
+                }
             });
         }
 
