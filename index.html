@@ -571,7 +571,7 @@
 
         .stat-icon {
             font-size: 1.5rem;
-            filter: drop_shadow(0 0 10px rgba(120, 119, 198, 0.5));
+            filter: drop-shadow(0 0 10px rgba(120, 119, 198, 0.5));
         }
 
         .skills-showcase {
@@ -655,7 +655,7 @@
 
         .skill-icon {
             font-size: 2.5rem;
-            filter: drop_shadow(0 0 15px rgba(120, 119, 198, 0.6));
+            filter: drop-shadow(0 0 15px rgba(120, 119, 198, 0.6));
         }
 
         .skill-badge {
@@ -1201,7 +1201,7 @@
 
         .title-icon {
             font-size: 1.8rem;
-            filter: drop_shadow(0 0 10px rgba(120, 119, 198, 0.5));
+            filter: drop-shadow(0 0 10px rgba(120, 119, 198, 0.5));
         }
 
         .education-timeline {
@@ -1347,7 +1347,7 @@
         .info-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-            filter: drop_shadow(0 0 10px rgba(120, 119, 198, 0.5));
+            filter: drop-shadow(0 0 10px rgba(120, 119, 198, 0.5));
         }
 
         .info-card h4 {
@@ -2526,7 +2526,7 @@
             <div class="profile-hero fade-in">
                 <div class="profile-visual">
                     <div class="profile-image-container">
-                        <img src="Photo01.jpg" alt="김소연 프로필" class="profile-image">
+                        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLHLYB%2FbtsOv8XhdWt%2FM5JOTSbaEUK0qO11CAMNA0%2Fimg.jpg" alt="김소연 프로필" class="profile-image">
                         <div class="image-glow"></div>
                     </div>
                     <div class="profile-badges">
@@ -2641,7 +2641,7 @@
             <h2 class="fade-in">연락처</h2>
             <div class="contact">
                 <div class="contact-info">
-                    <img src="Photo01.jpg" alt="이력서 사진" class="contact-photo">
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLHLYB%2FbtsOv8XhdWt%2FM5JOTSbaEUK0qO11CAMNA0%2Fimg.jpg" alt="이력서 사진" class="contact-photo">
                     <p>📧 이메일: <span class="contact-text">banakush@gmail.com</span></p>
                     <p>📱 전화: <span class="contact-text">010-9318-8528</span></p>
                 </div>
@@ -2678,7 +2678,7 @@
                                     <li>레벨 디자인 및 씬 구성</li>
                                 </ul>
                             </div>
-                            </div>
+                        </div>
                     </div>
 
                     <div class="subsection">
@@ -2698,7 +2698,7 @@
                                     <li>다양한 아트 스타일 적용</li>
                                 </ul>
                             </div>
-                            </div>
+                        </div>
                     </div>
 
                     <div class="subsection">
@@ -3109,10 +3109,10 @@
         let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
         // --- 섹션 전환 기능 ---
-        // showSection 함수 재정의: display 대신 opacity/visibility/height 사용
+        // showSection 함수 재정의: opacity/visibility/height 사용
         function showSection(sectionId) {
             console.log('Showing section:', sectionId);
-            const sections = document.querySelectorAll('section'); // 모든 섹션 선택 (hero 포함)
+            const sections = document.querySelectorAll('main > section'); // main의 직계 자식 section만 선택
 
             sections.forEach(section => {
                 // 현재 활성화된 섹션의 `active` 클래스 제거 및 CSS 속성 초기화
@@ -3165,7 +3165,7 @@
             }
         }
 
-        // 초기 로드 시 'home' 섹션 활성화
+        // 페이지 로드 시 'home' 섹션 활성화
         document.addEventListener('DOMContentLoaded', () => {
             showSection('home');
         });
@@ -3434,12 +3434,11 @@
         }
 
         // --- 스크롤 페이드인 애니메이션 (Intersection Observer) ---
-        // handleScroll 대신 Intersection Observer 사용
         const faders = document.querySelectorAll('.fade-in');
 
         const appearOptions = {
-            threshold: 0.1,
-            rootMargin: "0px 0px -50px 0px"
+            threshold: 0.1, 
+            rootMargin: "0px 0px -50px 0px" 
         };
 
         const appearOnScroll = new IntersectionObserver(function(entries, observer) {
@@ -3451,7 +3450,7 @@
             });
         }, appearOptions);
 
-        // 초기 로드시 모든 fade-in 요소 관찰
+        // 초기 로드시 모든 fade-in 요소 관찰 (DOM 생성 후)
         document.addEventListener('DOMContentLoaded', () => {
             faders.forEach(fader => {
                 appearOnScroll.observe(fader);
@@ -3461,9 +3460,8 @@
         // 특정 섹션 활성화 시 해당 섹션 내의 fade-in 요소들을 재트리거
         function triggerSequentialFadeIn(targetSection) {
             const fadeElements = targetSection.querySelectorAll('.fade-in');
-            fadeElements.forEach((element, index) => {
+            fadeElements.forEach((element) => {
                 element.classList.remove('visible'); // 먼저 visible 클래스 제거
-                // Intersection Observer가 다시 관찰하도록 요소 숨김
                 element.style.opacity = '0'; 
                 element.style.transform = 'translateY(30px)';
 
