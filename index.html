@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>김소연 - Technical Artist Portfolio</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -42,7 +41,7 @@
             50% { opacity: 0.7; }
         }
 
-        /* 새로운 헤더 스타일 */
+        /* 헤더 스타일 */
         header {
             position: fixed;
             top: 0;
@@ -54,11 +53,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
             transition: all 0.3s ease;
-        }
-
-        header.scrolled {
-            padding: 0.8rem 2rem;
-            background: rgba(10, 10, 10, 0.95);
         }
 
         nav {
@@ -115,23 +109,6 @@
             overflow: hidden;
         }
 
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(120, 119, 198, 0.1), rgba(255, 119, 198, 0.1));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .nav-item:hover::before,
-        .nav-item.active::before {
-            opacity: 1;
-        }
-
         .nav-item:hover,
         .nav-item.active {
             color: #ffffff;
@@ -141,7 +118,6 @@
 
         .nav-icon {
             font-size: 1rem;
-            filter: drop-shadow(0 0 8px rgba(120, 119, 198, 0.5));
         }
 
         .nav-text {
@@ -149,35 +125,7 @@
             font-weight: 600;
         }
 
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 4px;
-            padding: 0.5rem;
-        }
-
-        .nav-toggle span {
-            width: 25px;
-            height: 3px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(7px, 7px);
-        }
-
-        .nav-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .nav-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        /* 새로운 히어로 섹션 스타일 */
+        /* 히어로 섹션 */
         .hero {
             height: 100vh;
             display: flex;
@@ -210,7 +158,6 @@
             font-size: 2rem;
             opacity: 0.6;
             animation: floatBadge 6s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(120, 119, 198, 0.5));
         }
 
         @keyframes floatBadge {
@@ -242,7 +189,6 @@
             animation: gradientShift 4s ease-in-out infinite;
             margin: 0;
             letter-spacing: -0.02em;
-            text-shadow: 0 0 40px rgba(120, 119, 198, 0.3);
         }
 
         @keyframes gradientShift {
@@ -301,13 +247,11 @@
             font-size: 0.9rem;
             color: #7877c6;
             font-weight: 500;
-            backdrop-filter: blur(10px);
         }
 
         .result-text {
             color: #78dbe2;
             font-weight: 600;
-            text-shadow: 0 0 20px rgba(120, 219, 226, 0.5);
         }
 
         .hero-stats {
@@ -372,22 +316,6 @@
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
         }
 
         .cta-button.primary {
@@ -411,65 +339,14 @@
             background: rgba(120, 119, 198, 0.2);
             border-color: #7877c6;
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(120, 119, 198, 0.3);
         }
 
         .button-icon {
             font-size: 1.2rem;
-            transition: transform 0.3s ease;
         }
 
         .button-arrow {
-            transition: transform 0.3s ease;
             opacity: 0.8;
-        }
-
-        .cta-button:hover .button-icon {
-            transform: scale(1.2);
-        }
-
-        .cta-button:hover .button-arrow {
-            transform: translateX(5px);
-            opacity: 1;
-        }
-
-        .hero-particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 50%;
-            animation: particleFloat 8s ease-in-out infinite;
-            opacity: 0.6;
-        }
-
-        @keyframes particleFloat {
-            0%, 100% { 
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-                transform: translateY(90vh) scale(1);
-            }
-            90% {
-                opacity: 0.6;
-                transform: translateY(10vh) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(0) scale(0);
-            }
         }
 
         /* 섹션 스타일 */
@@ -493,17 +370,10 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 10px rgba(120, 119, 198, 0.6), 0 0 20px rgba(255, 119, 198, 0.4);
             letter-spacing: -0.05rem;
-            transition: all 0.5s ease-in-out;
         }
 
-        .section h2:hover {
-            transform: translateY(-5px);
-            text-shadow: 0 0 15px rgba(120, 119, 198, 0.8), 0 0 25px rgba(255, 119, 198, 0.6);
-        }
-
-        /* 새로운 스킬 섹션 스타일 */
+        /* 스킬 섹션 */
         .section-intro {
             text-align: center;
             margin-bottom: 4rem;
@@ -514,26 +384,6 @@
             color: rgba(255, 255, 255, 0.8);
             margin: 1rem 0 2rem 0;
             font-weight: 300;
-        }
-
-        .intro-stats {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .intro-stat {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .stat-icon {
-            font-size: 1.5rem;
-            filter: drop-shadow(0 0 10px rgba(120, 119, 198, 0.5));
         }
 
         .skills-showcase {
@@ -548,14 +398,12 @@
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 25px;
-            padding: 0;
+            padding: 2rem;
             transition: all 0.4s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
+            min-height: 300px;
         }
 
         .skill-card::before {
@@ -566,7 +414,6 @@
             right: 0;
             height: 4px;
             border-radius: 25px 25px 0 0;
-            transition: all 0.3s ease;
         }
 
         .skill-card.premium::before {
@@ -577,128 +424,23 @@
             background: linear-gradient(90deg, #ff77c6, #78dbe2);
         }
 
-        .skill-card.technical::before {
-            background: linear-gradient(90deg, #78dbe2, #7877c6);
-        }
-
-        .skill-card.leadership::before {
-            background: linear-gradient(90deg, #ffd93d, #ff77c6);
-        }
-
-        .card-glow {
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6, #78dbe2);
-            border-radius: 27px;
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.3s ease;
-        }
-
-        .skill-card:hover .card-glow {
-            opacity: 0.3;
-        }
-
         .skill-card:hover {
             transform: translateY(-10px);
             border-color: rgba(120, 119, 198, 0.3);
             box-shadow: 0 20px 40px rgba(120, 119, 198, 0.2);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2rem 2rem 1rem 2rem;
-        }
-
-        .skill-icon {
-            font-size: 2.5rem;
-            filter: drop-shadow(0 0 15px rgba(120, 119, 198, 0.6));
-        }
-
-        .skill-badge {
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-        }
-
-        .skill-card.premium .skill-badge {
-            background: linear-gradient(135deg, #7877c6, #ff77c6);
-            color: white;
-        }
-
-        .skill-card.innovative .skill-badge {
-            background: linear-gradient(135deg, #ff77c6, #78dbe2);
-            color: white;
-        }
-
-        .skill-card.technical .skill-badge {
-            background: linear-gradient(135deg, #78dbe2, #7877c6);
-            color: white;
-        }
-
-        .skill-card.leadership .skill-badge {
-            background: linear-gradient(135deg, #ffd93d, #ff77c6);
-            color: #0a0a0a;
-        }
-
-        .card-content {
-            padding: 0 2rem 2rem 2rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
         .skill-card h3 {
             color: #ffffff;
-            margin: 0;
+            margin-bottom: 1rem;
             font-size: 1.5rem;
             font-weight: 600;
-            line-height: 1.2;
         }
 
         .skill-description {
             color: rgba(255, 255, 255, 0.8);
             line-height: 1.6;
-            margin: 0;
-            flex: 1;
-        }
-
-        .skill-highlights {
-            display: flex;
-            gap: 2rem;
-            margin: 1rem 0;
-        }
-
-        .highlight-item {
-            text-align: center;
-        }
-
-        .highlight-number {
-            display: block;
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-        }
-
-        .highlight-label {
-            display: block;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 0.3rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
         }
 
         .skill-tags {
@@ -714,7 +456,6 @@
             border-radius: 20px;
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
         }
 
         .tag.featured {
@@ -724,207 +465,7 @@
             font-weight: 600;
         }
 
-        .tag:hover {
-            background: rgba(120, 119, 198, 0.3);
-            border-color: #7877c6;
-            transform: translateY(-2px);
-        }
-
-        .card-arrow {
-            position: absolute;
-            bottom: 1.5rem;
-            right: 2rem;
-            font-size: 1.5rem;
-            color: #7877c6;
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: all 0.3s ease;
-        }
-
-        .skill-card:hover .card-arrow {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .experience-intro {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        /* 경력 섹션 */
-        .experience-section {
-            margin-top: 5rem;
-        }
-
-        .section-divider {
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #7877c6, #ff77c6, transparent);
-            margin: 4rem 0 3rem 0;
-            border-radius: 2px;
-        }
-
-        .experience-timeline {
-            position: relative;
-            padding: 2rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            align-items: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .timeline-item {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s ease;
-            overflow: hidden;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 20px 20px 0 0;
-        }
-
-        .timeline-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(120, 119, 198, 0.3);
-        }
-
-        .company-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .company-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .company-info h3 {
-            color: #ffffff;
-            font-size: 1.5rem;
-            margin-bottom: 0.3rem;
-            font-weight: bold;
-            display: block;
-        }
-
-        .job-title {
-            color: #7877c6;
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-        }
-
-        .timeline-period {
-            color: #ff77c6;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .job-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .detail-item {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 1rem;
-            border-left: 3px solid #7877c6;
-        }
-
-        .detail-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #7877c6;
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .detail-content {
-            color: #ffffff;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .games-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .game-chip {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            color: white;
-            font-weight: 500;
-        }
-
-        .achievement-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
-            color: #2d3436;
-            padding: 0.4rem 0.9rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            font-family: 'Arial Black', 'Helvetica', sans-serif;
-            margin-left: 0.5rem;
-            text-align: center;
-            line-height: 1.1;
-            letter-spacing: -0.5px;
-            box-shadow: 0 2px 8px rgba(255, 234, 167, 0.3);
-            border: 1px solid rgba(253, 203, 110, 0.6);
-        }
-
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-        }
-
-        .tech-item {
-            background: rgba(120, 219, 226, 0.2);
-            border: 1px solid rgba(120, 219, 226, 0.4);
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            color: #78dbe2;
-        }
-
-        /* 새로운 인적사항 섹션 스타일 */
+        /* 인적사항 섹션 */
         .profile-hero {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -968,33 +509,7 @@
             height: 100%;
             object-fit: cover;
             border-radius: 20px;
-            border: 3px solid transparent;
-            background: linear-gradient(#0a0a0a, #0a0a0a) padding-box,
-                        linear-gradient(45deg, #7877c6, #ff77c6) border-box;
-            transition: all 0.3s ease;
-        }
-
-        .profile-image:hover {
-            transform: scale(1.02);
-        }
-
-        .image-glow {
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 25px;
-            z-index: -1;
-            opacity: 0.3;
-            filter: blur(15px);
-            animation: profileGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes profileGlow {
-            from { opacity: 0.2; transform: scale(0.95); }
-            to { opacity: 0.4; transform: scale(1.05); }
+            border: 3px solid #7877c6;
         }
 
         .profile-badges {
@@ -1010,31 +525,21 @@
             font-size: 0.9rem;
             font-weight: 600;
             text-align: center;
-            transition: all 0.3s ease;
-            cursor: default;
         }
 
         .badge.primary {
             background: linear-gradient(135deg, #7877c6, #8989d4);
             color: white;
-            box-shadow: 0 4px 15px rgba(120, 119, 198, 0.3);
         }
 
         .badge.secondary {
             background: linear-gradient(135deg, #ff77c6, #ff88d4);
             color: white;
-            box-shadow: 0 4px 15px rgba(255, 119, 198, 0.3);
         }
 
         .badge.accent {
             background: linear-gradient(135deg, #78dbe2, #88e5ec);
             color: #0a0a0a;
-            box-shadow: 0 4px 15px rgba(120, 219, 226, 0.3);
-        }
-
-        .badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(120, 119, 198, 0.4);
         }
 
         .profile-content {
@@ -1042,10 +547,6 @@
             flex-direction: column;
             justify-content: center;
             gap: 2rem;
-        }
-
-        .name-section {
-            text-align: left;
         }
 
         .profile-name {
@@ -1056,14 +557,12 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 0.5rem;
-            line-height: 1.1;
         }
 
         .profile-title {
             font-size: 1.3rem;
             color: rgba(255, 255, 255, 0.8);
             margin: 0;
-            font-weight: 300;
         }
 
         .contact-grid {
@@ -1079,13 +578,6 @@
             background: rgba(255, 255, 255, 0.03);
             border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .contact-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(120, 119, 198, 0.3);
-            transform: translateX(5px);
         }
 
         .contact-icon {
@@ -1097,7 +589,6 @@
             justify-content: center;
             background: linear-gradient(45deg, #7877c6, #ff77c6);
             border-radius: 12px;
-            flex-shrink: 0;
         }
 
         .contact-details {
@@ -1109,216 +600,12 @@
         .contact-label {
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.6);
-            font-weight: 500;
         }
 
         .contact-value {
             font-size: 1.1rem;
             color: #ffffff;
             font-weight: 600;
-        }
-
-        /* 학력 카드 스타일 */
-        .education-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 0;
-            margin-bottom: 3rem;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, rgba(120, 119, 198, 0.2), rgba(255, 119, 198, 0.1));
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin: 0;
-            font-size: 1.8rem;
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .title-icon {
-            font-size: 1.8rem;
-            filter: drop-shadow(0 0 10px rgba(120, 119, 198, 0.5));
-        }
-
-        .education-timeline {
-            padding: 2rem;
-            position: relative;
-        }
-
-        .education-timeline::before {
-            content: '';
-            position: absolute;
-            left: 2.5rem;
-            top: 2rem;
-            bottom: 2rem;
-            width: 2px;
-            background: linear-gradient(180deg, #7877c6, #ff77c6, #78dbe2);
-        }
-
-        .education-item {
-            position: relative;
-            padding-left: 4rem;
-            margin-bottom: 2.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .education-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .education-item:hover {
-            transform: translateX(10px);
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: -0.6rem;
-            top: 0.5rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border: 3px solid #0a0a0a;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-
-        .education-item.current .timeline-dot {
-            width: 16px;
-            height: 16px;
-            left: -0.8rem;
-            background: linear-gradient(45deg, #ff77c6, #78dbe2);
-            box-shadow: 0 0 20px rgba(255, 119, 198, 0.6);
-            animation: currentDot 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes currentDot {
-            from { box-shadow: 0 0 20px rgba(255, 119, 198, 0.4); }
-            to { box-shadow: 0 0 30px rgba(255, 119, 198, 0.8); }
-        }
-
-        .education-content {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1.5rem;
-            border-radius: 15px;
-            border-left: 4px solid transparent;
-            background: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)) padding-box,
-                        linear-gradient(45deg, #7877c6, #ff77c6) border-box;
-        }
-
-        .education-degree {
-            font-size: 1.3rem;
-            color: #ff77c6;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .education-school {
-            font-size: 1.1rem;
-            color: #ffffff;
-            margin-bottom: 0.8rem;
-            font-weight: 500;
-        }
-
-        .education-period {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            display: block;
-            margin-bottom: 1rem;
-        }
-
-        .education-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .edu-tag {
-            background: linear-gradient(135deg, rgba(120, 219, 226, 0.3), rgba(120, 219, 226, 0.1));
-            border: 1px solid rgba(120, 219, 226, 0.4);
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            color: #78dbe2;
-            font-weight: 500;
-        }
-
-        /* 정보 카드 그리드 */
-        .info-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .info-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #7877c6, #ff77c6, #78dbe2);
-            border-radius: 18px 18px 0 0;
-        }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(120, 119, 198, 0.3);
-            box-shadow: 0 10px 30px rgba(120, 119, 198, 0.2);
-        }
-
-        .info-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 10px rgba(120, 119, 198, 0.5));
-        }
-
-        .info-card h4 {
-            font-size: 1.2rem;
-            color: #7877c6;
-            margin-bottom: 0.8rem;
-            font-weight: 600;
-        }
-
-        .info-card p {
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        /* 스크롤 애니메이션 */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         /* 반응형 */
@@ -1353,113 +640,21 @@
                 background: linear-gradient(90deg, transparent, #7877c6, transparent);
             }
             
-            .stat-number {
-                font-size: 1.8rem;
-            }
-            
             .cta-container {
                 flex-direction: column;
                 align-items: center;
             }
             
             .cta-button { 
-                font-size: 1rem; 
-                padding: 1rem 2rem;
                 width: 100%;
                 max-width: 280px;
             }
 
-            .nav-links { 
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(10, 10, 10, 0.95);
-                backdrop-filter: blur(20px);
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                flex-direction: column;
-                padding: 1rem 0;
-                gap: 0;
-            }
-
-            .nav-links.mobile-open {
-                display: flex;
-            }
-
-            .nav-item {
-                width: 100%;
-                justify-content: center;
-                padding: 1rem 2rem;
-                border-radius: 0;
-            }
-
-            .nav-toggle {
-                display: flex;
-            }
-
-            .logo-subtitle {
-                display: none;
-            }
-
-            /* 보유 역량 블럭 정렬 개선 (모바일) */
             .skills-showcase {
-                grid-template-columns: 1fr; /* 모바일에서 1열로 변경 */
-                gap: 1.5rem;
-            }
-
-            .skill-card {
-                min-height: 350px;
-            }
-
-            .intro-stats {
-                gap: 1.5rem;
-            }
-
-            .intro-stat {
-                font-size: 1rem;
-            }
-
-            .skill-highlights {
-                gap: 1rem;
-            }
-
-            .card-header {
-                padding: 1.5rem 1.5rem 1rem 1.5rem;
-            }
-
-            .card-content {
-                padding: 0 1.5rem 1.5rem 1.5rem;
-                gap: 1rem;
-            }
-
-            .skill-card h3 {
-                font-size: 1.3rem;
-            }
-
-            /* 폰트 개선 (모바일) */
-            .section h2 {
-                font-size: 2.5rem; /* 모바일에서 폰트 크기 조절 */
-                margin-bottom: 2.5rem;
-            }
-
-            .job-details {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: 1.5rem;
             }
 
-            .company-header {
-                flex-direction: column; /* 모바일에서 회사 정보 세로 정렬 */
-                align-items: flex-start;
-            }
-            .company-info h3 {
-                font-size: 1.3rem; /* 회사 이름 크기 조절 */
-            }
-            .job-title, .timeline-period {
-                font-size: 0.85rem; /* 직책 및 기간 크기 조절 */
-            }
-
-            /* 인적사항 섹션 모바일 조정 */
             .profile-hero {
                 grid-template-columns: 1fr;
                 gap: 2rem;
@@ -1477,164 +672,19 @@
                 font-size: 2.2rem;
                 text-align: center;
             }
-
-            .profile-content {
-                gap: 1.5rem;
-            }
-
-            .name-section {
-                text-align: center;
-            }
-
-            .contact-item:hover {
-                transform: none;
-            }
-
-            .education-timeline::before {
-                left: 1.5rem;
-            }
-
-            .education-item {
-                padding-left: 3rem;
-            }
-
-            .education-item:hover {
-                transform: none;
-            }
-
-            .timeline-dot {
-                left: -0.6rem;
-            }
-
-            .education-item.current .timeline-dot {
-                left: -0.8rem;
-            }
-
-            .info-cards-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .info-card {
-                padding: 1.5rem;
-            }
         }
 
-        /* 모달 스타일 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+        /* 스크롤 애니메이션 */
+        .fade-in {
             opacity: 0;
-            transition: opacity 0.2s ease-out;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
         }
 
-        .modal.active-modal {
-            opacity: 1;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            position: relative;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 2% auto;
-            padding: 0;
-            width: 90%;
-            max-width: 1000px;
-            border-radius: 20px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: translateY(-30px);
-            opacity: 0;
-            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-        }
-
-        .modal.active-modal .modal-content {
+        .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
         }
-
-        .modal-content::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        .modal-content::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .modal-content::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            border-radius: 10px;
-            border: 2px solid rgba(10, 10, 10, 0.95);
-            transition: all 0.3s ease;
-        }
-
-        .modal-content::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #8989d4, #ff88d4);
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(120, 119, 198, 0.5);
-        }
-
-        .modal-content::-webkit-scrollbar-thumb:active {
-            background: linear-gradient(45deg, #6666b8, #ee66b8);
-        }
-
-        .modal-content {
-            scrollbar-width: thin;
-            scrollbar-color: #7877c6 rgba(255, 255, 255, 0.05);
-        }
-
-        .modal-header {
-            background: linear-gradient(45deg, #7877c6, #ff77c6);
-            padding: 2rem;
-            border-radius: 20px 20px 0 0;
-            text-align: center;
-        }
-
-        .modal-header h2 {
-            color: white;
-            font-size: 2.5rem;
-            margin: 0;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.2rem;
-            margin: 0.5rem 0 0 0;
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .close {
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-
-        .close:hover {
-            color: #ff77c6;
-            transform: scale(1.2);
-        }
-
-        /* 스타일은 기존과 동일하게 유지 */
     </style>
 </head>
 <body>
@@ -1647,24 +697,19 @@
                 <div class="logo-subtitle">Technical Artist</div>
             </div>
             <ul class="nav-links">
-                <li><a onclick="showSection('home')" class="nav-item active">
+                <li><a class="nav-item active" data-section="home">
                     <span class="nav-icon">🏠</span>
                     <span class="nav-text">Home</span>
                 </a></li>
-                <li><a onclick="showSection('skills')" class="nav-item">
+                <li><a class="nav-item" data-section="skills">
                     <span class="nav-icon">⚡</span>
                     <span class="nav-text">Skills</span>
                 </a></li>
-                <li><a onclick="showSection('about-me')" class="nav-item">
+                <li><a class="nav-item" data-section="about-me">
                     <span class="nav-icon">👤</span>
                     <span class="nav-text">About</span>
                 </a></li>
             </ul>
-            <div class="nav-toggle" onclick="toggleMobileNav()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </nav>
     </header>
 
@@ -1714,29 +759,17 @@
                 </div>
                 
                 <div class="cta-container">
-                    <button onclick="showSection('skills')" class="cta-button primary">
+                    <button class="cta-button primary" data-section="skills">
                         <span class="button-icon">⚡</span>
                         보유 역량 탐색
                         <span class="button-arrow">→</span>
                     </button>
-                    <button onclick="showSection('about-me')" class="cta-button secondary">
+                    <button class="cta-button secondary" data-section="about-me">
                         <span class="button-icon">👤</span>
                         인적사항 보기
                         <span class="button-arrow">→</span>
                     </button>
                 </div>
-            </div>
-            
-            <div class="hero-particles">
-                <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
-                <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
-                <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
-                <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
-                <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
-                <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
-                <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
-                <div class="particle" style="left: 80%; animation-delay: 4.5s;"></div>
-                <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
             </div>
         </div>
     </section>
@@ -1745,56 +778,64 @@
         <div class="section-intro fade-in">
             <h2>보유 역량</h2>
             <p class="section-subtitle">15년간 축적한 전문성과 최신 기술의 만남</p>
-            <div class="intro-stats">
-                <div class="intro-stat">
-                    <span class="stat-icon">🎨</span>
-                    <span class="stat-text">Creative Excellence</span>
-                </div>
-                <div class="intro-stat">
-                    <span class="stat-icon">⚡</span>
-                    <span class="stat-text">Technical Mastery</span>
-                </div>
-                <div class="intro-stat">
-                    <span class="stat-icon">🚀</span>
-                    <span class="stat-text">Innovation Drive</span>
-                </div>
-            </div>
         </div>
 
         <div class="skills-showcase">
-            <div class="skill-card premium fade-in" onclick="openModal('3d-gamedev-modal')">
-                <div class="card-glow"></div>
-                <div class="card-header">
-                    <div class="skill-icon">🎨</div>
-                    <div class="skill-badge">CORE</div>
+            <div class="skill-card premium fade-in">
+                <div class="skill-icon" style="font-size: 2.5rem; margin-bottom: 1rem;">🎨</div>
+                <h3>3D Art & Game Development</h3>
+                <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
+                <div class="skill-tags">
+                    <span class="tag featured">3ds Max</span>
+                    <span class="tag">Unity</span>
+                    <span class="tag">ZBrush</span>
+                    <span class="tag">Substance 3D</span>
+                    <span class="tag">Mobile Optimization</span>
                 </div>
-                <div class="card-content">
-                    <h3>3D Art & Game Development</h3>
-                    <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
-                    
-                    <div class="skill-highlights">
-                        <div class="highlight-item">
-                            <span class="highlight-number">15+</span>
-                            <span class="highlight-label">Years</span>
-                        </div>
-                        <div class="highlight-item">
-                            <span class="highlight-number">100K+</span>
-                            <span class="highlight-label">Downloads</span>
-                        </div>
-                    </div>
-
-                    <div class="skill-tags">
-                        <span class="tag featured">3ds Max</span>
-                        <span class="tag">Unity</span>
-                        <span class="tag">ZBrush</span>
-                        <span class="tag">Substance 3D</span>
-                        <span class="tag">Mobile Optimization</span>
-                    </div>
-                </div>
-                <div class="card-arrow">→</div>
             </div>
 
-            <div class="skill-card innovative fade-in" onclick="openModal('ai-modal')">
-                <div class="card-glow"></div>
-                <div class="card-header">
-                    <div class="skill-icon">
+            <div class="skill-card innovative fade-in">
+                <div class="skill-icon" style="font-size: 2.5rem; margin-bottom: 1rem;">🤖</div>
+                <h3>AI & Machine Learning</h3>
+                <p class="skill-description">대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
+                <div class="skill-tags">
+                    <span class="tag featured">Machine Learning</span>
+                    <span class="tag">AI Research</span>
+                    <span class="tag">Graduate Studies</span>
+                    <span class="tag">Procedural Generation</span>
+                </div>
+            </div>
+
+            <div class="skill-card premium fade-in">
+                <div class="skill-icon" style="font-size: 2.5rem; margin-bottom: 1rem;">🔬</div>
+                <h3>Advanced Graphics & Pipeline</h3>
+                <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론과 효율적인 개발 파이프라인 구축 전문성을 보유하고 있습니다.</p>
+                <div class="skill-tags">
+                    <span class="tag featured">BRDF</span>
+                    <span class="tag">PBR Theory</span>
+                    <span class="tag">Shader Development</span>
+                    <span class="tag">Pipeline Optimization</span>
+                </div>
+            </div>
+
+            <div class="skill-card innovative fade-in">
+                <div class="skill-icon" style="font-size: 2.5rem; margin-bottom: 1rem;">💼</div>
+                <h3>Team Leadership</h3>
+                <p class="skill-description">AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
+                <div class="skill-tags">
+                    <span class="tag featured">Art Direction</span>
+                    <span class="tag">Team Management</span>
+                    <span class="tag">Education</span>
+                    <span class="tag">Mentoring</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about-me" class="section">
+        <h2 class="fade-in">인적사항</h2>
+        
+        <div class="profile-hero fade-in">
+            <div class="profile-visual">
+                <div class="profile-image-container">
+                    <img src="https://raw.githubusercontent.com/Aryeon0228/Aryeon0228.github.io/refs/heads/main/Photo01.jpg" alt="김소연 프로필" class
