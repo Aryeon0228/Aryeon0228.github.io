@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>김소연 - Technical Artist Portfolio</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://img1.daumcdn.net; connect-src 'self' https://www.google-analytics.com;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://img1.daumcdn.net https://t1.daumcdn.net; frame-src 'self' https://www.youtube.com; connect-src 'self' https://www.google-analytics.com; object-src 'none'; base-uri 'self';">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        /* CSS Variables for easier theme management */
         :root {
             --primary-gradient: linear-gradient(45deg, #7877c6, #ff77c6);
             --text-color-light: rgba(255, 255, 255, 0.8);
@@ -38,7 +40,8 @@
             color: #ffffff;
             line-height: 1.6;
             overflow-x: hidden;
-            padding-top: 80px; /* Header 높이만큼 여백 */
+            padding-top: 80px;
+            /* Header 높이만큼 여백 */
         }
 
         /* 배경 애니메이션 */
@@ -49,15 +52,22 @@
             width: 100%;
             height: 100%;
             background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 80%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
             z-index: -1;
             animation: backgroundMove 20s ease-in-out infinite;
         }
 
         @keyframes backgroundMove {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
         /* 새로운 헤더 스타일 */
@@ -197,14 +207,16 @@
 
         /* 새로운 히어로 섹션 스타일 */
         .hero {
-            min-height: calc(100vh - 80px); /* 헤더 높이만큼 줄임 */
+            min-height: calc(100vh - 80px);
+            /* 헤더 높이만큼 줄임 */
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             position: relative;
             overflow: hidden;
-            padding: 2rem 0; /* 상하 패딩 추가 */
+            padding: 2rem 0;
+            /* 상하 패딩 추가 */
         }
 
         .hero-content {
@@ -233,10 +245,23 @@
         }
 
         @keyframes floatBadge {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(5deg); }
-            50% { transform: translateY(-10px) rotate(-3deg); }
-            75% { transform: translateY(-15px) rotate(3deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(-3deg);
+            }
+
+            75% {
+                transform: translateY(-15px) rotate(3deg);
+            }
         }
 
         .hero-main {
@@ -265,8 +290,15 @@
         }
 
         @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
         }
 
         .name-underline {
@@ -278,7 +310,9 @@
         }
 
         @keyframes underlineExpand {
-            to { width: 100%; }
+            to {
+                width: 100%;
+            }
         }
 
         .hero-titles {
@@ -473,18 +507,23 @@
         }
 
         @keyframes particleFloat {
-            0%, 100% { 
+
+            0%,
+            100% {
                 transform: translateY(100vh) scale(0);
                 opacity: 0;
             }
+
             10% {
                 opacity: 0.6;
                 transform: translateY(90vh) scale(1);
             }
+
             90% {
                 opacity: 0.6;
                 transform: translateY(10vh) scale(1);
             }
+
             100% {
                 opacity: 0;
                 transform: translateY(0) scale(0);
@@ -500,11 +539,11 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-            height: 0; 
-            overflow: hidden; 
+            height: 0;
+            overflow: hidden;
         }
 
-        .hero { 
+        .hero {
             padding: 2rem;
             max-width: 1200px;
             margin: 0 auto;
@@ -516,10 +555,11 @@
             overflow: hidden;
         }
 
-        .section.active, .hero.active {
+        .section.active,
+        .hero.active {
             opacity: 1;
             visibility: visible;
-            height: auto; 
+            height: auto;
             overflow: visible;
         }
 
@@ -1025,7 +1065,7 @@
             border-radius: 20px;
             border: 3px solid transparent;
             background: linear-gradient(#0a0a0a, #0a0a0a) padding-box,
-                        linear-gradient(45deg, #7877c6, #ff77c6) border-box;
+                linear-gradient(45deg, #7877c6, #ff77c6) border-box;
             transition: all 0.3s ease;
         }
 
@@ -1048,8 +1088,15 @@
         }
 
         @keyframes profileGlow {
-            from { opacity: 0.2; transform: scale(0.95); }
-            to { opacity: 0.4; transform: scale(1.05); }
+            from {
+                opacity: 0.2;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 0.4;
+                transform: scale(1.05);
+            }
         }
 
         .profile-badges {
@@ -1237,8 +1284,8 @@
 
         .timeline-dot {
             position: absolute;
-            left: 2rem; 
-            top: 0.7rem; 
+            left: 2rem;
+            top: 0.7rem;
             width: 12px;
             height: 12px;
             border-radius: 50%;
@@ -1251,15 +1298,20 @@
         .education-item.current .timeline-dot {
             width: 16px;
             height: 16px;
-            left: 1.8rem; 
+            left: 1.8rem;
             background: linear-gradient(45deg, #ff77c6, #78dbe2);
             box-shadow: 0 0 20px rgba(255, 119, 198, 0.6);
             animation: currentDot 2s ease-in-out infinite alternate;
         }
 
         @keyframes currentDot {
-            from { box-shadow: 0 0 20px rgba(255, 119, 198, 0.4); }
-            to { box-shadow: 0 0 30px rgba(255, 119, 198, 0.8); }
+            from {
+                box-shadow: 0 0 20px rgba(255, 119, 198, 0.4);
+            }
+
+            to {
+                box-shadow: 0 0 30px rgba(255, 119, 198, 0.8);
+            }
         }
 
         .education-content {
@@ -1268,7 +1320,7 @@
             border-radius: 15px;
             border-left: 4px solid transparent;
             background: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)) padding-box,
-                        linear-gradient(45deg, #7877c6, #ff77c6) border-box;
+                linear-gradient(45deg, #7877c6, #ff77c6) border-box;
         }
 
         .education-degree {
@@ -1380,7 +1432,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 2000;
+            z-index: 9999;
             left: 0;
             top: 0;
             width: 100%;
@@ -1388,8 +1440,15 @@
             background-color: rgba(0, 0, 0, 0.8);
             opacity: 0;
             transition: opacity 0.2s ease-out;
-            align-items: center; 
-            justify-content: center; 
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active-modal {
+            display: flex !important;
+            /* !important 추가 */
+            opacity: 1;
+            backdrop-filter: blur(5px);
         }
 
         .modal.active-modal {
@@ -1408,14 +1467,14 @@
             border-radius: 20px;
             max-height: 90vh;
             overflow-y: auto;
-            transform: translateY(-30px); 
-            opacity: 0; 
-            transition: opacity 0.2s ease-out, transform 0.2s ease-out; 
+            transform: translateY(-30px);
+            opacity: 0;
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
         }
 
         .modal.active-modal .modal-content {
             opacity: 1;
-            transform: translateY(0); 
+            transform: translateY(0);
         }
 
         .modal-content::-webkit-scrollbar {
@@ -1474,7 +1533,7 @@
             padding: 2rem;
         }
 
-        .close { 
+        .close {
             position: absolute;
             top: 1rem;
             right: 1.5rem;
@@ -1519,15 +1578,17 @@
             justify-content: center;
             font-size: 2rem;
             color: white;
-            overflow: hidden; 
+            overflow: hidden;
         }
+
         .portfolio-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover; 
+            object-fit: cover;
             transition: transform 0.3s ease;
-            cursor: pointer; 
+            cursor: pointer;
         }
+
         .portfolio-image:hover img {
             transform: scale(1.05);
         }
@@ -1535,21 +1596,22 @@
         /* 팀 리더십 모달 내의 이미지 갤러리 스타일 */
         .leadership-image-gallery {
             display: flex;
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 1rem; 
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
             margin-top: 1.5rem;
         }
 
         .leadership-image-gallery .gallery-item {
-            flex: 0 0 calc(40% - 1rem); /* 가로 40% 차지 (gap 고려) */
-            max-width: 40%; 
-            height: 150px; 
+            flex: 0 0 calc(40% - 1rem);
+            /* 가로 40% 차지 (gap 고려) */
+            max-width: 40%;
+            height: 150px;
             overflow: hidden;
             border-radius: 8px;
             border: 1px solid rgba(120, 119, 198, 0.3);
             background-color: rgba(255, 255, 255, 0.05);
-            display: flex; 
+            display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
@@ -1564,7 +1626,7 @@
         .leadership-image-gallery .gallery-item img {
             width: 100%;
             height: 100%;
-            object-fit: contain; 
+            object-fit: contain;
             transition: transform 0.2s ease;
         }
 
@@ -1572,35 +1634,63 @@
             transform: scale(1.03);
         }
 
-        /* 새로운 이미지 뷰어 모달 스타일 */
+
+        #image-viewer-modal {
+            display: none;
+            /* 처음에는 숨김 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #image-viewer-modal.active-modal {
+            opacity: 1;
+        }
+
         #image-viewer-modal .modal-content {
-            background: rgba(0, 0, 0, 0.9); 
-            max-width: 90vw; 
-            max-height: 90vh; 
+            max-width: 90vw;
+            max-height: 90vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
             border: none;
-            overflow: hidden; 
+            overflow: hidden;
+            position: relative;
         }
 
         #image-viewer-modal .modal-content img {
             max-width: 100%;
             max-height: 100%;
-            object-fit: contain; 
-            display: block; 
+            object-fit: contain;
+            display: block;
         }
 
         #image-viewer-modal .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 32px;
             color: white;
             opacity: 0.7;
             text-shadow: 0 0 5px black;
             transition: opacity 0.2s ease;
+            cursor: pointer;
         }
+
         #image-viewer-modal .close:hover {
             opacity: 1;
         }
+
+
 
         /* 3DGS 섹션 전용 스타일 */
         .portfolio-section {
@@ -1643,7 +1733,7 @@
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(120, 119, 198, 0.2);
         }
@@ -1669,8 +1759,31 @@
             word-wrap: break-word;
         }
 
+        .skill-details {
+            margin: 1.5rem 0;
+        }
+
+        .skill-details h4 {
+            color: #ff77c6;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .skill-details ul {
+            margin-left: 1.5rem;
+            padding-left: 0;
+            list-style-type: disc;
+            color: #ffffff;
+        }
+
+        .skill-details li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
         .file-info {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -1740,7 +1853,7 @@
 
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
@@ -1750,7 +1863,7 @@
 
         .btn-secondary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(245,87,108,0.4);
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
         }
 
         .tech-tags {
@@ -1779,56 +1892,56 @@
             border-radius: 6px;
             opacity: 0.8;
         }
-        
+
         /* 반응형 */
         @media (max-width: 768px) {
-            .hero-name { 
-                font-size: 3rem; 
+            .hero-name {
+                font-size: 3rem;
             }
-            
-            .title-primary { 
-                font-size: 1.3rem; 
+
+            .title-primary {
+                font-size: 1.3rem;
             }
-            
+
             .title-secondary {
                 font-size: 1rem;
                 flex-direction: column;
                 gap: 0.5rem;
             }
-            
+
             .hero-badges {
                 display: none;
             }
-            
+
             .hero-stats {
                 flex-direction: column;
                 gap: 1rem;
                 padding: 1.5rem 2rem;
             }
-            
+
             .stat-divider {
                 width: 40px;
                 height: 2px;
                 background: linear-gradient(90deg, transparent, #7877c6, transparent);
             }
-            
+
             .stat-number {
                 font-size: 1.8rem;
             }
-            
+
             .cta-container {
                 flex-direction: column;
                 align-items: center;
             }
-            
-            .cta-button { 
-                font-size: 1rem; 
+
+            .cta-button {
+                font-size: 1rem;
                 padding: 1rem 2rem;
                 width: 100%;
                 max-width: 280px;
             }
 
-            .nav-links { 
+            .nav-links {
                 display: none;
                 position: absolute;
                 top: 100%;
@@ -1863,7 +1976,8 @@
 
             /* 보유 역량 블럭 정렬 개선 (모바일) */
             .skills-showcase {
-                grid-template-columns: 1fr; /* 모바일에서 1열로 변경 */
+                grid-template-columns: 1fr;
+                /* 모바일에서 1열로 변경 */
                 gap: 1.5rem;
             }
 
@@ -1898,7 +2012,8 @@
 
             /* 폰트 개선 (모바일) */
             .section h2 {
-                font-size: 2.5rem; /* 모바일에서 폰트 크기 조절 */
+                font-size: 2.5rem;
+                /* 모바일에서 폰트 크기 조절 */
                 margin-bottom: 2.5rem;
             }
 
@@ -1908,14 +2023,20 @@
             }
 
             .company-header {
-                flex-direction: column; /* 모바일에서 회사 정보 세로 정렬 */
+                flex-direction: column;
+                /* 모바일에서 회사 정보 세로 정렬 */
                 align-items: flex-start;
             }
+
             .company-info h3 {
-                font-size: 1.3rem; /* 회사 이름 크기 조절 */
+                font-size: 1.3rem;
+                /* 회사 이름 크기 조절 */
             }
-            .job-title, .timeline-period {
-                font-size: 0.85rem; /* 직책 및 기간 크기 조절 */
+
+            .job-title,
+            .timeline-period {
+                font-size: 0.85rem;
+                /* 직책 및 기간 크기 조절 */
             }
 
             /* 인적사항 섹션 모바일 조정 */
@@ -1962,11 +2083,13 @@
             }
 
             .timeline-dot {
-                left: 1.1rem; /* Adjusted for mobile */
+                left: 1.1rem;
+                /* Adjusted for mobile */
             }
 
             .education-item.current .timeline-dot {
-                left: 0.9rem; /* Adjusted for mobile */
+                left: 0.9rem;
+                /* Adjusted for mobile */
             }
 
             .info-cards-grid {
@@ -1978,8 +2101,212 @@
                 padding: 1.5rem;
             }
         }
+
+        /* 기존 CSS 코드들... */
+
+        /* 모바일에서 이미지 세로 배치 - 여기에 추가! */
+        @media (max-width: 768px) {
+            .pbr-gallery {
+                flex-direction: column !important;
+            }
+
+            .pbr-image-item {
+                min-width: 100% !important;
+            }
+
+            .pbr-image-item img:hover {
+                transform: scale(1.02);
+            }
+        }
+
+        /* 3D 아트 갤러리 스타일 */
+        .art-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(120, 119, 198, 0.3);
+            border-color: rgba(120, 119, 198, 0.5);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 1rem 0.8rem 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* 슬라이드 모달 스타일 */
+        /* ID 선택자 추가 */
+        .slide-modal-content {
+            position: relative;
+            background: rgba(0, 0, 0, 0.95);
+            max-width: 95vw;   /* width → max-width */
+            max-height: 95vh;  
+            width: auto;       /* 추가 */
+            height: auto;      /* 추가 */
+            display: flex;
+            margin: 0 auto;  /* 수평 중앙 정렬만 */
+            border-radius: 20px;
+            overflow: visible;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .slide-container {
+            position: relative;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            min-height: 300px;  /* 최소 높이 설정 */
+        }
+
+        .slide-image {
+            max-width: none; /* 제한 제거 */
+            max-height: none; /* 제한 제거 */
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            cursor: zoom-in
+        }
+
+        .slide-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(calc(-50% - 2px));
+            background: rgba(120, 119, 198, 0.8);
+            color: white;
+            border: none;
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .slide-btn:hover {
+            background: rgba(120, 119, 198, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slide-btn.prev {
+            left: -80px;    /* 왼쪽으로 더 밀어내기 */
+        }
+
+        .slide-btn.next {
+            right: -80px;   /* 오른쪽으로 더 밀어내기 */
+        }
+
+        .slide-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+        }
+
+        .slide-counter {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .slide-caption {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ff77c6;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .art-gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+
+            .gallery-item img {
+                height: 120px;
+            }
+
+            .slide-container {
+                padding: 1rem;
+                max-width: 95vw;
+            }
+
+            .slide-btn {
+                font-size: 1.5rem;
+                padding: 0.8rem 1rem;
+            }
+
+            .slide-btn.prev {
+                left: 1rem;
+            }
+
+            .slide-btn.next {
+                right: 1rem;
+            }
+
+            #slide-image {
+                max-height: 60vh;
+            }
+        }
+
+        .slide-modal {
+            display: none;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95);
+            opacity: 0;
+            transition: opacity 0.2s ease-out;
+            align-items: center;      /* 세로 중앙 정렬 */
+            justify-content: center;  /* 가로 중앙 정렬 */
+            overflow: hidden;
+        }
     </style>
 </head>
+
 <body>
     <div class="background"></div>
 
@@ -1991,17 +2318,21 @@
             </div>
             <ul class="nav-links">
                 <li><a onclick="showSection('home')" class="nav-item active">
-                    <span class="nav-icon">🏠</span>
-                    <span class="nav-text">Home</span>
-                </a></li>
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">Home</span>
+                    </a></li>
                 <li><a onclick="showSection('skills')" class="nav-item">
-                    <span class="nav-icon">⚡</span>
-                    <span class="nav-text">Skills</span>
-                </a></li>
+                        <span class="nav-icon">⚡</span>
+                        <span class="nav-text">Skills</span>
+                    </a></li>
+                <li><a onclick="showSection('career')" class="nav-item">
+                        <span class="nav-icon">🛠️</span>
+                        <span class="nav-text">career</span>
+                    </a></li>
                 <li><a onclick="showSection('about-me')" class="nav-item">
-                    <span class="nav-icon">👤</span>
-                    <span class="nav-text">About</span>
-                </a></li>
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-text">About</span>
+                    </a></li>
             </ul>
             <div class="nav-toggle" onclick="toggleMobileNav()">
                 <span></span>
@@ -2012,6 +2343,8 @@
     </header>
 
     <main>
+
+
         <section id="home" class="hero active">
             <div class="hero-content">
                 <div class="hero-badges">
@@ -2021,25 +2354,25 @@
                     <span class="floating-badge" style="animation-delay: 0.5s;">🎮</span>
                     <span class="floating-badge" style="animation-delay: 1.5s;">🎓</span>
                 </div>
-                
+
                 <div class="hero-main">
                     <div class="name-container">
                         <h1 class="hero-name">김소연</h1>
                         <div class="name-underline"></div>
                     </div>
-                    
+
                     <div class="hero-titles">
                         <div class="title-primary">
-                            <span class="highlight-text">15년 경력</span>의 게임 아티스트 & 
+                            <span class="highlight-text">15년 경력</span>의 게임 아티스트 &
                             <span class="highlight-text">Technical Artist</span>
                         </div>
                         <div class="title-secondary">
-                            <span class="tech-badge">AI Research</span> × 
-                            <span class="tech-badge">Advanced Graphics</span> = 
+                            <span class="tech-badge">AI Research</span> ×
+                            <span class="tech-badge">Advanced Graphics</span> =
                             <span class="result-text">차세대 TA</span>
                         </div>
                     </div>
-                    
+
                     <div class="hero-stats">
                         <div class="stat-item">
                             <div class="stat-number">15+</div>
@@ -2056,7 +2389,7 @@
                             <div class="stat-label">Downloads</div>
                         </div>
                     </div>
-                    
+
                     <div class="cta-container">
                         <button onclick="showSection('skills')" class="cta-button primary">
                             <span class="button-icon">⚡</span>
@@ -2070,7 +2403,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="hero-particles">
                     <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
                     <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
@@ -2115,7 +2448,7 @@
                     <div class="card-content">
                         <h3>3D Art & Game Development</h3>
                         <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
-                        
+
                         <div class="skill-highlights">
                             <div class="highlight-item">
                                 <span class="highlight-number">15+</span>
@@ -2147,10 +2480,10 @@
                     <div class="card-content">
                         <h3>AI & Machine Learning</h3>
                         <p class="skill-description">대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
-                        
+
                         <div class="skill-highlights">
                             <div class="highlight-item">
-                                <span class="highlight-number">현재</span>
+                                <span class="highlight-number">AI</span>
                                 <span class="highlight-label">Research</span>
                             </div>
                             <div class="highlight-item">
@@ -2177,8 +2510,8 @@
                     </div>
                     <div class="card-content">
                         <h3>Advanced Graphics & Pipeline</h3>
-                        <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론과 효율적인 개발 파이프라인 구축 전문성을 보유하고 있습니다.</p>
-                        
+                        <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론을 이해하고 구현하고 있으며, 효율적인 개발 파이프라인 구축을 지향합니다.</p>
+
                         <div class="skill-highlights">
                             <div class="highlight-item">
                                 <span class="highlight-number">PBR</span>
@@ -2209,7 +2542,6 @@
                     <div class="card-content">
                         <h3>Team Leadership</h3>
                         <p class="skill-description">AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
-                        
                         <div class="skill-highlights">
                             <div class="highlight-item">
                                 <span class="highlight-number">TOP10%</span>
@@ -2226,12 +2558,12 @@
                             <span class="tag">Team Management</span>
                             <span class="tag">Education</span>
                             <span class="tag">Mentoring</span>
+                            <span class="tag">Guide</span>
                         </div>
                     </div>
                     <div class="card-arrow">→</div>
                 </div>
             </div>
-
             <div class="experience-section">
                 <div class="section-divider"></div>
                 <h2 class="fade-in">경력 사항</h2>
@@ -2253,8 +2585,13 @@
                                     <div class="games-list">
                                         <span class="game-chip">
                                             Cosmic Bomber
-                                            <a href="https://www.mocaverse.xyz/cosmic-club/cosmic-bomber" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="PC에서 보기">💻</a>
-                                            <a href="https://cosmicbomberk.xyz/" target="_blank" style="color: white; text-decoration: none; margin-left: 0.3rem;" title="모바일에서 보기">📱</a>
+                                            <a href="https://www.mocaverse.xyz/cosmic-club/cosmic-bomber"
+                                                target="_blank"
+                                                style="color: white; text-decoration: none; margin-left: 0.5rem;"
+                                                title="PC에서 보기">💻</a>
+                                            <a href="https://cosmicbomberk.xyz/" target="_blank"
+                                                style="color: white; text-decoration: none; margin-left: 0.3rem;"
+                                                title="모바일에서 보기">📱</a>
                                         </span>
                                     </div>
                                 </div>
@@ -2344,7 +2681,7 @@
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">💼 주요 업무</div>
-                                <div class="detail-content">프로젝트 총괄, 외주 관리, 3D 배경모델링, 3D 캐릭터모델링, 이펙트, 애니메이션, 최적화</div>
+                                <div class="detail-content">아트 파트 총괄, 외주 관리, 3D 배경모델링, 3D 캐릭터모델링, 이펙트, 애니메이션, 최적화</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">🏢 주요 클라이언트</div>
@@ -2369,8 +2706,14 @@
                                     <div class="games-list">
                                         <span class="game-chip">
                                             Colorzzle
-                                            <a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="PC에서 보기">💻</a>
-                                            <a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&hl=ko" target="_blank" style="color: white; text-decoration: none; margin-left: 0.3rem;" title="Google Play에서 보기">📱</a>
+                                            <a href="https://store.steampowered.com/app/818500/_/?l=koreana"
+                                                target="_blank"
+                                                style="color: white; text-decoration: none; margin-left: 0.5rem;"
+                                                title="PC에서 보기">💻</a>
+                                            <a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&hl=ko"
+                                                target="_blank"
+                                                style="color: white; text-decoration: none; margin-left: 0.3rem;"
+                                                title="Google Play에서 보기">📱</a>
                                         </span>
                                     </div>
                                 </div>
@@ -2426,7 +2769,7 @@
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">💼 주요 업무</div>
-                                <div class="detail-content">3D 배경모델링, 3D 캐릭터모델링, 이펙트, 라이팅, 최적화 etc.</div>
+                                <div class="detail-content">아트 파트 총괄, 3D 배경모델링, 3D 캐릭터모델링, 이펙트, 라이팅, 최적화</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">🛠️ 사용 툴</div>
@@ -2457,7 +2800,9 @@
                                     <div class="games-list">
                                         <span class="game-chip">
                                             R2
-                                            <a href="https://r2.webzen.co.kr/Main/" target="_blank" style="color: white; text-decoration: none; margin-left: 0.5rem;" title="PC에서 보기">💻</a>
+                                            <a href="https://r2.webzen.co.kr/Main/" target="_blank"
+                                                style="color: white; text-decoration: none; margin-left: 0.5rem;"
+                                                title="PC에서 보기">💻</a>
                                         </span>
                                     </div>
                                 </div>
@@ -2523,11 +2868,12 @@
 
         <section id="about-me" class="section">
             <h2 class="fade-in">인적사항</h2>
-            
+
             <div class="profile-hero fade-in">
                 <div class="profile-visual">
                     <div class="profile-image-container">
-                        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLHLYB%2FbtsOv8XhdWt%2FM5JOTSbaEUK0qO11CAMNA0%2Fimg.jpg" alt="김소연 프로필" class="profile-image">
+                        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLHLYB%2FbtsOv8XhdWt%2FM5JOTSbaEUK0qO11CAMNA0%2Fimg.jpg"
+                            alt="김소연 프로필" class="profile-image">
                         <div class="image-glow"></div>
                     </div>
                     <div class="profile-badges">
@@ -2536,13 +2882,13 @@
                         <span class="badge accent">💼 15년 경력</span>
                     </div>
                 </div>
-                
+
                 <div class="profile-content">
                     <div class="name-section">
                         <h3 class="profile-name">김소연</h3>
                         <p class="profile-title">Technical Artist & AI Researcher</p>
                     </div>
-                    
+
                     <div class="contact-grid">
                         <div class="contact-item">
                             <div class="contact-icon">📍</div>
@@ -2551,7 +2897,7 @@
                                 <span class="contact-value">경기도 성남시 분당구</span>
                             </div>
                         </div>
-                        
+
                         <div class="contact-item">
                             <div class="contact-icon">📱</div>
                             <div class="contact-details">
@@ -2559,7 +2905,7 @@
                                 <span class="contact-value">010-9318-8528</span>
                             </div>
                         </div>
-                        
+
                         <div class="contact-item">
                             <div class="contact-icon">✉️</div>
                             <div class="contact-details">
@@ -2578,7 +2924,7 @@
                         학력 사항
                     </h3>
                 </div>
-                
+
                 <div class="education-timeline">
                     <div class="education-item current">
                         <div class="timeline-dot"></div>
@@ -2592,12 +2938,12 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="education-item">
                         <div class="timeline-dot"></div>
                         <div class="education-content">
                             <h4 class="education-degree">학사 졸업</h4>
-                            <p class="education-school">홍익대학교(세종) 애니메이션과</p>
+                            <p class="education-school">홍익대학교 애니메이션과</p>
                             <span class="education-period">2003.03 - 2007.02</span>
                             <div class="education-tags">
                                 <span class="edu-tag">3D Animation</span>
@@ -2605,7 +2951,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="education-item">
                         <div class="timeline-dot"></div>
                         <div class="education-content">
@@ -2623,13 +2969,13 @@
                     <h4>전문 분야</h4>
                     <p>3D Art, Technical Art,<br>AI & Machine Learning</p>
                 </div>
-                
+
                 <div class="info-card">
                     <div class="info-icon">🏆</div>
                     <h4>주요 성과</h4>
                     <p>Google Play 10만+ DL<br>BIC Excellence 수상</p>
                 </div>
-                
+
                 <div class="info-card">
                     <div class="info-icon">💡</div>
                     <h4>현재 관심사</h4>
@@ -2642,7 +2988,8 @@
             <h2 class="fade-in">연락처</h2>
             <div class="contact">
                 <div class="contact-info">
-                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLHLYB%2FbtsOv8XhdWt%2FM5JOTSbaEUK0qO11CAMNA0%2Fimg.jpg" alt="이력서 사진" class="contact-photo">
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLHLYB%2FbtsOv8XhdWt%2FM5JOTSbaEUK0qO11CAMNA0%2Fimg.jpg"
+                        alt="이력서 사진" class="contact-photo">
                     <p>📧 이메일: <span class="contact-text">banakush@gmail.com</span></p>
                     <p>📱 전화: <span class="contact-text">010-9318-8528</span></p>
                 </div>
@@ -2651,6 +2998,22 @@
 
     </main>
 
+    <div id="slide-modal">
+        <div class="slide-modal-content">
+                <span class="close" onclick="closeSlideModal()">&times;</span>
+                <button class="slide-btn prev" data-direction="-1">‹</button>
+                <div class="slide-container">
+                    <img id="slide-image" src="" alt="3D 작업물">
+                    <div class="slide-info">
+                        <div class="slide-counter">
+                            <span id="current-slide">1</span> / <span id="total-slides">14</span>
+                        </div>
+                            <div class="slide-caption" id="slide-caption">작업물 #1</div>
+                    </div>
+                </div>
+                            <button class="slide-btn next" data-direction="1">›</button>
+        </div>
+    </div>
     <div id="3d-gamedev-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('3d-gamedev-modal')">&times;</span>
@@ -2665,7 +3028,8 @@
                     <div class="subsection">
                         <h4 class="subsection-title">🏰 배경 아트</h4>
                         <div class="work-item">
-                            <h5 class="work-title">3D 배경 모델링</h5> <p class="work-description">
+                            <h5 class="work-title">3D 배경 모델링</h5>
+                            <p class="work-description">
                                 하드서페이스와 오가닉 모델링을 모두 아우르는 환경 에셋 제작 전문성.
                                 건물, 소품, 자연물까지 다양한 스타일의 3D 환경을 구현합니다.
                             </p>
@@ -2722,35 +3086,303 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="subsection">
+                        <h4 class="subsection-title">🖼️ 작업물 갤러리</h4>
+                        <div class="work-item">
+                            <h5 class="work-title">3D 아트 제작 과정</h5>
+                            <p class="work-description">
+                                실제 프로젝트에서 제작한 3D 아트워크들을 제작 순서대로 소개합니다.
+                                각 이미지를 클릭하면 상세히 확인하실 수 있습니다.
+                            </p>
+
+                            <div class="art-gallery">
+                                
+                                <div class="gallery-item" data-slide-index="1">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbycLr1%2FbtsOEcJ1TbB%2FOY5hBNp7TX0OF2OkLZY941%2Fimg.jpg"
+                                        alt="3D 작업물 23">
+                                    <div class="gallery-caption">작업물 #23</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="1">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlhEfN%2FbtsOCFtpPXF%2F09XIvVihbt4hjK1YKxoSH1%2Fimg.jpg"
+                                        alt="3D 작업물 24">
+                                    <div class="gallery-caption">작업물 #24</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="1">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FUQ45u%2FbtsOCzGs1OY%2FY3O91nT1Kt4yx3gztUM1Ek%2Fimg.jpg"
+                                        alt="3D 작업물 25">
+                                    <div class="gallery-caption">작업물 #25</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="1">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpOLSh%2FbtsOCnGwFLO%2FR8VLuxBOGS9BM4qGD3qsdK%2Fimg.jpg"
+                                        alt="3D 작업물 25">
+                                    <div class="gallery-caption">작업물 #25</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="13">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FK0RHr%2FbtsOD2AUVLk%2FnbbXiDhZF1vexJnBMhyfC1%2Fimg.jpg"
+                                        alt="3D 작업물 14">
+                                    <div class="gallery-caption">작업물 #14</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="9">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FE1Vg8%2FbtsOCm8FERY%2FZ0YkyBAM4tqRmkJrGe9oPk%2Fimg.jpg"
+                                        alt="3D 작업물 10">
+                                    <div class="gallery-caption">작업물 #10</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="10">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrWFYG%2FbtsOCmt5q9I%2FI88dPalyEYSH2i1jrD1EHk%2Fimg.jpg"
+                                        alt="3D 작업물 11">
+                                    <div class="gallery-caption">작업물 #11</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="11">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpfYxn%2FbtsOMbTFJGV%2F0QWfCSpYgY4gPp3pKuPFu0%2Fimg.png"
+                                        alt="3D 작업물 12">
+                                    <div class="gallery-caption">작업물 #12</div>
+                                </div>
+
+                                <div class="gallery-item" data-slide-index="0">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn0Koi%2FbtsODVhKoi0%2FljRRhkkwXT2kklQv7KDoe0%2Fimg.png"
+                                        alt="3D 작업물 1">
+                                    <div class="gallery-caption">작업물 #1</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="17">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FqthKD%2FbtsOL7w9Gvl%2FAPbgE5rVlac6KPIYw1zao0%2Fimg.jpg"
+                                        alt="3D 작업물 18">
+                                    <div class="gallery-caption">작업물 #18</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="17">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbthPTc%2FbtsOOcjr2y8%2FzDjHyveAFHZTfojG7oUNrK%2Fimg.jpg"
+                                        alt="3D 작업물 18">
+                                    <div class="gallery-caption">작업물 #18</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="17">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlbYMp%2FbtsOFBQuCXx%2FWWUoJDs1iNuHJKOXLxio9K%2Fimg.jpg"
+                                        alt="3D 작업물 18">
+                                    <div class="gallery-caption">작업물 #18</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="15">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FKRtOr%2FbtsOOhSpwmF%2FbVqIVWEuknibxEwfnstg6K%2Fimg.png"
+                                        alt="3D 작업물 16">
+                                    <div class="gallery-caption">작업물 #16</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="16">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FempERT%2FbtsOBB57Bya%2FMVkqEcB6D607gkca5G9UOK%2Fimg.jpg"
+                                        alt="3D 작업물 17">
+                                    <div class="gallery-caption">작업물 #17</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="8">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdhR3od%2FbtsOMJvv7q3%2FbXp9Mw1pK74Rq5kVXGGFnK%2Fimg.png"
+                                        alt="3D 작업물 9">
+                                    <div class="gallery-caption">작업물 #9</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="1">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fcfk9fE%2FbtsOMS7emR6%2Fl8xw2IeXSe3guGr5hMxyNK%2Fimg.png"
+                                        alt="3D 작업물 2">
+                                    <div class="gallery-caption">작업물 #2</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="1">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F5Y62P%2FbtsOMn7oXSI%2FU9gTxTOQVceRrcHeIhoOkk%2Fimg.png"
+                                        alt="3D 작업물 22">
+                                    <div class="gallery-caption">작업물 #22</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="2">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FkRuvE%2FbtsOL8bDavy%2FAmPpRvh3KSoOls0qTlZdUk%2Fimg.png"
+                                        alt="3D 작업물 3">
+                                    <div class="gallery-caption">작업물 #3</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="3">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcnsEln%2FbtsOMe3Xar5%2FGlSvFaPBHpl30ShQPK6lE1%2Fimg.png"
+                                        alt="3D 작업물 4">
+                                    <div class="gallery-caption">작업물 #4</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="4">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F272E273E521061A211"
+                                        alt="3D 작업물 5">
+                                    <div class="gallery-caption">작업물 #5</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="5">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpCRdy%2FbtsOMmgo2zA%2F4uQ0DyFyHIS5jfHCjNxQN1%2Fimg.png"
+                                        alt="3D 작업물 6">
+                                    <div class="gallery-caption">작업물 #6</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="6">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F9AcCk%2FbtsOOaluAMg%2F3XpvQYD41LH6XX0Qki5ZRk%2Fimg.png"
+                                        alt="3D 작업물 7">
+                                    <div class="gallery-caption">작업물 #7</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="7">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FmMmvm%2FbtsON4ly4SO%2Fm0BKLzD8Q3WUNG2aiHv06K%2Fimg.png"
+                                        alt="3D 작업물 8">
+                                    <div class="gallery-caption">작업물 #8</div>
+                                </div>
+                                <div class="gallery-item" data-slide-index="8">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FG4nec%2FbtsOOzSEsbL%2F51tYaCBQ1vA6imtyHS8b60%2Fimg.png"
+                                        alt="3D 작업물 9">
+                                    <div class="gallery-caption">작업물 #9</div>
+                                </div>
+                                
+                            </div>
+
+                            <div class="tech-tags">
+                                <span class="tech-tag">3D Modeling</span>
+                                <span class="tech-tag">Environment Art</span>
+                                <span class="tech-tag">Character Art</span>
+                                <span class="tech-tag">Texturing</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="portfolio-section">
                     <h3 class="section-title">🛠️ 기술 스택 & 도구</h3>
 
+                    <!-- 새로운 빠른 학습 능력 섹션 추가 -->
                     <div class="subsection">
-                        <h4 class="subsection-title">🔧 주요 도구</h4>
-                        <div class="tech-stack" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">3D 모델링</strong><br>
-                                <span style="font-size: 0.9rem;">3ds Max (15년), ZBrush, Blender</span>
+                        <h4 class="subsection-title">⚡ 빠른 학습 능력 & 적응력</h4>
+                        <div class="work-item">
+                            <h5 class="work-title">신속한 도구 습득과 실무 적용</h5>
+                            <p class="work-description">
+                                새로운 도구나 기술을 빠르게 습득하여 즉시 프로덕션 레벨의 결과물을 만들어내는 것이 강점입니다.
+                                아래는 처음 접하는 도구들을 단기간에 마스터하여 성공적인 프로젝트를 완수한 사례들입니다.
+                            </p>
+
+                            <!-- 학습 사례들 -->
+                            <div style="display: grid; gap: 20px; margin-top: 20px;">
+                                <!-- SketchUp 사례 -->
+                                <div
+                                    style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px; border-left: 4px solid #7877c6;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                        <span style="font-size: 1.2rem;">🏗️</span>
+                                        <h6 style="color: #7877c6; margin: 0; font-size: 1.1rem; font-weight: 600;">
+                                            SketchUp 마스터 (2주 완성)</h6>
+                                    </div>
+                                    <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
+                                        <strong style="color: #ff77c6;">완전 초보 → 2주 만에 완성</strong><br>
+                                        에이콘 외주 프로젝트에서 SketchUp을 처음 접했지만, 단 2주 만에 고품질 3D 모델을 제작하여 클라이언트로부터 우수한 평가를 받았습니다.
+                                    </p>
+
+                                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                                        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbP2O86%2FbtsOEPPJ96Y%2FhIJkdKEfw3YmlStHkO3QE1%2Fimg.png"
+                                            alt="SketchUp 작업물"
+                                            style="width: 200px; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer;"
+                                            onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbP2O86%2FbtsOEPPJ96Y%2FhIJkdKEfw3YmlStHkO3QE1%2Fimg.png')">
+
+                                        <div style="flex: 1; min-width: 200px;">
+                                            <div
+                                                style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                                <a href="https://www.acon3d.com/ko/product/1000011368" target="_blank"
+                                                    style="display: inline-flex; align-items: center; gap: 8px; color: #7877c6; text-decoration: none; font-weight: 600; transition: color 0.3s ease;">
+                                                    🔗 에이콘 3D 스토어에서 확인
+                                                </a>
+                                            </div>
+                                            <ul
+                                                style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">
+                                                <li>학습 기간: <strong style="color: #ff77c6;">2주</strong></li>
+                                                <li>결과: <strong style="color: #ff77c6;">클라이언트 만족도 우수</strong></li>
+                                                <li>성과: <strong style="color: #ff77c6;">즉시 상용화 가능한 퀄리티</strong></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Shader Graph 사례 -->
+                                <div
+                                    style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px; border-left: 4px solid #ff77c6;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                        <span style="font-size: 1.2rem;">🎨</span>
+                                        <h6 style="color: #ff77c6; margin: 0; font-size: 1.1rem; font-weight: 600;">
+                                            Unity Shader Graph 활용</h6>
+                                    </div>
+                                    <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
+                                        <strong style="color: #78dbe2;">노드 기반 쉐이더 제작 전문성</strong><br>
+                                        복잡한 코딩 없이도 Unity의 Shader Graph를 활용하여 게임에 필요한 고급 이펙트를 구현합니다.
+                                        보스 방어, 돌진 이펙트 등 실제 게임에서 사용되는 퀄리티의 쉐이더를 제작하였습니다.
+                                    </p>
+
+                                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                                        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FB6JRx%2FbtsOMkbUr80%2Fniw9T0nqgb0l23b9vzk7KK%2Fimg.png"
+                                            alt="Shader Graph 작업물"
+                                            style="width: 200px; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer;"
+                                            onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FB6JRx%2FbtsOMkbUr80%2Fniw9T0nqgb0l23b9vzk7KK%2Fimg.png')">
+
+                                        <div style="flex: 1; min-width: 200px;">
+                                            <ul
+                                                style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">
+                                                <li>활용도: <strong style="color: #78dbe2;">실제 게임 보스전에 이펙트 적용</strong>
+                                                </li>
+                                                <li>기술: <strong style="color: #78dbe2;">노드 기반 비주얼 스크립팅</strong></li>
+                                                <li>장점: <strong style="color: #78dbe2;">빠른 프로토타이핑과 실시간 수정</strong></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- HTML/웹 개발 사례 -->
+                                <div
+                                    style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px; border-left: 4px solid #78dbe2;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                        <span style="font-size: 1.2rem;">💻</span>
+                                        <h6 style="color: #78dbe2; margin: 0; font-size: 1.1rem; font-weight: 600;">웹 개발
+                                            (HTML/CSS/JavaScript)</h6>
+                                    </div>
+                                    <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
+                                        <strong style="color: #ffd93d;">HTML 완전 초보 → 2주 동안 포트폴리오 사이트 제작</strong><br>
+                                        웹 개발 경험이 전혀 없던 상태에서 Claude AI와 협업하여 2주 동안 이 포트폴리오 웹사이트를 완성했습니다.
+                                        반응형 디자인, 모던한 UI/UX, 인터랙티브 애니메이션까지 모두 포함된 결과물입니다.
+                                    </p>
+
+                                    <div
+                                        style="background: rgba(255, 243, 205, 0.1); border-radius: 8px; padding: 15px; margin-top: 15px;">
+                                        <ul
+                                            style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">
+                                            <li>학습 기간: <strong style="color: #ffd93d;">2주</strong></li>
+                                            <li>기술 스택: <strong style="color: #ffd93d;">HTML5, CSS3, JavaScript,
+                                                    Chart.js</strong></li>
+                                            <li>특징: <strong style="color: #ffd93d;">반응형 디자인, 모던 UI, 인터랙티브 요소</strong>
+                                            </li>
+                                            <li>협업: <strong style="color: #ffd93d;">AI 도구 활용한 효율적 개발</strong></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">텍스처링</strong><br>
-                                <span style="font-size: 0.9rem;">Substance 3D Painter, Photoshop</span>
+
+                            <div
+                                style="background: linear-gradient(135deg, rgba(120, 119, 198, 0.1), rgba(255, 119, 198, 0.05)); border-radius: 12px; padding: 20px; margin-top: 20px; text-align: center;">
+                                <h6 style="color: #7877c6; margin: 0 0 10px 0; font-size: 1.1rem;">🚀 핵심 강점</h6>
+                                <p style="color: #ffffff; margin: 0; font-size: 0.95rem; line-height: 1.5;">
+                                    <strong style="color: #ff77c6;">빠른 학습 속도</strong> × <strong
+                                        style="color: #78dbe2;">실무 적용 능력</strong> × <strong style="color: #ffd93d;">품질
+                                        보장</strong><br>
+                                    새로운 기술이나 도구를 단기간에 습득하여 즉시 프로덕션에 활용할 수 있는 것이 가장 큰 장점입니다.
+                                </p>
                             </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">게임 엔진</strong><br>
-                                <span style="font-size: 0.9rem;">Unity, 자체 엔진</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">협업 도구</strong><br>
-                                <span style="font-size: 0.9rem;">Git/SVN, Jira, Confluence</span>
-                            </div>
+                        </div>
+                    </div>                   
+                </div>
+
+                <div class="subsection">
+                    <h4 class="subsection-title">🔧 주요 도구</h4>
+                    <div class="tech-stack"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <strong style="color: #7877c6;">3D 모델링</strong><br>
+                            <span style="font-size: 0.9rem;">3ds Max (15년), ZBrush, Blender,Sketch Up </span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <strong style="color: #7877c6;">텍스처링</strong><br>
+                            <span style="font-size: 0.9rem;">Substance 3D Painter, Photoshop</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <strong style="color: #7877c6;">게임 엔진</strong><br>
+                            <span style="font-size: 0.9rem;">Unity, 자체 엔진</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <strong style="color: #7877c6;">협업 도구</strong><br>
+                            <span style="font-size: 0.9rem;">Git/SVN, Jira, Confluence</span>
                         </div>
                     </div>
                 </div>
+            </div>                
             </div>
-        </div>
     </div>
 
     <div id="ai-modal" class="modal">
@@ -2772,7 +3404,8 @@
                                 한국컴퓨터그래픽학회 논문집 (2024)
                             </p>
 
-                            <div class="file-info" style="background: linear-gradient(135deg, rgba(120, 119, 198, 0.1), rgba(255, 119, 198, 0.05)); border-left: 4px solid #ff77c6;">
+                            <div class="file-info"
+                                style="background: linear-gradient(135deg, rgba(120, 119, 198, 0.1), rgba(255, 119, 198, 0.05)); border-left: 4px solid #ff77c6;">
                                 <strong>논문 개요:</strong><br>
                                 • 발표 학회: 한국컴퓨터그래픽학회<br>
                                 • 발표 연도: 2024년<br>
@@ -2781,7 +3414,8 @@
                             </div>
 
                             <div class="button-group">
-                                <a href="https://aryeon0228.github.io/Kim_SoYeon_NeRF_Research_2024.pdf" target="_blank" class="btn btn-primary">
+                                <a href="https://aryeon0228.github.io/Kim_SoYeon_NeRF_Research_2024.pdf" target="_blank"
+                                    class="btn btn-primary">
                                     📖 논문 전문 보기
                                 </a>
                             </div>
@@ -2801,7 +3435,8 @@
                         <div class="work-item">
                             <h5 class="work-title">고해상도 3DGS 씬 재구성</h5>
                             <p class="work-description">
-                                Neural Radiance Fields (NeRF) 연구를 바탕으로 한 3D Gaussian Splatting 기법을 활용한 실시간 렌더링 가능한 3D 씬 재구성 작업입니다.
+                                Neural Radiance Fields (NeRF) 연구를 바탕으로 한 3D Gaussian Splatting 기법을 활용한 실시간 렌더링 가능한 3D 씬
+                                재구성 작업입니다.
                                 높은 품질의 포인트 클라우드 데이터로 사실적인 3D 환경을 구현했습니다.
                             </p>
 
@@ -2820,7 +3455,8 @@
                                     <li><strong>⚠️ 대용량 파일 주의:</strong><br>
                                         구글 드라이브에서 "바이러스를 검사할 수 없습니다" 경고가 나타날 수 있습니다.<br>
                                         <span style="color: #ff77c6; font-weight: bold;">"다운로드 계속"</span> 또는
-                                        <span style="color: #ff77c6; font-weight: bold;">"다운로드"</span> 버튼을 클릭하여 진행하세요.</li>
+                                        <span style="color: #ff77c6; font-weight: bold;">"다운로드"</span> 버튼을 클릭하여 진행하세요.
+                                    </li>
                                     <li>'Supersplat 에디터 열기' 버튼을 클릭하여 뷰어를 엽니다</li>
                                     <li>에디터에서 다운로드한 PLY 파일을 업로드합니다</li>
                                     <li>실시간으로 3D 씬을 탐색하고 다양한 각도에서 확인할 수 있습니다</li>
@@ -2835,7 +3471,10 @@
                                     🚀 Supersplat 에디터 열기
                                 </a>
                             </div>
-
+                            <div class="preview-note">
+                                💡 대용량 파일이므로 다운로드에 시간이 걸릴 수 있습니다.<br>
+                                Wi-Fi 환경에서 다운로드하시는 것을 권장합니다.
+                            </div>
                             <div class="tech-tags">
                                 <span class="tech-tag">3D Gaussian Splatting</span>
                                 <span class="tech-tag">Point Cloud</span>
@@ -2843,105 +3482,169 @@
                                 <span class="tech-tag">NeRF</span>
                                 <span class="tech-tag">PLY Format</span>
                             </div>
-
-                            <div class="preview-note">
-                                💡 대용량 파일이므로 다운로드에 시간이 걸릴 수 있습니다.<br>
-                                Wi-Fi 환경에서 다운로드하시는 것을 권장합니다.
-                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="portfolio-section">
-                    <h3 class="section-title">🛠️ AI 도구 및 응용</h3>
 
                     <div class="subsection">
-                        <h4 class="subsection-title">📊 AI 기반 데이터 분석</h4>
+                        <h4 class="subsection-title">🎨 Comfy UI & LoRA 모델 활용 사례</h4>
                         <div class="work-item">
-                            <h5 class="work-title">Art 폴더 용량 최적화 프로젝트</h5>
-                            <p class="work-description">
-                                회사 프로젝트에서 Art 폴더 용량이 과도하게 증가하여 최적화가 필요한 상황에서
-                                Claude AI를 활용한 데이터 분석으로 효율적인 해결책을 도출한 실무 사례입니다.
+                            <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin-bottom: 15px;">
+                                Stable Diffusion 기반의 고급 워크플로우 도구인 Comfy UI를 활용하여 LoRA(Low-Rank Adaptation) 모델을 적용한 이미지
+                                생성 예시입니다.
+                                복잡한 노드 기반 워크플로우를 통해 더욱 정교하고 일관된 스타일의 게임 아트워크를 제작할 수 있습니다.
                             </p>
+                        </div>
 
-                            <div class="file-info">
-                                <strong>프로젝트 개요:</strong><br>
-                                • 분석 대상: Art 폴더 (총 2.65GB)<br>
-                                • 주요 문제: 용량 과다, 중복 파일, 비효율적 구조<br>
-                                • 해결 방법: AI 기반 데이터 시각화 및 분석<br>
-                                • 결과: 30-45% 용량 절약 방안 도출
-                            </div>
+                        <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                            <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbKFMTm%2FbtsODE8owl5%2FKUZA5D9zuctIO9FqaPk0D1%2Fimg.png"
+                                alt="Comfy UI LoRA 모델 사용 예시"
+                                style="width: 300px; height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid rgba(120, 119, 198, 0.3);"
+                                onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbKFMTm%2FbtsODE8owl5%2FKUZA5D9zuctIO9FqaPk0D1%2Fimg.png')">
 
-                            <div class="button-group">
-                                <a href="#" class="btn btn-primary" onclick="showAnalysisChart()">
-                                    📈 분석 결과 차트 보기
-                                </a>
-                            </div>
-
-                            <div id="analysisChartContainer" style="display: none; margin-top: 20px;">
-                                <div style="background: rgba(255, 255, 255, 0.02); border-radius: 15px; padding: 20px; border: 1px solid rgba(120, 119, 198, 0.2);">
-                                    <h4 style="color: #7877c6; text-align: center; margin-bottom: 20px;">📊 Art 폴더 용량 분석 결과</h4>
-
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                                        <div style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
-                                            <canvas id="miniMainChart" style="max-height: 250px;"></canvas>
-                                        </div>
-                                        <div style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
-                                            <canvas id="miniCharacterChart" style="max-height: 250px;"></canvas>
-                                        </div>
-                                    </div>
-
-                                    <div style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
-                                        <canvas id="miniPcChart" style="max-height: 300px;"></canvas>
-                                    </div>
-
-                                    <div style="margin-top: 20px; padding: 15px; background: rgba(120, 219, 226, 0.1); border-radius: 10px; border-left: 4px solid #78dbe2;">
-                                        <h5 style="color: #78dbe2; margin: 0 0 10px 0;">🎯 AI 분석 핵심 결과</h5>
-                                        <ul style="margin: 0; color: #ffffff; font-size: 0.9rem;">
-                                            <li>Character 폴더가 <strong style="color: #ff77c6;">60.3% (1.6GB)</strong> 차지</li>
-                                            <li>Basebody가 <strong style="color: #ff77c6;">886MB</strong>로 최대 용량</li>
-                                            <li>최적화 시 <strong style="color: #ff77c6;">800MB-1.2GB</strong> 절약 가능</li>
-                                            <li>팀 생산성 향상 - 시각적 자료로 빠른 의사결정 지원</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="skill-details" style="margin-top: 20px;">
-                                <h4>🎯 주요 성과</h4>
-                                <ul>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">Character 폴더 60.3% 점유</span> - 최우선 최적화 대상 식별</li>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">중복 파일 패턴 발견</span> - Materials, Textures 폴더 정리 방향 제시</li>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">800MB-1.2GB 절약 가능</span> - 구체적 최적화 효과 예측</li>
-                                    <li><span style="color: #ff77c6; font-weight: bold;">팀 생산성 향상</span> - 시각적 자료로 빠른 의사결정 지원</li>
+                            <div style="flex: 1; min-width: 250px;">
+                                <h5 style="color: #78dbe2; margin: 0 0 10px 0; font-size: 1rem; font-weight: 600;">LoRA
+                                    모델 특화 기능</h5>
+                                <ul
+                                    style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
+                                    <li><strong style="color: #ff77c6;">스타일 일관성:</strong> 특정 아트 스타일을 학습한 LoRA로 통일된 비주얼
+                                        구현</li>
+                                    <li><strong style="color: #ff77c6;">워크플로우 최적화:</strong> 노드 기반 인터페이스로 복잡한 생성 과정 자동화
+                                    </li>
+                                    <li><strong style="color: #ff77c6;">실시간 조정:</strong> 파라미터 실시간 변경으로 빠른 이터레이션</li>
+                                    <li><strong style="color: #ff77c6;">배치 처리:</strong> 여러 변형 이미지를 한 번에 생성하여 효율성 극대화
+                                    </li>
                                 </ul>
                             </div>
+                        </div>
 
-                            <div class="tech-tags">
-                                <span class="tech-tag">Data Analysis</span>
-                                <span class="tech-tag">Claude AI</span>
-                                <span class="tech-tag">Chart.js</span>
-                                <span class="tech-tag">Asset Optimization</span>
-                                <span class="tech-tag">Team Collaboration</span>
-                            </div>
+                        <div
+                            style="background: rgba(120, 219, 226, 0.1); border-radius: 8px; padding: 15px; margin-top: 15px;">
+                            <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
+                                💡 <strong style="color: #78dbe2;">실무 활용도:</strong>
+                                게임 개발에서 컨셉 아트, 캐릭터 디자인, 환경 에셋 등의 초안을 빠르게 생성하여
+                                아티스트의 작업 시간을 단축하고 더 많은 아이디어를 탐색할 수 있습니다.
+                            </p>
                         </div>
                     </div>
 
-                    <div class="subsection">
-                        <h4 class="subsection-title">🎨 AI 창작 도구</h4>
-                        <div class="modal-portfolio">
-                            <div class="portfolio-item">
-                                <div class="portfolio-image">🎨 AI 도구</div>
-                                <div class="portfolio-info">
-                                    <h4>프로시저럴 에셋 생성</h4>
-                                    <p>머신러닝을 활용한 게임 에셋 자동 생성 연구</p>
+                    <div class="portfolio-section">
+                        <h3 class="section-title">🛠️ AI 도구 및 응용</h3>
+
+                        <div class="subsection">
+                            <h4 class="subsection-title">📊 AI 기반 데이터 분석</h4>
+                            <div class="work-item">
+                                <h5 class="work-title">Art 폴더 용량 최적화 프로젝트</h5>
+                                <p class="work-description">
+                                    Animoca Games의 프로젝트에서 Art 폴더 용량이 과도하게 증가하여 최적화가 필요한 상황에
+                                    Claude AI를 활용한 데이터 분석으로 효율적인 해결책을 도출한 실무 사례입니다.
+                                </p>
+
+                                <div class="file-info">
+                                    <strong>프로젝트 개요:</strong><br>
+                                    • 분석 대상: Art 폴더 (총 2.65GB)<br>
+                                    • 주요 문제: 용량 과다, 중복 파일, 비효율적 구조<br>
+                                    • 해결 방법: AI 기반 데이터 시각화 및 분석<br>
+                                    • 결과: 30-45% 용량 절약 방안 도출
+                                </div>
+
+                                <div class="button-group">
+                                    <a href="#" class="btn btn-primary" onclick="showAnalysisChart()">
+                                        📈 분석 결과 차트 보기
+                                    </a>
+                                </div>
+
+                                <div id="analysisChartContainer" style="display: none; margin-top: 20px;">
+                                    <div
+                                        style="background: rgba(255, 255, 255, 0.02); border-radius: 15px; padding: 20px; border: 1px solid rgba(120, 119, 198, 0.2);">
+                                        <h4 style="color: #7877c6; text-align: center; margin-bottom: 20px;">📊 Art 폴더
+                                            용량 분석 결과</h4>
+
+                                        <div
+                                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                            <div
+                                                style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
+                                                <canvas id="miniMainChart" style="max-height: 250px;"></canvas>
+                                            </div>
+                                            <div
+                                                style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
+                                                <canvas id="miniCharacterChart" style="max-height: 250px;"></canvas>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            style="background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px;">
+                                            <canvas id="miniPcChart" style="max-height: 300px;"></canvas>
+                                        </div>
+
+                                        <div
+                                            style="margin-top: 20px; padding: 15px; background: rgba(120, 219, 226, 0.1); border-radius: 10px; border-left: 4px solid #78dbe2;">
+                                            <h5 style="color: #78dbe2; margin: 0 0 10px 0;">🎯 AI 분석 핵심 결과</h5>
+                                            <ul style="margin: 0; color: #ffffff; font-size: 0.9rem;">
+                                                <li>Character 폴더가 <strong style="color: #ff77c6;">60.3% (1.6GB)</strong>
+                                                    차지</li>
+                                                <li>Basebody가 <strong style="color: #ff77c6;">886MB</strong>로 최대 용량</li>
+                                                <li>최적화 시 <strong style="color: #ff77c6;">800MB-1.2GB</strong> 절약 가능
+                                                </li>
+                                                <li>팀 생산성 향상 - 시각적 자료로 빠른 의사결정 지원</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="skill-details" style="margin-top: 20px;">
+                                    <h4>🎯 주요 성과</h4>
+                                    <ul>
+                                        <li><span style="color: #ff77c6; font-weight: bold;">Character 폴더 60.3%
+                                                점유</span> - 최우선 최적화 대상 식별</li>
+                                        <li><span style="color: #ff77c6; font-weight: bold;">중복 파일 패턴 발견</span> -
+                                            Materials, Textures 폴더 정리 방향 제시</li>
+                                        <li><span style="color: #ff77c6; font-weight: bold;">800MB-1.2GB 절약 가능</span> -
+                                            구체적 최적화 효과 예측</li>
+                                        <li><span style="color: #ff77c6; font-weight: bold;">팀 생산성 향상</span> - 시각적 자료로
+                                            빠른 의사결정 지원</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Data Analysis</span>
+                                    <span class="tech-tag">Claude AI</span>
+                                    <span class="tech-tag">Chart.js</span>
+                                    <span class="tech-tag">Asset Optimization</span>
+                                    <span class="tech-tag">Team Collaboration</span>
                                 </div>
                             </div>
-                            <div class="portfolio-item">
-                                <div class="portfolio-image">🎨 AI 텍스처</div>
-                                <div class="portfolio-info">
-                                    <h4>AI 텍스처 생성</h4>
-                                    <p>Stable Diffusion을 활용한 게임 텍스처 제작 워크플로우</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h4 class="subsection-title">🎨 AI 창작 도구</h4>
+                            <div class="work-item">
+                                <h5 class="work-title">게임 개발을 위한 AI 도구 활용</h5>
+                                <p class="work-description">
+                                    최신 AI 기술을 게임 개발 워크플로우에 통합하여 생산성을 혁신적으로 향상시키고 있습니다.
+                                    전통적인 아트 제작 방식과 AI 도구를 조화롭게 결합하여 고품질 게임 에셋을 효율적으로 제작합니다.
+                                </p>
+
+                                <div class="skill-details">
+                                    <h4>🤖 원화, UI, 이펙트 스프라이트 이미지 생성</h4>
+                                    <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin-bottom: 1rem;">
+                                        Stable Diffusion, Midjourney, Comfy UI를 이용하여 이미지를 제작한 경험이 있습니다.
+                                        원화가가 없는 상황에서 높은 퀄리티와 빠른 작업을 위해 사용했습니다.
+                                    </p>
+                                    <ul>
+                                        <li>AI 기반 원화 생성</li>
+                                        <li>AI 생성 이미지의 변환</li>
+                                        <li>스타일 트랜스퍼를 활용한 일관된 아트 스타일</li>
+                                        <li>인페인팅 기법을 통한 텍스처 보완 및 확장</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Stable Diffusion</span>
+                                    <span class="tech-tag">Midjourney</span>
+                                    <span class="tech-tag">Comfy UI</span>
+                                    <span class="tech-tag">Procedural Generation</span>
+                                    <span class="tech-tag">Texture Synthesis</span>
+
                                 </div>
                             </div>
                         </div>
@@ -2951,51 +3654,6 @@
         </div>
     </div>
 
-    <div id="graphics-pipeline-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('graphics-pipeline-modal')">&times;</span>
-            <div class="modal-header">
-                <h2>🔬 Advanced Graphics & Pipeline</h2>
-                <p>고급 렌더링 기술과 효율적인 파이프라인 구축</p>
-            </div>
-            <div class="modal-body">
-                <div class="modal-description">
-                    <h3>고급 그래픽스 & 파이프라인 전문성</h3>
-                    <p>BRDF, PBR 등 고급 렌더링 이론을 깊이 이해하고, 이를 실제 프로덕션에 적용하는 동시에 팀의 생산성을 극대화하는 효율적인 파이프라인을 구축합니다.</p>
-
-                    <div class="skill-details">
-                        <h4>🔬 고급 그래픽스 기술</h4>
-                        <ul>
-                            <li>PBR Metallic-Roughness 워크플로우</li>
-                            <li>BRDF 함수 이론 및 구현</li>
-                            <li>HLSL/GLSL 셰이더 프로그래밍</li>
-                            <li>Unity URP/HDRP 커스터마이징</li>
-                        </ul>
-                    </div>
-
-                    <div class="skill-details">
-                        <h4>🛠️ 파이프라인 & 최적화</h4>
-                        <ul>
-                            <li>아트 에셋 파이프라인 구축</li>
-                            <li>모바일 최적화 가이드라인 수립</li>
-                            <li>자동화 스크립트 개발 (Python)</li>
-                            <li>버전 관리 시스템 구축 (Git/SVN)</li>
-                        </ul>
-                    </div>
-
-                    <div class="skill-details">
-                        <h4>⚙️ 기술 스택 & 도구</h4>
-                        <ul>
-                            <li>Substance Designer (고급 활용)</li>
-                            <li>Unity Build Pipeline</li>
-                            <li>Jira/Asana (프로젝트 관리)</li>
-                            <li>실시간 렌더링 최적화</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div id="leadership-modal" class="modal">
         <div class="modal-content">
@@ -3007,7 +3665,8 @@
             <div class="modal-body">
                 <div class="modal-description">
                     <h3>리더십 경험</h3>
-                    <p>다년간의 아트 디렉팅 경험을 통해 팀원들의 잠재력을 끌어내고, 프로젝트의 성공적인 완수를 이끌었습니다. 명확한 비전 제시와 효과적인 커뮤니케이션으로 팀워크를 강화하고 생산성을 극대화합니다.</p>
+                    <p>다년간의 아트 디렉팅 경험을 통해 팀원들의 잠재력을 끌어내고, 프로젝트의 성공적인 완수를 이끌었습니다. 명확한 비전
+                        제시와 효과적인 커뮤니케이션으로 팀워크를 강화하고 생산성을 극대화합니다.</p>
 
                     <div class="skill-details">
                         <h4>🎯 주요 리더십 역량</h4>
@@ -3038,53 +3697,86 @@
                         <h4 class="subsection-title">색상, 명도, 채도를 활용한 화풍 가이드</h4>
                         <div class="work-item">
                             <p class="work-description">
-                                아트팀 리더로서 아트워크의 일관된 색감과 화풍을 유지하기 위해, 색상(Hue), 명도(Value), 채도(Saturation) 이론을 기반으로 시각 자료를 활용하여 팀원들에게 가이드라인을 제시했습니다. 다양한 레퍼런스 이미지를 통해 특정 색감이나 화풍을 어떻게 분석하고 재현하는지에 대한 이론적, 실용적 접근법을 공유하여 아트워크의 퀄리티와 통일성을 높였습니다.
+                                아트팀 리더로서 아트워크의 일관된 색감과 화풍을 유지하기 위해, 색상(Hue), 명도(Value),
+                                채도(Saturation) 이론을 기반으로 시각 자료를 활용하여 팀원들에게 가이드라인을 제시했습니다.
+                                다양한 레퍼런스 이미지를 통해 특정 색감이나 화풍을 어떻게 분석하고 재현하는지에 대한 이론적, 실용적
+                                접근법을 공유하여 아트워크의 퀄리티와 통일성을 높였습니다.
                             </p>
-                            <div class="file-info" style="background: rgba(120, 219, 226, 0.1); border-left: 4px solid #78dbe2;">
+                            <div class="file-info"
+                                style="background: rgba(120, 219, 226, 0.1); border-left: 4px solid #78dbe2;">
                                 <p style="font-size: 0.95rem; margin-bottom: 0.5rem; color: #ffffff;">
                                     <strong style="color: #ff77c6;">주요 내용:</strong>
                                 </p>
-                                <ul style="list-style: disc; padding-left: 1.2rem; margin-top: 0.5rem; color: #ffffff; line-height: 1.5;">
-                                    <li><strong style="color: #ff77c6;">색상 이론 적용:</strong> 아트워크에 적용할 주된 색상 팔레트와 보조 색상 사용 가이드.</li>
-                                    <li><strong style="color: #ff77c6;">명도 대비:</strong> 오브젝트의 입체감을 살리고 시선을 유도하는 명도(밝기) 조절 전략.</li>
-                                    <li><strong style="color: #ff77c6;">채도 활용:</strong> 아트워크의 분위기와 감정을 조절하는 채도(색의 순도) 운용 방안.</li>
-                                    <li><strong style="color: #ff77c6;">화풍 분석:</strong> 특정 화풍(예: 캐주얼, 실사, 반실사)의 시각적 특징을 HVS 기반으로 해부.</li>
-                                    <li><strong style="color: #ff77c6;">실제 사례 분석:</strong> 유사한 색감/화풍의 게임 아트워크 분석을 통해 적용 방안 제시.</li>
+                                <ul
+                                    style="list-style: disc; padding-left: 1.2rem; margin-top: 0.5rem; color: #ffffff; line-height: 1.5;">
+                                    <li><strong style="color: #ff77c6;">색상 이론
+                                            적용:</strong> 아트워크에 적용할 주된 색상 팔레트와 보조 색상 사용
+                                        가이드.</li>
+                                    <li><strong style="color: #ff77c6;">명도 대비:</strong>
+                                        오브젝트의 입체감을 살리고 시선을 유도하는 명도(밝기) 조절 전략.</li>
+                                    <li><strong style="color: #ff77c6;">채도 활용:</strong>
+                                        아트워크의 분위기와 감정을 조절하는 채도(색의 순도) 운용 방안.</li>
+                                    <li><strong style="color: #ff77c6;">화풍 분석:</strong>
+                                        특정 화풍(예: 캐주얼, 실사, 반실사)의 시각적 특징을 HVS 기반으로 해부.
+                                    </li>
+                                    <li><strong style="color: #ff77c6;">실제 사례
+                                            분석:</strong> 유사한 색감/화풍의 게임 아트워크 분석을 통해 적용 방안
+                                        제시.</li>
                                 </ul>
                             </div>
-                            <div class="leadership-image-gallery"> 
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29" alt="예시 이미지 1">
+                            <div class="leadership-image-gallery">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2160F24D5836D77E29"
+                                        alt="예시 이미지 1">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115" alt="예시 이미지 2">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2261424D5836D78115"
+                                        alt="예시 이미지 2">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401" alt="예시 이미지 3">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2648954D5836D78401"
+                                        alt="예시 이미지 3">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F" alt="색의 특징 이미지">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F012B733B51B571363F"
+                                        alt="색의 특징 이미지">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F213B443651ACB1F635')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F213B443651ACB1F635" alt="색감 스터디 1">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F213B443651ACB1F635')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F213B443651ACB1F635"
+                                        alt="색감 스터디 1">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F0326114551AB3C2325')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F0326114551AB3C2325" alt="색감 스터디 2">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F0326114551AB3C2325')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F0326114551AB3C2325"
+                                        alt="색감 스터디 2">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2312543C51AB0E2504')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2312543C51AB0E2504" alt="색감 스터디 3">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2312543C51AB0E2504')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2312543C51AB0E2504"
+                                        alt="색감 스터디 3">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F017C4B4E51A62F3634')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F017C4B4E51A62F3634" alt="색감 스터디 4">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F017C4B4E51A62F3634')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F017C4B4E51A62F3634"
+                                        alt="색감 스터디 4">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F245AF242519E21B928')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F245AF242519E21B928" alt="색감 스터디 5">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F245AF242519E21B928')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F245AF242519E21B928"
+                                        alt="색감 스터디 5">
                                 </div>
-                                <div class="gallery-item" onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F244E9C40519B8C4025')">
-                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F244E9C40519B8C4025" alt="색감 스터디 6">
+                                <div class="gallery-item"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F244E9C40519B8C4025')">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F244E9C40519B8C4025"
+                                        alt="색감 스터디 6">
                                 </div>
                             </div>
-                            <div class="tech-tags" style="margin-top: 1rem;"> 
+                            <div class="tech-tags" style="margin-top: 1rem;">
                                 <span class="tech-tag">Art Direction</span>
                                 <span class="tech-tag">Color Theory</span>
                                 <span class="tech-tag">Hue-Value-Saturation</span>
@@ -3098,6 +3790,222 @@
         </div>
     </div>
 
+
+    <div id="graphics-pipeline-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('graphics-pipeline-modal')">&times;</span>
+
+            <div class="modal-header">
+                <h2>🔬 Advanced Graphics & Pipeline</h2>
+                <p>고급 렌더링 기술과 효율적인 파이프라인 구축</p>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="portfolio-section">
+                    <h3 class="section-title">🔬 렌더링 이론 & 기술</h3>
+
+                    <div class="subsection">
+                        <h4 class="subsection-title">🎨 PBR (Physically Based Rendering)</h4>
+
+                        <div class="work-item">
+                            <h5 class="work-title">Metallic-Roughness 워크플로우</h5>
+                            <p class="work-description">
+                                물리 기반 렌더링의 핵심인 PBR 워크플로우를 깊이 이해하고 활용합니다.
+                                Metallic과 Roughness 값을 통한 사실적인 머티리얼 제작과 최적화된 텍스처 파이프라인을 구축합니다.
+                            </p>
+
+                            <div class="skill-details">
+                                <h4>🛠️ 주요 기술</h4>
+                                <ul>
+                                    <li>Albedo, Normal, Metallic, Roughness 맵 제작</li>
+                                    <li>물리적으로 정확한 머티리얼 파라미터 설정</li>
+                                    <li>다양한 표면 재질별 PBR 워크플로우</li>
+                                </ul>
+                            </div>
+
+                            <div class="video-container"
+                                style="margin: 20px 0; background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px; border-left: 4px solid #7877c6;">
+                                <h4
+                                    style="color: #ff77c6; margin-bottom: 15px; display: flex; align-items: center; gap: 0.5rem;">
+                                    🎥 PBR 실무 적용 사례
+                                </h4>
+                                <div
+                                    style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%; overflow: hidden; border-radius: 8px; background: #000;">
+                                    <iframe src="https://www.youtube.com/embed/z9QUk8IKnwo"
+                                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                                </div>
+                                <p
+                                    style="margin-top: 12px; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; font-style: italic;">
+                                    💡 실제 프로젝트에서 PBR 머터리얼 세팅 후 테스트 샷
+                                </p>
+                            </div>
+
+                            <div class="pbr-gallery"
+                                style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+
+                                <div class="pbr-image-item"
+                                    style="flex: 1; min-width: 300px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; overflow: hidden; border: 1px solid rgba(120, 119, 198, 0.2);">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb5aiOH%2FbtsODnyJzWm%2FywJIZZqsCX26wcTEXSiS1K%2Fimg.jpg"
+                                        alt="보스 재질감 및 림라이트 표현"
+                                        style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                        onclick="openImageViewer(this.src)">
+                                    <div style="padding: 12px; text-align: center;">
+                                        <p style="margin: 0; color: #ff77c6; font-weight: 600; font-size: 0.9rem;">
+                                            보스 재질감 및 림라이트 표현
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="pbr-image-item"
+                                    style="flex: 1; min-width: 300px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; overflow: hidden; border: 1px solid rgba(120, 119, 198, 0.2);">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2n4Sx%2FbtsOEf7KYck%2FUF3sQzU5EKnG5Uywf0iLy1%2Fimg.jpg"
+                                        alt="의상과 장화의 재질감 표현"
+                                        style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                        onclick="openImageViewer(this.src)">
+                                    <div style="padding: 12px; text-align: center;">
+                                        <p style="margin: 0; color: #ff77c6; font-weight: 600; font-size: 0.9rem;">
+                                            의상과 장화의 재질감 표현
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="pbr-image-item"
+                                    style="flex: 1; min-width: 300px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; overflow: hidden; border: 1px solid rgba(120, 119, 198, 0.2);">
+                                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcA2Fkd%2FbtsOFkax7Lb%2FwVgdmBO9NuVDHfteqOKsfK%2Fimg.jpg"
+                                        alt="얼음 쉐이더 R&D 예시"
+                                        style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                        onclick="openImageViewer(this.src)">
+                                    <div style="padding: 12px; text-align: center;">
+                                        <p style="margin: 0; color: #ff77c6; font-weight: 600; font-size: 0.9rem;">
+                                            얼음 쉐이더 R&D 예시
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div> <!-- pbr-gallery 끝 -->
+                        </div> <!-- work-item 끝 -->
+                    </div> <!-- subsection 끝 -->
+                </div> <!-- portfolio-section (렌더링 이론 & 기술) 끝 -->
+
+                <div class="portfolio-section">
+                    <h3 class="section-title">💻 Custom Shader Development</h3>
+                    <div
+                        style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px; border-left: 4px solid #78dbe2;">
+                        <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin-bottom: 15px;">
+                            Unity에서 직접 쉐이더 코드를 작성하고 디버깅하는 실제 개발 과정입니다.
+                            이론적 지식을 바탕으로 HLSL 코드를 구현하여 게임에 필요한 커스텀 렌더링 효과를 만들어냅니다.
+                        </p>
+                        <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+                            <div
+                                style="flex: 1; min-width: 300px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; overflow: hidden; border: 1px solid rgba(120, 219, 226, 0.2);">
+                                <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdYXviH%2FbtsOEkCKdGe%2FzfKVvN7zfnUPK69wBeH8pk%2Fimg.png"
+                                    alt="쉐이더 개발 과정 - Unity Inspector"
+                                    style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdYXviH%2FbtsOEkCKdGe%2FzfKVvN7zfnUPK69wBeH8pk%2Fimg.png')">
+                                <div style="padding: 12px; text-align: center;">
+                                    <p style="margin: 0; color: #78dbe2; font-weight: 600; font-size: 0.9rem;">컨셉에 맞춘
+                                        쉐이더 연구</p>
+                                </div>
+                            </div>
+                            <div
+                                style="flex: 1; min-width: 300px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; overflow: hidden; border: 1px solid rgba(120, 219, 226, 0.2);">
+                                <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbdBSeS%2FbtsODMzAyxc%2FKwXfGmqK6k5KtFHtUbBlzK%2Fimg.jpg"
+                                    alt="쉐이더 개발 과정 - HLSL 코드"
+                                    style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                    onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbdBSeS%2FbtsODMzAyxc%2FKwXfGmqK6k5KtFHtUbBlzK%2Fimg.jpg')">
+                                <div style="padding: 12px; text-align: center;">
+                                    <p style="margin: 0; color: #78dbe2; font-weight: 600; font-size: 0.9rem;">HLSL 쉐이더
+                                        코드 작성</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h5 style="color: #ff77c6; margin: 0 0 10px 0; font-size: 1rem; font-weight: 600;">🛠️ 쉐이더
+                                개발 역량</h5>
+                            <ul
+                                style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
+                                <li><strong style="color: #78dbe2;">HLSL 코드 작성:</strong> 버텍스/프래그먼트 쉐이더를 직접 코딩하여 커스텀 효과
+                                    구현</li>
+                                <li><strong style="color: #78dbe2;">실시간 디버깅:</strong> Unity Inspector에서 속성값을 조정하며 실시간 결과
+                                    확인</li>
+                                <li><strong style="color: #78dbe2;">렌더링 파이프라인 이해:</strong> GPU 렌더링 과정과 최적화 기법 적용</li>
+                                <li><strong style="color: #78dbe2;">Cross-Platform 호환성:</strong> 다양한 플랫폼에서 안정적으로 동작하는
+                                    쉐이더 제작</li>
+                            </ul>
+                        </div>
+                        <div
+                            style="background: rgba(255, 119, 198, 0.1); border-radius: 8px; padding: 15px; margin-top: 15px;">
+                            <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
+                                💡 <strong style="color: #ff77c6;">개발 접근법:</strong> 시각적 결과물을 먼저 기획하고, 수학적 공식을 HLSL로 구현한
+                                뒤, 최적화와 호환성을 고려하여 완성도 높은 쉐이더를 제작합니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portfolio-section">
+                    <h3 class="section-title">🛠️ 파이프라인 & 워크플로우</h3>
+                    <div class="subsection">
+                        <h4 class="subsection-title">📱 모바일 최적화</h4>
+                        <div class="work-item">
+                            <h5 class="work-title">플랫폼별 최적화 전략</h5>
+                            <p class="work-description">
+                                다양한 모바일 디바이스에서 안정적인 성능을 보장하기 위한 체계적인 최적화 가이드라인을 수립하고 적용합니다.
+                            </p>
+                            <div class="skill-details">
+                                <h4>🛠️ 주요 기술</h4>
+                                <ul>
+                                    <li>텍스처 메모리 최적화 (ASTC, ETC2)</li>
+                                    <li>드로우 콜 최적화 및 배칭</li>
+                                    <li>모바일 GPU 프로파일링</li>
+                                    <li>플랫폼별 셰이더 최적화</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portfolio-section">
+                    <h3 class="section-title">🛠️ 기술 스택 & 전문 도구</h3>
+                    <div class="subsection">
+                        <h4 class="subsection-title">🔧 핵심 도구</h4>
+                        <div class="tech-stack"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                                <strong style="color: #7877c6;">렌더링 엔진</strong><br>
+                                <span style="font-size: 0.9rem;">Unity URP/HDRP, Custom Pipeline</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                                <strong style="color: #7877c6;">셰이더 개발</strong><br>
+                                <span style="font-size: 0.9rem;">HLSL/GLSL, Shader Graph</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                                <strong style="color: #7877c6;">머티리얼 제작</strong><br>
+                                <span style="font-size: 0.9rem;">Substance Designer, Painter</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                                <strong style="color: #7877c6;">프로파일링</strong><br>
+                                <span style="font-size: 0.9rem;">Unity Profiler, RenderDoc</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                                <strong style="color: #7877c6;">자동화</strong><br>
+                                <span style="font-size: 0.9rem;">Python, Unity Editor Scripts</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                                <strong style="color: #7877c6;">버전 관리</strong><br>
+                                <span style="font-size: 0.9rem;">Git LFS, Perforce</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- modal-body 끝 -->
+        </div> <!-- modal-content 끝 -->
+    </div> <!-- modal 끝 -->
+
     <div id="image-viewer-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeImageViewer()">&times;</span>
@@ -3105,18 +4013,64 @@
         </div>
     </div>
 
+
     <script>
         // 전역 변수로 스크롤바 너비 저장 (한 번만 계산)
         let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
         // --- 섹션 전환 기능 ---
         // showSection 함수 재정의: opacity/visibility/height 사용
         function showSection(sectionId) {
             console.log('Showing section:', sectionId);
-            const sections = document.querySelectorAll('main > section'); // main의 직계 자식 section만 선택
 
+            // career 섹션 특별 처리
+            if (sectionId === 'career') {
+                const skillsSection = document.getElementById('skills');
+                if (skillsSection) {
+                    skillsSection.classList.add('active');
+                    skillsSection.style.opacity = '1';
+                    skillsSection.style.visibility = 'visible';
+                    skillsSection.style.height = 'auto';
+                    skillsSection.style.overflow = 'visible';
+                }
+
+                setTimeout(() => {
+                    const experienceSection = document.querySelector('.experience-section');
+                    if (experienceSection) {
+                        const headerHeight = document.querySelector('header').offsetHeight;
+                        const rect = experienceSection.getBoundingClientRect();
+                        const offset = rect.top + window.pageYOffset - headerHeight - 20;
+
+                        window.scrollTo({
+                            top: offset,
+                            behavior: 'smooth'
+                        });
+
+                        triggerSequentialFadeIn(skillsSection);
+                    }
+                }, 100);
+
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => item.classList.remove('active'));
+                const targetNavItem = document.querySelector(`.nav-item[onclick*="showSection('career')"]`);
+                if (targetNavItem) {
+                    targetNavItem.classList.add('active');
+                }
+
+                const navLinks = document.querySelector('.nav-links');
+                const navToggle = document.querySelector('.nav-toggle');
+                if (navLinks && navLinks.classList.contains('mobile-open')) {
+                    navLinks.classList.remove('mobile-open');
+                    navToggle.classList.remove('active');
+                }
+
+                return;
+            }
+
+            // 일반 섹션 처리
+            const sections = document.querySelectorAll('main > section');
+
+            // 모든 섹션 숨기기
             sections.forEach(section => {
-                // 현재 활성화된 섹션의 `active` 클래스 제거 및 CSS 속성 초기화
                 if (section.classList.contains('active')) {
                     section.classList.remove('active');
                     section.style.opacity = '0';
@@ -3132,11 +4086,9 @@
                 targetSection.classList.add('active');
                 targetSection.style.opacity = '1';
                 targetSection.style.visibility = 'visible';
-                targetSection.style.height = 'auto'; // 높이 자동 조절
+                targetSection.style.height = 'auto';
                 targetSection.style.overflow = 'visible';
 
-                // 섹션 활성화 후 스크롤
-                // DOM 업데이트 후 정확한 offsetTop 값을 얻기 위해 작은 딜레이를 줌
                 setTimeout(() => {
                     const headerHeight = document.querySelector('header').offsetHeight;
                     const rect = targetSection.getBoundingClientRect();
@@ -3146,11 +4098,9 @@
                         behavior: 'smooth'
                     });
 
-                    // 스크롤 후 페이드인 애니메이션 트리거
                     triggerSequentialFadeIn(targetSection);
-                }, 50); // 짧은 딜레이 추가
+                }, 550);
 
-                // 내비게이션 바 항목의 active 상태 업데이트
                 const navItems = document.querySelectorAll('.nav-item');
                 navItems.forEach(item => item.classList.remove('active'));
                 const targetNavItem = document.querySelector(`.nav-item[onclick*="showSection('${sectionId}')"]`);
@@ -3158,54 +4108,34 @@
                     targetNavItem.classList.add('active');
                 }
 
-                // 모바일 메뉴가 열려있으면 닫기
                 const navLinks = document.querySelector('.nav-links');
                 const navToggle = document.querySelector('.nav-toggle');
-                if (navLinks.classList.contains('mobile-open')) {
+                if (navLinks && navLinks.classList.contains('mobile-open')) {
                     navLinks.classList.remove('mobile-open');
                     navToggle.classList.remove('active');
                 }
-
             }
         }
-
-        // 페이지 로드 시 'home' 섹션 활성화
-        document.addEventListener('DOMContentLoaded', () => {
-            showSection('home');
-        });
-
-        // --- 모바일 내비게이션 토글 기능 ---
-        function toggleMobileNav() {
-            const navLinks = document.querySelector('.nav-links');
-            const navToggle = document.querySelector('.nav-toggle');
-            navLinks.classList.toggle('mobile-open');
-            navToggle.classList.toggle('active');
-        }
-
-        // --- 모달 팝업 기능 (일반 모달) ---
         function openModal(modalId) {
+            console.log('🔍 Opening modal:', modalId);
             const modal = document.getElementById(modalId);
+            console.log('🔍 Modal element found:', modal);
+
             if (modal) {
-                modal.style.display = 'flex'; // Flex로 설정하여 중앙 정렬 유지
+                modal.style.display = 'flex';
+                console.log('🔍 Modal display set to flex');
+
                 setTimeout(() => {
                     modal.classList.add('active-modal');
+                    console.log('🔍 Active modal class added');
                 }, 10);
-                document.body.style.overflow = 'hidden'; // 모달 열렸을 때 스크롤 방지
-                document.body.style.paddingRight = scrollbarWidth + 'px'; // 스크롤바 제거로 인한 레이아웃 점프 방지
-                
-                // 차트가 포함된 모달인 경우 차트 초기화 함수 호출
-                if (modalId === 'ai-modal') {
-                    // 차트 컨테이너가 숨겨져 있다면 보여주기
-                    const analysisChartContainer = document.getElementById('analysisChartContainer');
-                    if (analysisChartContainer && analysisChartContainer.style.display !== 'none') {
-                        initializeCharts(); // 차트 초기화 함수 호출
-                    }
-                }
+
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = scrollbarWidth + 'px';
             } else {
-                console.error('Modal not found:', modalId);
+                console.error('❌ Modal not found:', modalId);
             }
         }
-
         function closeModal(modalId) {
             let targetModal;
             if (modalId) {
@@ -3229,15 +4159,34 @@
 
         // 모달 닫기 버튼 이벤트 리스너 (클래스 이름 .close에 맞춤)
         document.addEventListener('DOMContentLoaded', () => {
+            // 갤러리 아이템 클릭 이벤트 등록 (중복 방지)
+            const galleryItems = document.querySelectorAll('.gallery-item[data-slide-index]');
+            galleryItems.forEach(item => {
+                // 기존 이벤트 리스너 제거 후 새로 등록
+                item.removeEventListener('click', handleGalleryClick);
+                item.addEventListener('click', handleGalleryClick);
+            });
+        });
+
+        // 갤러리 클릭 핸들러 분리
+        function handleGalleryClick(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const slideIndex = parseInt(this.getAttribute('data-slide-index'));
+            openSlideModal(slideIndex);
+        }
+
             const closeButtons = document.querySelectorAll('.close');
             closeButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     // 클릭된 닫기 버튼의 가장 가까운 모달을 찾아 닫기
                     const modalToClose = this.closest('.modal');
                     if (modalToClose) {
                         // 이미지 뷰어 모달인 경우
                         if (modalToClose.id === 'image-viewer-modal') {
                             closeImageViewer();
+                        } else if (modalToClose.id === 'slide-modal') {
+                            closeSlideModal();
                         } else { // 다른 일반 모달인 경우
                             closeModal(modalToClose.id);
                         }
@@ -3246,26 +4195,38 @@
             });
 
             // 모달 외부 클릭 시 닫기
-            window.addEventListener('click', function(event) {
+            window.addEventListener('click', function (event) {
                 document.querySelectorAll('.modal.active-modal').forEach(modal => {
                     if (event.target === modal) {
                         // 이미지 뷰어 모달인 경우
                         if (modal.id === 'image-viewer-modal') {
                             closeImageViewer();
+                        } else if (modal.id === 'slide-modal') {
+                            closeSlideModal();
                         } else { // 다른 일반 모달인 경우
                             closeModal(modal.id);
                         }
                     }
                 });
             });
-        });
+            // 슬라이드 버튼 이벤트 등록 (DOMContentLoaded 내부에 추가)
+            const slidePrevBtn = document.querySelector('.slide-btn.prev');
+            const slideNextBtn = document.querySelector('.slide-btn.next');
+
+            if (slidePrevBtn) {
+                slidePrevBtn.addEventListener('click', () => changeSlide(-1));
+            }
+            if (slideNextBtn) {
+                slideNextBtn.addEventListener('click', () => changeSlide(1));
+            }
+        
 
         // --- 이미지 뷰어 모달 열기/닫기 함수 ---
         function openImageViewer(imageUrl) {
             const imageViewerModal = document.getElementById('image-viewer-modal');
             const fullImage = document.getElementById('full-image');
 
-            fullImage.src = imageUrl; 
+            fullImage.src = imageUrl;
             imageViewerModal.style.display = 'flex'; // 이미지 뷰어 모달은 flex로
             setTimeout(() => {
                 imageViewerModal.classList.add('active-modal');
@@ -3343,7 +4304,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     const value = context.parsed;
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const percentage = ((value / total) * 100).toFixed(1);
@@ -3378,7 +4339,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     return context.label + ': ' + context.parsed.toFixed(1) + 'MB';
                                 }
                             }
@@ -3408,7 +4369,7 @@
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     return context.label + ': ' + context.parsed.y.toFixed(1) + 'MB';
                                 }
                             }
@@ -3420,7 +4381,7 @@
                             ticks: {
                                 color: '#ffffff',
                                 font: { size: 10 },
-                                callback: function(value) { return value + 'MB'; }
+                                callback: function (value) { return value + 'MB'; }
                             },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' }
                         },
@@ -3441,11 +4402,11 @@
         const faders = document.querySelectorAll('.fade-in');
 
         const appearOptions = {
-            threshold: 0.1, 
-            rootMargin: "0px 0px -50px 0px" 
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
         };
 
-        const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+        const appearOnScroll = new IntersectionObserver(function (entries, observer) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
@@ -3466,7 +4427,7 @@
             const fadeElements = targetSection.querySelectorAll('.fade-in');
             fadeElements.forEach((element) => {
                 element.classList.remove('visible'); // 먼저 visible 클래스 제거
-                element.style.opacity = '0';
+                element.style.opacity = '1';
                 element.style.transform = 'translateY(30px)';
 
                 appearOnScroll.unobserve(element); // 기존 관찰 중지
@@ -3480,7 +4441,7 @@
         }
 
         // --- 헤더 스크롤 효과 ---
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const header = document.querySelector('header');
             if (window.scrollY > 50) {
                 header.classList.add('scrolled');
@@ -3488,6 +4449,151 @@
                 header.classList.remove('scrolled');
             }
         });
+        // 슬라이드 모달 관련 변수
+        let currentSlideIndex = 0;
+        const slideImages = [
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn0Koi%2FbtsODVhKoi0%2FljRRhkkwXT2kklQv7KDoe0%2Fimg.png',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdNm2Qd%2FbtsODJ9pD3L%2Fdd2fGro8szPE78uPkxYyM1%2Fimg.png',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fd54C1L%2FbtsOCnfsTmg%2FSZ5RFJr1hfJKqWJMFhKHV0%2Fimg.png',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FM0hYb%2FbtsOBZS9oJF%2F7y9X1HwqEq2NiQhvRgLqYK%2Fimg.png',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F272E273E521061A211',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FE1Vg8%2FbtsOCm8FERY%2FZ0YkyBAM4tqRmkJrGe9oPk%2Fimg.jpg',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrWFYG%2FbtsOCmt5q9I%2FI88dPalyEYSH2i1jrD1EHk%2Fimg.jpg',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2264394851B01F9B08',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fy7Zia%2FbtsOBCqonbT%2FJkwFctHMz8oW22bqCfOmT0%2Fimg.png',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FempERT%2FbtsOBB57Bya%2FMVkqEcB6D607gkca5G9UOK%2Fimg.jpg',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FnA7cq%2FbtsOCC4rPhc%2FWkk79H0fwp0aPyZxuHVWLk%2Fimg.jpg',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlhEfN%2FbtsOCFtpPXF%2F09XIvVihbt4hjK1YKxoSH1%2Fimg.jpg',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FUQ45u%2FbtsOCzGs1OY%2FY3O91nT1Kt4yx3gztUM1Ek%2Fimg.jpg',
+            'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FK0RHr%2FbtsOD2AUVLk%2FnbbXiDhZF1vexJnBMhyfC1%2Fimg.jpg'
+        ];
+
+        // 슬라이드 모달 열기
+        function openSlideModal(index) {
+            currentSlideIndex = index;
+            const slideModal = document.getElementById('slide-modal');
+    
+        // 현재 스크롤 위치 저장
+        const scrollY = window.scrollY;
+    
+        // 슬라이드 모달 표시
+        slideModal.style.display = 'flex';
+        slideModal.style.position = 'fixed';
+        slideModal.style.top = '0';
+        slideModal.style.left = '0';
+        slideModal.style.width = '100%';
+        slideModal.style.height = '100%';
+        slideModal.style.alignItems = 'center';
+        slideModal.style.justifyContent = 'center';
+        slideModal.style.zIndex = '99999';
+    
+        setTimeout(() => {
+            slideModal.classList.add('active-modal');
+        }, 10);
+
+        // body 고정 (스크롤 위치 유지)
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+        document.body.style.overflow = 'hidden';
+    
+        // 스크롤 위치 저장
+        slideModal.dataset.scrollY = scrollY;
+    
+        updateSlide();
+    }
+
+        function closeSlideModal() {
+            const slideModal = document.getElementById('slide-modal');
+    
+            slideModal.classList.remove('active-modal');
+            slideModal.addEventListener('transitionend', function handler() {
+                slideModal.style.display = 'none';
+                slideModal.removeEventListener('transitionend', handler);
+            }, { once: true });
+
+            // 스크롤 위치 복원
+            const scrollY = slideModal.dataset.scrollY || 0;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            document.body.style.overflow = '';
+    
+            window.scrollTo(0, parseInt(scrollY));
+        }
+
+        // 슬라이드 변경
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+
+            if (currentSlideIndex >= slideImages.length) {
+                currentSlideIndex = 0;
+            } else if (currentSlideIndex < 0) {
+                currentSlideIndex = slideImages.length - 1;
+            }
+
+            updateSlide();
+        }
+
+        // 슬라이드 업데이트
+        function updateSlide() {
+            const slideImage = document.getElementById('slide-image');
+            const currentSlideSpan = document.getElementById('current-slide');
+            const slideCaption = document.getElementById('slide-caption');
+
+            slideImage.src = slideImages[currentSlideIndex];
+            currentSlideSpan.textContent = currentSlideIndex + 1;
+            slideCaption.textContent = `작업물 #${currentSlideIndex + 1}`;
+    
+            // 슬라이드 이미지 클릭 시 이미지 뷰어로 전환 (실제 사이즈)
+            slideImage.onclick = function() {
+            closeSlideModal();
+            // 딜레이 없이 즉시 실행
+            setTimeout(() => {
+                openImageViewer(slideImages[currentSlideIndex]);
+            }, 50); // 300ms → 50ms로 단축
+        };
+    }
+
+        // DOM 로드 완료 후 슬라이드 모달 관련 이벤트 초기화
+        document.addEventListener('DOMContentLoaded', function () {
+            // 슬라이드 모달 관련 이벤트 리스너 등록
+            const slideModal = document.getElementById('slide-modal');
+
+            // 슬라이드 모달 외부 클릭 시 닫기
+            if (slideModal) {
+                slideModal.addEventListener('click', function (event) {
+                    if (event.target === slideModal) {
+                        closeSlideModal();
+                    }
+                });
+            }
+        });
+
+        // 키보드 이벤트 (화살표 키로 슬라이드 이동)
+        document.addEventListener('keydown', function (event) {
+            const slideModal = document.getElementById('slide-modal');
+            if (slideModal && slideModal.classList.contains('active-modal')) {
+                if (event.key === 'ArrowLeft') {
+                    changeSlide(-1);
+                } else if (event.key === 'ArrowRight') {
+                    changeSlide(1);
+                } else if (event.key === 'Escape') {
+                    closeSlideModal();
+                }
+            }
+        });
+
+        // 전역 윈도우 로드 이벤트로 슬라이드 함수들 확인
+        window.addEventListener('load', function () {
+            console.log('Slide functions loaded:', {
+                openSlideModal: typeof openSlideModal,
+                closeSlideModal: typeof closeSlideModal,
+                changeSlide: typeof changeSlide,
+                updateSlide: typeof updateSlide
+            });
+        });
     </script>
 </body>
+
 </html>
