@@ -1433,6 +1433,7 @@
             display: none;
             position: fixed;
             z-index: 9999;
+            /* 높은 z-index */
             left: 0;
             top: 0;
             width: 100%;
@@ -1646,7 +1647,7 @@
             background: rgba(0, 0, 0, 0.9);
             align-items: center;
             justify-content: center;
-            z-index: 10001;
+            z-index: 9999;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -2168,56 +2169,47 @@
         }
 
         /* 슬라이드 모달 스타일 */
-        /* ID 선택자 추가 */
         .slide-modal-content {
             position: relative;
             background: rgba(0, 0, 0, 0.95);
-            max-width: 95vw;   /* width → max-width */
-            max-height: 95vh;  
-            width: auto;       /* 추가 */
-            height: auto;      /* 추가 */
+            max-width: 90vw;
+            max-height: 90vh;
             display: flex;
-            margin: 0 auto;  /* 수평 중앙 정렬만 */
+            align-items: center;
+            justify-content: center;
             border-radius: 20px;
-            overflow: visible;
+            overflow: hidden;
             border: 1px solid rgba(120, 119, 198, 0.3);
         }
 
         .slide-container {
             position: relative;
-            overflow: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1rem;
             padding: 2rem;
-            min-height: 300px;  /* 최소 높이 설정 */
+            max-width: 80vw;
+            max-height: 80vh;
         }
 
         .slide-image {
-            max-width: none; /* 제한 제거 */
-            max-height: none; /* 제한 제거 */
-            width: auto;
-            height: auto;
+            max-width: 100%;
+            max-height: 70vh;
             object-fit: contain;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            cursor: zoom-in
         }
 
         .slide-btn {
             position: absolute;
             top: 50%;
-            transform: translateY(calc(-50% - 2px));
+            transform: translateY(-50%);
             background: rgba(120, 119, 198, 0.8);
             color: white;
             border: none;
             font-size: 2rem;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 1rem 1.5rem;
             cursor: pointer;
             border-radius: 50%;
             transition: all 0.3s ease;
@@ -2230,11 +2222,11 @@
         }
 
         .slide-btn.prev {
-            left: -80px;    /* 왼쪽으로 더 밀어내기 */
+            left: 2rem;
         }
 
         .slide-btn.next {
-            right: -80px;   /* 오른쪽으로 더 밀어내기 */
+            right: 2rem;
         }
 
         .slide-info {
@@ -2292,17 +2284,10 @@
         }
 
         .slide-modal {
-            display: none;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.95);
-            opacity: 0;
-            transition: opacity 0.2s ease-out;
-            align-items: center;      /* 세로 중앙 정렬 */
-            justify-content: center;  /* 가로 중앙 정렬 */
-            overflow: hidden;
+            z-index: 2001;
+            /* 다른 모달보다 높게 */
+            position: fixed;
+            /* absolute에서 fixed로 변경 */
         }
     </style>
 </head>
@@ -2447,7 +2432,7 @@
                     </div>
                     <div class="card-content">
                         <h3>3D Art & Game Development</h3>
-                        <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다.</p>
+                        <p class="skill-description">3D 모델링부터 게임 개발까지, 아트와 기술을 아우르는 종합적인 게임 제작 전문성을 보유하고 있습니다</p>
 
                         <div class="skill-highlights">
                             <div class="highlight-item">
@@ -2479,7 +2464,7 @@
                     </div>
                     <div class="card-content">
                         <h3>AI & Machine Learning</h3>
-                        <p class="skill-description">대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다.</p>
+                        <p class="skill-description">대학원에서 AI를 전공하며 머신러닝 기술을 게임 개발에 접목하는 연구를 진행하고 있습니다</p>
 
                         <div class="skill-highlights">
                             <div class="highlight-item">
@@ -2510,7 +2495,7 @@
                     </div>
                     <div class="card-content">
                         <h3>Advanced Graphics & Pipeline</h3>
-                        <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론을 이해하고 구현하고 있으며, 효율적인 개발 파이프라인 구축을 지향합니다.</p>
+                        <p class="skill-description">BRDF, PBR 등 고급 렌더링 이론을 이해하고 구현하고 있으며, 효율적인 개발 파이프라인 구축을 지향합니다</p>
 
                         <div class="skill-highlights">
                             <div class="highlight-item">
@@ -2541,7 +2526,7 @@
                     </div>
                     <div class="card-content">
                         <h3>Team Leadership</h3>
-                        <p class="skill-description">AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다.</p>
+                        <p class="skill-description">AD 역할부터 교육까지, 팀을 이끌고 지식을 공유하는 리더십을 발휘합니다</p>
                         <div class="skill-highlights">
                             <div class="highlight-item">
                                 <span class="highlight-number">TOP10%</span>
@@ -2606,7 +2591,7 @@
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">💼 주요 업무</div>
-                                <div class="detail-content">3D 배경모델링, 3D 캐릭터모델링, 이펙트, 애니메이션, 최적화, 2D 버전 컨버팅 etc.</div>
+                                <div class="detail-content">3D 배경모델링, 3D 캐릭터모델링, 이펙트, 애니메이션, 최적화, 2D 버전 컨버팅</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">🛠️ 사용 툴</div>
@@ -2979,7 +2964,7 @@
                 <div class="info-card">
                     <div class="info-icon">💡</div>
                     <h4>현재 관심사</h4>
-                    <p>3D Gaussian Splatting<br>NeRF Technology</p>
+                    <p>Art<br>AI</p>
                 </div>
             </div>
         </section>
@@ -2998,22 +2983,6 @@
 
     </main>
 
-    <div id="slide-modal">
-        <div class="slide-modal-content">
-                <span class="close" onclick="closeSlideModal()">&times;</span>
-                <button class="slide-btn prev" data-direction="-1">‹</button>
-                <div class="slide-container">
-                    <img id="slide-image" src="" alt="3D 작업물">
-                    <div class="slide-info">
-                        <div class="slide-counter">
-                            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-                        </div>
-                            <div class="slide-caption" id="slide-caption">작업물 #1</div>
-                    </div>
-                </div>
-                            <button class="slide-btn next" data-direction="1">›</button>
-        </div>
-    </div>
     <div id="3d-gamedev-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('3d-gamedev-modal')">&times;</span>
@@ -3030,8 +2999,8 @@
                         <div class="work-item">
                             <h5 class="work-title">3D 배경 모델링</h5>
                             <p class="work-description">
-                                하드서페이스와 오가닉 모델링을 모두 아우르는 환경 에셋 제작 전문성.
-                                건물, 소품, 자연물까지 다양한 스타일의 3D 환경을 구현합니다.
+                                하드서페이스와 오가닉 모델링을 모두 아우르는 환경 에셋 제작
+                                건물, 소품, 자연물까지 다양한 스타일의 3D 환경을 구현합니다
                             </p>
 
                             <div class="skill-details">
@@ -3051,7 +3020,7 @@
                         <div class="work-item">
                             <h5 class="work-title">3D 캐릭터 모델링</h5>
                             <p class="work-description">
-                                게임에 최적화된 3D 캐릭터 제작. 컨셉부터 리깅까지 캐릭터 제작 파이프라인 전반을 담당합니다.
+                                게임에 최적화된 3D 캐릭터 제작
                             </p>
 
                             <div class="skill-details">
@@ -3059,8 +3028,7 @@
                                 <ul>
                                     <li>Low-poly 캐릭터 모델링</li>
                                     <li>UV 맵핑 및 텍스처링</li>
-                                    <li>리깅 및 애니메이션 준비</li>
-                                    <li>다양한 아트 스타일 적용</li>
+                                    <li>다양한 아트 스타일 적용 및 최적화</li>
                                 </ul>
                             </div>
                         </div>
@@ -3071,8 +3039,8 @@
                         <div class="work-item">
                             <h5 class="work-title">PBR 워크플로우</h5>
                             <p class="work-description">
-                                Physically Based Rendering을 기반으로 한 사실적인 머티리얼 제작.
-                                Substance 3D를 활용한 고품질 텍스처 파이프라인을 구축합니다.
+                                Physically Based Rendering을 기반으로 한 사실적인 머티리얼 제작
+                                Substance 3D 시리즈를 활용한 고품질 텍스처 파이프라인을 구축합니다
                             </p>
 
                             <div class="skill-details">
@@ -3080,7 +3048,7 @@
                                 <ul>
                                     <li>PBR Metallic-Roughness 워크플로우</li>
                                     <li>Substance Painter를 활용한 텍스처링</li>
-                                    <li>프로시저럴 머티리얼 제작</li>
+                                    <li>Procedural 머티리얼 제작</li>
                                     <li>모바일 최적화 텍스처 압축</li>
                                 </ul>
                             </div>
@@ -3097,127 +3065,156 @@
                             </p>
 
                             <div class="art-gallery">
-                                
-                                <div class="gallery-item" data-slide-index="1">
+
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbycLr1%2FbtsOEcJ1TbB%2FOY5hBNp7TX0OF2OkLZY941%2Fimg.jpg"
-                                        alt="3D 작업물 1">
+                                        alt="3D 작업물 1"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbycLr1%2FbtsOEcJ1TbB%2FOY5hBNp7TX0OF2OkLZY941%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #1</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="2">
+
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlhEfN%2FbtsOCFtpPXF%2F09XIvVihbt4hjK1YKxoSH1%2Fimg.jpg"
-                                        alt="3D 작업물 2">
+                                        alt="3D 작업물 2"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlhEfN%2FbtsOCFtpPXF%2F09XIvVihbt4hjK1YKxoSH1%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #2</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="3">
+
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FUQ45u%2FbtsOCzGs1OY%2FY3O91nT1Kt4yx3gztUM1Ek%2Fimg.jpg"
-                                        alt="3D 작업물 3">
+                                        alt="3D 작업물 3"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FUQ45u%2FbtsOCzGs1OY%2FY3O91nT1Kt4yx3gztUM1Ek%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #3</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="4">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpOLSh%2FbtsOCnGwFLO%2FR8VLuxBOGS9BM4qGD3qsdK%2Fimg.jpg"
-                                        alt="3D 작업물 4">
+                                        alt="3D 작업물 4"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpOLSh%2FbtsOCnGwFLO%2FR8VLuxBOGS9BM4qGD3qsdK%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #4</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="5">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FK0RHr%2FbtsOD2AUVLk%2FnbbXiDhZF1vexJnBMhyfC1%2Fimg.jpg"
-                                        alt="3D 작업물 5">
+                                        alt="3D 작업물 5"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FK0RHr%2FbtsOD2AUVLk%2FnbbXiDhZF1vexJnBMhyfC1%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #5</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="6">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FE1Vg8%2FbtsOCm8FERY%2FZ0YkyBAM4tqRmkJrGe9oPk%2Fimg.jpg"
-                                        alt="3D 작업물 6">
+                                        alt="3D 작업물 6"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FE1Vg8%2FbtsOCm8FERY%2FZ0YkyBAM4tqRmkJrGe9oPk%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #6</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="7">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrWFYG%2FbtsOCmt5q9I%2FI88dPalyEYSH2i1jrD1EHk%2Fimg.jpg"
-                                        alt="3D 작업물 7">
+                                        alt="3D 작업물 7"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrWFYG%2FbtsOCmt5q9I%2FI88dPalyEYSH2i1jrD1EHk%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #7</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="8">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpfYxn%2FbtsOMbTFJGV%2F0QWfCSpYgY4gPp3pKuPFu0%2Fimg.png"
-                                        alt="3D 작업물 8">
+                                        alt="3D 작업물 8"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpfYxn%2FbtsOMbTFJGV%2F0QWfCSpYgY4gPp3pKuPFu0%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #8</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="9">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn0Koi%2FbtsODVhKoi0%2FljRRhkkwXT2kklQv7KDoe0%2Fimg.png"
-                                        alt="3D 작업물 9">
+                                        alt="3D 작업물 9"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn0Koi%2FbtsODVhKoi0%2FljRRhkkwXT2kklQv7KDoe0%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #9</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="10">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FqthKD%2FbtsOL7w9Gvl%2FAPbgE5rVlac6KPIYw1zao0%2Fimg.jpg"
-                                        alt="3D 작업물 10">
+                                        alt="3D 작업물 10"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FqthKD%2FbtsOL7w9Gvl%2FAPbgE5rVlac6KPIYw1zao0%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #10</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="11">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbthPTc%2FbtsOOcjr2y8%2FzDjHyveAFHZTfojG7oUNrK%2Fimg.jpg"
-                                        alt="3D 작업물 11">
+                                        alt="3D 작업물 11"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbthPTc%2FbtsOOcjr2y8%2FzDjHyveAFHZTfojG7oUNrK%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #11</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="12">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlbYMp%2FbtsOFBQuCXx%2FWWUoJDs1iNuHJKOXLxio9K%2Fimg.jpg"
-                                        alt="3D 작업물 12">
+                                        alt="3D 작업물 12"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlbYMp%2FbtsOFBQuCXx%2FWWUoJDs1iNuHJKOXLxio9K%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #12</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="13">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FKRtOr%2FbtsOOhSpwmF%2FbVqIVWEuknibxEwfnstg6K%2Fimg.png"
-                                        alt="3D 작업물 13">
+                                        alt="3D 작업물 13"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FKRtOr%2FbtsOOhSpwmF%2FbVqIVWEuknibxEwfnstg6K%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #13</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="14">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FempERT%2FbtsOBB57Bya%2FMVkqEcB6D607gkca5G9UOK%2Fimg.jpg"
-                                        alt="3D 작업물 14">
+                                        alt="3D 작업물 14"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FempERT%2FbtsOBB57Bya%2FMVkqEcB6D607gkca5G9UOK%2Fimg.jpg')">
                                     <div class="gallery-caption">작업물 #14</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="15">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdhR3od%2FbtsOMJvv7q3%2FbXp9Mw1pK74Rq5kVXGGFnK%2Fimg.png"
-                                        alt="3D 작업물 15">
+                                        alt="3D 작업물 15"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdhR3od%2FbtsOMJvv7q3%2FbXp9Mw1pK74Rq5kVXGGFnK%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #15</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="16">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fcfk9fE%2FbtsOMS7emR6%2Fl8xw2IeXSe3guGr5hMxyNK%2Fimg.png"
-                                        alt="3D 작업물 16">
+                                        alt="3D 작업물 16"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fcfk9fE%2FbtsOMS7emR6%2Fl8xw2IeXSe3guGr5hMxyNK%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #16</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="17">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F5Y62P%2FbtsOMn7oXSI%2FU9gTxTOQVceRrcHeIhoOkk%2Fimg.png"
-                                        alt="3D 작업물 17">
+                                        alt="3D 작업물 17"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F5Y62P%2FbtsOMn7oXSI%2FU9gTxTOQVceRrcHeIhoOkk%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #17</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="18">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FkRuvE%2FbtsOL8bDavy%2FAmPpRvh3KSoOls0qTlZdUk%2Fimg.png"
-                                        alt="3D 작업물 18">
+                                        alt="3D 작업물 18"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FkRuvE%2FbtsOL8bDavy%2FAmPpRvh3KSoOls0qTlZdUk%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #18</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="19">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcnsEln%2FbtsOMe3Xar5%2FGlSvFaPBHpl30ShQPK6lE1%2Fimg.png"
-                                        alt="3D 작업물 19">
+                                        alt="3D 작업물 19"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcnsEln%2FbtsOMe3Xar5%2FGlSvFaPBHpl30ShQPK6lE1%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #19</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="20">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F272E273E521061A211"
-                                        alt="3D 작업물 20">
+                                        alt="3D 작업물 20"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F272E273E521061A211')">
                                     <div class="gallery-caption">작업물 #20</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="21">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpCRdy%2FbtsOMmgo2zA%2F4uQ0DyFyHIS5jfHCjNxQN1%2Fimg.png"
-                                        alt="3D 작업물 21">
-                                    <div class="gallery-caption">작업물 #21
-                                <div class="gallery-item" data-slide-index="22">
+                                        alt="3D 작업물 21"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpCRdy%2FbtsOMmgo2zA%2F4uQ0DyFyHIS5jfHCjNxQN1%2Fimg.png')">
+                                    <div class="gallery-caption">작업물 #21</div>
+                                </div>
+
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F9AcCk%2FbtsOOaluAMg%2F3XpvQYD41LH6XX0Qki5ZRk%2Fimg.png"
-                                        alt="3D 작업물 22">
+                                        alt="3D 작업물 22"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F9AcCk%2FbtsOOaluAMg%2F3XpvQYD41LH6XX0Qki5ZRk%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #22</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="23">
+
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FmMmvm%2FbtsON4ly4SO%2Fm0BKLzD8Q3WUNG2aiHv06K%2Fimg.png"
-                                        alt="3D 작업물 23">
+                                        alt="3D 작업물 23"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FmMmvm%2FbtsON4ly4SO%2Fm0BKLzD8Q3WUNG2aiHv06K%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #23</div>
                                 </div>
-                                <div class="gallery-item" data-slide-index="24">
+                                <div class="gallery-item">
                                     <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FG4nec%2FbtsOOzSEsbL%2F51tYaCBQ1vA6imtyHS8b60%2Fimg.png"
-                                        alt="3D 작업물 24">
+                                        alt="3D 작업물 24"
+                                        onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FG4nec%2FbtsOOzSEsbL%2F51tYaCBQ1vA6imtyHS8b60%2Fimg.png')">
                                     <div class="gallery-caption">작업물 #24</div>
                                 </div>
-                                
+
                             </div>
 
                             <div class="tech-tags">
@@ -3239,8 +3236,8 @@
                         <div class="work-item">
                             <h5 class="work-title">신속한 도구 습득과 실무 적용</h5>
                             <p class="work-description">
-                                새로운 도구나 기술을 빠르게 습득하여 즉시 프로덕션 레벨의 결과물을 만들어내는 것이 강점입니다.
-                                아래는 처음 접하는 도구들을 단기간에 마스터하여 성공적인 프로젝트를 완수한 사례들입니다.
+                                새로운 도구나 기술을 빠르게 습득하여 즉시 프로덕션 레벨의 결과물을 만들어내는 것이 강점입니다
+                                아래는 처음 접하는 도구들을 단기간에 마스터하여 성공적인 프로젝트를 완수한 사례들입니다
                             </p>
 
                             <!-- 학습 사례들 -->
@@ -3254,8 +3251,9 @@
                                             SketchUp 마스터 (2주 완성)</h6>
                                     </div>
                                     <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
-                                        <strong style="color: #ff77c6;">완전 초보 → 2주 만에 완성</strong><br>
-                                        에이콘 외주 프로젝트에서 SketchUp을 처음 접했지만, 단 2주 만에 고품질 3D 모델을 제작하여 클라이언트로부터 우수한 평가를 받았습니다.
+                                        <strong style="color: #ff77c6;">초보 → 2주 완성</strong><br>
+                                        에이콘 외주 프로젝트에서 SketchUp을 처음 접했지만, 2주 동안 제작완료하여 클라이언트로부터 우수한
+                                        평가를 받았습니다.
                                     </p>
 
                                     <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
@@ -3275,8 +3273,10 @@
                                             <ul
                                                 style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">
                                                 <li>학습 기간: <strong style="color: #ff77c6;">2주</strong></li>
-                                                <li>결과: <strong style="color: #ff77c6;">클라이언트 만족도 우수</strong></li>
-                                                <li>성과: <strong style="color: #ff77c6;">즉시 상용화 가능한 퀄리티</strong></li>
+                                                <li>결과: <strong style="color: #ff77c6;">클라이언트 만족도 우수</strong>
+                                                </li>
+                                                <li>성과: <strong style="color: #ff77c6;">상용화 퀄리티</strong>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -3293,22 +3293,25 @@
                                     <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
                                         <strong style="color: #78dbe2;">노드 기반 쉐이더 제작 전문성</strong><br>
                                         복잡한 코딩 없이도 Unity의 Shader Graph를 활용하여 게임에 필요한 고급 이펙트를 구현합니다.
-                                        보스 방어, 돌진 이펙트 등 실제 게임에서 사용되는 퀄리티의 쉐이더를 제작하였습니다.
+                                        보스 스킬 이펙트 등 실제 게임에서 사용되는 퀄리티의 쉐이더를 제작합니다.
                                     </p>
 
                                     <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                                        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FB6JRx%2FbtsOMkbUr80%2Fniw9T0nqgb0l23b9vzk7KK%2Fimg.png"
+                                        <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FB6JRx%2FbtsOMkbUr80%2FAAAAAAAAAAAAAAAAAAAAADuMP7zy0FXuiL0qgXL7rWZa6LbRCNfCPJ9dVp3SIKnT%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1751295599%26allow_ip%3D%26allow_referer%3D%26signature%3Df5tcApxQ%252Fx8eYl4q4r0uPPVLxIo%253D"
                                             alt="Shader Graph 작업물"
                                             style="width: 200px; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer;"
-                                            onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FB6JRx%2FbtsOMkbUr80%2Fniw9T0nqgb0l23b9vzk7KK%2Fimg.png')">
+                                            onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FB6JRx%2FbtsOMkbUr80%2FAAAAAAAAAAAAAAAAAAAAADuMP7zy0FXuiL0qgXL7rWZa6LbRCNfCPJ9dVp3SIKnT%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1751295599%26allow_ip%3D%26allow_referer%3D%26signature%3Df5tcApxQ%252Fx8eYl4q4r0uPPVLxIo%253D')">
 
                                         <div style="flex: 1; min-width: 200px;">
                                             <ul
                                                 style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">
-                                                <li>활용도: <strong style="color: #78dbe2;">실제 게임 보스전에 이펙트 적용</strong>
+                                                <li>활용도: <strong style="color: #78dbe2;">실제 게임 보스 스킬 이펙트에
+                                                        적용</strong>
                                                 </li>
-                                                <li>기술: <strong style="color: #78dbe2;">노드 기반 비주얼 스크립팅</strong></li>
-                                                <li>장점: <strong style="color: #78dbe2;">빠른 프로토타이핑과 실시간 수정</strong></li>
+                                                <li>기술: <strong style="color: #78dbe2;">노드 기반 비주얼 스크립팅</strong>
+                                                </li>
+                                                <li>장점: <strong style="color: #78dbe2;">빠른 프로토타이핑과 실시간
+                                                        수정</strong></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -3319,13 +3322,14 @@
                                     style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px; border-left: 4px solid #78dbe2;">
                                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                                         <span style="font-size: 1.2rem;">💻</span>
-                                        <h6 style="color: #78dbe2; margin: 0; font-size: 1.1rem; font-weight: 600;">웹 개발
+                                        <h6 style="color: #78dbe2; margin: 0; font-size: 1.1rem; font-weight: 600;">
+                                            웹 개발
                                             (HTML/CSS/JavaScript)</h6>
                                     </div>
                                     <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
-                                        <strong style="color: #ffd93d;">HTML 완전 초보 → 2주 동안 포트폴리오 사이트 제작</strong><br>
-                                        웹 개발 경험이 전혀 없던 상태에서 Claude AI와 협업하여 2주 동안 이 포트폴리오 웹사이트를 완성했습니다.
-                                        반응형 디자인, 모던한 UI/UX, 인터랙티브 애니메이션까지 모두 포함된 결과물입니다.
+                                        <strong style="color: #ffd93d;">HTML 완전 초보 → 포트폴리오 사이트 제작
+                                            제작</strong><br>
+                                        웹 개발 경험이 전혀 없던 상태에서 2주 동안 이 포트폴리오 웹사이트를 완성했습니다
                                     </p>
 
                                     <div
@@ -3333,11 +3337,12 @@
                                         <ul
                                             style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">
                                             <li>학습 기간: <strong style="color: #ffd93d;">2주</strong></li>
-                                            <li>기술 스택: <strong style="color: #ffd93d;">HTML5, CSS3, JavaScript,
-                                                    Chart.js</strong></li>
-                                            <li>특징: <strong style="color: #ffd93d;">반응형 디자인, 모던 UI, 인터랙티브 요소</strong>
+                                            <li>기술 스택: <strong style="color: #ffd93d;">HTML5</strong></li>
+                                            <li>특징: <strong style="color: #ffd93d;">반응형 디자인, 모던 UI, 인터랙티브
+                                                    요소</strong>
                                             </li>
-                                            <li>협업: <strong style="color: #ffd93d;">AI 도구 활용한 효율적 개발</strong></li>
+                                            <li>협업: <strong style="color: #ffd93d;">AI 도구 활용한 효율적 개발</strong>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -3350,11 +3355,13 @@
                                     <strong style="color: #ff77c6;">빠른 학습 속도</strong> × <strong
                                         style="color: #78dbe2;">실무 적용 능력</strong> × <strong style="color: #ffd93d;">품질
                                         보장</strong><br>
-                                    새로운 기술이나 도구를 단기간에 습득하여 즉시 프로덕션에 활용할 수 있는 것이 가장 큰 장점입니다.
+                                    새로운 기술이나 도구를 단기간에 습득하여 즉시 프로젝트에 활용할 수 있는 것이 장점입니다
                                 </p>
                             </div>
                         </div>
-                    </div>                   
+                    </div>
+
+       
                 </div>
 
                 <div class="subsection">
@@ -3375,12 +3382,28 @@
                         </div>
                         <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
                             <strong style="color: #7877c6;">협업 도구</strong><br>
-                            <span style="font-size: 0.9rem;">Git/SVN, Jira, Confluence</span>
+                            <span style="font-size: 0.9rem;">Git/SVN, Jira, Confluence Wiki</span>
                         </div>
                     </div>
                 </div>
-            </div>                
             </div>
+            <div id="slide-modal" class="modal">
+                <div class="slide-modal-content">
+                    <span class="close">&times;</span>
+                    <button class="slide-btn prev" data-direction="-1">‹</button>
+                    <div class="slide-container">
+                        <img id="slide-image" src="" alt="3D 작업물">
+                        <div class="slide-info">
+                            <div class="slide-counter">
+                                <span id="current-slide">1</span> / <span id="total-slides">14</span>
+                            </div>
+                            <div class="slide-caption" id="slide-caption">작업물 #1</div>
+                        </div>
+                    </div>
+                    <button class="slide-btn next" data-direction="1">›</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="ai-modal" class="modal">
@@ -3433,9 +3456,10 @@
                         <div class="work-item">
                             <h5 class="work-title">고해상도 3DGS 씬 재구성</h5>
                             <p class="work-description">
-                                Neural Radiance Fields (NeRF) 연구를 바탕으로 한 3D Gaussian Splatting 기법을 활용한 실시간 렌더링 가능한 3D 씬
-                                재구성 작업입니다.
-                                높은 품질의 포인트 클라우드 데이터로 사실적인 3D 환경을 구현했습니다.
+                                Neural Radiance Fields (NeRF) 연구를 바탕으로 한 3D Gaussian Splatting 기법을 활용한 실시간 렌더링
+                                가능한 3D 씬
+                                재구성 작업입니다
+                                높은 품질의 포인트 클라우드 데이터로 사실적인 3D 환경을 구현했습니다
                             </p>
 
                             <div class="file-info">
@@ -3453,7 +3477,8 @@
                                     <li><strong>⚠️ 대용량 파일 주의:</strong><br>
                                         구글 드라이브에서 "바이러스를 검사할 수 없습니다" 경고가 나타날 수 있습니다.<br>
                                         <span style="color: #ff77c6; font-weight: bold;">"다운로드 계속"</span> 또는
-                                        <span style="color: #ff77c6; font-weight: bold;">"다운로드"</span> 버튼을 클릭하여 진행하세요.
+                                        <span style="color: #ff77c6; font-weight: bold;">"다운로드"</span> 버튼을 클릭하여
+                                        진행하세요
                                     </li>
                                     <li>'Supersplat 에디터 열기' 버튼을 클릭하여 뷰어를 엽니다</li>
                                     <li>에디터에서 다운로드한 PLY 파일을 업로드합니다</li>
@@ -3470,8 +3495,8 @@
                                 </a>
                             </div>
                             <div class="preview-note">
-                                💡 대용량 파일이므로 다운로드에 시간이 걸릴 수 있습니다.<br>
-                                Wi-Fi 환경에서 다운로드하시는 것을 권장합니다.
+                                💡 대용량 파일이므로 다운로드에 시간이 걸릴 수 있습니다<br>
+                                Wi-Fi 환경에서 다운로드하시는 것을 권장합니다
                             </div>
                             <div class="tech-tags">
                                 <span class="tech-tag">3D Gaussian Splatting</span>
@@ -3487,7 +3512,8 @@
                         <h4 class="subsection-title">🎨 Comfy UI & LoRA 모델 활용 사례</h4>
                         <div class="work-item">
                             <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin-bottom: 15px;">
-                                Stable Diffusion 기반의 고급 워크플로우 도구인 Comfy UI를 활용하여 LoRA(Low-Rank Adaptation) 모델을 적용한 이미지
+                                Stable Diffusion 기반의 고급 워크플로우 도구인 Comfy UI를 활용하여 LoRA(Low-Rank Adaptation) 모델을
+                                적용한 이미지
                                 생성 예시입니다.
                                 복잡한 노드 기반 워크플로우를 통해 더욱 정교하고 일관된 스타일의 게임 아트워크를 제작할 수 있습니다.
                             </p>
@@ -3500,16 +3526,21 @@
                                 onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbKFMTm%2FbtsODE8owl5%2FKUZA5D9zuctIO9FqaPk0D1%2Fimg.png')">
 
                             <div style="flex: 1; min-width: 250px;">
-                                <h5 style="color: #78dbe2; margin: 0 0 10px 0; font-size: 1rem; font-weight: 600;">LoRA
+                                <h5 style="color: #78dbe2; margin: 0 0 10px 0; font-size: 1rem; font-weight: 600;">
+                                    LoRA
                                     모델 특화 기능</h5>
                                 <ul
                                     style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
-                                    <li><strong style="color: #ff77c6;">스타일 일관성:</strong> 특정 아트 스타일을 학습한 LoRA로 통일된 비주얼
+                                    <li><strong style="color: #ff77c6;">스타일 일관성:</strong> 특정 아트 스타일을 학습한 LoRA로
+                                        통일된 비주얼
                                         구현</li>
-                                    <li><strong style="color: #ff77c6;">워크플로우 최적화:</strong> 노드 기반 인터페이스로 복잡한 생성 과정 자동화
+                                    <li><strong style="color: #ff77c6;">워크플로우 최적화:</strong> 노드 기반 인터페이스로 복잡한 생성
+                                        과정 자동화
                                     </li>
-                                    <li><strong style="color: #ff77c6;">실시간 조정:</strong> 파라미터 실시간 변경으로 빠른 이터레이션</li>
-                                    <li><strong style="color: #ff77c6;">배치 처리:</strong> 여러 변형 이미지를 한 번에 생성하여 효율성 극대화
+                                    <li><strong style="color: #ff77c6;">실시간 조정:</strong> 파라미터 실시간 변경으로 빠른 이터레이션
+                                    </li>
+                                    <li><strong style="color: #ff77c6;">배치 처리:</strong> 여러 변형 이미지를 한 번에 생성하여 효율성
+                                        극대화
                                     </li>
                                 </ul>
                             </div>
@@ -3520,7 +3551,7 @@
                             <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
                                 💡 <strong style="color: #78dbe2;">실무 활용도:</strong>
                                 게임 개발에서 컨셉 아트, 캐릭터 디자인, 환경 에셋 등의 초안을 빠르게 생성하여
-                                아티스트의 작업 시간을 단축하고 더 많은 아이디어를 탐색할 수 있습니다.
+                                아티스트의 작업 시간을 단축하고 더 많은 아이디어를 탐색할 수 있습니다
                             </p>
                         </div>
                     </div>
@@ -3534,7 +3565,7 @@
                                 <h5 class="work-title">Art 폴더 용량 최적화 프로젝트</h5>
                                 <p class="work-description">
                                     Animoca Games의 프로젝트에서 Art 폴더 용량이 과도하게 증가하여 최적화가 필요한 상황에
-                                    Claude AI를 활용한 데이터 분석으로 효율적인 해결책을 도출한 실무 사례입니다.
+                                    Claude AI를 활용한 데이터 분석으로 효율적인 해결책을 도출한 실무 사례입니다
                                 </p>
 
                                 <div class="file-info">
@@ -3554,7 +3585,8 @@
                                 <div id="analysisChartContainer" style="display: none; margin-top: 20px;">
                                     <div
                                         style="background: rgba(255, 255, 255, 0.02); border-radius: 15px; padding: 20px; border: 1px solid rgba(120, 119, 198, 0.2);">
-                                        <h4 style="color: #7877c6; text-align: center; margin-bottom: 20px;">📊 Art 폴더
+                                        <h4 style="color: #7877c6; text-align: center; margin-bottom: 20px;">📊
+                                            Art 폴더
                                             용량 분석 결과</h4>
 
                                         <div
@@ -3578,10 +3610,13 @@
                                             style="margin-top: 20px; padding: 15px; background: rgba(120, 219, 226, 0.1); border-radius: 10px; border-left: 4px solid #78dbe2;">
                                             <h5 style="color: #78dbe2; margin: 0 0 10px 0;">🎯 AI 분석 핵심 결과</h5>
                                             <ul style="margin: 0; color: #ffffff; font-size: 0.9rem;">
-                                                <li>Character 폴더가 <strong style="color: #ff77c6;">60.3% (1.6GB)</strong>
+                                                <li>Character 폴더가 <strong style="color: #ff77c6;">60.3%
+                                                        (1.6GB)</strong>
                                                     차지</li>
-                                                <li>Basebody가 <strong style="color: #ff77c6;">886MB</strong>로 최대 용량</li>
-                                                <li>최적화 시 <strong style="color: #ff77c6;">800MB-1.2GB</strong> 절약 가능
+                                                <li>Basebody가 <strong style="color: #ff77c6;">886MB</strong>로 최대
+                                                    용량</li>
+                                                <li>최적화 시 <strong style="color: #ff77c6;">800MB-1.2GB</strong>
+                                                    절약 가능
                                                 </li>
                                                 <li>팀 생산성 향상 - 시각적 자료로 빠른 의사결정 지원</li>
                                             </ul>
@@ -3594,11 +3629,14 @@
                                     <ul>
                                         <li><span style="color: #ff77c6; font-weight: bold;">Character 폴더 60.3%
                                                 점유</span> - 최우선 최적화 대상 식별</li>
-                                        <li><span style="color: #ff77c6; font-weight: bold;">중복 파일 패턴 발견</span> -
+                                        <li><span style="color: #ff77c6; font-weight: bold;">중복 파일 패턴 발견</span>
+                                            -
                                             Materials, Textures 폴더 정리 방향 제시</li>
-                                        <li><span style="color: #ff77c6; font-weight: bold;">800MB-1.2GB 절약 가능</span> -
+                                        <li><span style="color: #ff77c6; font-weight: bold;">800MB-1.2GB 절약
+                                                가능</span> -
                                             구체적 최적화 효과 예측</li>
-                                        <li><span style="color: #ff77c6; font-weight: bold;">팀 생산성 향상</span> - 시각적 자료로
+                                        <li><span style="color: #ff77c6; font-weight: bold;">팀 생산성 향상</span> -
+                                            시각적 자료로
                                             빠른 의사결정 지원</li>
                                     </ul>
                                 </div>
@@ -3618,15 +3656,15 @@
                             <div class="work-item">
                                 <h5 class="work-title">게임 개발을 위한 AI 도구 활용</h5>
                                 <p class="work-description">
-                                    최신 AI 기술을 게임 개발 워크플로우에 통합하여 생산성을 혁신적으로 향상시키고 있습니다.
-                                    전통적인 아트 제작 방식과 AI 도구를 조화롭게 결합하여 고품질 게임 에셋을 효율적으로 제작합니다.
+                                    최신 AI 기술을 게임 개발 워크플로우에 통합하여 생산성을 향상시키려 노력하고 있습니다
+                                    전통적인 아트 제작 방식과 AI 도구를 조화롭게 결합하여 고품질 게임 에셋을 효율적으로 제작합니다
                                 </p>
 
                                 <div class="skill-details">
                                     <h4>🤖 원화, UI, 이펙트 스프라이트 이미지 생성</h4>
                                     <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin-bottom: 1rem;">
-                                        Stable Diffusion, Midjourney, Comfy UI를 이용하여 이미지를 제작한 경험이 있습니다.
-                                        원화가가 없는 상황에서 높은 퀄리티와 빠른 작업을 위해 사용했습니다.
+                                        Stable Diffusion, Midjourney, Comfy UI를 이용하여 이미지를 제작한 경험이 있습니다
+                                        원화가가 없는 상황에서 높은 퀄리티와 빠른 작업을 위해 사용했습니다
                                     </p>
                                     <ul>
                                         <li>AI 기반 원화 생성</li>
@@ -3663,8 +3701,7 @@
             <div class="modal-body">
                 <div class="modal-description">
                     <h3>리더십 경험</h3>
-                    <p>다년간의 아트 디렉팅 경험을 통해 팀원들의 잠재력을 끌어내고, 프로젝트의 성공적인 완수를 이끌었습니다. 명확한 비전
-                        제시와 효과적인 커뮤니케이션으로 팀워크를 강화하고 생산성을 극대화합니다.</p>
+                    <p>다년간의 아트 디렉팅 경험을 통해 팀원들의 잠재력을 끌어내고, 명확한 비전제시와 효과적인 커뮤니케이션으로 팀워크를 강화하고 생산성을 극대화합니다</p>
 
                     <div class="skill-details">
                         <h4>🎯 주요 리더십 역량</h4>
@@ -3696,9 +3733,9 @@
                         <div class="work-item">
                             <p class="work-description">
                                 아트팀 리더로서 아트워크의 일관된 색감과 화풍을 유지하기 위해, 색상(Hue), 명도(Value),
-                                채도(Saturation) 이론을 기반으로 시각 자료를 활용하여 팀원들에게 가이드라인을 제시했습니다.
+                                채도(Saturation) 이론을 기반으로 시각 자료를 활용하여 팀원들에게 가이드라인을 제시했습니다
                                 다양한 레퍼런스 이미지를 통해 특정 색감이나 화풍을 어떻게 분석하고 재현하는지에 대한 이론적, 실용적
-                                접근법을 공유하여 아트워크의 퀄리티와 통일성을 높였습니다.
+                                접근법을 공유하여 아트워크의 퀄리티와 통일성을 높였습니다
                             </p>
                             <div class="file-info"
                                 style="background: rgba(120, 219, 226, 0.1); border-left: 4px solid #78dbe2;">
@@ -3709,17 +3746,17 @@
                                     style="list-style: disc; padding-left: 1.2rem; margin-top: 0.5rem; color: #ffffff; line-height: 1.5;">
                                     <li><strong style="color: #ff77c6;">색상 이론
                                             적용:</strong> 아트워크에 적용할 주된 색상 팔레트와 보조 색상 사용
-                                        가이드.</li>
+                                        가이드</li>
                                     <li><strong style="color: #ff77c6;">명도 대비:</strong>
                                         오브젝트의 입체감을 살리고 시선을 유도하는 명도(밝기) 조절 전략.</li>
                                     <li><strong style="color: #ff77c6;">채도 활용:</strong>
                                         아트워크의 분위기와 감정을 조절하는 채도(색의 순도) 운용 방안.</li>
                                     <li><strong style="color: #ff77c6;">화풍 분석:</strong>
-                                        특정 화풍(예: 캐주얼, 실사, 반실사)의 시각적 특징을 HVS 기반으로 해부.
+                                        특정 화풍(예: 캐주얼, 실사, 반실사)의 시각적 특징을 HVS 기반으로 해부
                                     </li>
                                     <li><strong style="color: #ff77c6;">실제 사례
                                             분석:</strong> 유사한 색감/화풍의 게임 아트워크 분석을 통해 적용 방안
-                                        제시.</li>
+                                        제시</li>
                                 </ul>
                             </div>
                             <div class="leadership-image-gallery">
@@ -3809,8 +3846,8 @@
                         <div class="work-item">
                             <h5 class="work-title">Metallic-Roughness 워크플로우</h5>
                             <p class="work-description">
-                                물리 기반 렌더링의 핵심인 PBR 워크플로우를 깊이 이해하고 활용합니다.
-                                Metallic과 Roughness 값을 통한 사실적인 머티리얼 제작과 최적화된 텍스처 파이프라인을 구축합니다.
+                                물리 기반 렌더링의 핵심인 PBR 워크플로우를 깊이 이해하고 활용합니다
+                                Metallic과 Roughness 값을 통한 사실적인 머티리얼 제작과 최적화된 텍스처 파이프라인을 구축합니다
                             </p>
 
                             <div class="skill-details">
@@ -3893,8 +3930,7 @@
                     <div
                         style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 20px; border-left: 4px solid #78dbe2;">
                         <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin-bottom: 15px;">
-                            Unity에서 직접 쉐이더 코드를 작성하고 디버깅하는 실제 개발 과정입니다.
-                            이론적 지식을 바탕으로 HLSL 코드를 구현하여 게임에 필요한 커스텀 렌더링 효과를 만들어냅니다.
+                            최근 Shader Graph의 아쉬움을 느껴 HLSL 코드를 공부중입니다. 초보 수준이지만 직접 쉐이더 코드를 작성하고 디버깅하는 경험을 해보고 있습니다
                         </p>
                         <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
                             <div
@@ -3904,7 +3940,8 @@
                                     style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
                                     onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdYXviH%2FbtsOEkCKdGe%2FzfKVvN7zfnUPK69wBeH8pk%2Fimg.png')">
                                 <div style="padding: 12px; text-align: center;">
-                                    <p style="margin: 0; color: #78dbe2; font-weight: 600; font-size: 0.9rem;">컨셉에 맞춘
+                                    <p style="margin: 0; color: #78dbe2; font-weight: 600; font-size: 0.9rem;">
+                                        컨셉에 맞춘
                                         쉐이더 연구</p>
                                 </div>
                             </div>
@@ -3915,30 +3952,36 @@
                                     style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
                                     onclick="openImageViewer('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbdBSeS%2FbtsODMzAyxc%2FKwXfGmqK6k5KtFHtUbBlzK%2Fimg.jpg')">
                                 <div style="padding: 12px; text-align: center;">
-                                    <p style="margin: 0; color: #78dbe2; font-weight: 600; font-size: 0.9rem;">HLSL 쉐이더
+                                    <p style="margin: 0; color: #78dbe2; font-weight: 600; font-size: 0.9rem;">
+                                        HLSL 쉐이더
                                         코드 작성</p>
                                 </div>
                             </div>
                         </div>
                         <div style="margin-top: 20px;">
-                            <h5 style="color: #ff77c6; margin: 0 0 10px 0; font-size: 1rem; font-weight: 600;">🛠️ 쉐이더
+                            <h5 style="color: #ff77c6; margin: 0 0 10px 0; font-size: 1rem; font-weight: 600;">
+                                🛠️ 쉐이더
                                 개발 역량</h5>
                             <ul
                                 style="margin: 0; padding-left: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
-                                <li><strong style="color: #78dbe2;">HLSL 코드 작성:</strong> 버텍스/프래그먼트 쉐이더를 직접 코딩하여 커스텀 효과
+                                <li><strong style="color: #78dbe2;">HLSL 코드 작성:</strong> 쉐이더를 직접 코딩하여
+                                    커스텀 효과
                                     구현</li>
-                                <li><strong style="color: #78dbe2;">실시간 디버깅:</strong> Unity Inspector에서 속성값을 조정하며 실시간 결과
+                                <li><strong style="color: #78dbe2;">실시간 디버깅:</strong> Unity Inspector에서 속성값을
+                                    조정하며 실시간 결과
                                     확인</li>
-                                <li><strong style="color: #78dbe2;">렌더링 파이프라인 이해:</strong> GPU 렌더링 과정과 최적화 기법 적용</li>
-                                <li><strong style="color: #78dbe2;">Cross-Platform 호환성:</strong> 다양한 플랫폼에서 안정적으로 동작하는
+                                <li><strong style="color: #78dbe2;">렌더링 파이프라인 이해:</strong> GPU 렌더링 과정과 최적화 기법 적용
+                                </li>
+                                <li><strong style="color: #78dbe2;">Cross-Platform 호환성:</strong> 다양한 플랫폼에서 안정적으로
+                                    동작하는
                                     쉐이더 제작</li>
                             </ul>
                         </div>
                         <div
                             style="background: rgba(255, 119, 198, 0.1); border-radius: 8px; padding: 15px; margin-top: 15px;">
                             <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.5;">
-                                💡 <strong style="color: #ff77c6;">개발 접근법:</strong> 시각적 결과물을 먼저 기획하고, 수학적 공식을 HLSL로 구현한
-                                뒤, 최적화와 호환성을 고려하여 완성도 높은 쉐이더를 제작합니다.
+                                💡 <strong style="color: #ff77c6;">개발 접근법:</strong> 시각적 결과물을 먼저 기획하고, 수학적 공식을
+                                HLSL로 구현한 뒤, 최적화와 호환성을 고려하여 완성도 높은 쉐이더를 제작하려 노력하고 있습니다
                             </p>
                         </div>
                     </div>
@@ -3951,7 +3994,7 @@
                         <div class="work-item">
                             <h5 class="work-title">플랫폼별 최적화 전략</h5>
                             <p class="work-description">
-                                다양한 모바일 디바이스에서 안정적인 성능을 보장하기 위한 체계적인 최적화 가이드라인을 수립하고 적용합니다.
+                                다양한 모바일 디바이스에서 안정적인 성능을 보장하기 위한 체계적인 최적화 가이드라인을 수립하고 적용합니다
                             </p>
                             <div class="skill-details">
                                 <h4>🛠️ 주요 기술</h4>
@@ -3985,16 +4028,8 @@
                                 <span style="font-size: 0.9rem;">Substance Designer, Painter</span>
                             </div>
                             <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">프로파일링</strong><br>
-                                <span style="font-size: 0.9rem;">Unity Profiler, RenderDoc</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                <strong style="color: #7877c6;">자동화</strong><br>
-                                <span style="font-size: 0.9rem;">Python, Unity Editor Scripts</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
                                 <strong style="color: #7877c6;">버전 관리</strong><br>
-                                <span style="font-size: 0.9rem;">Git LFS, Perforce</span>
+                                <span style="font-size: 0.9rem;">Git LFS</span>
                             </div>
                         </div>
                     </div>
@@ -4157,22 +4192,15 @@
 
         // 모달 닫기 버튼 이벤트 리스너 (클래스 이름 .close에 맞춤)
         document.addEventListener('DOMContentLoaded', () => {
-            // 갤러리 아이템 클릭 이벤트 등록 (중복 방지)
+            // 갤러리 아이템 클릭 이벤트 등록
             const galleryItems = document.querySelectorAll('.gallery-item[data-slide-index]');
             galleryItems.forEach(item => {
-                // 기존 이벤트 리스너 제거 후 새로 등록
-                item.removeEventListener('click', handleGalleryClick);
-                item.addEventListener('click', handleGalleryClick);
+                item.addEventListener('click', function () {
+                    const slideIndex = parseInt(this.getAttribute('data-slide-index'));
+                    console.log('Gallery item clicked, index:', slideIndex); // 디버깅용
+                    openSlideModal(slideIndex);
+                });
             });
-        });
-
-        // 갤러리 클릭 핸들러 분리
-        function handleGalleryClick(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            const slideIndex = parseInt(this.getAttribute('data-slide-index'));
-            openSlideModal(slideIndex);
-        }
 
             const closeButtons = document.querySelectorAll('.close');
             closeButtons.forEach(button => {
@@ -4217,7 +4245,7 @@
             if (slideNextBtn) {
                 slideNextBtn.addEventListener('click', () => changeSlide(1));
             }
-        
+        });
 
         // --- 이미지 뷰어 모달 열기/닫기 함수 ---
         function openImageViewer(imageUrl) {
@@ -4470,54 +4498,28 @@
         function openSlideModal(index) {
             currentSlideIndex = index;
             const slideModal = document.getElementById('slide-modal');
-    
-        // 현재 스크롤 위치 저장
-        const scrollY = window.scrollY;
-    
-        // 슬라이드 모달 표시
-        slideModal.style.display = 'flex';
-        slideModal.style.position = 'fixed';
-        slideModal.style.top = '0';
-        slideModal.style.left = '0';
-        slideModal.style.width = '100%';
-        slideModal.style.height = '100%';
-        slideModal.style.alignItems = 'center';
-        slideModal.style.justifyContent = 'center';
-        slideModal.style.zIndex = '99999';
-    
-        setTimeout(() => {
-            slideModal.classList.add('active-modal');
-        }, 10);
+            slideModal.style.display = 'flex';
+            setTimeout(() => {
+                slideModal.classList.add('active-modal');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = scrollbarWidth + 'px';
 
-        // body 고정 (스크롤 위치 유지)
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollY}px`;
-        document.body.style.width = '100%';
-        document.body.style.overflow = 'hidden';
-    
-        // 스크롤 위치 저장
-        slideModal.dataset.scrollY = scrollY;
-    
-        updateSlide();
-    }
+            console.log('Open Modal, index:', index); // 디버깅용
+            updateSlide();
+        }
 
+        // 슬라이드 모달 닫기
         function closeSlideModal() {
             const slideModal = document.getElementById('slide-modal');
-    
             slideModal.classList.remove('active-modal');
             slideModal.addEventListener('transitionend', function handler() {
                 slideModal.style.display = 'none';
+                slideModal.style.visibility = 'hidden';
                 slideModal.removeEventListener('transitionend', handler);
             }, { once: true });
-
-            // 스크롤 위치 복원
-            const scrollY = slideModal.dataset.scrollY || 0;
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
-            document.body.style.overflow = '';
-    
-            window.scrollTo(0, parseInt(scrollY));
+            document.body.style.overflow = 'auto';
+            document.body.style.paddingRight = '0px';
         }
 
         // 슬라이드 변경
@@ -4542,16 +4544,7 @@
             slideImage.src = slideImages[currentSlideIndex];
             currentSlideSpan.textContent = currentSlideIndex + 1;
             slideCaption.textContent = `작업물 #${currentSlideIndex + 1}`;
-    
-            // 슬라이드 이미지 클릭 시 이미지 뷰어로 전환 (실제 사이즈)
-            slideImage.onclick = function() {
-            closeSlideModal();
-            // 딜레이 없이 즉시 실행
-            setTimeout(() => {
-                openImageViewer(slideImages[currentSlideIndex]);
-            }, 50); // 300ms → 50ms로 단축
-        };
-    }
+        }
 
         // DOM 로드 완료 후 슬라이드 모달 관련 이벤트 초기화
         document.addEventListener('DOMContentLoaded', function () {
