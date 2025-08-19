@@ -64,3 +64,65 @@ hr, .section-divider, .detail-item{ border-color: var(--border) !important; }
 
 /* 8) 파티클/배경 포인트만 살짝 파랑 */
 .particle{ background: var(--accent) !important; opacity: .3 !important; }
+
+/* ===== mono.css 추가 패치 (무채색 + 파란 포인트 강제) ===== */
+
+/* A. 텍스트 색을 전역으로 덮어쓰기 (인라인 color도 대부분 이김) */
+body, body *:not(svg):not(svg *){
+  color: var(--text) !important;
+}
+h1, h2, h3, h4, h5, h6, strong { color: var(--text-strong) !important; }
+a, a * { color: var(--accent) !important; }
+
+/* B. 그라데이션 텍스트/효과 제거 (logo/히어로/타이틀 등) */
+.logo, .hero-name, .section h2, .work-title, .stat-number, .skill-badge, .floating-badge {
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* C. 버튼류를 일괄 파란 포인트로 */
+.cta-button, .btn, button, [role="button"], [class*="btn"], [class*="button"]{
+  background: var(--accent) !important;
+  color: #fff !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: none !important;
+}
+.cta-button.secondary{
+  background: var(--surface) !important;
+  color: var(--text-strong) !important;
+  border-color: var(--border) !important;
+}
+
+/* D. 태그/배지/칩 계열을 무채색으로 */
+.tag, .tag.featured, .skill-badge, .tech-badge, .game-chip, .floating-badge{
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* E. 인라인에 남아 있는 그라데이션/강한 배경까지 제거 */
+[style*="linear-gradient"], [style*="background: linear-gradient"]{
+  background-image: none !important;
+  background: var(--surface) !important;
+}
+
+/* F. 포인트로 남길 텍스트 (학위/기간/하이라이트 숫자 등) */
+.education-degree, .timeline-period, .highlight-number{
+  color: var(--accent) !important;
+}
+
+/* G. 네비/아이콘류의 지나친 효과 제거 */
+.nav-icon, .skill-icon, .title-icon, .info-icon{
+  filter: none !important;
+}
+
+/* (선택) 아이콘이 너무 옅으면 주석 해제해서 SVG도 글자색을 따르게:
+svg * { fill: currentColor !important; stroke: currentColor !important; }
+*/
+
