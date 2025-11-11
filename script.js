@@ -190,20 +190,25 @@ if (skillCard3D) {
         });
     });
 
-    // Animate progress bars on scroll into view
-    const progressObserver = new IntersectionObserver((entries) => {
+    // Animate skill dots on scroll into view
+    const skillObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const progressBars = skillCard3D.querySelectorAll('.skill-progress-fill');
-                progressBars.forEach((bar, index) => {
+                const dots = skillCard3D.querySelectorAll('.dot.filled');
+                dots.forEach((dot, index) => {
                     setTimeout(() => {
-                        bar.style.width = bar.getAttribute('style').match(/width:\s*(\d+%)/)[1];
-                    }, index * 100);
+                        dot.style.opacity = '0';
+                        dot.style.transform = 'scale(0)';
+                        setTimeout(() => {
+                            dot.style.opacity = '1';
+                            dot.style.transform = 'scale(1)';
+                        }, 50);
+                    }, index * 50);
                 });
-                progressObserver.unobserve(entry.target);
+                skillObserver.unobserve(entry.target);
             }
         });
     }, { threshold: 0.5 });
 
-    progressObserver.observe(skillCard3D);
+    skillObserver.observe(skillCard3D);
 }
