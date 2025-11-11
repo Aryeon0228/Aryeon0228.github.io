@@ -489,6 +489,136 @@ nav {
     border: 1px solid var(--border-color);
 }
 
+/* ==================== 3D Layered Skill Card ==================== */
+.skill-card-3d {
+    position: relative;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    overflow: visible;
+    transition: transform 0.1s ease-out;
+}
+
+.skill-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    transition: transform 0.1s ease-out;
+    pointer-events: none;
+}
+
+.skill-layer-back {
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.1), rgba(92, 223, 230, 0.1));
+    border: 1px solid var(--border-color);
+    transform: translateZ(-40px);
+    opacity: 0.5;
+}
+
+.skill-layer-mid {
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.05), rgba(92, 223, 230, 0.05));
+    border: 1px solid var(--border-color);
+    transform: translateZ(-20px);
+    opacity: 0.7;
+}
+
+.skill-layer-front {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: var(--spacing-md);
+    transform: translateZ(0);
+    pointer-events: auto;
+    z-index: 1;
+}
+
+.layer-decoration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    transform: translate(-50%, -50%);
+    background: var(--gradient);
+    opacity: 0.1;
+    border-radius: 50%;
+    filter: blur(30px);
+}
+
+/* Skills Progress Bars */
+.skills-progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.skill-progress-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.skill-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skill-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.skill-level {
+    font-weight: 600;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 0.875rem;
+}
+
+.skill-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 50px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.skill-progress-fill {
+    height: 100%;
+    background: var(--gradient);
+    border-radius: 50px;
+    transition: width 1s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.skill-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
 /* ==================== Portfolio Section ==================== */
 .portfolio-grid {
     display: grid;
@@ -662,6 +792,20 @@ footer p {
 
     .container {
         padding: 0 var(--spacing-sm);
+    }
+
+    /* Disable 3D effects on mobile for better performance */
+    .skill-card-3d {
+        perspective: none;
+    }
+
+    .skill-layer-back,
+    .skill-layer-mid {
+        display: none;
+    }
+
+    .skill-layer-front {
+        transform: none !important;
     }
 }
 
