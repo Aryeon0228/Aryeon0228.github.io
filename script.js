@@ -152,8 +152,8 @@ if (skillCard3D) {
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
         }
-        layerBack.style.transform = 'translateZ(-40px) rotateX(0deg) rotateY(0deg)';
-        layerMid.style.transform = 'translateZ(-20px) rotateX(0deg) rotateY(0deg)';
+        layerBack.style.transform = 'translateZ(-20px) rotateX(0deg) rotateY(0deg)';
+        layerMid.style.transform = 'translateZ(-10px) rotateX(0deg) rotateY(0deg)';
         layerFront.style.transform = 'translateZ(0) rotateX(0deg) rotateY(0deg)';
         skillCard3D.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
@@ -180,30 +180,26 @@ if (skillCard3D) {
             skillCard3D.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
             // Back layer moves more (stronger parallax)
-            layerBack.style.transform = `translateZ(-40px) rotateX(${rotateX * 1.5}deg) rotateY(${rotateY * 1.5}deg)`;
+            layerBack.style.transform = `translateZ(-20px) rotateX(${rotateX * 1.3}deg) rotateY(${rotateY * 1.3}deg)`;
 
             // Mid layer moves moderately
-            layerMid.style.transform = `translateZ(-20px) rotateX(${rotateX * 1.2}deg) rotateY(${rotateY * 1.2}deg)`;
+            layerMid.style.transform = `translateZ(-10px) rotateX(${rotateX * 1.1}deg) rotateY(${rotateY * 1.1}deg)`;
 
             // Front layer moves least (subtle effect)
-            layerFront.style.transform = `translateZ(0) rotateX(${rotateX * 0.5}deg) rotateY(${rotateY * 0.5}deg)`;
+            layerFront.style.transform = `translateZ(0) rotateX(${rotateX * 0.3}deg) rotateY(${rotateY * 0.3}deg)`;
         });
     });
 
-    // Animate skill dots on scroll into view
+    // Animate skill bars on scroll into view
     const skillObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const dots = skillCard3D.querySelectorAll('.dot.filled');
-                dots.forEach((dot, index) => {
+                const bars = skillCard3D.querySelectorAll('.skill-bar-fill');
+                bars.forEach((bar, index) => {
+                    const width = bar.getAttribute('data-width');
                     setTimeout(() => {
-                        dot.style.opacity = '0';
-                        dot.style.transform = 'scale(0)';
-                        setTimeout(() => {
-                            dot.style.opacity = '1';
-                            dot.style.transform = 'scale(1)';
-                        }, 50);
-                    }, index * 50);
+                        bar.style.width = width + '%';
+                    }, index * 100);
                 });
                 skillObserver.unobserve(entry.target);
             }
