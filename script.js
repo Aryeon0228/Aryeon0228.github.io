@@ -130,3 +130,85 @@ if (window.location.hash) {
         window.scrollTo(0, 0);
     }, 1);
 }
+
+// ==================== 3D Layered Skill Card ====================
+const skillCard3D = document.getElementById('skillCard3D');
+
+if (skillCard3D) {
+    const layerBack = skillCard3D.querySelector('.skill-layer-back');
+    const layerMid = skillCard3D.querySelector('.skill-layer-mid');
+    const layerFront = skillCard3D.querySelector('.skill-layer-front');
+
+    let isHovering = false;
+    let animationFrameId = null;
+
+    skillCard3D.addEventListener('mouseenter', () => {
+        isHovering = true;
+    });
+
+    skillCard3D.addEventListener('mouseleave', () => {
+        isHovering = false;
+        // Reset layers to original position
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+        layerBack.style.transform = 'translateZ(-40px) rotateX(0deg) rotateY(0deg)';
+        layerMid.style.transform = 'translateZ(-20px) rotateX(0deg) rotateY(0deg)';
+        layerFront.style.transform = 'translateZ(0) rotateX(0deg) rotateY(0deg)';
+        skillCard3D.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    skillCard3D.addEventListener('mousemove', (e) => {
+        if (!isHovering) return;
+
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+
+        animationFrameId = requestAnimationFrame(() => {
+            const rect = skillCard3D.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = ((y - centerY) / centerY) * -10; // Max 10 degrees
+            const rotateY = ((x - centerX) / centerX) * 10;  // Max 10 degrees
+
+            // Apply transforms with different intensities for parallax effect
+            skillCard3D.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+            // Back layer moves more (stronger parallax)
+            layerBack.style.transform = `translateZ(-40px) rotateX(${rotateX * 1.5}deg) rotateY(${rotateY * 1.5}deg)`;
+
+            // Mid layer moves moderately
+            layerMid.style.transform = `translateZ(-20px) rotateX(${rotateX * 1.2}deg) rotateY(${rotateY * 1.2}deg)`;
+
+            // Front layer moves least (subtle effect)
+            layerFront.style.transform = `translateZ(0) rotateX(${rotateX * 0.5}deg) rotateY(${rotateY * 0.5}deg)`;
+        });
+    });
+
+    // Animate skill dots on scroll into view
+    const skillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const dots = skillCard3D.querySelectorAll('.dot.filled');
+                dots.forEach((dot, index) => {
+                    setTimeout(() => {
+                        dot.style.opacity = '0';
+                        dot.style.transform = 'scale(0)';
+                        setTimeout(() => {
+                            dot.style.opacity = '1';
+                            dot.style.transform = 'scale(1)';
+                        }, 50);
+                    }, index * 50);
+                });
+                skillObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    skillObserver.observe(skillCard3D);
+}

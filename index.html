@@ -104,25 +104,81 @@
                     </div>
                 </div>
 
-                <!-- Skills Card -->
-                <div class="card">
-                    <h3 class="card-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                        Skills
-                    </h3>
-                    <div class="skills-list">
-                        <span class="skill-tag">3ds Max</span>
-                        <span class="skill-tag">ZBrush</span>
-                        <span class="skill-tag">Substance 3D Painter</span>
-                        <span class="skill-tag">Substance 3D Designer</span>
-                        <span class="skill-tag">Photoshop</span>
-                        <span class="skill-tag">Blender</span>
-                        <span class="skill-tag">Unity</span>
-                        <span class="skill-tag">Unreal Engine</span>
+                <!-- Skills Card with 3D Effect -->
+                <div class="card skill-card-3d" id="skillCard3D">
+                    <div class="skill-layer skill-layer-back">
+                        <div class="layer-decoration"></div>
+                    </div>
+                    <div class="skill-layer skill-layer-mid">
+                        <div class="layer-decoration"></div>
+                    </div>
+                    <div class="skill-layer skill-layer-front">
+                        <h3 class="card-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                            Skills
+                        </h3>
+                        <div class="skills-progress-list">
+                            <div class="skill-level-item">
+                                <span class="skill-name">3ds Max</span>
+                                <div class="skill-level-dots">
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                </div>
+                            </div>
+                            <div class="skill-level-item">
+                                <span class="skill-name">ZBrush</span>
+                                <div class="skill-level-dots">
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                </div>
+                            </div>
+                            <div class="skill-level-item">
+                                <span class="skill-name">Substance 3D</span>
+                                <div class="skill-level-dots">
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                            <div class="skill-level-item">
+                                <span class="skill-name">Photoshop</span>
+                                <div class="skill-level-dots">
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                </div>
+                            </div>
+                            <div class="skill-level-item">
+                                <span class="skill-name">Blender</span>
+                                <div class="skill-level-dots">
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                            <div class="skill-level-item">
+                                <span class="skill-name">Unity</span>
+                                <div class="skill-level-dots">
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                            <div class="skill-level-item">
+                                <span class="skill-name">Unreal Engine</span>
+                                <div class="skill-level-dots">
+                                    <span class="dot filled"></span>
+                                    <span class="dot filled"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -244,8 +300,10 @@
             <div class="portfolio-grid">
                 <!-- Project Card 1 -->
                 <div class="card portfolio-card">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/400x300/8a55fe/ffffff?text=Cosmic+Bomber" alt="Cosmic Bomber">
+                    <div class="portfolio-image portfolio-gradient-1">
+                        <div class="portfolio-placeholder">
+                            <span>Cosmic Bomber</span>
+                        </div>
                     </div>
                     <div class="portfolio-content">
                         <h3>Cosmic Bomber</h3>
@@ -260,8 +318,10 @@
 
                 <!-- Project Card 2 -->
                 <div class="card portfolio-card">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/400x300/5cdfe6/ffffff?text=Colorzzle" alt="Colorzzle">
+                    <div class="portfolio-image portfolio-gradient-2">
+                        <div class="portfolio-placeholder">
+                            <span>Colorzzle</span>
+                        </div>
                     </div>
                     <div class="portfolio-content">
                         <h3>Colorzzle</h3>
@@ -276,8 +336,10 @@
 
                 <!-- Project Card 3 -->
                 <div class="card portfolio-card">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/400x300/8a55fe/ffffff?text=Metaverse" alt="융건릉 메타버스">
+                    <div class="portfolio-image portfolio-gradient-3">
+                        <div class="portfolio-placeholder">
+                            <span>융건릉 메타버스</span>
+                        </div>
                     </div>
                     <div class="portfolio-content">
                         <h3>융건릉 메타버스</h3>
@@ -292,8 +354,10 @@
 
                 <!-- Project Card 4 -->
                 <div class="card portfolio-card">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/400x300/5cdfe6/ffffff?text=Rainbow+Tree" alt="Rainbow Tree">
+                    <div class="portfolio-image portfolio-gradient-4">
+                        <div class="portfolio-placeholder">
+                            <span>Rainbow Tree</span>
+                        </div>
                     </div>
                     <div class="portfolio-content">
                         <h3>Rainbow Tree</h3>
@@ -307,8 +371,10 @@
 
                 <!-- Project Card 5 -->
                 <div class="card portfolio-card">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/400x300/8a55fe/ffffff?text=Wild+Gear" alt="와일드기어 for kakao">
+                    <div class="portfolio-image portfolio-gradient-5">
+                        <div class="portfolio-placeholder">
+                            <span>와일드기어</span>
+                        </div>
                     </div>
                     <div class="portfolio-content">
                         <h3>와일드기어 for kakao</h3>
@@ -322,8 +388,10 @@
 
                 <!-- Project Card 6 -->
                 <div class="card portfolio-card">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/400x300/5cdfe6/ffffff?text=NeRF+Research" alt="NeRF Research">
+                    <div class="portfolio-image portfolio-gradient-6">
+                        <div class="portfolio-placeholder">
+                            <span>NeRF 연구</span>
+                        </div>
                     </div>
                     <div class="portfolio-content">
                         <h3>NeRF 연구 논문</h3>

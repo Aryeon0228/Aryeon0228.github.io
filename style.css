@@ -334,6 +334,18 @@ nav {
     color: white;
 }
 
+.card-highlight .btn-primary {
+    background: white;
+    color: var(--gradient-start);
+    border: 2px solid white;
+}
+
+.card-highlight .btn-primary:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+}
+
 /* ==================== About Section ==================== */
 .about-text {
     font-size: 1.125rem;
@@ -489,6 +501,108 @@ nav {
     border: 1px solid var(--border-color);
 }
 
+/* ==================== 3D Layered Skill Card ==================== */
+.skill-card-3d {
+    position: relative;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    overflow: visible;
+    transition: transform 0.1s ease-out;
+}
+
+.skill-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    transition: transform 0.1s ease-out;
+    pointer-events: none;
+}
+
+.skill-layer-back {
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.1), rgba(92, 223, 230, 0.1));
+    border: 1px solid var(--border-color);
+    transform: translateZ(-40px);
+    opacity: 0.5;
+}
+
+.skill-layer-mid {
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.05), rgba(92, 223, 230, 0.05));
+    border: 1px solid var(--border-color);
+    transform: translateZ(-20px);
+    opacity: 0.7;
+}
+
+.skill-layer-front {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: var(--spacing-md);
+    transform: translateZ(0);
+    pointer-events: auto;
+    z-index: 1;
+}
+
+.layer-decoration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    transform: translate(-50%, -50%);
+    background: var(--gradient);
+    opacity: 0.1;
+    border-radius: 50%;
+    filter: blur(30px);
+}
+
+/* Skills 3-Level System */
+.skills-progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.skill-level-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skill-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.skill-level-dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.dot.filled {
+    background: var(--gradient);
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(138, 85, 254, 0.3);
+}
+
+.skill-level-item:hover .dot.filled {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(138, 85, 254, 0.5);
+}
+
 /* ==================== Portfolio Section ==================== */
 .portfolio-grid {
     display: grid;
@@ -505,6 +619,46 @@ nav {
     width: 100%;
     height: 200px;
     overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portfolio-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.portfolio-gradient-1 {
+    background: linear-gradient(135deg, #8a55fe, #b57bff);
+}
+
+.portfolio-gradient-2 {
+    background: linear-gradient(135deg, #5cdfe6, #7ee8ed);
+}
+
+.portfolio-gradient-3 {
+    background: linear-gradient(135deg, #ff6b9d, #ffa6c1);
+}
+
+.portfolio-gradient-4 {
+    background: linear-gradient(135deg, #ffa726, #ffcc80);
+}
+
+.portfolio-gradient-5 {
+    background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+}
+
+.portfolio-gradient-6 {
+    background: linear-gradient(135deg, #5c6bc0, #9fa8da);
 }
 
 .portfolio-image img {
@@ -514,8 +668,8 @@ nav {
     transition: var(--transition);
 }
 
-.portfolio-card:hover .portfolio-image img {
-    transform: scale(1.1);
+.portfolio-card:hover .portfolio-image {
+    transform: scale(1.05);
 }
 
 .portfolio-content {
@@ -662,6 +816,20 @@ footer p {
 
     .container {
         padding: 0 var(--spacing-sm);
+    }
+
+    /* Disable 3D effects on mobile for better performance */
+    .skill-card-3d {
+        perspective: none;
+    }
+
+    .skill-layer-back,
+    .skill-layer-mid {
+        display: none;
+    }
+
+    .skill-layer-front {
+        transform: none !important;
     }
 }
 
