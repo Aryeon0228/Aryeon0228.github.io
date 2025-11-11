@@ -387,6 +387,7 @@ nav {
 .resume-desc {
     color: var(--text-secondary);
     line-height: 1.6;
+    word-break: keep-all;
 }
 
 /* Experience Timeline */
@@ -424,6 +425,7 @@ nav {
     font-size: 1.25rem;
     color: var(--text-primary);
     margin: 0;
+    font-weight: 700;
 }
 
 .experience-period {
@@ -433,9 +435,15 @@ nav {
 }
 
 .experience-role {
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    margin-top: 0.5rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .experience-project {
