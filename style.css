@@ -387,6 +387,7 @@ nav {
 .resume-desc {
     color: var(--text-secondary);
     line-height: 1.6;
+    word-break: keep-all;
 }
 
 /* Experience Timeline */
@@ -424,6 +425,7 @@ nav {
     font-size: 1.25rem;
     color: var(--text-primary);
     margin: 0;
+    font-weight: 700;
 }
 
 .experience-period {
@@ -433,9 +435,15 @@ nav {
 }
 
 .experience-role {
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    margin-top: 0.5rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .experience-project {
@@ -522,17 +530,17 @@ nav {
 }
 
 .skill-layer-back {
-    background: linear-gradient(135deg, rgba(138, 85, 254, 0.03), rgba(92, 223, 230, 0.03));
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.05), rgba(92, 223, 230, 0.05));
     border: 1px solid var(--border-color);
-    transform: translateZ(-20px);
-    opacity: 0.3;
+    transform: translateZ(-30px);
+    opacity: 0.4;
 }
 
 .skill-layer-mid {
-    background: linear-gradient(135deg, rgba(138, 85, 254, 0.02), rgba(92, 223, 230, 0.02));
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.03), rgba(92, 223, 230, 0.03));
     border: 1px solid var(--border-color);
-    transform: translateZ(-10px);
-    opacity: 0.5;
+    transform: translateZ(-15px);
+    opacity: 0.6;
 }
 
 .skill-layer-front {
@@ -605,7 +613,7 @@ nav {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
     animation: shimmer 2.5s infinite;
 }
 
