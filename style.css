@@ -438,12 +438,20 @@ nav {
     color: var(--text-primary);
     font-weight: 700;
     font-size: 1.1rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
     margin-top: 0.5rem;
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+.experience-team {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    font-style: italic;
 }
 
 .experience-project {
