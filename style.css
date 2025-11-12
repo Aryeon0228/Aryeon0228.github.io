@@ -274,8 +274,16 @@ nav {
 .section-title {
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
     text-align: center;
+}
+
+.section-description {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-lg);
+    font-weight: 400;
 }
 
 .section-subtitle {
