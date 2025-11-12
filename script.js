@@ -155,21 +155,21 @@ if (skillCard) {
 }
 
 // ==================== 3D Portfolio Cards ====================
-const portfolioCards = document.querySelectorAll('.portfolio-3d');
+const portfolioImageWrappers = document.querySelectorAll('.portfolio-image-wrapper.portfolio-3d');
 
-portfolioCards.forEach(card => {
-    const layerBack = card.querySelector('.portfolio-layer-back');
-    const layerMid = card.querySelector('.portfolio-layer-mid');
-    const layerFront = card.querySelector('.portfolio-layer-front');
+portfolioImageWrappers.forEach(wrapper => {
+    const layerBack = wrapper.querySelector('.portfolio-layer-back');
+    const layerMid = wrapper.querySelector('.portfolio-layer-mid');
+    const layerFront = wrapper.querySelector('.portfolio-layer-front');
 
     let isHovering = false;
     let animationFrameId = null;
 
-    card.addEventListener('mouseenter', () => {
+    wrapper.addEventListener('mouseenter', () => {
         isHovering = true;
     });
 
-    card.addEventListener('mouseleave', () => {
+    wrapper.addEventListener('mouseleave', () => {
         isHovering = false;
         // Reset layers to original position
         if (animationFrameId) {
@@ -178,10 +178,10 @@ portfolioCards.forEach(card => {
         layerBack.style.transform = 'translateZ(-30px) rotateX(0deg) rotateY(0deg)';
         layerMid.style.transform = 'translateZ(-15px) rotateX(0deg) rotateY(0deg)';
         layerFront.style.transform = 'translateZ(0) rotateX(0deg) rotateY(0deg)';
-        card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        wrapper.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
 
-    card.addEventListener('mousemove', (e) => {
+    wrapper.addEventListener('mousemove', (e) => {
         if (!isHovering) return;
 
         if (animationFrameId) {
@@ -189,7 +189,7 @@ portfolioCards.forEach(card => {
         }
 
         animationFrameId = requestAnimationFrame(() => {
-            const rect = card.getBoundingClientRect();
+            const rect = wrapper.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
@@ -200,7 +200,7 @@ portfolioCards.forEach(card => {
             const rotateY = ((x - centerX) / centerX) * 8;  // Max 8 degrees
 
             // Apply transforms with different intensities for parallax effect
-            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            wrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
             // Back layer moves more (stronger parallax)
             layerBack.style.transform = `translateZ(-30px) rotateX(${rotateX * 1.5}deg) rotateY(${rotateY * 1.5}deg)`;
