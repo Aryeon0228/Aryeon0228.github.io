@@ -131,70 +131,15 @@ if (window.location.hash) {
     }, 1);
 }
 
-// ==================== 3D Layered Skill Card ====================
-const skillCard3D = document.getElementById('skillCard3D');
+// ==================== Skill Bar Animation ====================
+const skillCard = document.getElementById('skillCard');
 
-if (skillCard3D) {
-    const layerBack = skillCard3D.querySelector('.skill-layer-back');
-    const layerMid = skillCard3D.querySelector('.skill-layer-mid');
-    const layerFront = skillCard3D.querySelector('.skill-layer-front');
-
-    let isHovering = false;
-    let animationFrameId = null;
-
-    skillCard3D.addEventListener('mouseenter', () => {
-        isHovering = true;
-    });
-
-    skillCard3D.addEventListener('mouseleave', () => {
-        isHovering = false;
-        // Reset layers to original position
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-        }
-        layerBack.style.transform = 'translateZ(-30px) rotateX(0deg) rotateY(0deg)';
-        layerMid.style.transform = 'translateZ(-15px) rotateX(0deg) rotateY(0deg)';
-        layerFront.style.transform = 'translateZ(0) rotateX(0deg) rotateY(0deg)';
-        skillCard3D.style.transform = 'rotateX(0deg) rotateY(0deg)';
-    });
-
-    skillCard3D.addEventListener('mousemove', (e) => {
-        if (!isHovering) return;
-
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-        }
-
-        animationFrameId = requestAnimationFrame(() => {
-            const rect = skillCard3D.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const rotateX = ((y - centerY) / centerY) * -10; // Max 10 degrees
-            const rotateY = ((x - centerX) / centerX) * 10;  // Max 10 degrees
-
-            // Apply transforms with different intensities for parallax effect
-            skillCard3D.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-            // Back layer moves more (stronger parallax)
-            layerBack.style.transform = `translateZ(-30px) rotateX(${rotateX * 1.4}deg) rotateY(${rotateY * 1.4}deg)`;
-
-            // Mid layer moves moderately
-            layerMid.style.transform = `translateZ(-15px) rotateX(${rotateX * 1.2}deg) rotateY(${rotateY * 1.2}deg)`;
-
-            // Front layer moves least (subtle effect)
-            layerFront.style.transform = `translateZ(0) rotateX(${rotateX * 0.4}deg) rotateY(${rotateY * 0.4}deg)`;
-        });
-    });
-
+if (skillCard) {
     // Animate skill bars on scroll into view
     const skillObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const bars = skillCard3D.querySelectorAll('.skill-bar-fill');
+                const bars = skillCard.querySelectorAll('.skill-bar-fill');
                 bars.forEach((bar, index) => {
                     const width = bar.getAttribute('data-width');
                     setTimeout(() => {
@@ -206,5 +151,65 @@ if (skillCard3D) {
         });
     }, { threshold: 0.5 });
 
-    skillObserver.observe(skillCard3D);
+    skillObserver.observe(skillCard);
 }
+
+// ==================== 3D Portfolio Cards ====================
+const portfolioCards = document.querySelectorAll('.portfolio-3d');
+
+portfolioCards.forEach(card => {
+    const layerBack = card.querySelector('.portfolio-layer-back');
+    const layerMid = card.querySelector('.portfolio-layer-mid');
+    const layerFront = card.querySelector('.portfolio-layer-front');
+
+    let isHovering = false;
+    let animationFrameId = null;
+
+    card.addEventListener('mouseenter', () => {
+        isHovering = true;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        isHovering = false;
+        // Reset layers to original position
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+        layerBack.style.transform = 'translateZ(-30px) rotateX(0deg) rotateY(0deg)';
+        layerMid.style.transform = 'translateZ(-15px) rotateX(0deg) rotateY(0deg)';
+        layerFront.style.transform = 'translateZ(0) rotateX(0deg) rotateY(0deg)';
+        card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    card.addEventListener('mousemove', (e) => {
+        if (!isHovering) return;
+
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+
+        animationFrameId = requestAnimationFrame(() => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = ((y - centerY) / centerY) * -8; // Max 8 degrees
+            const rotateY = ((x - centerX) / centerX) * 8;  // Max 8 degrees
+
+            // Apply transforms with different intensities for parallax effect
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+            // Back layer moves more (stronger parallax)
+            layerBack.style.transform = `translateZ(-30px) rotateX(${rotateX * 1.5}deg) rotateY(${rotateY * 1.5}deg)`;
+
+            // Mid layer moves moderately
+            layerMid.style.transform = `translateZ(-15px) rotateX(${rotateX * 1.2}deg) rotateY(${rotateY * 1.2}deg)`;
+
+            // Front layer moves least (subtle effect)
+            layerFront.style.transform = `translateZ(0) rotateX(${rotateX * 0.5}deg) rotateY(${rotateY * 0.5}deg)`;
+        });
+    });
+});
