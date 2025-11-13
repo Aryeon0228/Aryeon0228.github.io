@@ -175,7 +175,7 @@ const METAL_PRESETS = {
     satin: { color: [0.9, 0.8, 0.85], metallic: 0.0, roughness: 0.3, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 0.6 },
     dusty_metal: { color: [0.5, 0.5, 0.5], metallic: 1.0, roughness: 0.6, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 0.5 },
     // Special effects - Iridescence examples
-    soap_bubble: { color: [0.95, 0.95, 0.95], metallic: 0.0, roughness: 0.0, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.3 },
+    soap_bubble: { color: [0.95, 0.95, 0.95], metallic: 0.0, roughness: 0.0, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.3, transmission: 0.9 },
     titanium_anodized: { color: [0.75, 0.75, 0.78], metallic: 1.0, roughness: 0.2, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 0.8, iridescenceIOR: 1.5 },
     oil_slick: { color: [0.1, 0.1, 0.1], metallic: 0.3, roughness: 0.1, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 0.9, iridescenceIOR: 1.4 },
     cd_surface: { color: [0.9, 0.9, 0.9], metallic: 0.5, roughness: 0.05, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.6 },
@@ -324,7 +324,10 @@ function initViewer() {
         sheenColor: new THREE.Color(1, 1, 1),
         iridescence: 0.0,
         iridescenceIOR: 1.3,
-        iridescenceThicknessRange: [100, 400]
+        iridescenceThicknessRange: [100, 400],
+        transmission: 0.0,
+        thickness: 0.5,
+        ior: 1.5
     });
 
     // Geometries - Create all geometries but only show selected one
@@ -350,7 +353,8 @@ function initViewer() {
         clearcoatRoughness: document.getElementById('clearcoatRoughness'),
         sheen: document.getElementById('sheen'),
         iridescence: document.getElementById('iridescence'),
-        iridescenceIOR: document.getElementById('iridescenceIOR')
+        iridescenceIOR: document.getElementById('iridescenceIOR'),
+        transmission: document.getElementById('transmission')
     };
 
     const valueDisplays = {
@@ -361,7 +365,8 @@ function initViewer() {
         clearcoatRoughness: document.getElementById('clearcoatRoughnessValue'),
         sheen: document.getElementById('sheenValue'),
         iridescence: document.getElementById('iridescenceValue'),
-        iridescenceIOR: document.getElementById('iridescenceIORValue')
+        iridescenceIOR: document.getElementById('iridescenceIORValue'),
+        transmission: document.getElementById('transmissionValue')
     };
 
     function updateMaterial() {
@@ -381,6 +386,7 @@ function initViewer() {
         material.sheen = parseFloat(controls_ui.sheen.value);
         material.iridescence = parseFloat(controls_ui.iridescence.value);
         material.iridescenceIOR = parseFloat(controls_ui.iridescenceIOR.value);
+        material.transmission = parseFloat(controls_ui.transmission.value);
 
         // Update displays
         if (valueDisplays.metallic) valueDisplays.metallic.textContent = material.metalness.toFixed(2);
@@ -391,6 +397,7 @@ function initViewer() {
         if (valueDisplays.sheen) valueDisplays.sheen.textContent = material.sheen.toFixed(2);
         if (valueDisplays.iridescence) valueDisplays.iridescence.textContent = material.iridescence.toFixed(2);
         if (valueDisplays.iridescenceIOR) valueDisplays.iridescenceIOR.textContent = material.iridescenceIOR.toFixed(2);
+        if (valueDisplays.transmission) valueDisplays.transmission.textContent = material.transmission.toFixed(2);
 
         // Update color display
         const r255 = Math.round(rgb.r * 255);
@@ -445,6 +452,7 @@ function initViewer() {
                 controls_ui.sheen.value = preset.sheen || 0;
                 controls_ui.iridescence.value = preset.iridescence || 0;
                 controls_ui.iridescenceIOR.value = preset.iridescenceIOR || 1.3;
+                controls_ui.transmission.value = preset.transmission || 0;
 
                 updateMaterial();
             }
