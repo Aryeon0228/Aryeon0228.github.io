@@ -271,6 +271,43 @@
             box-shadow: 0 4px 12px rgba(138, 85, 254, 0.3);
         }
 
+        .lighting-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .lighting-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .toggle-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(138, 85, 254, 0.3);
+            border: 1px solid rgba(138, 85, 254, 0.5);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .toggle-btn.active {
+            background: rgba(138, 85, 254, 0.7);
+            border-color: rgba(138, 85, 254, 1);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(138, 85, 254, 0.5);
+        }
+
         .info {
             margin-top: 20px;
             padding: 15px;
@@ -572,6 +609,11 @@
             </div>
         </div>
 
+        <div class="lighting-section">
+            <div class="lighting-title">💡 Lighting</div>
+            <button class="toggle-btn active" id="iblToggle">🌍 IBL Environment: ON</button>
+        </div>
+
         <div class="info">
             💡 <strong>Tip:</strong> 왼쪽 📚 버튼을 클릭하여 금속 레퍼런스를 확인하세요
         </div>
@@ -589,6 +631,7 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
         // Reference panel toggle
         const refToggle = document.getElementById('refToggle');
@@ -616,6 +659,24 @@
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
+
+        // Load HDR environment map
+        let envMap = null;
+        let iblEnabled = true;
+        const rgbeLoader = new RGBELoader();
+
+        rgbeLoader.load(
+            'https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.hdr',
+            function (texture) {
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+                envMap = texture;
+                scene.environment = texture;
+            },
+            undefined,
+            function (error) {
+                console.error('Error loading HDR:', error);
+            }
+        );
 
         // Lighting
         const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -745,6 +806,16 @@
 
                 updateMaterial();
             });
+        });
+
+        // IBL Toggle
+        const iblToggle = document.getElementById('iblToggle');
+        iblToggle.addEventListener('click', () => {
+            iblEnabled = !iblEnabled;
+            scene.environment = iblEnabled ? envMap : null;
+
+            iblToggle.classList.toggle('active');
+            iblToggle.textContent = iblEnabled ? '🌍 IBL Environment: ON' : '🌑 IBL Environment: OFF';
         });
 
         // Animation loop
