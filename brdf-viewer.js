@@ -273,47 +273,6 @@ function initViewer() {
     // Generate reference panel content
     generateReferencePanel();
 
-    // Mobile drawer toggle
-    const uiPanel = document.querySelector('.ui-panel');
-    const isMobile = () => window.innerWidth <= 768;
-
-    if (uiPanel && isMobile()) {
-        // Click on handle area to toggle
-        const handleArea = uiPanel;
-        let startY = 0;
-        let currentY = 0;
-
-        handleArea.addEventListener('click', (e) => {
-            // Only toggle if clicking in the top area (handle)
-            const rect = handleArea.getBoundingClientRect();
-            const clickY = e.clientY - rect.top;
-            if (clickY < 40) {
-                uiPanel.classList.toggle('expanded');
-            }
-        });
-
-        // Touch swipe support
-        handleArea.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-        }, { passive: true });
-
-        handleArea.addEventListener('touchmove', (e) => {
-            currentY = e.touches[0].clientY;
-        }, { passive: true });
-
-        handleArea.addEventListener('touchend', () => {
-            const diff = startY - currentY;
-            // Swipe up to expand, down to collapse
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    uiPanel.classList.add('expanded');
-                } else {
-                    uiPanel.classList.remove('expanded');
-                }
-            }
-        });
-    }
-
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f0f1e);
@@ -456,7 +415,7 @@ function initViewer() {
     // Custom Geometry Generators
     // ========================================================================
 
-    // Create a chubby 3D heart shape
+    // Create a chubby 3D heart shape (M&M style - rounded on all sides)
     function createHeartGeometry() {
         const heartShape = new THREE.Shape();
         const x = 0, y = 0;
@@ -470,12 +429,14 @@ function initViewer() {
         heartShape.bezierCurveTo(x + 1.7, y + 0.7, x + 1.7, y - 0.1, x + 1.0, y - 0.1);
         heartShape.bezierCurveTo(x + 0.6, y - 0.1, x + 0.5, y + 0.4, x + 0.5, y + 0.4);
 
+        // M&M style: much thicker depth with lots of bevel for rounded sides
         const extrudeSettings = {
-            depth: 1.0,
+            depth: 0.6,
             bevelEnabled: true,
-            bevelThickness: 0.3,
-            bevelSize: 0.3,
-            bevelSegments: 20
+            bevelThickness: 0.5,  // Very thick bevel for M&M roundness
+            bevelSize: 0.5,
+            bevelSegments: 32,     // Lots of segments for smooth curves
+            curveSegments: 32      // Smooth outline
         };
 
         const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
@@ -494,24 +455,24 @@ function initViewer() {
         bodyGeometry.translate(0, -0.2, 0);
         geometries.push(bodyGeometry);
 
-        // Head - bigger sphere (cuter proportions)
-        const headGeometry = new THREE.SphereGeometry(0.65, 32, 32);
-        headGeometry.translate(0, 0.75, 0.2);
+        // Head - smaller sphere (40% reduction: 0.65 → 0.39)
+        const headGeometry = new THREE.SphereGeometry(0.39, 32, 32);
+        headGeometry.translate(0, 0.65, 0.25);
         geometries.push(headGeometry);
 
-        // Beak - cone (adjusted for bigger head)
-        const beakGeometry = new THREE.ConeGeometry(0.18, 0.35, 16);
+        // Beak - more prominent cone sticking out
+        const beakGeometry = new THREE.ConeGeometry(0.12, 0.28, 16);
         beakGeometry.rotateX(Math.PI / 2);
-        beakGeometry.translate(0, 0.75, 0.7);
+        beakGeometry.translate(0, 0.65, 0.55);  // Further forward so it's visible
         geometries.push(beakGeometry);
 
-        // Eyes - small spheres (adjusted for bigger head)
-        const leftEyeGeometry = new THREE.SphereGeometry(0.1, 16, 16);
-        leftEyeGeometry.translate(-0.2, 0.9, 0.55);
+        // Eyes - positioned on sides of smaller head
+        const leftEyeGeometry = new THREE.SphereGeometry(0.07, 16, 16);
+        leftEyeGeometry.translate(-0.15, 0.75, 0.35);  // Side position
         geometries.push(leftEyeGeometry);
 
-        const rightEyeGeometry = new THREE.SphereGeometry(0.1, 16, 16);
-        rightEyeGeometry.translate(0.2, 0.9, 0.55);
+        const rightEyeGeometry = new THREE.SphereGeometry(0.07, 16, 16);
+        rightEyeGeometry.translate(0.15, 0.75, 0.35);  // Side position
         geometries.push(rightEyeGeometry);
 
         // Tail - small cone

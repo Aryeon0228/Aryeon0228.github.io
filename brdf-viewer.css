@@ -488,41 +488,29 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 768px) {
-    /* Mobile: Control panel becomes bottom drawer */
+    /* Mobile: Split screen - top 50% for 3D view, bottom 50% for UI */
+    #canvas-container {
+        height: 50vh;
+        top: 0;
+    }
+
     .ui-panel {
         right: 0;
-        top: auto;
+        top: 50vh;
         bottom: 0;
         left: 0;
         width: 100%;
-        max-height: 60vh;
-        border-radius: 20px 20px 0 0;
-        padding: 20px;
-        padding-top: 25px;
-        transform: translateY(calc(100% - 60px));
-        transition: transform 0.3s ease;
+        height: 50vh;
+        max-height: 50vh;
+        border-radius: 0;
+        padding: 15px;
+        transform: none;
+        transition: none;
     }
 
-    /* Expanded state */
-    .ui-panel.expanded {
-        transform: translateY(0);
-    }
-
-    /* Show drawer handle on mobile */
+    /* Hide drawer handle on mobile split view */
     .ui-panel::before {
-        display: block;
-        cursor: pointer;
-    }
-
-    /* Handle area for dragging */
-    .ui-panel::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 40px;
-        cursor: pointer;
+        display: none;
     }
 
     /* Larger touch targets for mobile */
