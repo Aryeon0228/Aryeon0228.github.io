@@ -27,6 +27,82 @@
             z-index: 1;
         }
 
+        /* Reference Panel (Left) */
+        .reference-panel {
+            position: fixed;
+            left: -350px;
+            top: 20px;
+            width: 350px;
+            max-height: calc(100vh - 40px);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0 15px 15px 0;
+            padding: 20px;
+            z-index: 10;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .reference-panel.open {
+            left: 0;
+        }
+
+        .reference-toggle {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(138, 85, 254, 0.8);
+            color: white;
+            border: none;
+            padding: 15px 10px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            z-index: 11;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .reference-toggle:hover {
+            background: rgba(138, 85, 254, 1);
+            padding-right: 15px;
+        }
+
+        .metal-ref-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        .metal-ref-name {
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .metal-ref-swatches {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .metal-ref-swatch {
+            height: 30px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metal-ref-info {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #ccc;
+        }
+
+        /* Control Panel (Right) */
         .ui-panel {
             position: fixed;
             right: 20px;
@@ -42,16 +118,19 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
-        .ui-panel::-webkit-scrollbar {
+        .ui-panel::-webkit-scrollbar,
+        .reference-panel::-webkit-scrollbar {
             width: 8px;
         }
 
-        .ui-panel::-webkit-scrollbar-track {
+        .ui-panel::-webkit-scrollbar-track,
+        .reference-panel::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
         }
 
-        .ui-panel::-webkit-scrollbar-thumb {
+        .ui-panel::-webkit-scrollbar-thumb,
+        .reference-panel::-webkit-scrollbar-thumb {
             background: rgba(138, 85, 254, 0.6);
             border-radius: 4px;
         }
@@ -63,6 +142,12 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #fff;
         }
 
         .subtitle {
@@ -116,15 +201,6 @@
             border: none;
         }
 
-        input[type="color"] {
-            width: 100%;
-            height: 40px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            background: transparent;
-        }
-
         .color-row {
             display: flex;
             gap: 10px;
@@ -139,26 +215,37 @@
         }
 
         .presets h3 {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+            font-size: 1rem;
+            margin-bottom: 12px;
             color: #fff;
+        }
+
+        .preset-section {
+            margin-bottom: 20px;
+        }
+
+        .preset-section-title {
+            font-size: 0.85rem;
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .preset-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
 
         .preset-btn {
-            padding: 12px;
+            padding: 10px 8px;
             background: rgba(138, 85, 254, 0.2);
             border: 1px solid rgba(138, 85, 254, 0.4);
             border-radius: 8px;
             color: #fff;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
         }
 
@@ -185,12 +272,168 @@
                 width: calc(100% - 40px);
                 max-height: 50vh;
             }
+            .reference-panel {
+                width: 280px;
+            }
         }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
 
+    <!-- Reference Toggle Button -->
+    <button class="reference-toggle" id="refToggle">📚</button>
+
+    <!-- Reference Panel (Left) -->
+    <div class="reference-panel" id="refPanel">
+        <h2>🔨 Metal Reference</h2>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">⚙️ Iron (철) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #C6C6C6;"></div>
+                <div class="metal-ref-swatch" style="background: #C6C6C6;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(198,198,198) • M:1.0 • R:0.4-0.5</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">⚙️ Iron (철) - 녹슬음</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #8C5A3C;"></div>
+                <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(140,90,60) • M:0.0-0.2 • R:0.8-0.9</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">✈️ Aluminum (알루미늄) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #F5F6F6;"></div>
+                <div class="metal-ref-swatch" style="background: #F5F6F6;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(245,246,246) • M:1.0 • R:0.1-0.3</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">✈️ Aluminum (알루미늄) - 산화</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #C8CDCD;"></div>
+                <div class="metal-ref-swatch" style="background: #787878;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(200,205,205) • M:0.3-0.5 • R:0.7-0.8</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🔔 Copper (구리) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #FAD0C0;"></div>
+                <div class="metal-ref-swatch" style="background: #FAD0C0;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(250,208,192) • M:1.0 • R:0.1-0.2</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🔔 Copper (구리) - 녹청</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #78B4A5;"></div>
+                <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(120,180,165) • M:0.0-0.1 • R:0.6-0.8</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">👑 Gold (금) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #FFE29B;"></div>
+                <div class="metal-ref-swatch" style="background: #FFE29B;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(255,226,155) • M:1.0 • R:0.1-0.2</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">👑 Gold (금) - 변색</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #C8AA6E;"></div>
+                <div class="metal-ref-swatch" style="background: #B09858;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(200,170,110) • M:0.7-0.9 • R:0.4-0.5</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">💍 Silver (은) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #FCFAF5;"></div>
+                <div class="metal-ref-swatch" style="background: #FCFAF5;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(252,250,245) • M:1.0 • R:0.05-0.1</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">💍 Silver (은) - 변색</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #504B46;"></div>
+                <div class="metal-ref-swatch" style="background: #403C38;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(80,75,70) • M:0.5-0.7 • R:0.5-0.7</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🏺 Bronze (청동) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #CD7F32;"></div>
+                <div class="metal-ref-swatch" style="background: #CD7F32;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(205,127,50) • M:1.0 • R:0.2-0.3</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🏺 Bronze (청동) - 녹청</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #6B8E7F;"></div>
+                <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(107,142,127) • M:0.0-0.1 • R:0.7-0.9</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🎺 Brass (황동) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #E1C16E;"></div>
+                <div class="metal-ref-swatch" style="background: #E1C16E;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(225,193,110) • M:1.0 • R:0.1-0.3</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🎺 Brass (황동) - 변색</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #8B7355;"></div>
+                <div class="metal-ref-swatch" style="background: #5A5A5A;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(139,115,85) • M:0.4-0.6 • R:0.5-0.7</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🛡️ Titanium (티타늄) - 일반</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #C0C0C8;"></div>
+                <div class="metal-ref-swatch" style="background: #C0C0C8;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(192,192,200) • M:1.0 • R:0.3-0.4</div>
+        </div>
+
+        <div class="metal-ref-card">
+            <div class="metal-ref-name">🛡️ Titanium (티타늄) - 산화</div>
+            <div class="metal-ref-swatches">
+                <div class="metal-ref-swatch" style="background: #B8B8C0;"></div>
+                <div class="metal-ref-swatch" style="background: #8A8A8A;"></div>
+            </div>
+            <div class="metal-ref-info">RGB(184,184,192) • M:0.6-0.8 • R:0.6-0.8</div>
+        </div>
+    </div>
+
+    <!-- Control Panel (Right) -->
     <div class="ui-panel">
         <h1>Disney BRDF Viewer</h1>
         <p class="subtitle">실시간 PBR 머티리얼 시뮬레이터</p>
@@ -248,19 +491,50 @@
 
         <div class="presets">
             <h3>Material Presets</h3>
-            <div class="preset-grid">
-                <button class="preset-btn" data-preset="gold">Gold</button>
-                <button class="preset-btn" data-preset="chrome">Chrome</button>
-                <button class="preset-btn" data-preset="plastic">Plastic</button>
-                <button class="preset-btn" data-preset="rubber">Rubber</button>
-                <button class="preset-btn" data-preset="wood">Wood</button>
-                <button class="preset-btn" data-preset="carpaint">Car Paint</button>
-                <button class="preset-btn" data-preset="brushedmetal">Brushed Metal</button>
+
+            <div class="preset-section">
+                <div class="preset-section-title">✨ 일반 금속</div>
+                <div class="preset-grid">
+                    <button class="preset-btn" data-preset="iron">⚙️ Iron</button>
+                    <button class="preset-btn" data-preset="aluminum">✈️ Aluminum</button>
+                    <button class="preset-btn" data-preset="copper">🔔 Copper</button>
+                    <button class="preset-btn" data-preset="gold">👑 Gold</button>
+                    <button class="preset-btn" data-preset="silver">💍 Silver</button>
+                    <button class="preset-btn" data-preset="bronze">🏺 Bronze</button>
+                    <button class="preset-btn" data-preset="brass">🎺 Brass</button>
+                    <button class="preset-btn" data-preset="titanium">🛡️ Titanium</button>
+                </div>
+            </div>
+
+            <div class="preset-section">
+                <div class="preset-section-title">🦀 산화/녹슨 금속</div>
+                <div class="preset-grid">
+                    <button class="preset-btn" data-preset="iron_rust">Iron Rust</button>
+                    <button class="preset-btn" data-preset="aluminum_oxidized">Al Oxidized</button>
+                    <button class="preset-btn" data-preset="copper_patina">Cu Patina</button>
+                    <button class="preset-btn" data-preset="gold_tarnished">Gold Tarnish</button>
+                    <button class="preset-btn" data-preset="silver_tarnished">Silver Tarnish</button>
+                    <button class="preset-btn" data-preset="bronze_patina">Bronze Patina</button>
+                    <button class="preset-btn" data-preset="brass_tarnished">Brass Tarnish</button>
+                    <button class="preset-btn" data-preset="titanium_oxidized">Ti Oxidized</button>
+                </div>
+            </div>
+
+            <div class="preset-section">
+                <div class="preset-section-title">🎨 기타 머티리얼</div>
+                <div class="preset-grid">
+                    <button class="preset-btn" data-preset="chrome">Chrome</button>
+                    <button class="preset-btn" data-preset="plastic">Plastic</button>
+                    <button class="preset-btn" data-preset="rubber">Rubber</button>
+                    <button class="preset-btn" data-preset="wood">Wood</button>
+                    <button class="preset-btn" data-preset="carpaint">Car Paint</button>
+                    <button class="preset-btn" data-preset="brushedmetal">Brushed</button>
+                </div>
             </div>
         </div>
 
         <div class="info">
-            💡 <strong>Tip:</strong> 마우스로 드래그하여 회전, 스크롤로 줌 조절
+            💡 <strong>Tip:</strong> 왼쪽 📚 버튼을 클릭하여 금속 레퍼런스를 확인하세요
         </div>
     </div>
 
@@ -276,6 +550,15 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Reference panel toggle
+        const refToggle = document.getElementById('refToggle');
+        const refPanel = document.getElementById('refPanel');
+
+        refToggle.addEventListener('click', () => {
+            refPanel.classList.toggle('open');
+            refToggle.textContent = refPanel.classList.contains('open') ? '✖️' : '📚';
+        });
 
         // Scene setup
         const scene = new THREE.Scene();
@@ -295,7 +578,7 @@
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
 
-        // Lighting - matching Python version
+        // Lighting
         const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
         light1.position.set(5, 5, 5);
         scene.add(light1);
@@ -377,9 +660,29 @@
             control.addEventListener('input', updateMaterial);
         });
 
-        // Presets
+        // Presets - RGB values converted from 0-255 to 0-1
         const presets = {
-            gold: { color: [1.0, 0.7, 0.3], metallic: 1.0, roughness: 0.2, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            // Pure metals
+            iron: { color: [0.776, 0.776, 0.776], metallic: 1.0, roughness: 0.45, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            aluminum: { color: [0.961, 0.965, 0.965], metallic: 1.0, roughness: 0.2, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            copper: { color: [0.980, 0.816, 0.753], metallic: 1.0, roughness: 0.15, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            gold: { color: [1.0, 0.886, 0.608], metallic: 1.0, roughness: 0.15, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            silver: { color: [0.988, 0.980, 0.961], metallic: 1.0, roughness: 0.075, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            bronze: { color: [0.804, 0.498, 0.196], metallic: 1.0, roughness: 0.25, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            brass: { color: [0.882, 0.757, 0.431], metallic: 1.0, roughness: 0.2, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            titanium: { color: [0.753, 0.753, 0.784], metallic: 1.0, roughness: 0.35, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+
+            // Oxidized/Rusted metals
+            iron_rust: { color: [0.549, 0.353, 0.235], metallic: 0.1, roughness: 0.85, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            aluminum_oxidized: { color: [0.784, 0.804, 0.804], metallic: 0.4, roughness: 0.75, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            copper_patina: { color: [0.471, 0.706, 0.647], metallic: 0.05, roughness: 0.7, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            gold_tarnished: { color: [0.784, 0.667, 0.431], metallic: 0.8, roughness: 0.45, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            silver_tarnished: { color: [0.314, 0.294, 0.275], metallic: 0.6, roughness: 0.6, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            bronze_patina: { color: [0.420, 0.557, 0.498], metallic: 0.05, roughness: 0.8, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            brass_tarnished: { color: [0.545, 0.451, 0.333], metallic: 0.5, roughness: 0.6, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            titanium_oxidized: { color: [0.722, 0.722, 0.753], metallic: 0.7, roughness: 0.7, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+
+            // Other materials
             chrome: { color: [0.88, 0.88, 0.88], metallic: 1.0, roughness: 0.05, clearcoat: 0.0, clearcoatRoughness: 0.0 },
             plastic: { color: [0.8, 0.2, 0.2], metallic: 0.0, roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.1 },
             rubber: { color: [0.15, 0.15, 0.15], metallic: 0.0, roughness: 0.9, clearcoat: 0.0, clearcoatRoughness: 0.0 },
