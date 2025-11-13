@@ -287,9 +287,9 @@ function initViewer() {
             name: '🌅 Sunset',
             url: 'https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr'
         },
-        studio: {
-            name: '🏛️ Studio',
-            url: 'https://threejs.org/examples/textures/equirectangular/empty_warehouse_01_1k.hdr'
+        forest: {
+            name: '🌲 Forest',
+            url: 'https://threejs.org/examples/textures/equirectangular/forest_slope_1k.hdr'
         },
         night: {
             name: '🌙 Night',
