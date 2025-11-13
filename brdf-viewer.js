@@ -169,6 +169,15 @@ const METAL_PRESETS = {
     bronze_patina: { color: [0.420, 0.557, 0.498], metallic: 0.05, roughness: 0.8, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     brass_tarnished: { color: [0.545, 0.451, 0.333], metallic: 0.5, roughness: 0.6, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     titanium_oxidized: { color: [0.722, 0.722, 0.753], metallic: 0.7, roughness: 0.7, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+    // Special effects - Sheen examples
+    velvet: { color: [0.6, 0.1, 0.2], metallic: 0.0, roughness: 0.8, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 1.0 },
+    peach: { color: [1.0, 0.8, 0.6], metallic: 0.0, roughness: 0.4, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 0.7 },
+    dusty_metal: { color: [0.5, 0.5, 0.5], metallic: 1.0, roughness: 0.6, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 0.5 },
+    // Special effects - Iridescence examples
+    soap_bubble: { color: [0.95, 0.95, 0.95], metallic: 0.0, roughness: 0.0, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.3 },
+    titanium_anodized: { color: [0.75, 0.75, 0.78], metallic: 1.0, roughness: 0.2, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 0.8, iridescenceIOR: 1.5 },
+    oil_slick: { color: [0.1, 0.1, 0.1], metallic: 0.3, roughness: 0.1, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 0.9, iridescenceIOR: 1.4 },
+    cd_surface: { color: [0.9, 0.9, 0.9], metallic: 0.5, roughness: 0.05, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.6 },
     // Other materials
     chrome: { color: [0.88, 0.88, 0.88], metallic: 1.0, roughness: 0.05, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     plastic: { color: [0.8, 0.2, 0.2], metallic: 0.0, roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.1 },
