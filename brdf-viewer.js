@@ -273,6 +273,47 @@ function initViewer() {
     // Generate reference panel content
     generateReferencePanel();
 
+    // Mobile drawer toggle
+    const uiPanel = document.querySelector('.ui-panel');
+    const isMobile = () => window.innerWidth <= 768;
+
+    if (uiPanel && isMobile()) {
+        // Click on handle area to toggle
+        const handleArea = uiPanel;
+        let startY = 0;
+        let currentY = 0;
+
+        handleArea.addEventListener('click', (e) => {
+            // Only toggle if clicking in the top area (handle)
+            const rect = handleArea.getBoundingClientRect();
+            const clickY = e.clientY - rect.top;
+            if (clickY < 40) {
+                uiPanel.classList.toggle('expanded');
+            }
+        });
+
+        // Touch swipe support
+        handleArea.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        handleArea.addEventListener('touchmove', (e) => {
+            currentY = e.touches[0].clientY;
+        }, { passive: true });
+
+        handleArea.addEventListener('touchend', () => {
+            const diff = startY - currentY;
+            // Swipe up to expand, down to collapse
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    uiPanel.classList.add('expanded');
+                } else {
+                    uiPanel.classList.remove('expanded');
+                }
+            }
+        });
+    }
+
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f0f1e);
@@ -420,25 +461,26 @@ function initViewer() {
         const heartShape = new THREE.Shape();
         const x = 0, y = 0;
 
-        heartShape.moveTo(x + 0.5, y + 0.5);
-        heartShape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
-        heartShape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
-        heartShape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.54, x + 0.5, y + 1.9);
-        heartShape.bezierCurveTo(x + 1.2, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
-        heartShape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1.0, y);
-        heartShape.bezierCurveTo(x + 0.7, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+        // Rounder, chubbier heart shape (relaxed/soft style)
+        heartShape.moveTo(x + 0.5, y + 0.4);
+        heartShape.bezierCurveTo(x + 0.5, y + 0.4, x + 0.4, y - 0.1, x, y - 0.1);
+        heartShape.bezierCurveTo(x - 0.7, y - 0.1, x - 0.7, y + 0.7, x - 0.7, y + 0.8);
+        heartShape.bezierCurveTo(x - 0.7, y + 1.3, x - 0.2, y + 1.7, x + 0.5, y + 2.0);
+        heartShape.bezierCurveTo(x + 1.2, y + 1.7, x + 1.7, y + 1.3, x + 1.7, y + 0.8);
+        heartShape.bezierCurveTo(x + 1.7, y + 0.7, x + 1.7, y - 0.1, x + 1.0, y - 0.1);
+        heartShape.bezierCurveTo(x + 0.6, y - 0.1, x + 0.5, y + 0.4, x + 0.5, y + 0.4);
 
         const extrudeSettings = {
-            depth: 0.8,
+            depth: 1.0,
             bevelEnabled: true,
-            bevelThickness: 0.2,
-            bevelSize: 0.2,
-            bevelSegments: 16
+            bevelThickness: 0.3,
+            bevelSize: 0.3,
+            bevelSegments: 20
         };
 
         const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
         geometry.center();
-        geometry.scale(1.2, 1.2, 1.2);
+        geometry.scale(1.1, 1.1, 1.1);
         return geometry;
     }
 
@@ -452,24 +494,24 @@ function initViewer() {
         bodyGeometry.translate(0, -0.2, 0);
         geometries.push(bodyGeometry);
 
-        // Head - sphere
-        const headGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-        headGeometry.translate(0, 0.7, 0.2);
+        // Head - bigger sphere (cuter proportions)
+        const headGeometry = new THREE.SphereGeometry(0.65, 32, 32);
+        headGeometry.translate(0, 0.75, 0.2);
         geometries.push(headGeometry);
 
-        // Beak - cone
-        const beakGeometry = new THREE.ConeGeometry(0.15, 0.3, 16);
+        // Beak - cone (adjusted for bigger head)
+        const beakGeometry = new THREE.ConeGeometry(0.18, 0.35, 16);
         beakGeometry.rotateX(Math.PI / 2);
-        beakGeometry.translate(0, 0.7, 0.6);
+        beakGeometry.translate(0, 0.75, 0.7);
         geometries.push(beakGeometry);
 
-        // Eyes - small spheres
-        const leftEyeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-        leftEyeGeometry.translate(-0.15, 0.8, 0.45);
+        // Eyes - small spheres (adjusted for bigger head)
+        const leftEyeGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+        leftEyeGeometry.translate(-0.2, 0.9, 0.55);
         geometries.push(leftEyeGeometry);
 
-        const rightEyeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-        rightEyeGeometry.translate(0.15, 0.8, 0.45);
+        const rightEyeGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+        rightEyeGeometry.translate(0.2, 0.9, 0.55);
         geometries.push(rightEyeGeometry);
 
         // Tail - small cone
