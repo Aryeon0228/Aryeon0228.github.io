@@ -116,10 +116,10 @@
 
         <div class="control-group">
             <div class="control-label">
-                <span>Clearcoat Roughness</span>
-                <span class="control-value" id="clearcoatRoughnessValue">0.00</span>
+                <span>Clearcoat Gloss</span>
+                <span class="control-value" id="clearcoatGlossValue">1.00</span>
             </div>
-            <input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0.0" aria-label="Clearcoat roughness">
+            <input type="range" id="clearcoatGloss" min="0" max="1" step="0.01" value="1.0" aria-label="Clearcoat gloss">
         </div>
 
         <div class="control-group">
@@ -152,6 +152,22 @@
                 <span class="control-value" id="transmissionValue">0.00</span>
             </div>
             <input type="range" id="transmission" min="0" max="1" step="0.01" value="0.0" aria-label="Transmission">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Anisotropy (이방성)</span>
+                <span class="control-value" id="anisotropyValue">0.00</span>
+            </div>
+            <input type="range" id="anisotropy" min="0" max="1" step="0.01" value="0.0" aria-label="Anisotropy">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Anisotropy Rotation</span>
+                <span class="control-value" id="anisotropyRotationValue">0.00π</span>
+            </div>
+            <input type="range" id="anisotropyRotation" min="0" max="6.283" step="0.01" value="0.0" aria-label="Anisotropy Rotation">
         </div>
 
         <div class="presets">
