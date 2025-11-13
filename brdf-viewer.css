@@ -145,9 +145,10 @@ body {
 
 .color-rgb-text {
     font-size: 0.85rem;
-    color: #5cdfe6;
+    color: #fff;
     font-weight: 600;
     font-family: 'Courier New', monospace;
+    opacity: 0.9;
 }
 
 /* Control Panel (Right) */
@@ -186,10 +187,7 @@ body {
 h1 {
     font-size: 1.5rem;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #8a55fe, #5cdfe6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #fff;
 }
 
 h2 {
@@ -217,8 +215,9 @@ h2 {
 }
 
 .control-value {
-    color: #5cdfe6;
+    color: #fff;
     font-weight: 600;
+    opacity: 0.9;
 }
 
 input[type="range"] {
@@ -232,21 +231,23 @@ input[type="range"] {
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(135deg, #8a55fe, #5cdfe6);
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(138, 85, 254, 0.5);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
 input[type="range"]::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: linear-gradient(135deg, #8a55fe, #5cdfe6);
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
     border-radius: 50%;
     cursor: pointer;
-    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
 .color-hsv-group {
@@ -305,9 +306,10 @@ input[type="range"]::-moz-range-thumb {
 
 .preset-section-title {
     font-size: 0.85rem;
-    color: #ffd700;
+    color: #fff;
     margin-bottom: 8px;
     font-weight: 600;
+    opacity: 0.9;
 }
 
 .preset-grid {
@@ -318,8 +320,8 @@ input[type="range"]::-moz-range-thumb {
 
 .preset-btn {
     padding: 10px 8px;
-    background: rgba(138, 85, 254, 0.2);
-    border: 1px solid rgba(138, 85, 254, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     color: #fff;
     cursor: pointer;
@@ -329,10 +331,10 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .preset-btn:hover {
-    background: rgba(138, 85, 254, 0.4);
-    border-color: rgba(138, 85, 254, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(138, 85, 254, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .lighting-section,
@@ -340,42 +342,24 @@ input[type="range"]::-moz-range-thumb {
 .texture-section {
     margin-top: 20px;
     padding: 15px;
-    background: rgba(255, 193, 7, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    border: 1px solid rgba(255, 193, 7, 0.3);
-}
-
-.geometry-section {
-    background: rgba(92, 223, 230, 0.1);
-    border-color: rgba(92, 223, 230, 0.3);
-}
-
-.texture-section {
-    background: rgba(138, 85, 254, 0.1);
-    border-color: rgba(138, 85, 254, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .lighting-title,
 .section-title {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #ffc107;
+    color: #fff;
     margin-bottom: 10px;
-}
-
-.geometry-section .section-title {
-    color: #5cdfe6;
-}
-
-.texture-section .section-title {
-    color: #8a55fe;
 }
 
 .toggle-btn {
     width: 100%;
     padding: 10px;
-    background: rgba(138, 85, 254, 0.3);
-    border: 1px solid rgba(138, 85, 254, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     color: #fff;
     cursor: pointer;
@@ -385,12 +369,12 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .toggle-btn.active {
-    background: rgba(138, 85, 254, 0.7);
-    border-color: rgba(138, 85, 254, 1);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .toggle-btn:hover {
-    background: rgba(138, 85, 254, 0.5);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .geometry-grid {
@@ -401,8 +385,8 @@ input[type="range"]::-moz-range-thumb {
 
 .geometry-btn {
     padding: 10px 8px;
-    background: rgba(92, 223, 230, 0.2);
-    border: 1px solid rgba(92, 223, 230, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     color: #fff;
     cursor: pointer;
@@ -412,12 +396,12 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .geometry-btn.active {
-    background: rgba(92, 223, 230, 0.6);
-    border-color: rgba(92, 223, 230, 1);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .geometry-btn:hover {
-    background: rgba(92, 223, 230, 0.4);
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
 }
 
@@ -425,7 +409,7 @@ input[type="range"]::-moz-range-thumb {
     width: 100%;
     padding: 8px;
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(138, 85, 254, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     color: #fff;
     font-size: 0.8rem;
@@ -434,7 +418,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .texture-section input[type="file"]::file-selector-button {
-    background: rgba(138, 85, 254, 0.5);
+    background: rgba(255, 255, 255, 0.15);
     border: none;
     border-radius: 4px;
     padding: 6px 12px;
@@ -444,14 +428,14 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .texture-section input[type="file"]::file-selector-button:hover {
-    background: rgba(138, 85, 254, 0.8);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .clear-btn {
     width: 100%;
     padding: 8px;
-    background: rgba(255, 87, 87, 0.3);
-    border: 1px solid rgba(255, 87, 87, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     color: #fff;
     cursor: pointer;
@@ -462,7 +446,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .clear-btn:hover {
-    background: rgba(255, 87, 87, 0.5);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .texture-info {
@@ -477,8 +461,8 @@ input[type="range"]::-moz-range-thumb {
 .info {
     margin-top: 20px;
     padding: 15px;
-    background: rgba(92, 223, 230, 0.1);
-    border-left: 3px solid #5cdfe6;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     font-size: 0.8rem;
     line-height: 1.6;
