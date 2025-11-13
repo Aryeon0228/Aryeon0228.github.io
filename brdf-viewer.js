@@ -289,7 +289,7 @@ function initViewer() {
         },
         studio: {
             name: '🏛️ Studio',
-            url: 'https://threejs.org/examples/textures/equirectangular/studio_small_08_1k.hdr'
+            url: 'https://threejs.org/examples/textures/equirectangular/empty_warehouse_01_1k.hdr'
         },
         night: {
             name: '🌙 Night',
