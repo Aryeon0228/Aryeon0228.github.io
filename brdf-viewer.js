@@ -415,12 +415,12 @@ function initViewer() {
     // Custom Geometry Generators
     // ========================================================================
 
-    // Create a chubby 3D heart shape (M&M style - rounded on all sides)
+    // Create a chubby 3D heart shape (M&M style - flattened sphere/lenticular)
     function createHeartGeometry() {
+        // Create heart shape outline
         const heartShape = new THREE.Shape();
         const x = 0, y = 0;
 
-        // Rounder, chubbier heart shape (relaxed/soft style)
         heartShape.moveTo(x + 0.5, y + 0.4);
         heartShape.bezierCurveTo(x + 0.5, y + 0.4, x + 0.4, y - 0.1, x, y - 0.1);
         heartShape.bezierCurveTo(x - 0.7, y - 0.1, x - 0.7, y + 0.7, x - 0.7, y + 0.8);
@@ -429,19 +429,19 @@ function initViewer() {
         heartShape.bezierCurveTo(x + 1.7, y + 0.7, x + 1.7, y - 0.1, x + 1.0, y - 0.1);
         heartShape.bezierCurveTo(x + 0.6, y - 0.1, x + 0.5, y + 0.4, x + 0.5, y + 0.4);
 
-        // M&M style: much thicker depth with lots of bevel for rounded sides
+        // M&M style: thin extrude with massive bevel creates lenticular shape
         const extrudeSettings = {
-            depth: 0.6,
+            depth: 0.3,            // Very thin center
             bevelEnabled: true,
-            bevelThickness: 0.5,  // Very thick bevel for M&M roundness
-            bevelSize: 0.5,
-            bevelSegments: 32,     // Lots of segments for smooth curves
-            curveSegments: 32      // Smooth outline
+            bevelThickness: 0.7,   // Huge bevel for roundness
+            bevelSize: 0.7,
+            bevelSegments: 40,     // Super smooth curves
+            curveSegments: 40
         };
 
         const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
         geometry.center();
-        geometry.scale(1.1, 1.1, 1.1);
+        geometry.scale(1.0, 1.0, 0.8);  // Slightly flatten Z axis
         return geometry;
     }
 
@@ -455,24 +455,24 @@ function initViewer() {
         bodyGeometry.translate(0, -0.2, 0);
         geometries.push(bodyGeometry);
 
-        // Head - smaller sphere (40% reduction: 0.65 → 0.39)
-        const headGeometry = new THREE.SphereGeometry(0.39, 32, 32);
-        headGeometry.translate(0, 0.65, 0.25);
+        // Head - 20% bigger (0.39 → 0.47)
+        const headGeometry = new THREE.SphereGeometry(0.47, 32, 32);
+        headGeometry.translate(0, 0.7, 0.25);
         geometries.push(headGeometry);
 
-        // Beak - more prominent cone sticking out
-        const beakGeometry = new THREE.ConeGeometry(0.12, 0.28, 16);
-        beakGeometry.rotateX(Math.PI / 2);
-        beakGeometry.translate(0, 0.65, 0.55);  // Further forward so it's visible
+        // Beak - rounded (flattened sphere instead of cone)
+        const beakGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+        beakGeometry.scale(1, 0.6, 1.2);  // Flatten vertically, extend forward
+        beakGeometry.translate(0, 0.7, 0.65);  // Stick out in front
         geometries.push(beakGeometry);
 
-        // Eyes - positioned on sides of smaller head
-        const leftEyeGeometry = new THREE.SphereGeometry(0.07, 16, 16);
-        leftEyeGeometry.translate(-0.15, 0.75, 0.35);  // Side position
+        // Eyes - positioned higher and more forward
+        const leftEyeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+        leftEyeGeometry.translate(-0.18, 0.85, 0.5);  // Higher and forward
         geometries.push(leftEyeGeometry);
 
-        const rightEyeGeometry = new THREE.SphereGeometry(0.07, 16, 16);
-        rightEyeGeometry.translate(0.15, 0.75, 0.35);  // Side position
+        const rightEyeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+        rightEyeGeometry.translate(0.18, 0.85, 0.5);  // Higher and forward
         geometries.push(rightEyeGeometry);
 
         // Tail - small cone
