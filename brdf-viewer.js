@@ -308,7 +308,13 @@ function initViewer() {
         roughness: 0.5,
         clearcoat: 0.0,
         clearcoatRoughness: 0.0,
-        reflectivity: 0.5
+        reflectivity: 0.5,
+        sheen: 0.0,
+        sheenRoughness: 0.5,
+        sheenColor: new THREE.Color(1, 1, 1),
+        iridescence: 0.0,
+        iridescenceIOR: 1.3,
+        iridescenceThicknessRange: [100, 400]
     });
 
     // Geometries - Create all geometries but only show selected one
@@ -331,7 +337,10 @@ function initViewer() {
         roughness: document.getElementById('roughness'),
         specular: document.getElementById('specular'),
         clearcoat: document.getElementById('clearcoat'),
-        clearcoatRoughness: document.getElementById('clearcoatRoughness')
+        clearcoatRoughness: document.getElementById('clearcoatRoughness'),
+        sheen: document.getElementById('sheen'),
+        iridescence: document.getElementById('iridescence'),
+        iridescenceIOR: document.getElementById('iridescenceIOR')
     };
 
     const valueDisplays = {
@@ -339,7 +348,10 @@ function initViewer() {
         roughness: document.getElementById('roughnessValue'),
         specular: document.getElementById('specularValue'),
         clearcoat: document.getElementById('clearcoatValue'),
-        clearcoatRoughness: document.getElementById('clearcoatRoughnessValue')
+        clearcoatRoughness: document.getElementById('clearcoatRoughnessValue'),
+        sheen: document.getElementById('sheenValue'),
+        iridescence: document.getElementById('iridescenceValue'),
+        iridescenceIOR: document.getElementById('iridescenceIORValue')
     };
 
     function updateMaterial() {
@@ -356,6 +368,9 @@ function initViewer() {
         material.reflectivity = parseFloat(controls_ui.specular.value);
         material.clearcoat = parseFloat(controls_ui.clearcoat.value);
         material.clearcoatRoughness = parseFloat(controls_ui.clearcoatRoughness.value);
+        material.sheen = parseFloat(controls_ui.sheen.value);
+        material.iridescence = parseFloat(controls_ui.iridescence.value);
+        material.iridescenceIOR = parseFloat(controls_ui.iridescenceIOR.value);
 
         // Update displays
         if (valueDisplays.metallic) valueDisplays.metallic.textContent = material.metalness.toFixed(2);
@@ -363,6 +378,9 @@ function initViewer() {
         if (valueDisplays.specular) valueDisplays.specular.textContent = material.reflectivity.toFixed(2);
         if (valueDisplays.clearcoat) valueDisplays.clearcoat.textContent = material.clearcoat.toFixed(2);
         if (valueDisplays.clearcoatRoughness) valueDisplays.clearcoatRoughness.textContent = material.clearcoatRoughness.toFixed(2);
+        if (valueDisplays.sheen) valueDisplays.sheen.textContent = material.sheen.toFixed(2);
+        if (valueDisplays.iridescence) valueDisplays.iridescence.textContent = material.iridescence.toFixed(2);
+        if (valueDisplays.iridescenceIOR) valueDisplays.iridescenceIOR.textContent = material.iridescenceIOR.toFixed(2);
 
         // Update color display
         const r255 = Math.round(rgb.r * 255);
@@ -414,6 +432,9 @@ function initViewer() {
                 controls_ui.roughness.value = preset.roughness;
                 controls_ui.clearcoat.value = preset.clearcoat;
                 controls_ui.clearcoatRoughness.value = preset.clearcoatRoughness;
+                controls_ui.sheen.value = preset.sheen || 0;
+                controls_ui.iridescence.value = preset.iridescence || 0;
+                controls_ui.iridescenceIOR.value = preset.iridescenceIOR || 1.3;
 
                 updateMaterial();
             }
