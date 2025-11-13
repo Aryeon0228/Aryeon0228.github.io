@@ -279,17 +279,13 @@ function initViewer() {
 
     // HDR Environment maps
     const hdriMaps = {
-        outdoor: {
-            name: '☀️ Day',
+        indoor: {
+            name: '🏛️ Indoor Bright',
             url: 'https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.hdr'
         },
         sunset: {
             name: '🌅 Sunset',
             url: 'https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr'
-        },
-        forest: {
-            name: '🌲 Forest',
-            url: 'https://threejs.org/examples/textures/equirectangular/forest_slope_1k.hdr'
         },
         night: {
             name: '🌙 Night',
@@ -302,14 +298,6 @@ function initViewer() {
         quarry: {
             name: '⛰️ Quarry',
             url: 'https://threejs.org/examples/textures/equirectangular/quarry_01_1k.hdr'
-        },
-        warehouse: {
-            name: '🏢 Warehouse',
-            url: 'https://threejs.org/examples/textures/equirectangular/empty_warehouse_01_1k.hdr'
-        },
-        beach: {
-            name: '🏖️ Beach',
-            url: 'https://threejs.org/examples/textures/equirectangular/kloppenheim_06_1k.hdr'
         }
     };
 
@@ -339,7 +327,7 @@ function initViewer() {
     }
 
     // Load default environment
-    loadEnvironment('outdoor');
+    loadEnvironment('indoor');
 
     // Lighting
     const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
