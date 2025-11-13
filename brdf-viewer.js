@@ -1,6 +1,15 @@
+/**
+ * Disney Principled BRDF Interactive Viewer
+ * Real-time PBR material simulator with full Disney BRDF parameters
+ */
+
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+// ============================================================================
+// Color Conversion Utilities
+// ============================================================================
 
 // HSV to RGB conversion function
 function hsvToRgb(h, s, v) {
@@ -61,7 +70,12 @@ function rgbToHsv(r, g, b) {
     return { h, s, v };
 }
 
+// ============================================================================
+// Material Presets
+// ============================================================================
+
 // Metal presets with complete data (RGB 0-1 format)
+// Includes normal and weathered states for realistic metal variations
 const METAL_PRESETS = {
     // Pure metals
     iron: {
@@ -239,7 +253,10 @@ function generateReferencePanel() {
     refPanel.innerHTML = html;
 }
 
-// Initialize the viewer
+// ============================================================================
+// Main Viewer Initialization
+// ============================================================================
+
 function initViewer() {
     // Reference panel toggle
     const refToggle = document.getElementById('refToggle');
@@ -277,7 +294,9 @@ function initViewer() {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    // HDR Environment maps
+    // ========================================================================
+    // HDR Environment Maps - All 10 official Three.js HDR maps
+    // ========================================================================
     const hdriMaps = {
         indoor: {
             name: '🏛️ Indoor Bright',
@@ -349,7 +368,9 @@ function initViewer() {
     // Load default environment
     loadEnvironment('indoor');
 
-    // Lighting
+    // ========================================================================
+    // Scene Lighting Setup
+    // ========================================================================
     const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
     light1.position.set(5, 5, 5);
     scene.add(light1);
@@ -365,7 +386,10 @@ function initViewer() {
     const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
     scene.add(ambientLight);
 
-    // Material
+    // ========================================================================
+    // Disney Principled BRDF Material
+    // Includes all parameters: anisotropy, iridescence, sheen, transmission
+    // ========================================================================
     const material = new THREE.MeshPhysicalMaterial({
         color: new THREE.Color(0.5, 0.5, 0.5),
         metalness: 0.0,
@@ -397,7 +421,9 @@ function initViewer() {
     let currentMesh = new THREE.Mesh(geometries.sphere, material);
     scene.add(currentMesh);
 
-    // UI Controls
+    // ========================================================================
+    // UI Controls & Event Handlers
+    // ========================================================================
     const controls_ui = {
         colorH: document.getElementById('colorH'),
         colorS: document.getElementById('colorS'),
@@ -429,6 +455,7 @@ function initViewer() {
         anisotropyRotation: document.getElementById('anisotropyRotationValue')
     };
 
+    // Update material properties from UI controls
     function updateMaterial() {
         const h = parseFloat(controls_ui.colorH.value);
         const s = parseFloat(controls_ui.colorS.value);

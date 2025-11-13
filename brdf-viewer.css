@@ -165,6 +165,21 @@ body {
     z-index: 10;
     overflow-y: auto;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
+
+/* Mobile drawer handle */
+.ui-panel::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    display: none;
 }
 
 .ui-panel::-webkit-scrollbar,
@@ -473,11 +488,143 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 768px) {
+    /* Mobile: Control panel becomes bottom drawer */
     .ui-panel {
-        width: calc(100% - 40px);
-        max-height: 50vh;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-height: 60vh;
+        border-radius: 20px 20px 0 0;
+        padding: 20px;
+        padding-top: 25px;
     }
+
+    /* Show drawer handle on mobile */
+    .ui-panel::before {
+        display: block;
+    }
+
+    /* Larger touch targets for mobile */
+    .preset-btn,
+    .geometry-btn,
+    .environment-btn {
+        padding: 12px 10px;
+        font-size: 0.85rem;
+        min-height: 44px; /* iOS recommended touch target */
+    }
+
+    /* Single column layout for better readability */
+    .preset-grid,
+    .geometry-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    /* Larger sliders for touch */
+    input[type="range"] {
+        height: 8px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Reference panel full screen on mobile */
     .reference-panel {
-        width: 280px;
+        left: -100%;
+        width: 100%;
+        top: 0;
+        max-height: 100vh;
+        border-radius: 0;
+        padding: 60px 20px 20px;
+    }
+
+    .reference-panel.open {
+        left: 0;
+    }
+
+    /* Toggle button more accessible */
+    .reference-toggle {
+        left: 10px;
+        top: 10px;
+        transform: none;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-size: 1.5rem;
+    }
+
+    .reference-toggle:hover {
+        padding: 12px 15px;
+    }
+
+    /* Adjust title sizes for mobile */
+    h1 {
+        font-size: 1.3rem;
+    }
+
+    .subtitle {
+        font-size: 0.8rem;
+        margin-bottom: 15px;
+    }
+
+    /* Optimize spacing */
+    .control-group {
+        margin-bottom: 18px;
+    }
+
+    .lighting-section,
+    .geometry-section,
+    .texture-section {
+        margin-top: 15px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small screens: even more compact */
+    .ui-panel {
+        max-height: 65vh;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    .preset-btn,
+    .geometry-btn,
+    .environment-btn {
+        font-size: 0.8rem;
+        padding: 10px 8px;
+    }
+
+    /* Horizontal scroll for environment buttons if needed */
+    .geometry-section:has(.environment-btn) .geometry-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    .ui-panel {
+        max-height: 80vh;
+        right: 0;
+        left: auto;
+        width: 320px;
+        border-radius: 15px 0 0 15px;
+    }
+
+    .reference-panel {
+        width: 300px;
+        left: -300px;
     }
 }
