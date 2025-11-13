@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
 // ============================================================================
 // Color Conversion Utilities
@@ -410,12 +411,85 @@ function initViewer() {
         anisotropyRotation: 0.0
     });
 
+    // ========================================================================
+    // Custom Geometry Generators
+    // ========================================================================
+
+    // Create a chubby 3D heart shape
+    function createHeartGeometry() {
+        const heartShape = new THREE.Shape();
+        const x = 0, y = 0;
+
+        heartShape.moveTo(x + 0.5, y + 0.5);
+        heartShape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
+        heartShape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
+        heartShape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.54, x + 0.5, y + 1.9);
+        heartShape.bezierCurveTo(x + 1.2, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
+        heartShape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1.0, y);
+        heartShape.bezierCurveTo(x + 0.7, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+
+        const extrudeSettings = {
+            depth: 0.8,
+            bevelEnabled: true,
+            bevelThickness: 0.2,
+            bevelSize: 0.2,
+            bevelSegments: 16
+        };
+
+        const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+        geometry.center();
+        geometry.scale(1.2, 1.2, 1.2);
+        return geometry;
+    }
+
+    // Create a cute rubber duck (Toro style)
+    function createRubberDuckGeometry() {
+        const geometries = [];
+
+        // Body - ellipsoid
+        const bodyGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+        bodyGeometry.scale(1, 0.85, 1);
+        bodyGeometry.translate(0, -0.2, 0);
+        geometries.push(bodyGeometry);
+
+        // Head - sphere
+        const headGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        headGeometry.translate(0, 0.7, 0.2);
+        geometries.push(headGeometry);
+
+        // Beak - cone
+        const beakGeometry = new THREE.ConeGeometry(0.15, 0.3, 16);
+        beakGeometry.rotateX(Math.PI / 2);
+        beakGeometry.translate(0, 0.7, 0.6);
+        geometries.push(beakGeometry);
+
+        // Eyes - small spheres
+        const leftEyeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+        leftEyeGeometry.translate(-0.15, 0.8, 0.45);
+        geometries.push(leftEyeGeometry);
+
+        const rightEyeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+        rightEyeGeometry.translate(0.15, 0.8, 0.45);
+        geometries.push(rightEyeGeometry);
+
+        // Tail - small cone
+        const tailGeometry = new THREE.ConeGeometry(0.12, 0.25, 16);
+        tailGeometry.rotateX(-Math.PI / 4);
+        tailGeometry.translate(0, 0.2, -0.7);
+        geometries.push(tailGeometry);
+
+        // Merge all geometries into one
+        return BufferGeometryUtils.mergeGeometries(geometries);
+    }
+
     // Geometries - Create all geometries but only show selected one
     const geometries = {
         sphere: new THREE.SphereGeometry(1.5, 64, 64),
         torus: new THREE.TorusKnotGeometry(1, 0.3, 128, 16, 2, 3),
         cube: new THREE.BoxGeometry(2, 2, 2, 32, 32, 32),
-        cylinder: new THREE.CylinderGeometry(1, 1, 2, 64, 32)
+        cylinder: new THREE.CylinderGeometry(1, 1, 2, 64, 32),
+        heart: createHeartGeometry(),
+        duck: createRubberDuckGeometry()
     };
 
     let currentMesh = new THREE.Mesh(geometries.sphere, material);
