@@ -381,7 +381,9 @@ function initViewer() {
         iridescenceThicknessRange: [100, 400],
         transmission: 0.0,
         thickness: 0.5,
-        ior: 1.5
+        ior: 1.5,
+        anisotropy: 0.0,
+        anisotropyRotation: 0.0
     });
 
     // Geometries - Create all geometries but only show selected one
@@ -408,7 +410,9 @@ function initViewer() {
         sheen: document.getElementById('sheen'),
         iridescence: document.getElementById('iridescence'),
         iridescenceIOR: document.getElementById('iridescenceIOR'),
-        transmission: document.getElementById('transmission')
+        transmission: document.getElementById('transmission'),
+        anisotropy: document.getElementById('anisotropy'),
+        anisotropyRotation: document.getElementById('anisotropyRotation')
     };
 
     const valueDisplays = {
@@ -420,7 +424,9 @@ function initViewer() {
         sheen: document.getElementById('sheenValue'),
         iridescence: document.getElementById('iridescenceValue'),
         iridescenceIOR: document.getElementById('iridescenceIORValue'),
-        transmission: document.getElementById('transmissionValue')
+        transmission: document.getElementById('transmissionValue'),
+        anisotropy: document.getElementById('anisotropyValue'),
+        anisotropyRotation: document.getElementById('anisotropyRotationValue')
     };
 
     function updateMaterial() {
@@ -441,6 +447,8 @@ function initViewer() {
         material.iridescence = parseFloat(controls_ui.iridescence.value);
         material.iridescenceIOR = parseFloat(controls_ui.iridescenceIOR.value);
         material.transmission = parseFloat(controls_ui.transmission.value);
+        material.anisotropy = parseFloat(controls_ui.anisotropy.value);
+        material.anisotropyRotation = parseFloat(controls_ui.anisotropyRotation.value);
 
         // Update displays
         if (valueDisplays.metallic) valueDisplays.metallic.textContent = material.metalness.toFixed(2);
@@ -452,6 +460,8 @@ function initViewer() {
         if (valueDisplays.iridescence) valueDisplays.iridescence.textContent = material.iridescence.toFixed(2);
         if (valueDisplays.iridescenceIOR) valueDisplays.iridescenceIOR.textContent = material.iridescenceIOR.toFixed(2);
         if (valueDisplays.transmission) valueDisplays.transmission.textContent = material.transmission.toFixed(2);
+        if (valueDisplays.anisotropy) valueDisplays.anisotropy.textContent = material.anisotropy.toFixed(2);
+        if (valueDisplays.anisotropyRotation) valueDisplays.anisotropyRotation.textContent = (material.anisotropyRotation / Math.PI).toFixed(2) + 'π';
 
         // Update color display
         const r255 = Math.round(rgb.r * 255);
