@@ -298,6 +298,26 @@ function initViewer() {
         quarry: {
             name: '⛰️ Quarry',
             url: 'https://threejs.org/examples/textures/equirectangular/quarry_01_1k.hdr'
+        },
+        blouberg: {
+            name: '🌄 Sunrise Beach',
+            url: 'https://threejs.org/examples/textures/equirectangular/blouberg_sunrise_2_1k.hdr'
+        },
+        lobe: {
+            name: '🏢 Studio',
+            url: 'https://threejs.org/examples/textures/equirectangular/lobe.hdr'
+        },
+        bridge: {
+            name: '🌉 Bridge',
+            url: 'https://threejs.org/examples/textures/equirectangular/san_giuseppe_bridge_2k.hdr'
+        },
+        spotlight: {
+            name: '💡 Spotlight',
+            url: 'https://threejs.org/examples/textures/equirectangular/spot1Lux.hdr'
+        },
+        dawn: {
+            name: '🌅 Dawn',
+            url: 'https://threejs.org/examples/textures/equirectangular/spruit_sunrise_1k.hdr'
         }
     };
 
