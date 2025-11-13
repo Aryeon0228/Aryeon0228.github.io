@@ -294,6 +294,22 @@ function initViewer() {
         night: {
             name: '🌙 Night',
             url: 'https://threejs.org/examples/textures/equirectangular/moonless_golf_1k.hdr'
+        },
+        overpass: {
+            name: '🌉 Overpass',
+            url: 'https://threejs.org/examples/textures/equirectangular/pedestrian_overpass_1k.hdr'
+        },
+        quarry: {
+            name: '⛰️ Quarry',
+            url: 'https://threejs.org/examples/textures/equirectangular/quarry_01_1k.hdr'
+        },
+        warehouse: {
+            name: '🏢 Warehouse',
+            url: 'https://threejs.org/examples/textures/equirectangular/empty_warehouse_01_1k.hdr'
+        },
+        beach: {
+            name: '🏖️ Beach',
+            url: 'https://threejs.org/examples/textures/equirectangular/kloppenheim_06_1k.hdr'
         }
     };
 
