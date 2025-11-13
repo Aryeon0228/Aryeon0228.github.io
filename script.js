@@ -6,31 +6,35 @@ const html = document.documentElement;
 const currentTheme = localStorage.getItem('theme') || 'light';
 html.setAttribute('data-theme', currentTheme);
 
-themeToggle.addEventListener('click', () => {
-    const theme = html.getAttribute('data-theme');
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        const theme = html.getAttribute('data-theme');
+        const newTheme = theme === 'light' ? 'dark' : 'light';
 
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-});
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+}
 
 // ==================== Mobile Menu Toggle ====================
 const mobileToggle = document.getElementById('mobileToggle');
 const navMenu = document.querySelector('.nav-menu');
 
-mobileToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    mobileToggle.classList.toggle('active');
-});
-
-// Close mobile menu when clicking on a link
-const navLinks = document.querySelectorAll('.nav-menu a');
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-        mobileToggle.classList.remove('active');
+if (mobileToggle && navMenu) {
+    mobileToggle.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        mobileToggle.classList.toggle('active');
     });
-});
+
+    // Close mobile menu when clicking on a link
+    const navLinks = document.querySelectorAll('.nav-menu a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            mobileToggle.classList.remove('active');
+        });
+    });
+}
 
 // ==================== Smooth Scroll for Navigation ====================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -54,18 +58,20 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 let lastScroll = 0;
 const header = document.querySelector('header');
 
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
+if (header) {
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
 
-    // Add shadow to header on scroll
-    if (currentScroll > 10) {
-        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-    } else {
-        header.style.boxShadow = 'none';
-    }
+        // Add shadow to header on scroll
+        if (currentScroll > 10) {
+            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        } else {
+            header.style.boxShadow = 'none';
+        }
 
-    lastScroll = currentScroll;
-});
+        lastScroll = currentScroll;
+    });
+}
 
 // ==================== Intersection Observer for Animations ====================
 const observerOptions = {
@@ -117,12 +123,14 @@ function highlightNavigation() {
 window.addEventListener('scroll', highlightNavigation);
 
 // ==================== Close Mobile Menu on Outside Click ====================
-document.addEventListener('click', (e) => {
-    if (!navMenu.contains(e.target) && !mobileToggle.contains(e.target)) {
-        navMenu.classList.remove('active');
-        mobileToggle.classList.remove('active');
-    }
-});
+if (navMenu && mobileToggle) {
+    document.addEventListener('click', (e) => {
+        if (!navMenu.contains(e.target) && !mobileToggle.contains(e.target)) {
+            navMenu.classList.remove('active');
+            mobileToggle.classList.remove('active');
+        }
+    });
+}
 
 // ==================== Prevent Page Jump on Load ====================
 if (window.location.hash) {
@@ -161,6 +169,11 @@ portfolioImageWrappers.forEach(wrapper => {
     const layerBack = wrapper.querySelector('.portfolio-layer-back');
     const layerMid = wrapper.querySelector('.portfolio-layer-mid');
     const layerFront = wrapper.querySelector('.portfolio-layer-front');
+
+    // Skip if required layers are missing
+    if (!layerBack || !layerMid || !layerFront) {
+        return;
+    }
 
     let isHovering = false;
     let animationFrameId = null;
