@@ -499,11 +499,30 @@ input[type="range"]::-moz-range-thumb {
         border-radius: 20px 20px 0 0;
         padding: 20px;
         padding-top: 25px;
+        transform: translateY(calc(100% - 60px));
+        transition: transform 0.3s ease;
+    }
+
+    /* Expanded state */
+    .ui-panel.expanded {
+        transform: translateY(0);
     }
 
     /* Show drawer handle on mobile */
     .ui-panel::before {
         display: block;
+        cursor: pointer;
+    }
+
+    /* Handle area for dragging */
+    .ui-panel::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        cursor: pointer;
     }
 
     /* Larger touch targets for mobile */
