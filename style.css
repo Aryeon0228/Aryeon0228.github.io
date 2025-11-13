@@ -130,6 +130,45 @@ nav {
     width: 100%;
 }
 
+/* Header CTA Buttons */
+.header-cta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.header-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.header-btn-primary {
+    background: var(--gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(138, 85, 254, 0.3);
+}
+
+.header-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 85, 254, 0.4);
+}
+
+.header-btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.header-btn-secondary:hover {
+    border-color: var(--gradient-start);
+    background: rgba(138, 85, 254, 0.1);
+}
+
 .theme-toggle {
     background: none;
     border: 2px solid var(--border-color);
@@ -847,6 +886,10 @@ footer p {
 
     .nav-menu.active {
         left: 0;
+    }
+
+    .header-cta {
+        display: none;
     }
 
     .mobile-toggle {
