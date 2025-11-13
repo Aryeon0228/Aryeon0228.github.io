@@ -273,47 +273,6 @@ function initViewer() {
     // Generate reference panel content
     generateReferencePanel();
 
-    // Mobile drawer toggle
-    const uiPanel = document.querySelector('.ui-panel');
-    const isMobile = () => window.innerWidth <= 768;
-
-    if (uiPanel && isMobile()) {
-        // Click on handle area to toggle
-        const handleArea = uiPanel;
-        let startY = 0;
-        let currentY = 0;
-
-        handleArea.addEventListener('click', (e) => {
-            // Only toggle if clicking in the top area (handle)
-            const rect = handleArea.getBoundingClientRect();
-            const clickY = e.clientY - rect.top;
-            if (clickY < 40) {
-                uiPanel.classList.toggle('expanded');
-            }
-        });
-
-        // Touch swipe support
-        handleArea.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-        }, { passive: true });
-
-        handleArea.addEventListener('touchmove', (e) => {
-            currentY = e.touches[0].clientY;
-        }, { passive: true });
-
-        handleArea.addEventListener('touchend', () => {
-            const diff = startY - currentY;
-            // Swipe up to expand, down to collapse
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    uiPanel.classList.add('expanded');
-                } else {
-                    uiPanel.classList.remove('expanded');
-                }
-            }
-        });
-    }
-
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f0f1e);
