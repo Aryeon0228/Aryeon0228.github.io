@@ -406,7 +406,7 @@ function initViewer() {
         roughness: document.getElementById('roughness'),
         specular: document.getElementById('specular'),
         clearcoat: document.getElementById('clearcoat'),
-        clearcoatRoughness: document.getElementById('clearcoatRoughness'),
+        clearcoatGloss: document.getElementById('clearcoatGloss'),
         sheen: document.getElementById('sheen'),
         iridescence: document.getElementById('iridescence'),
         iridescenceIOR: document.getElementById('iridescenceIOR'),
@@ -420,7 +420,7 @@ function initViewer() {
         roughness: document.getElementById('roughnessValue'),
         specular: document.getElementById('specularValue'),
         clearcoat: document.getElementById('clearcoatValue'),
-        clearcoatRoughness: document.getElementById('clearcoatRoughnessValue'),
+        clearcoatGloss: document.getElementById('clearcoatGlossValue'),
         sheen: document.getElementById('sheenValue'),
         iridescence: document.getElementById('iridescenceValue'),
         iridescenceIOR: document.getElementById('iridescenceIORValue'),
@@ -442,7 +442,11 @@ function initViewer() {
         material.roughness = parseFloat(controls_ui.roughness.value);
         material.reflectivity = parseFloat(controls_ui.specular.value);
         material.clearcoat = parseFloat(controls_ui.clearcoat.value);
-        material.clearcoatRoughness = parseFloat(controls_ui.clearcoatRoughness.value);
+
+        // Convert Gloss to Roughness (Disney BRDF uses Gloss, Three.js uses Roughness)
+        const clearcoatGloss = parseFloat(controls_ui.clearcoatGloss.value);
+        material.clearcoatRoughness = 1.0 - clearcoatGloss;
+
         material.sheen = parseFloat(controls_ui.sheen.value);
         material.iridescence = parseFloat(controls_ui.iridescence.value);
         material.iridescenceIOR = parseFloat(controls_ui.iridescenceIOR.value);
@@ -455,7 +459,7 @@ function initViewer() {
         if (valueDisplays.roughness) valueDisplays.roughness.textContent = material.roughness.toFixed(2);
         if (valueDisplays.specular) valueDisplays.specular.textContent = material.reflectivity.toFixed(2);
         if (valueDisplays.clearcoat) valueDisplays.clearcoat.textContent = material.clearcoat.toFixed(2);
-        if (valueDisplays.clearcoatRoughness) valueDisplays.clearcoatRoughness.textContent = material.clearcoatRoughness.toFixed(2);
+        if (valueDisplays.clearcoatGloss) valueDisplays.clearcoatGloss.textContent = clearcoatGloss.toFixed(2);
         if (valueDisplays.sheen) valueDisplays.sheen.textContent = material.sheen.toFixed(2);
         if (valueDisplays.iridescence) valueDisplays.iridescence.textContent = material.iridescence.toFixed(2);
         if (valueDisplays.iridescenceIOR) valueDisplays.iridescenceIOR.textContent = material.iridescenceIOR.toFixed(2);
@@ -512,7 +516,8 @@ function initViewer() {
                 controls_ui.metallic.value = preset.metallic;
                 controls_ui.roughness.value = preset.roughness;
                 controls_ui.clearcoat.value = preset.clearcoat;
-                controls_ui.clearcoatRoughness.value = preset.clearcoatRoughness;
+                // Convert roughness to gloss for Disney BRDF compatibility
+                controls_ui.clearcoatGloss.value = 1.0 - (preset.clearcoatRoughness || 0);
                 controls_ui.sheen.value = preset.sheen || 0;
                 controls_ui.iridescence.value = preset.iridescence || 0;
                 controls_ui.iridescenceIOR.value = preset.iridescenceIOR || 1.3;
