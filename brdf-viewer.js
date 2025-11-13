@@ -172,6 +172,7 @@ const METAL_PRESETS = {
     // Special effects - Sheen examples
     velvet: { color: [0.6, 0.1, 0.2], metallic: 0.0, roughness: 0.8, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 1.0 },
     peach: { color: [1.0, 0.8, 0.6], metallic: 0.0, roughness: 0.4, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 0.7 },
+    satin: { color: [0.9, 0.8, 0.85], metallic: 0.0, roughness: 0.3, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 0.6 },
     dusty_metal: { color: [0.5, 0.5, 0.5], metallic: 1.0, roughness: 0.6, clearcoat: 0.0, clearcoatRoughness: 0.0, sheen: 0.5 },
     // Special effects - Iridescence examples
     soap_bubble: { color: [0.95, 0.95, 0.95], metallic: 0.0, roughness: 0.0, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.3 },
