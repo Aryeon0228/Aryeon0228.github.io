@@ -73,33 +73,48 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             padding: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             font-size: 0.85rem;
         }
 
         .metal-ref-name {
             font-weight: 600;
             color: #ffd700;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .metal-state {
+            margin-bottom: 10px;
+        }
+
+        .metal-state:last-child {
+            margin-bottom: 0;
+        }
+
+        .metal-state-title {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 5px;
         }
 
         .metal-ref-swatches {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 6px;
-            margin-bottom: 8px;
+            gap: 5px;
+            margin-bottom: 5px;
         }
 
         .metal-ref-swatch {
-            height: 30px;
+            height: 28px;
             border-radius: 4px;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .metal-ref-info {
-            font-size: 0.75rem;
-            line-height: 1.4;
-            color: #ccc;
+            font-size: 0.7rem;
+            line-height: 1.3;
+            color: #bbb;
         }
 
         /* Control Panel (Right) */
@@ -288,148 +303,172 @@
     <div class="reference-panel" id="refPanel">
         <h2>🔨 Metal Reference</h2>
 
+        <!-- Iron -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">⚙️ Iron (철) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #C6C6C6;"></div>
-                <div class="metal-ref-swatch" style="background: #C6C6C6;"></div>
+            <div class="metal-ref-name">⚙️ Iron (철)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #C6C6C6;"></div>
+                    <div class="metal-ref-swatch" style="background: #C6C6C6;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(198,198,198) • Spec: Same • M:1.0 • R:0.4-0.5</div>
             </div>
-            <div class="metal-ref-info">RGB(198,198,198) • M:1.0 • R:0.4-0.5</div>
+            <div class="metal-state">
+                <div class="metal-state-title">🦀 녹슬음 (Rust)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #8C5A3C;"></div>
+                    <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(140,90,60) • Spec: RGB(60,60,60) • M:0.0-0.2 • R:0.8-0.9</div>
+            </div>
         </div>
 
+        <!-- Aluminum -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">⚙️ Iron (철) - 녹슬음</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #8C5A3C;"></div>
-                <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+            <div class="metal-ref-name">✈️ Aluminum (알루미늄)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #F5F6F6;"></div>
+                    <div class="metal-ref-swatch" style="background: #F5F6F6;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(245,246,246) • Spec: Same • M:1.0 • R:0.1-0.3</div>
             </div>
-            <div class="metal-ref-info">RGB(140,90,60) • M:0.0-0.2 • R:0.8-0.9</div>
+            <div class="metal-state">
+                <div class="metal-state-title">☁️ 산화 (Oxidized)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #C8CDCD;"></div>
+                    <div class="metal-ref-swatch" style="background: #787878;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(200,205,205) • Spec: RGB(120,120,120) • M:0.3-0.5 • R:0.7-0.8</div>
+            </div>
         </div>
 
+        <!-- Copper -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">✈️ Aluminum (알루미늄) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #F5F6F6;"></div>
-                <div class="metal-ref-swatch" style="background: #F5F6F6;"></div>
+            <div class="metal-ref-name">🔔 Copper (구리)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #FAD0C0;"></div>
+                    <div class="metal-ref-swatch" style="background: #FAD0C0;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(250,208,192) • Spec: Same • M:1.0 • R:0.1-0.2</div>
             </div>
-            <div class="metal-ref-info">RGB(245,246,246) • M:1.0 • R:0.1-0.3</div>
+            <div class="metal-state">
+                <div class="metal-state-title">🗽 녹청 (Patina)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #78B4A5;"></div>
+                    <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(120,180,165) • Spec: RGB(60,60,60) • M:0.0-0.1 • R:0.6-0.8</div>
+            </div>
         </div>
 
+        <!-- Gold -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">✈️ Aluminum (알루미늄) - 산화</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #C8CDCD;"></div>
-                <div class="metal-ref-swatch" style="background: #787878;"></div>
+            <div class="metal-ref-name">👑 Gold (금)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #FFE29B;"></div>
+                    <div class="metal-ref-swatch" style="background: #FFE29B;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(255,226,155) • Spec: Same • M:1.0 • R:0.1-0.2</div>
             </div>
-            <div class="metal-ref-info">RGB(200,205,205) • M:0.3-0.5 • R:0.7-0.8</div>
+            <div class="metal-state">
+                <div class="metal-state-title">🕰️ 변색 (Tarnished)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #C8AA6E;"></div>
+                    <div class="metal-ref-swatch" style="background: #B09858;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(200,170,110) • Spec: RGB(176,152,88) • M:0.7-0.9 • R:0.4-0.5</div>
+            </div>
         </div>
 
+        <!-- Silver -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">🔔 Copper (구리) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #FAD0C0;"></div>
-                <div class="metal-ref-swatch" style="background: #FAD0C0;"></div>
+            <div class="metal-ref-name">💍 Silver (은)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #FCFAF5;"></div>
+                    <div class="metal-ref-swatch" style="background: #FCFAF5;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(252,250,245) • Spec: Same • M:1.0 • R:0.05-0.1</div>
             </div>
-            <div class="metal-ref-info">RGB(250,208,192) • M:1.0 • R:0.1-0.2</div>
+            <div class="metal-state">
+                <div class="metal-state-title">🌑 변색 (Tarnished)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #504B46;"></div>
+                    <div class="metal-ref-swatch" style="background: #403C38;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(80,75,70) • Spec: RGB(64,60,56) • M:0.5-0.7 • R:0.5-0.7</div>
+            </div>
         </div>
 
+        <!-- Bronze -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">🔔 Copper (구리) - 녹청</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #78B4A5;"></div>
-                <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+            <div class="metal-ref-name">🏺 Bronze (청동)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #CD7F32;"></div>
+                    <div class="metal-ref-swatch" style="background: #CD7F32;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(205,127,50) • Spec: Same • M:1.0 • R:0.2-0.3</div>
             </div>
-            <div class="metal-ref-info">RGB(120,180,165) • M:0.0-0.1 • R:0.6-0.8</div>
+            <div class="metal-state">
+                <div class="metal-state-title">🟢 녹청 (Patina)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #6B8E7F;"></div>
+                    <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(107,142,127) • Spec: RGB(60,60,60) • M:0.0-0.1 • R:0.7-0.9</div>
+            </div>
         </div>
 
+        <!-- Brass -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">👑 Gold (금) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #FFE29B;"></div>
-                <div class="metal-ref-swatch" style="background: #FFE29B;"></div>
+            <div class="metal-ref-name">🎺 Brass (황동)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #E1C16E;"></div>
+                    <div class="metal-ref-swatch" style="background: #E1C16E;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(225,193,110) • Spec: Same • M:1.0 • R:0.1-0.3</div>
             </div>
-            <div class="metal-ref-info">RGB(255,226,155) • M:1.0 • R:0.1-0.2</div>
+            <div class="metal-state">
+                <div class="metal-state-title">🟤 변색 (Tarnished)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #8B7355;"></div>
+                    <div class="metal-ref-swatch" style="background: #5A5A5A;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(139,115,85) • Spec: RGB(90,90,90) • M:0.4-0.6 • R:0.5-0.7</div>
+            </div>
         </div>
 
+        <!-- Titanium -->
         <div class="metal-ref-card">
-            <div class="metal-ref-name">👑 Gold (금) - 변색</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #C8AA6E;"></div>
-                <div class="metal-ref-swatch" style="background: #B09858;"></div>
+            <div class="metal-ref-name">🛡️ Titanium (티타늄)</div>
+            <div class="metal-state">
+                <div class="metal-state-title">✨ 일반 상태</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #C0C0C8;"></div>
+                    <div class="metal-ref-swatch" style="background: #C0C0C8;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(192,192,200) • Spec: Same • M:1.0 • R:0.3-0.4</div>
             </div>
-            <div class="metal-ref-info">RGB(200,170,110) • M:0.7-0.9 • R:0.4-0.5</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">💍 Silver (은) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #FCFAF5;"></div>
-                <div class="metal-ref-swatch" style="background: #FCFAF5;"></div>
+            <div class="metal-state">
+                <div class="metal-state-title">⚪ 산화 (Oxidized)</div>
+                <div class="metal-ref-swatches">
+                    <div class="metal-ref-swatch" style="background: #B8B8C0;"></div>
+                    <div class="metal-ref-swatch" style="background: #8A8A8A;"></div>
+                </div>
+                <div class="metal-ref-info">Base: RGB(184,184,192) • Spec: RGB(138,138,138) • M:0.6-0.8 • R:0.6-0.8</div>
             </div>
-            <div class="metal-ref-info">RGB(252,250,245) • M:1.0 • R:0.05-0.1</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">💍 Silver (은) - 변색</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #504B46;"></div>
-                <div class="metal-ref-swatch" style="background: #403C38;"></div>
-            </div>
-            <div class="metal-ref-info">RGB(80,75,70) • M:0.5-0.7 • R:0.5-0.7</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">🏺 Bronze (청동) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #CD7F32;"></div>
-                <div class="metal-ref-swatch" style="background: #CD7F32;"></div>
-            </div>
-            <div class="metal-ref-info">RGB(205,127,50) • M:1.0 • R:0.2-0.3</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">🏺 Bronze (청동) - 녹청</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #6B8E7F;"></div>
-                <div class="metal-ref-swatch" style="background: #3C3C3C;"></div>
-            </div>
-            <div class="metal-ref-info">RGB(107,142,127) • M:0.0-0.1 • R:0.7-0.9</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">🎺 Brass (황동) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #E1C16E;"></div>
-                <div class="metal-ref-swatch" style="background: #E1C16E;"></div>
-            </div>
-            <div class="metal-ref-info">RGB(225,193,110) • M:1.0 • R:0.1-0.3</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">🎺 Brass (황동) - 변색</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #8B7355;"></div>
-                <div class="metal-ref-swatch" style="background: #5A5A5A;"></div>
-            </div>
-            <div class="metal-ref-info">RGB(139,115,85) • M:0.4-0.6 • R:0.5-0.7</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">🛡️ Titanium (티타늄) - 일반</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #C0C0C8;"></div>
-                <div class="metal-ref-swatch" style="background: #C0C0C8;"></div>
-            </div>
-            <div class="metal-ref-info">RGB(192,192,200) • M:1.0 • R:0.3-0.4</div>
-        </div>
-
-        <div class="metal-ref-card">
-            <div class="metal-ref-name">🛡️ Titanium (티타늄) - 산화</div>
-            <div class="metal-ref-swatches">
-                <div class="metal-ref-swatch" style="background: #B8B8C0;"></div>
-                <div class="metal-ref-swatch" style="background: #8A8A8A;"></div>
-            </div>
-            <div class="metal-ref-info">RGB(184,184,192) • M:0.6-0.8 • R:0.6-0.8</div>
         </div>
     </div>
 
