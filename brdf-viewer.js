@@ -277,23 +277,49 @@ function initViewer() {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    // Load HDR environment map
+    // HDR Environment maps
+    const hdriMaps = {
+        outdoor: {
+            name: '🌅 Bright Outdoor',
+            url: 'https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.hdr'
+        },
+        sunset: {
+            name: '🌳 Sunset Nature',
+            url: 'https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr'
+        },
+        night: {
+            name: '🌙 Dark Night',
+            url: 'https://threejs.org/examples/textures/equirectangular/dikhololo_night_1k.hdr'
+        }
+    };
+
     let envMap = null;
     let iblEnabled = true;
     const rgbeLoader = new RGBELoader();
 
-    rgbeLoader.load(
-        'https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.hdr',
-        function (texture) {
-            texture.mapping = THREE.EquirectangularReflectionMapping;
-            envMap = texture;
-            scene.environment = texture;
-        },
-        undefined,
-        function (error) {
-            console.error('Error loading HDR:', error);
-        }
-    );
+    // Function to load environment map
+    function loadEnvironment(key) {
+        const hdri = hdriMaps[key];
+        if (!hdri) return;
+
+        rgbeLoader.load(
+            hdri.url,
+            function (texture) {
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+                envMap = texture;
+                if (iblEnabled) {
+                    scene.environment = texture;
+                }
+            },
+            undefined,
+            function (error) {
+                console.error('Error loading HDR:', error);
+            }
+        );
+    }
+
+    // Load default environment
+    loadEnvironment('outdoor');
 
     // Lighting
     const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -485,6 +511,18 @@ function initViewer() {
 
             // Update active button
             document.querySelectorAll('.geometry-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // Environment switching
+    document.querySelectorAll('.environment-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const envType = btn.dataset.environment;
+            loadEnvironment(envType);
+
+            // Update active button
+            document.querySelectorAll('.environment-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         });
     });
