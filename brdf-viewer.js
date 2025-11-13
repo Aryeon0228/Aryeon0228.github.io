@@ -2,6 +2,65 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
+// HSV to RGB conversion function
+function hsvToRgb(h, s, v) {
+    // h: 0-360, s: 0-100, v: 0-100
+    // returns: {r, g, b} in 0-1 range
+    s = s / 100;
+    v = v / 100;
+
+    const c = v * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = v - c;
+
+    let r, g, b;
+    if (h >= 0 && h < 60) {
+        r = c; g = x; b = 0;
+    } else if (h >= 60 && h < 120) {
+        r = x; g = c; b = 0;
+    } else if (h >= 120 && h < 180) {
+        r = 0; g = c; b = x;
+    } else if (h >= 180 && h < 240) {
+        r = 0; g = x; b = c;
+    } else if (h >= 240 && h < 300) {
+        r = x; g = 0; b = c;
+    } else {
+        r = c; g = 0; b = x;
+    }
+
+    return {
+        r: r + m,
+        g: g + m,
+        b: b + m
+    };
+}
+
+// RGB to HSV conversion function
+function rgbToHsv(r, g, b) {
+    // r, g, b: 0-1 range
+    // returns: {h: 0-360, s: 0-100, v: 0-100}
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+
+    let h = 0;
+    if (delta !== 0) {
+        if (max === r) {
+            h = 60 * (((g - b) / delta) % 6);
+        } else if (max === g) {
+            h = 60 * (((b - r) / delta) + 2);
+        } else {
+            h = 60 * (((r - g) / delta) + 4);
+        }
+    }
+    if (h < 0) h += 360;
+
+    const s = max === 0 ? 0 : (delta / max) * 100;
+    const v = max * 100;
+
+    return { h, s, v };
+}
+
 // Metal presets with complete data (RGB 0-1 format)
 const METAL_PRESETS = {
     // Pure metals
@@ -252,22 +311,22 @@ function initViewer() {
         reflectivity: 0.5
     });
 
-    // Geometries
-    const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
-    const sphere = new THREE.Mesh(sphereGeometry, material);
-    sphere.position.x = -2.5;
-    scene.add(sphere);
+    // Geometries - Create all geometries but only show selected one
+    const geometries = {
+        sphere: new THREE.SphereGeometry(1.5, 64, 64),
+        torus: new THREE.TorusKnotGeometry(1, 0.3, 128, 16, 2, 3),
+        cube: new THREE.BoxGeometry(2, 2, 2, 32, 32, 32),
+        cylinder: new THREE.CylinderGeometry(1, 1, 2, 64, 32)
+    };
 
-    const torusKnotGeometry = new THREE.TorusKnotGeometry(0.8, 0.3, 128, 16, 2, 3);
-    const torusKnot = new THREE.Mesh(torusKnotGeometry, material);
-    torusKnot.position.x = 2.5;
-    scene.add(torusKnot);
+    let currentMesh = new THREE.Mesh(geometries.sphere, material);
+    scene.add(currentMesh);
 
     // UI Controls
     const controls_ui = {
-        colorR: document.getElementById('colorR'),
-        colorG: document.getElementById('colorG'),
-        colorB: document.getElementById('colorB'),
+        colorH: document.getElementById('colorH'),
+        colorS: document.getElementById('colorS'),
+        colorV: document.getElementById('colorV'),
         metallic: document.getElementById('metallic'),
         roughness: document.getElementById('roughness'),
         specular: document.getElementById('specular'),
@@ -284,11 +343,14 @@ function initViewer() {
     };
 
     function updateMaterial() {
-        const r = parseFloat(controls_ui.colorR.value);
-        const g = parseFloat(controls_ui.colorG.value);
-        const b = parseFloat(controls_ui.colorB.value);
+        const h = parseFloat(controls_ui.colorH.value);
+        const s = parseFloat(controls_ui.colorS.value);
+        const v = parseFloat(controls_ui.colorV.value);
 
-        material.color.setRGB(r, g, b);
+        // Convert HSV to RGB
+        const rgb = hsvToRgb(h, s, v);
+        material.color.setRGB(rgb.r, rgb.g, rgb.b);
+
         material.metalness = parseFloat(controls_ui.metallic.value);
         material.roughness = parseFloat(controls_ui.roughness.value);
         material.reflectivity = parseFloat(controls_ui.specular.value);
@@ -303,15 +365,29 @@ function initViewer() {
         if (valueDisplays.clearcoatRoughness) valueDisplays.clearcoatRoughness.textContent = material.clearcoatRoughness.toFixed(2);
 
         // Update color display
-        const r255 = Math.round(r * 255);
-        const g255 = Math.round(g * 255);
-        const b255 = Math.round(b * 255);
+        const r255 = Math.round(rgb.r * 255);
+        const g255 = Math.round(rgb.g * 255);
+        const b255 = Math.round(rgb.b * 255);
         const rgbHex = `rgb(${r255}, ${g255}, ${b255})`;
 
         const colorPreview = document.getElementById('colorPreview');
         const colorRGBText = document.getElementById('colorRGBText');
         if (colorPreview) colorPreview.style.backgroundColor = rgbHex;
-        if (colorRGBText) colorRGBText.textContent = `RGB(${r255}, ${g255}, ${b255})`;
+        if (colorRGBText) colorRGBText.textContent = `HSV(${Math.round(h)}°, ${Math.round(s)}%, ${Math.round(v)}%)`;
+
+        // Update saturation slider gradient based on current hue
+        const hueColor = hsvToRgb(h, 100, 100);
+        const hueHex = `rgb(${Math.round(hueColor.r * 255)}, ${Math.round(hueColor.g * 255)}, ${Math.round(hueColor.b * 255)})`;
+        if (controls_ui.colorS) {
+            controls_ui.colorS.style.background = `linear-gradient(to right, #808080, ${hueHex})`;
+        }
+
+        // Update value slider gradient based on current hue and saturation
+        const valueColorMax = hsvToRgb(h, s, 100);
+        const valueHex = `rgb(${Math.round(valueColorMax.r * 255)}, ${Math.round(valueColorMax.g * 255)}, ${Math.round(valueColorMax.b * 255)})`;
+        if (controls_ui.colorV) {
+            controls_ui.colorV.style.background = `linear-gradient(to right, #000000, ${valueHex})`;
+        }
     }
 
     // Add event listeners
@@ -327,10 +403,13 @@ function initViewer() {
             const presetName = btn.dataset.preset;
             const preset = METAL_PRESETS[presetName];
 
-            if (preset && controls_ui.colorR) {
-                controls_ui.colorR.value = preset.color[0];
-                controls_ui.colorG.value = preset.color[1];
-                controls_ui.colorB.value = preset.color[2];
+            if (preset && controls_ui.colorH) {
+                // Convert RGB preset to HSV
+                const hsv = rgbToHsv(preset.color[0], preset.color[1], preset.color[2]);
+                controls_ui.colorH.value = hsv.h;
+                controls_ui.colorS.value = hsv.s;
+                controls_ui.colorV.value = hsv.v;
+
                 controls_ui.metallic.value = preset.metallic;
                 controls_ui.roughness.value = preset.roughness;
                 controls_ui.clearcoat.value = preset.clearcoat;
@@ -353,14 +432,73 @@ function initViewer() {
         });
     }
 
+    // Geometry switching
+    document.querySelectorAll('.geometry-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const geometryType = btn.dataset.geometry;
+
+            // Remove current mesh
+            scene.remove(currentMesh);
+
+            // Create new mesh with selected geometry
+            currentMesh = new THREE.Mesh(geometries[geometryType], material);
+            scene.add(currentMesh);
+
+            // Update active button
+            document.querySelectorAll('.geometry-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // Normal map upload
+    const normalMapUpload = document.getElementById('normalMapUpload');
+    const clearNormalMap = document.getElementById('clearNormalMap');
+    const normalMapInfo = document.getElementById('normalMapInfo');
+    const textureLoader = new THREE.TextureLoader();
+
+    if (normalMapUpload) {
+        normalMapUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    textureLoader.load(event.target.result, (texture) => {
+                        texture.wrapS = THREE.RepeatWrapping;
+                        texture.wrapT = THREE.RepeatWrapping;
+                        material.normalMap = texture;
+                        material.normalScale = new THREE.Vector2(1, 1);
+                        material.needsUpdate = true;
+
+                        if (normalMapInfo) {
+                            normalMapInfo.textContent = `✅ Loaded: ${file.name}`;
+                            normalMapInfo.style.color = '#5cdfe6';
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (clearNormalMap) {
+        clearNormalMap.addEventListener('click', () => {
+            material.normalMap = null;
+            material.needsUpdate = true;
+            if (normalMapUpload) normalMapUpload.value = '';
+            if (normalMapInfo) {
+                normalMapInfo.textContent = 'No normal map loaded';
+                normalMapInfo.style.color = '#aaa';
+            }
+        });
+    }
+
     // Animation loop
     function animate() {
         requestAnimationFrame(animate);
 
         // Slow rotation
-        sphere.rotation.y += 0.003;
-        torusKnot.rotation.y += 0.003;
-        torusKnot.rotation.x += 0.002;
+        currentMesh.rotation.y += 0.003;
+        currentMesh.rotation.x += 0.002;
 
         controls.update();
         renderer.render(scene, camera);
