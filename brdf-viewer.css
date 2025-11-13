@@ -249,13 +249,44 @@ input[type="range"]::-moz-range-thumb {
     border: none;
 }
 
-.color-row {
+.color-hsv-group {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.color-row input[type="range"] {
-    flex: 1;
+.color-slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.color-slider-row label {
+    font-size: 0.8rem;
+    color: #aaa;
+    font-weight: 500;
+}
+
+/* Hue slider - rainbow gradient */
+.slider-hue {
+    background: linear-gradient(to right,
+        #ff0000 0%,
+        #ffff00 16.67%,
+        #00ff00 33.33%,
+        #00ffff 50%,
+        #0000ff 66.67%,
+        #ff00ff 83.33%,
+        #ff0000 100%) !important;
+}
+
+/* Saturation slider - gray to current hue */
+.slider-saturation {
+    background: linear-gradient(to right, #808080, #ff0000) !important;
+}
+
+/* Value slider - black to white */
+.slider-value {
+    background: linear-gradient(to right, #000000, #ffffff) !important;
 }
 
 .presets {
@@ -304,7 +335,9 @@ input[type="range"]::-moz-range-thumb {
     box-shadow: 0 4px 12px rgba(138, 85, 254, 0.3);
 }
 
-.lighting-section {
+.lighting-section,
+.geometry-section,
+.texture-section {
     margin-top: 20px;
     padding: 15px;
     background: rgba(255, 193, 7, 0.1);
@@ -312,11 +345,30 @@ input[type="range"]::-moz-range-thumb {
     border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
-.lighting-title {
+.geometry-section {
+    background: rgba(92, 223, 230, 0.1);
+    border-color: rgba(92, 223, 230, 0.3);
+}
+
+.texture-section {
+    background: rgba(138, 85, 254, 0.1);
+    border-color: rgba(138, 85, 254, 0.3);
+}
+
+.lighting-title,
+.section-title {
     font-size: 0.9rem;
     font-weight: 600;
     color: #ffc107;
     margin-bottom: 10px;
+}
+
+.geometry-section .section-title {
+    color: #5cdfe6;
+}
+
+.texture-section .section-title {
+    color: #8a55fe;
 }
 
 .toggle-btn {
@@ -339,6 +391,87 @@ input[type="range"]::-moz-range-thumb {
 
 .toggle-btn:hover {
     background: rgba(138, 85, 254, 0.5);
+}
+
+.geometry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.geometry-btn {
+    padding: 10px 8px;
+    background: rgba(92, 223, 230, 0.2);
+    border: 1px solid rgba(92, 223, 230, 0.4);
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.geometry-btn.active {
+    background: rgba(92, 223, 230, 0.6);
+    border-color: rgba(92, 223, 230, 1);
+}
+
+.geometry-btn:hover {
+    background: rgba(92, 223, 230, 0.4);
+    transform: translateY(-2px);
+}
+
+.texture-section input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(138, 85, 254, 0.4);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.texture-section input[type="file"]::file-selector-button {
+    background: rgba(138, 85, 254, 0.5);
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: #fff;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.texture-section input[type="file"]::file-selector-button:hover {
+    background: rgba(138, 85, 254, 0.8);
+}
+
+.clear-btn {
+    width: 100%;
+    padding: 8px;
+    background: rgba(255, 87, 87, 0.3);
+    border: 1px solid rgba(255, 87, 87, 0.5);
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
+
+.clear-btn:hover {
+    background: rgba(255, 87, 87, 0.5);
+}
+
+.texture-info {
+    font-size: 0.75rem;
+    color: #aaa;
+    text-align: center;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
 }
 
 .info {

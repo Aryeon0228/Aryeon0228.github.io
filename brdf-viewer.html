@@ -22,22 +22,48 @@
 
         <div class="control-group">
             <div class="control-label">
-                <span>Base Color</span>
+                <span>Base Color (HSV)</span>
             </div>
-            <div class="color-row">
-                <input type="range" id="colorR" min="0" max="1" step="0.01" value="0.5" aria-label="Red channel">
-                <input type="range" id="colorG" min="0" max="1" step="0.01" value="0.5" aria-label="Green channel">
-                <input type="range" id="colorB" min="0" max="1" step="0.01" value="0.5" aria-label="Blue channel">
+            <div class="color-hsv-group">
+                <div class="color-slider-row">
+                    <label>Hue</label>
+                    <input type="range" id="colorH" class="slider-hue" min="0" max="360" step="1" value="0" aria-label="Hue">
+                </div>
+                <div class="color-slider-row">
+                    <label>Saturation</label>
+                    <input type="range" id="colorS" class="slider-saturation" min="0" max="100" step="1" value="0" aria-label="Saturation">
+                </div>
+                <div class="color-slider-row">
+                    <label>Value</label>
+                    <input type="range" id="colorV" class="slider-value" min="0" max="100" step="1" value="50" aria-label="Value">
+                </div>
             </div>
             <div class="color-display">
                 <div class="color-preview" id="colorPreview"></div>
-                <div class="color-rgb-text" id="colorRGBText">RGB(128, 128, 128)</div>
+                <div class="color-rgb-text" id="colorRGBText">HSV(0°, 0%, 50%)</div>
             </div>
         </div>
 
         <div class="lighting-section">
             <div class="lighting-title">💡 Lighting</div>
             <button class="toggle-btn active" id="iblToggle" aria-label="Toggle IBL environment">🌍 IBL Environment: ON</button>
+        </div>
+
+        <div class="geometry-section">
+            <div class="section-title">🔷 Geometry</div>
+            <div class="geometry-grid">
+                <button class="geometry-btn active" data-geometry="sphere">⚪ Sphere</button>
+                <button class="geometry-btn" data-geometry="torus">🍩 Torus</button>
+                <button class="geometry-btn" data-geometry="cube">🔲 Cube</button>
+                <button class="geometry-btn" data-geometry="cylinder">🥫 Cylinder</button>
+            </div>
+        </div>
+
+        <div class="texture-section">
+            <div class="section-title">🗺️ Normal Map</div>
+            <input type="file" id="normalMapUpload" accept="image/*" aria-label="Upload normal map">
+            <button class="clear-btn" id="clearNormalMap">✖️ Clear Normal Map</button>
+            <div class="texture-info" id="normalMapInfo">No normal map loaded</div>
         </div>
 
         <div class="control-group">
