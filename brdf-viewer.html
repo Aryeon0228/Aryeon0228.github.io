@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disney BRDF Interactive Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .ui-panel {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 320px;
+            max-height: calc(100vh - 40px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            z-index: 10;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .ui-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .ui-panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .ui-panel::-webkit-scrollbar-thumb {
+            background: rgba(138, 85, 254, 0.6);
+            border-radius: 4px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #8a55fe, #5cdfe6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+
+        .control-value {
+            color: #5cdfe6;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #8a55fe, #5cdfe6);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(138, 85, 254, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #8a55fe, #5cdfe6);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .color-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .color-row input[type="range"] {
+            flex: 1;
+        }
+
+        .presets {
+            margin-top: 30px;
+        }
+
+        .presets h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .preset-btn {
+            padding: 12px;
+            background: rgba(138, 85, 254, 0.2);
+            border: 1px solid rgba(138, 85, 254, 0.4);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .preset-btn:hover {
+            background: rgba(138, 85, 254, 0.4);
+            border-color: rgba(138, 85, 254, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(138, 85, 254, 0.3);
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(92, 223, 230, 0.1);
+            border-left: 3px solid #5cdfe6;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .ui-panel {
+                width: calc(100% - 40px);
+                max-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div class="ui-panel">
+        <h1>Disney BRDF Viewer</h1>
+        <p class="subtitle">실시간 PBR 머티리얼 시뮬레이터</p>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Base Color</span>
+            </div>
+            <div class="color-row">
+                <input type="range" id="colorR" min="0" max="1" step="0.01" value="0.5">
+                <input type="range" id="colorG" min="0" max="1" step="0.01" value="0.5">
+                <input type="range" id="colorB" min="0" max="1" step="0.01" value="0.5">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Metallic</span>
+                <span class="control-value" id="metallicValue">0.00</span>
+            </div>
+            <input type="range" id="metallic" min="0" max="1" step="0.01" value="0.0">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Roughness</span>
+                <span class="control-value" id="roughnessValue">0.50</span>
+            </div>
+            <input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Specular (IOR)</span>
+                <span class="control-value" id="specularValue">0.50</span>
+            </div>
+            <input type="range" id="specular" min="0" max="1" step="0.01" value="0.5">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Clearcoat</span>
+                <span class="control-value" id="clearcoatValue">0.00</span>
+            </div>
+            <input type="range" id="clearcoat" min="0" max="1" step="0.01" value="0.0">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Clearcoat Roughness</span>
+                <span class="control-value" id="clearcoatRoughnessValue">0.00</span>
+            </div>
+            <input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0.0">
+        </div>
+
+        <div class="presets">
+            <h3>Material Presets</h3>
+            <div class="preset-grid">
+                <button class="preset-btn" data-preset="gold">Gold</button>
+                <button class="preset-btn" data-preset="chrome">Chrome</button>
+                <button class="preset-btn" data-preset="plastic">Plastic</button>
+                <button class="preset-btn" data-preset="rubber">Rubber</button>
+                <button class="preset-btn" data-preset="wood">Wood</button>
+                <button class="preset-btn" data-preset="carpaint">Car Paint</button>
+                <button class="preset-btn" data-preset="brushedmetal">Brushed Metal</button>
+            </div>
+        </div>
+
+        <div class="info">
+            💡 <strong>Tip:</strong> 마우스로 드래그하여 회전, 스크롤로 줌 조절
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0f0f1e);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 6);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Lighting - matching Python version
+        const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
+        light1.position.set(5, 5, 5);
+        scene.add(light1);
+
+        const light2 = new THREE.DirectionalLight(0x99b3ff, 0.6);
+        light2.position.set(-5, -3, 3);
+        scene.add(light2);
+
+        const light3 = new THREE.DirectionalLight(0xffcc99, 0.4);
+        light3.position.set(0, -5, -3);
+        scene.add(light3);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+        scene.add(ambientLight);
+
+        // Material
+        const material = new THREE.MeshPhysicalMaterial({
+            color: new THREE.Color(0.5, 0.5, 0.5),
+            metalness: 0.0,
+            roughness: 0.5,
+            clearcoat: 0.0,
+            clearcoatRoughness: 0.0,
+            reflectivity: 0.5
+        });
+
+        // Geometries
+        const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
+        const sphere = new THREE.Mesh(sphereGeometry, material);
+        sphere.position.x = -2.5;
+        scene.add(sphere);
+
+        const torusKnotGeometry = new THREE.TorusKnotGeometry(0.8, 0.3, 128, 16, 2, 3);
+        const torusKnot = new THREE.Mesh(torusKnotGeometry, material);
+        torusKnot.position.x = 2.5;
+        scene.add(torusKnot);
+
+        // UI Controls
+        const controls_ui = {
+            colorR: document.getElementById('colorR'),
+            colorG: document.getElementById('colorG'),
+            colorB: document.getElementById('colorB'),
+            metallic: document.getElementById('metallic'),
+            roughness: document.getElementById('roughness'),
+            specular: document.getElementById('specular'),
+            clearcoat: document.getElementById('clearcoat'),
+            clearcoatRoughness: document.getElementById('clearcoatRoughness')
+        };
+
+        const valueDisplays = {
+            metallic: document.getElementById('metallicValue'),
+            roughness: document.getElementById('roughnessValue'),
+            specular: document.getElementById('specularValue'),
+            clearcoat: document.getElementById('clearcoatValue'),
+            clearcoatRoughness: document.getElementById('clearcoatRoughnessValue')
+        };
+
+        function updateMaterial() {
+            const r = parseFloat(controls_ui.colorR.value);
+            const g = parseFloat(controls_ui.colorG.value);
+            const b = parseFloat(controls_ui.colorB.value);
+
+            material.color.setRGB(r, g, b);
+            material.metalness = parseFloat(controls_ui.metallic.value);
+            material.roughness = parseFloat(controls_ui.roughness.value);
+            material.reflectivity = parseFloat(controls_ui.specular.value);
+            material.clearcoat = parseFloat(controls_ui.clearcoat.value);
+            material.clearcoatRoughness = parseFloat(controls_ui.clearcoatRoughness.value);
+
+            // Update displays
+            valueDisplays.metallic.textContent = material.metalness.toFixed(2);
+            valueDisplays.roughness.textContent = material.roughness.toFixed(2);
+            valueDisplays.specular.textContent = material.reflectivity.toFixed(2);
+            valueDisplays.clearcoat.textContent = material.clearcoat.toFixed(2);
+            valueDisplays.clearcoatRoughness.textContent = material.clearcoatRoughness.toFixed(2);
+        }
+
+        // Add event listeners
+        Object.values(controls_ui).forEach(control => {
+            control.addEventListener('input', updateMaterial);
+        });
+
+        // Presets
+        const presets = {
+            gold: { color: [1.0, 0.7, 0.3], metallic: 1.0, roughness: 0.2, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            chrome: { color: [0.88, 0.88, 0.88], metallic: 1.0, roughness: 0.05, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            plastic: { color: [0.8, 0.2, 0.2], metallic: 0.0, roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.1 },
+            rubber: { color: [0.15, 0.15, 0.15], metallic: 0.0, roughness: 0.9, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+            wood: { color: [0.42, 0.2, 0.06], metallic: 0.0, roughness: 0.7, clearcoat: 0.1, clearcoatRoughness: 0.3 },
+            carpaint: { color: [0.8, 0.0, 0.0], metallic: 0.0, roughness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.0 },
+            brushedmetal: { color: [0.7, 0.7, 0.7], metallic: 1.0, roughness: 0.3, clearcoat: 0.0, clearcoatRoughness: 0.0 }
+        };
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const presetName = btn.dataset.preset;
+                const preset = presets[presetName];
+
+                controls_ui.colorR.value = preset.color[0];
+                controls_ui.colorG.value = preset.color[1];
+                controls_ui.colorB.value = preset.color[2];
+                controls_ui.metallic.value = preset.metallic;
+                controls_ui.roughness.value = preset.roughness;
+                controls_ui.clearcoat.value = preset.clearcoat;
+                controls_ui.clearcoatRoughness.value = preset.clearcoatRoughness;
+
+                updateMaterial();
+            });
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Slow rotation
+            sphere.rotation.y += 0.003;
+            torusKnot.rotation.y += 0.003;
+            torusKnot.rotation.x += 0.002;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
