@@ -415,33 +415,45 @@ function initViewer() {
     // Custom Geometry Generators
     // ========================================================================
 
-    // Create a chubby 3D heart shape (M&M style - flattened sphere/lenticular)
+    // Create a chubby 3D heart shape (M&M style - like a flattened sphere)
     function createHeartGeometry() {
-        // Create heart shape outline
-        const heartShape = new THREE.Shape();
-        const x = 0, y = 0;
+        // Start with a sphere and deform it into a heart shape
+        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        const positions = geometry.attributes.position;
 
-        heartShape.moveTo(x + 0.5, y + 0.4);
-        heartShape.bezierCurveTo(x + 0.5, y + 0.4, x + 0.4, y - 0.1, x, y - 0.1);
-        heartShape.bezierCurveTo(x - 0.7, y - 0.1, x - 0.7, y + 0.7, x - 0.7, y + 0.8);
-        heartShape.bezierCurveTo(x - 0.7, y + 1.3, x - 0.2, y + 1.7, x + 0.5, y + 2.0);
-        heartShape.bezierCurveTo(x + 1.2, y + 1.7, x + 1.7, y + 1.3, x + 1.7, y + 0.8);
-        heartShape.bezierCurveTo(x + 1.7, y + 0.7, x + 1.7, y - 0.1, x + 1.0, y - 0.1);
-        heartShape.bezierCurveTo(x + 0.6, y - 0.1, x + 0.5, y + 0.4, x + 0.5, y + 0.4);
+        // Deform each vertex to create heart shape
+        for (let i = 0; i < positions.count; i++) {
+            let x = positions.getX(i);
+            let y = positions.getY(i);
+            let z = positions.getZ(i);
 
-        // M&M style: thin extrude with massive bevel creates lenticular shape
-        const extrudeSettings = {
-            depth: 0.3,            // Very thin center
-            bevelEnabled: true,
-            bevelThickness: 0.7,   // Huge bevel for roundness
-            bevelSize: 0.7,
-            bevelSegments: 40,     // Super smooth curves
-            curveSegments: 40
-        };
+            // Convert to cylindrical coordinates for easier heart shaping
+            const r = Math.sqrt(x * x + z * z);
+            const theta = Math.atan2(z, x);
 
-        const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+            // Heart shape formula in polar coordinates (adjusted for 3D)
+            const heartR = Math.sin(theta) * Math.sqrt(Math.abs(Math.cos(theta))) /
+                          (Math.sin(theta) + 1.4) - 2 * Math.sin(theta) + 2;
+
+            // Scale radius based on heart shape
+            const newR = r * (0.5 + 0.5 * heartR);
+
+            // Apply heart deformation
+            x = newR * Math.cos(theta);
+            z = newR * Math.sin(theta);
+
+            // Flatten the sphere in Y axis (M&M shape)
+            // Make it thicker in the middle, thinner at edges
+            const distFromCenter = Math.sqrt(x * x + z * z);
+            const flatteningFactor = 0.5 * (1 - distFromCenter * 0.3);
+            y = y * flatteningFactor;
+
+            positions.setXYZ(i, x, y, z);
+        }
+
+        geometry.computeVertexNormals();
         geometry.center();
-        geometry.scale(1.0, 1.0, 0.8);  // Slightly flatten Z axis
+        geometry.scale(1.5, 1.5, 1.5);
         return geometry;
     }
 
