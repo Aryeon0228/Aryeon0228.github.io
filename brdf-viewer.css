@@ -383,7 +383,8 @@ input[type="range"]::-moz-range-thumb {
     gap: 8px;
 }
 
-.geometry-btn {
+.geometry-btn,
+.environment-btn {
     padding: 10px 8px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -395,12 +396,14 @@ input[type="range"]::-moz-range-thumb {
     font-weight: 500;
 }
 
-.geometry-btn.active {
+.geometry-btn.active,
+.environment-btn.active {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.4);
 }
 
-.geometry-btn:hover {
+.geometry-btn:hover,
+.environment-btn:hover {
     background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
 }
