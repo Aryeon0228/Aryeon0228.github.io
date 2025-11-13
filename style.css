@@ -412,6 +412,7 @@ nav {
     padding-bottom: var(--spacing-sm);
     border-bottom: 1px solid var(--border-color);
     position: relative;
+    overflow: hidden;
 }
 
 .resume-item:last-child {
@@ -421,12 +422,12 @@ nav {
 
 .school-logo {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 80px;
-    height: 80px;
+    bottom: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
     object-fit: contain;
-    opacity: 0.15;
+    opacity: 0.1;
     pointer-events: none;
 }
 
