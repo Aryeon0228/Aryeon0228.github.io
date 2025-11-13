@@ -280,15 +280,19 @@ function initViewer() {
     // HDR Environment maps
     const hdriMaps = {
         outdoor: {
-            name: '🌅 Bright Outdoor',
+            name: '☀️ Day',
             url: 'https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.hdr'
         },
         sunset: {
-            name: '🌳 Sunset Nature',
+            name: '🌅 Sunset',
             url: 'https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr'
         },
+        studio: {
+            name: '🏛️ Studio',
+            url: 'https://threejs.org/examples/textures/equirectangular/studio_small_08_1k.hdr'
+        },
         night: {
-            name: '🌙 Dark Night',
+            name: '🌙 Night',
             url: 'https://threejs.org/examples/textures/equirectangular/moonless_golf_1k.hdr'
         }
     };
