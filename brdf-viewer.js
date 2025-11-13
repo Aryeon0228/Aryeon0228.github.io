@@ -289,7 +289,7 @@ function initViewer() {
         },
         night: {
             name: '🌙 Dark Night',
-            url: 'https://threejs.org/examples/textures/equirectangular/dikhololo_night_1k.hdr'
+            url: 'https://threejs.org/examples/textures/equirectangular/moonless_golf_1k.hdr'
         }
     };
 
