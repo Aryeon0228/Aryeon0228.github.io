@@ -438,11 +438,65 @@ nav {
     background: var(--gradient);
     color: white;
     border: none;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.card-highlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 70%
+    );
+    background-size: 200% 200%;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.card-highlight:hover::before {
+    opacity: 1;
+    animation: hologramShine 2s infinite;
+}
+
+.card-highlight:hover {
+    animation: hologramTilt 0.5s ease-in-out;
+}
+
+@keyframes hologramShine {
+    0% {
+        background-position: 200% 200%;
+    }
+    100% {
+        background-position: -200% -200%;
+    }
+}
+
+@keyframes hologramTilt {
+    0%, 100% {
+        transform: translateY(0) rotateZ(0deg);
+    }
+    25% {
+        transform: translateY(-3px) rotateZ(1deg);
+    }
+    75% {
+        transform: translateY(-3px) rotateZ(-1deg);
+    }
 }
 
 .card-highlight .card-title,
 .card-highlight .card-desc {
     color: white;
+    position: relative;
+    z-index: 1;
 }
 
 .card-highlight .card-title svg {
@@ -453,6 +507,8 @@ nav {
     background: white;
     color: var(--gradient-start);
     border: 2px solid white;
+    position: relative;
+    z-index: 1;
 }
 
 .card-highlight .btn-primary:hover {
