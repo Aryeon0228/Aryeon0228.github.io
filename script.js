@@ -16,6 +16,37 @@ if (themeToggle) {
     });
 }
 
+// ==================== Floating Particles ====================
+const particlesContainer = document.querySelector('.particles');
+
+if (particlesContainer) {
+    const particles = ['✨', '⭐', '💫', '🌟'];
+
+    function createParticle() {
+        const particle = document.createElement('span');
+        particle.className = 'particle';
+        particle.textContent = particles[Math.floor(Math.random() * particles.length)];
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        particle.style.fontSize = (Math.random() * 1 + 1) + 'rem';
+
+        particlesContainer.appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 10000);
+    }
+
+    // Create initial particles
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => createParticle(), i * 1000);
+    }
+
+    // Keep creating particles
+    setInterval(createParticle, 2000);
+}
+
 // ==================== Home Link ====================
 const homeLink = document.getElementById('homeLink');
 
