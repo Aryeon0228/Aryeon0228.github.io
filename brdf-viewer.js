@@ -503,8 +503,8 @@ function initViewer() {
         torus: new THREE.TorusKnotGeometry(1, 0.3, 128, 16, 2, 3),
         cube: new THREE.BoxGeometry(2, 2, 2, 32, 32, 32),
         cylinder: new THREE.CylinderGeometry(1, 1, 2, 64, 32),
-        heart: createHeartGeometry(),
-        duck: createRubberDuckGeometry()
+        icosahedron: new THREE.IcosahedronGeometry(1.5, 1),
+        octahedron: new THREE.OctahedronGeometry(1.5, 2)
     };
 
     let currentMesh = new THREE.Mesh(geometries.sphere, material);
