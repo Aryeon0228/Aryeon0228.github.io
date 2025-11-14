@@ -470,12 +470,12 @@ nav {
     right: 0;
     bottom: 0;
     background: linear-gradient(
-        45deg,
+        180deg,
         transparent 30%,
-        rgba(92, 223, 230, 0.4) 50%,
+        rgba(92, 223, 230, 0.3) 50%,
         transparent 70%
     );
-    background-size: 200% 200%;
+    background-size: 100% 200%;
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
@@ -483,34 +483,15 @@ nav {
 
 .card-highlight:hover::before {
     opacity: 1;
-    animation: hologramShine 2s infinite;
-}
-
-.card-highlight:hover {
-    animation: hologramFloat 3s ease-in-out infinite;
+    animation: hologramShine 1.5s ease-out;
 }
 
 @keyframes hologramShine {
     0% {
-        background-position: 200% 200%;
+        background-position: 0% 0%;
     }
     100% {
-        background-position: -200% -200%;
-    }
-}
-
-@keyframes hologramFloat {
-    0%, 100% {
-        transform: translateY(0) rotateZ(0deg);
-    }
-    25% {
-        transform: translateY(-8px) rotateZ(2deg);
-    }
-    50% {
-        transform: translateY(-12px) rotateZ(0deg);
-    }
-    75% {
-        transform: translateY(-8px) rotateZ(-2deg);
+        background-position: 0% 100%;
     }
 }
 
@@ -713,11 +694,39 @@ nav {
     font-size: 0.875rem;
 }
 
+.award-group .award-subitem {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.award-group .award-subitem:first-of-type {
+    margin-top: 0.75rem;
+    padding-top: 0;
+    border-top: none;
+}
+
 /* Skills Bar System */
 .skills-progress-list {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.skill-category-title {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gradient-start);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: -0.5rem;
+}
+
+.skill-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 0.5rem 0;
 }
 
 .skill-level-item {
