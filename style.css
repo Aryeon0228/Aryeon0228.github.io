@@ -47,11 +47,11 @@ html {
 }
 
 body {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
-    font-weight: 300;
+    font-weight: 400;
     font-size: 18px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -89,9 +89,9 @@ nav {
 }
 
 .logo {
-    font-family: 'Playfair Display', 'Pretendard', serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 1.75rem;
-    font-weight: 900;
+    font-weight: 800;
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -111,7 +111,7 @@ nav {
 }
 
 .nav-menu a {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
@@ -294,9 +294,9 @@ nav {
 }
 
 .hero-title {
-    font-family: 'Playfair Display', 'Pretendard', serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 5rem;
-    font-weight: 900;
+    font-weight: 800;
     line-height: 1.1;
     margin-bottom: var(--spacing-sm);
     letter-spacing: -0.02em;
@@ -321,12 +321,11 @@ nav {
 }
 
 .hero-description {
-    font-family: 'JetBrains Mono', 'Pretendard', monospace;
+    font-family: 'Pretendard', sans-serif;
     font-size: 1.1rem;
     font-weight: 400;
     color: var(--text-secondary);
     margin-bottom: var(--spacing-md);
-    letter-spacing: 0.02em;
 }
 
 .hero-image {
@@ -354,7 +353,7 @@ nav {
 
 /* ==================== Buttons ==================== */
 .btn {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     display: inline-block;
     padding: 0.875rem 2rem;
     border-radius: 50px;
@@ -363,7 +362,6 @@ nav {
     font-size: 1rem;
     transition: var(--transition);
     border: 2px solid transparent;
-    letter-spacing: 0.01em;
 }
 
 .btn-primary {
@@ -392,7 +390,7 @@ nav {
 }
 
 .section-title {
-    font-family: 'Playfair Display', 'Pretendard', serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 4rem;
     font-weight: 800;
     margin-bottom: var(--spacing-sm);
@@ -402,16 +400,16 @@ nav {
 }
 
 .section-description {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     text-align: center;
     color: var(--text-secondary);
     font-size: 1.125rem;
     margin-bottom: var(--spacing-lg);
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .section-subtitle {
-    font-family: 'Playfair Display', 'Pretendard', serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 2.5rem;
     font-weight: 700;
     margin-top: var(--spacing-lg);
@@ -436,7 +434,7 @@ nav {
 }
 
 .card-title {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
@@ -472,12 +470,12 @@ nav {
     right: 0;
     bottom: 0;
     background: linear-gradient(
-        45deg,
+        180deg,
         transparent 30%,
-        rgba(92, 223, 230, 0.4) 50%,
+        rgba(92, 223, 230, 0.3) 50%,
         transparent 70%
     );
-    background-size: 200% 200%;
+    background-size: 100% 200%;
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
@@ -485,34 +483,15 @@ nav {
 
 .card-highlight:hover::before {
     opacity: 1;
-    animation: hologramShine 2s infinite;
-}
-
-.card-highlight:hover {
-    animation: hologramFloat 3s ease-in-out infinite;
+    animation: hologramShine 1.5s ease-out;
 }
 
 @keyframes hologramShine {
     0% {
-        background-position: 200% 200%;
+        background-position: 0% 0%;
     }
     100% {
-        background-position: -200% -200%;
-    }
-}
-
-@keyframes hologramFloat {
-    0%, 100% {
-        transform: translateY(0) rotateZ(0deg);
-    }
-    25% {
-        transform: translateY(-8px) rotateZ(2deg);
-    }
-    50% {
-        transform: translateY(-12px) rotateZ(0deg);
-    }
-    75% {
-        transform: translateY(-8px) rotateZ(-2deg);
+        background-position: 0% 100%;
     }
 }
 
@@ -580,7 +559,7 @@ nav {
 }
 
 .resume-item h4 {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
@@ -632,7 +611,7 @@ nav {
 }
 
 .experience-header h4 {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 1.25rem;
     color: var(--text-primary);
     margin: 0;
@@ -646,7 +625,7 @@ nav {
 }
 
 .experience-role {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     color: var(--text-primary);
     font-weight: 600;
     font-size: 1.1rem;
@@ -695,7 +674,7 @@ nav {
 }
 
 .award-item h4 {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 1.125rem;
     font-weight: 600;
     color: var(--text-primary);
@@ -715,11 +694,39 @@ nav {
     font-size: 0.875rem;
 }
 
+.award-group .award-subitem {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.award-group .award-subitem:first-of-type {
+    margin-top: 0.75rem;
+    padding-top: 0;
+    border-top: none;
+}
+
 /* Skills Bar System */
 .skills-progress-list {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.skill-category-title {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gradient-start);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: -0.5rem;
+}
+
+.skill-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 0.5rem 0;
 }
 
 .skill-level-item {
@@ -729,11 +736,10 @@ nav {
 }
 
 .skill-name {
-    font-family: 'JetBrains Mono', 'Pretendard', monospace;
+    font-family: 'Pretendard', sans-serif;
     font-weight: 500;
     color: var(--text-primary);
     font-size: 0.95rem;
-    letter-spacing: 0.01em;
 }
 
 .skill-bar {
@@ -918,7 +924,7 @@ nav {
 }
 
 .portfolio-content h3 {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: var(--spacing-sm);
@@ -941,7 +947,7 @@ nav {
 }
 
 .portfolio-btn {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -952,7 +958,6 @@ nav {
     font-weight: 600;
     transition: var(--transition);
     border: 2px solid transparent;
-    letter-spacing: 0.01em;
 }
 
 .portfolio-btn svg {
@@ -1057,7 +1062,7 @@ nav {
 }
 
 .contact-card h3 {
-    font-family: 'IBM Plex Sans', 'Pretendard', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: var(--spacing-xs);
