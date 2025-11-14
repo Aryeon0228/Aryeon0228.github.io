@@ -453,7 +453,7 @@ nav {
     background: linear-gradient(
         45deg,
         transparent 30%,
-        rgba(255, 255, 255, 0.3) 50%,
+        rgba(92, 223, 230, 0.4) 50%,
         transparent 70%
     );
     background-size: 200% 200%;
@@ -468,7 +468,7 @@ nav {
 }
 
 .card-highlight:hover {
-    animation: hologramTilt 0.5s ease-in-out;
+    animation: hologramFloat 3s ease-in-out infinite;
 }
 
 @keyframes hologramShine {
@@ -480,15 +480,18 @@ nav {
     }
 }
 
-@keyframes hologramTilt {
+@keyframes hologramFloat {
     0%, 100% {
         transform: translateY(0) rotateZ(0deg);
     }
     25% {
-        transform: translateY(-3px) rotateZ(1deg);
+        transform: translateY(-8px) rotateZ(2deg);
+    }
+    50% {
+        transform: translateY(-12px) rotateZ(0deg);
     }
     75% {
-        transform: translateY(-3px) rotateZ(-1deg);
+        transform: translateY(-8px) rotateZ(-2deg);
     }
 }
 
