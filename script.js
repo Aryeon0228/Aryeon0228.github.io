@@ -16,6 +16,19 @@ if (themeToggle) {
     });
 }
 
+// ==================== Home Link ====================
+const homeLink = document.getElementById('homeLink');
+
+if (homeLink) {
+    homeLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
 // ==================== Mobile Menu Toggle ====================
 const mobileToggle = document.getElementById('mobileToggle');
 const navMenu = document.querySelector('.nav-menu');
@@ -55,7 +68,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ==================== Scroll Effects ====================
-let lastScroll = 0;
 const header = document.querySelector('header');
 
 if (header) {
@@ -68,8 +80,6 @@ if (header) {
         } else {
             header.style.boxShadow = 'none';
         }
-
-        lastScroll = currentScroll;
     });
 }
 
