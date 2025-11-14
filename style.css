@@ -747,9 +747,35 @@ nav {
     height: 10px;
     background: var(--bg-secondary);
     border-radius: 50px;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     border: 1px solid var(--border-color);
+}
+
+.skill-bar::before,
+.skill-bar::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 14px;
+    background: white;
+    z-index: 10;
+    border-radius: 1px;
+}
+
+[data-theme="dark"] .skill-bar::before,
+[data-theme="dark"] .skill-bar::after {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.skill-bar::before {
+    left: 33.33%;
+}
+
+.skill-bar::after {
+    left: 66.66%;
 }
 
 .skill-bar-fill {
