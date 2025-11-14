@@ -244,6 +244,24 @@ nav {
     opacity: 0;
     animation: floatParticle 8s ease-in-out forwards;
     pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(138, 85, 254, 0.9), rgba(92, 223, 230, 0.9));
+    box-shadow: 0 0 15px rgba(138, 85, 254, 0.6),
+                0 0 30px rgba(92, 223, 230, 0.4);
+    animation: floatParticle 8s ease-in-out forwards, sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(138, 85, 254, 0.6),
+                    0 0 30px rgba(92, 223, 230, 0.4);
+    }
+    50% {
+        transform: scale(1.3);
+        box-shadow: 0 0 25px rgba(138, 85, 254, 0.9),
+                    0 0 50px rgba(92, 223, 230, 0.7);
+    }
 }
 
 @keyframes floatParticle {
