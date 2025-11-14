@@ -243,11 +243,11 @@ nav {
     bottom: -50px;
     opacity: 0;
     pointer-events: none;
-    border-radius: 50%;
     background: radial-gradient(circle, rgba(138, 85, 254, 0.9), rgba(92, 223, 230, 0.9));
     box-shadow: 0 0 15px rgba(138, 85, 254, 0.6),
                 0 0 30px rgba(92, 223, 230, 0.4);
     animation: floatParticle 8s ease-in-out forwards;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
 }
 
 @keyframes floatParticle {
