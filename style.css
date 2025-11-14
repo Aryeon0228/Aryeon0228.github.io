@@ -967,7 +967,7 @@ nav {
 }
 
 .portfolio-btn-primary {
-    background: var(--gradient);
+    background: linear-gradient(90deg, #8a55fe 0%, #5cdfe6 100%);
     color: white;
     border-color: transparent;
 }
