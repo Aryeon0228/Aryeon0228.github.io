@@ -418,6 +418,17 @@ nav {
     letter-spacing: -0.01em;
 }
 
+.category-title {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--gradient-start);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
 /* ==================== Cards ==================== */
 .card {
     background: var(--card-bg);
