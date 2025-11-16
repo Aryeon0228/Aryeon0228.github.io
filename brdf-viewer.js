@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
 // ============================================================================
@@ -503,12 +504,15 @@ function initViewer() {
     // Geometries - Create all geometries but only show selected one
     const geometries = {
         sphere: new THREE.SphereGeometry(1.5, 64, 64),
+        plane: new THREE.PlaneGeometry(3, 3, 128, 128),
         torus: new THREE.TorusKnotGeometry(1, 0.3, 128, 16, 2, 3),
         cube: new THREE.BoxGeometry(2, 2, 2, 32, 32, 32),
         cylinder: new THREE.CylinderGeometry(1, 1, 2, 64, 32),
-        icosahedron: new THREE.IcosahedronGeometry(1.5, 0),
-        octahedron: new THREE.OctahedronGeometry(1.5, 0)
+        icosahedron: new THREE.IcosahedronGeometry(1.5, 0)
     };
+
+    // Store custom model geometry
+    let customModelGeometry = null;
 
     let currentMesh = new THREE.Mesh(geometries.sphere, material);
     scene.add(currentMesh);
@@ -677,8 +681,8 @@ function initViewer() {
             // Remove current mesh
             scene.remove(currentMesh);
 
-            // Enable flat shading for polyhedra to show clear facets
-            const useFlatShading = geometryType === 'icosahedron' || geometryType === 'octahedron';
+            // Enable flat shading for icosahedron to show clear facets
+            const useFlatShading = geometryType === 'icosahedron';
             material.flatShading = useFlatShading;
             material.needsUpdate = true;
 
@@ -746,6 +750,73 @@ function initViewer() {
         });
     }
 
+    // OBJ Model upload
+    const modelUpload = document.getElementById('modelUpload');
+    const modelInfo = document.getElementById('modelInfo');
+    const objLoader = new OBJLoader();
+
+    if (modelUpload) {
+        modelUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const objData = event.target.result;
+                        const loadedObj = objLoader.parse(objData);
+
+                        // Extract geometry from loaded OBJ
+                        // OBJ files can have multiple meshes, merge them
+                        const geometries = [];
+                        loadedObj.traverse((child) => {
+                            if (child instanceof THREE.Mesh && child.geometry) {
+                                geometries.push(child.geometry);
+                            }
+                        });
+
+                        if (geometries.length > 0) {
+                            // Merge all geometries if multiple
+                            customModelGeometry = geometries.length === 1
+                                ? geometries[0]
+                                : BufferGeometryUtils.mergeGeometries(geometries);
+
+                            // Center and scale the model
+                            customModelGeometry.center();
+                            customModelGeometry.computeBoundingSphere();
+                            const scale = 2.5 / customModelGeometry.boundingSphere.radius;
+                            customModelGeometry.scale(scale, scale, scale);
+                            customModelGeometry.computeVertexNormals();
+
+                            // Remove current mesh and add custom model
+                            scene.remove(currentMesh);
+                            material.flatShading = false;
+                            material.needsUpdate = true;
+                            currentMesh = new THREE.Mesh(customModelGeometry, material);
+                            scene.add(currentMesh);
+
+                            // Deactivate all geometry buttons
+                            document.querySelectorAll('.geometry-btn').forEach(b => b.classList.remove('active'));
+
+                            if (modelInfo) {
+                                modelInfo.textContent = `✅ Loaded: ${file.name}`;
+                                modelInfo.style.color = '#5cdfe6';
+                            }
+                        } else {
+                            throw new Error('No geometry found in OBJ file');
+                        }
+                    } catch (error) {
+                        console.error('Error loading OBJ:', error);
+                        if (modelInfo) {
+                            modelInfo.textContent = `❌ Error loading ${file.name}`;
+                            modelInfo.style.color = '#ff6b6b';
+                        }
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+    }
+
     // Reset button - restore all parameters to default values
     const resetBtn = document.getElementById('resetBtn');
     if (resetBtn) {
@@ -774,6 +845,26 @@ function initViewer() {
                 normalMapInfo.textContent = 'No normal map loaded';
                 normalMapInfo.style.color = '#aaa';
             }
+
+            // Clear custom model and reset to sphere
+            customModelGeometry = null;
+            if (modelUpload) modelUpload.value = '';
+            if (modelInfo) {
+                modelInfo.textContent = 'No model loaded';
+                modelInfo.style.color = '#aaa';
+            }
+
+            // Reset to default sphere geometry
+            scene.remove(currentMesh);
+            material.flatShading = false;
+            material.needsUpdate = true;
+            currentMesh = new THREE.Mesh(geometries.sphere, material);
+            scene.add(currentMesh);
+
+            // Activate sphere button
+            document.querySelectorAll('.geometry-btn').forEach(b => b.classList.remove('active'));
+            const sphereBtn = document.querySelector('.geometry-btn[data-geometry="sphere"]');
+            if (sphereBtn) sphereBtn.classList.add('active');
 
             // Update material with default values
             updateMaterial();

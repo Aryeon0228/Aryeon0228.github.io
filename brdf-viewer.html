@@ -58,12 +58,18 @@
             <div class="section-title">🔷 Geometry</div>
             <div class="geometry-grid">
                 <button class="geometry-btn active" data-geometry="sphere">⚪ Sphere</button>
+                <button class="geometry-btn" data-geometry="plane">▫️ Plane</button>
                 <button class="geometry-btn" data-geometry="torus">🍩 Torus</button>
                 <button class="geometry-btn" data-geometry="cube">🔲 Cube</button>
                 <button class="geometry-btn" data-geometry="cylinder">🥫 Cylinder</button>
                 <button class="geometry-btn" data-geometry="icosahedron">💎 Icosahedron</button>
-                <button class="geometry-btn" data-geometry="octahedron">🔷 Octahedron</button>
             </div>
+        </div>
+
+        <div class="texture-section">
+            <div class="section-title">📦 Custom Model</div>
+            <input type="file" id="modelUpload" accept=".obj" aria-label="Upload OBJ model">
+            <div class="texture-info" id="modelInfo">No model loaded</div>
         </div>
 
         <div class="geometry-section">
