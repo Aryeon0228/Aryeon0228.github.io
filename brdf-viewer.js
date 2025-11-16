@@ -504,8 +504,8 @@ function initViewer() {
         torus: new THREE.TorusKnotGeometry(1, 0.3, 128, 16, 2, 3),
         cube: new THREE.BoxGeometry(2, 2, 2, 32, 32, 32),
         cylinder: new THREE.CylinderGeometry(1, 1, 2, 64, 32),
-        icosahedron: new THREE.IcosahedronGeometry(1.5, 1),
-        octahedron: new THREE.OctahedronGeometry(1.5, 2)
+        icosahedron: new THREE.IcosahedronGeometry(1.5, 0),
+        octahedron: new THREE.OctahedronGeometry(1.5, 0)
     };
 
     let currentMesh = new THREE.Mesh(geometries.sphere, material);
@@ -664,6 +664,11 @@ function initViewer() {
 
             // Remove current mesh
             scene.remove(currentMesh);
+
+            // Enable flat shading for polyhedra to show clear facets
+            const useFlatShading = geometryType === 'icosahedron' || geometryType === 'octahedron';
+            material.flatShading = useFlatShading;
+            material.needsUpdate = true;
 
             // Create new mesh with selected geometry
             currentMesh = new THREE.Mesh(geometries[geometryType], material);
