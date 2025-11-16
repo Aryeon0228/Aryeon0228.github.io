@@ -358,6 +358,7 @@ function initViewer() {
                 envMap = texture;
                 if (iblEnabled) {
                     scene.environment = texture;
+                    scene.background = texture;
                 }
             },
             undefined,
@@ -651,6 +652,7 @@ function initViewer() {
         iblToggle.addEventListener('click', () => {
             iblEnabled = !iblEnabled;
             scene.environment = iblEnabled ? envMap : null;
+            scene.background = iblEnabled ? envMap : null;
 
             iblToggle.classList.toggle('active');
             iblToggle.textContent = iblEnabled ? '🌍 IBL Environment: ON' : '🌑 IBL Environment: OFF';
