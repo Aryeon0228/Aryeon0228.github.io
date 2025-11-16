@@ -178,6 +178,7 @@ const METAL_PRESETS = {
     // Oxidized/Rusted metals
     iron_rust: { color: [0.549, 0.353, 0.235], metallic: 0.1, roughness: 0.85, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     aluminum_oxidized: { color: [0.784, 0.804, 0.804], metallic: 0.4, roughness: 0.75, clearcoat: 0.0, clearcoatRoughness: 0.0 },
+    aluminum_anodized: { color: [0.2, 0.2, 0.22], metallic: 0.6, roughness: 0.35, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     copper_patina: { color: [0.471, 0.706, 0.647], metallic: 0.05, roughness: 0.7, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     gold_tarnished: { color: [0.784, 0.667, 0.431], metallic: 0.8, roughness: 0.45, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     silver_tarnished: { color: [0.314, 0.294, 0.275], metallic: 0.6, roughness: 0.6, clearcoat: 0.0, clearcoatRoughness: 0.0 },
