@@ -358,6 +358,7 @@ function initViewer() {
                 envMap = texture;
                 if (iblEnabled) {
                     scene.environment = texture;
+                    scene.background = texture;
                 }
             },
             undefined,
@@ -651,6 +652,7 @@ function initViewer() {
         iblToggle.addEventListener('click', () => {
             iblEnabled = !iblEnabled;
             scene.environment = iblEnabled ? envMap : null;
+            scene.background = iblEnabled ? envMap : null;
 
             iblToggle.classList.toggle('active');
             iblToggle.textContent = iblEnabled ? '🌍 IBL Environment: ON' : '🌑 IBL Environment: OFF';
@@ -731,6 +733,45 @@ function initViewer() {
                 normalMapInfo.textContent = 'No normal map loaded';
                 normalMapInfo.style.color = '#aaa';
             }
+        });
+    }
+
+    // Reset button - restore all parameters to default values
+    const resetBtn = document.getElementById('resetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            // Reset all sliders to default values
+            controls_ui.colorH.value = 0;
+            controls_ui.colorS.value = 0;
+            controls_ui.colorV.value = 50;
+            controls_ui.metallic.value = 0;
+            controls_ui.roughness.value = 0.5;
+            controls_ui.specular.value = 0.5;
+            controls_ui.clearcoat.value = 0;
+            controls_ui.clearcoatGloss.value = 1.0;
+            controls_ui.sheen.value = 0;
+            controls_ui.iridescence.value = 0;
+            controls_ui.iridescenceIOR.value = 1.3;
+            controls_ui.transmission.value = 0;
+            controls_ui.anisotropy.value = 0;
+            controls_ui.anisotropyRotation.value = 0;
+
+            // Clear normal map
+            material.normalMap = null;
+            if (normalMapUpload) normalMapUpload.value = '';
+            if (normalMapInfo) {
+                normalMapInfo.textContent = 'No normal map loaded';
+                normalMapInfo.style.color = '#aaa';
+            }
+
+            // Update material with default values
+            updateMaterial();
+
+            // Visual feedback
+            resetBtn.textContent = '✅ Reset!';
+            setTimeout(() => {
+                resetBtn.textContent = '🔄 Reset';
+            }, 1000);
         });
     }
 
