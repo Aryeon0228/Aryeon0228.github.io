@@ -195,6 +195,7 @@ const METAL_PRESETS = {
     titanium_anodized: { color: [0.75, 0.75, 0.78], metallic: 1.0, roughness: 0.2, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 0.8, iridescenceIOR: 1.5 },
     oil_slick: { color: [0.1, 0.1, 0.1], metallic: 0.3, roughness: 0.1, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 0.9, iridescenceIOR: 1.4 },
     cd_surface: { color: [0.9, 0.9, 0.9], metallic: 0.5, roughness: 0.05, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.6 },
+    bismuth: { color: [0.5, 0.55, 0.6], metallic: 0.8, roughness: 0.3, clearcoat: 0.0, clearcoatRoughness: 0.0, iridescence: 1.0, iridescenceIOR: 1.8 },
     // Other materials
     chrome: { color: [0.88, 0.88, 0.88], metallic: 1.0, roughness: 0.05, clearcoat: 0.0, clearcoatRoughness: 0.0 },
     plastic: { color: [0.8, 0.2, 0.2], metallic: 0.0, roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.1 },
@@ -529,7 +530,8 @@ function initViewer() {
         iridescenceIOR: document.getElementById('iridescenceIOR'),
         transmission: document.getElementById('transmission'),
         anisotropy: document.getElementById('anisotropy'),
-        anisotropyRotation: document.getElementById('anisotropyRotation')
+        anisotropyRotation: document.getElementById('anisotropyRotation'),
+        emissive: document.getElementById('emissive')
     };
 
     const valueDisplays = {
@@ -543,7 +545,8 @@ function initViewer() {
         iridescenceIOR: document.getElementById('iridescenceIORValue'),
         transmission: document.getElementById('transmissionValue'),
         anisotropy: document.getElementById('anisotropyValue'),
-        anisotropyRotation: document.getElementById('anisotropyRotationValue')
+        anisotropyRotation: document.getElementById('anisotropyRotationValue'),
+        emissive: document.getElementById('emissiveValue')
     };
 
     // Update material properties from UI controls
@@ -572,6 +575,11 @@ function initViewer() {
         material.anisotropy = parseFloat(controls_ui.anisotropy.value);
         material.anisotropyRotation = parseFloat(controls_ui.anisotropyRotation.value);
 
+        // Emissive - use base color as emissive color, intensity controlled by slider
+        const emissiveIntensity = parseFloat(controls_ui.emissive.value);
+        material.emissive.setRGB(rgb.r * emissiveIntensity, rgb.g * emissiveIntensity, rgb.b * emissiveIntensity);
+        material.emissiveIntensity = 1.0;
+
         // Update displays
         if (valueDisplays.metallic) valueDisplays.metallic.textContent = material.metalness.toFixed(2);
         if (valueDisplays.roughness) valueDisplays.roughness.textContent = material.roughness.toFixed(2);
@@ -584,6 +592,7 @@ function initViewer() {
         if (valueDisplays.transmission) valueDisplays.transmission.textContent = material.transmission.toFixed(2);
         if (valueDisplays.anisotropy) valueDisplays.anisotropy.textContent = material.anisotropy.toFixed(2);
         if (valueDisplays.anisotropyRotation) valueDisplays.anisotropyRotation.textContent = (material.anisotropyRotation / Math.PI).toFixed(2) + 'π';
+        if (valueDisplays.emissive) valueDisplays.emissive.textContent = emissiveIntensity.toFixed(2);
 
         // Update color display
         const r255 = Math.round(rgb.r * 255);
@@ -640,6 +649,7 @@ function initViewer() {
                 controls_ui.iridescence.value = preset.iridescence || 0;
                 controls_ui.iridescenceIOR.value = preset.iridescenceIOR || 1.3;
                 controls_ui.transmission.value = preset.transmission || 0;
+                controls_ui.emissive.value = preset.emissive || 0;
 
                 updateMaterial();
             }
@@ -755,6 +765,7 @@ function initViewer() {
             controls_ui.transmission.value = 0;
             controls_ui.anisotropy.value = 0;
             controls_ui.anisotropyRotation.value = 0;
+            controls_ui.emissive.value = 0;
 
             // Clear normal map
             material.normalMap = null;
