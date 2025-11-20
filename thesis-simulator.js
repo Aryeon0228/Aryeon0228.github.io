@@ -147,7 +147,16 @@ function initQuadView() {
 
     materialNames.forEach(matName => {
         const container = document.getElementById(`canvas-${matName}`);
-        if (!container) return;
+        if (!container) {
+            console.error(`Container not found: canvas-${matName}`);
+            return;
+        }
+
+        // Get container dimensions (fallback if not rendered yet)
+        const width = container.clientWidth || 400;
+        const height = container.clientHeight || 400;
+
+        console.log(`Initializing ${matName}: ${width}x${height}`);
 
         // Create scene
         const scene = new THREE.Scene();
@@ -156,7 +165,7 @@ function initQuadView() {
         // Create camera
         const camera = new THREE.PerspectiveCamera(
             45,
-            container.clientWidth / container.clientHeight,
+            width / height,
             0.1,
             1000
         );
@@ -167,7 +176,7 @@ function initQuadView() {
             antialias: true,
             alpha: true
         });
-        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setSize(width, height);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.0;
@@ -202,6 +211,10 @@ function initQuadView() {
         materials[matName].renderer = renderer;
         materials[matName].controls = controls;
         materials[matName].mesh = mesh;
+
+        // Initial render
+        renderer.render(scene, camera);
+        console.log(`${matName} initialized successfully`);
     });
 }
 
