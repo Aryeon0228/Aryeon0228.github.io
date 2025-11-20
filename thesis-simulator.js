@@ -623,12 +623,12 @@ function updateEvaluationDisplay() {
         return;
     }
 
-    evalList.innerHTML = state.evaluations.slice(-10).reverse().map((eval, index) => `
+    evalList.innerHTML = state.evaluations.slice(-10).reverse().map((evaluation, index) => `
         <div class="eval-item">
-            <strong>#${state.evaluations.length - index}</strong> - ${eval.material.toUpperCase()} |
-            Blend: ${eval.styleBlend}% |
-            Rating: ${eval.rating}/${eval.scaleType} |
-            ${new Date(eval.timestamp).toLocaleTimeString('ko-KR')}
+            <strong>#${state.evaluations.length - index}</strong> - ${evaluation.material.toUpperCase()} |
+            Blend: ${evaluation.styleBlend}% |
+            Rating: ${evaluation.rating}/${evaluation.scaleType} |
+            ${new Date(evaluation.timestamp).toLocaleTimeString('ko-KR')}
         </div>
     `).join('');
 }
@@ -654,16 +654,16 @@ function exportEvaluationsToCSV() {
     ];
 
     // Create CSV rows
-    const rows = state.evaluations.map(eval => [
-        eval.timestamp,
-        eval.material,
-        eval.styleBlend,
-        eval.scaleType,
-        eval.rating,
-        eval.viewMode,
-        eval.displacementScale,
-        eval.geometryDetail,
-        eval.environment
+    const rows = state.evaluations.map(evaluation => [
+        evaluation.timestamp,
+        evaluation.material,
+        evaluation.styleBlend,
+        evaluation.scaleType,
+        evaluation.rating,
+        evaluation.viewMode,
+        evaluation.displacementScale,
+        evaluation.geometryDetail,
+        evaluation.environment
     ]);
 
     // Combine header and rows
