@@ -604,6 +604,8 @@ nav {
     border-radius: 15px;
     padding: var(--spacing-md);
     transition: var(--transition);
+    position: relative;
+    overflow: hidden;
 }
 
 .experience-item:hover {
