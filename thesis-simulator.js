@@ -9,14 +9,16 @@ const state = {
     currentMaterial: 'wood',
     iblEnabled: true,
     autoRotateEnabled: false,
-    currentEnvironment: 'indoor'
+    currentEnvironment: 'indoor',
+    displacementScale: 0.5,
+    geometryDetail: 64
 };
 
 // ===== Material Data Storage =====
 const materials = {
     wood: {
-        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
-        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
+        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
+        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
         scene: null,
         camera: null,
         renderer: null,
@@ -24,8 +26,8 @@ const materials = {
         mesh: null
     },
     stone: {
-        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
-        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
+        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
+        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
         scene: null,
         camera: null,
         renderer: null,
@@ -33,8 +35,8 @@ const materials = {
         mesh: null
     },
     metal: {
-        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
-        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
+        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
+        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
         scene: null,
         camera: null,
         renderer: null,
@@ -42,8 +44,8 @@ const materials = {
         mesh: null
     },
     cloth: {
-        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
-        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null },
+        realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
+        stylized: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
         scene: null,
         camera: null,
         renderer: null,
@@ -178,7 +180,8 @@ function initQuadView() {
         controls.autoRotateSpeed = 2.0;
 
         // Create geometry and material
-        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        const detail = state.geometryDetail;
+        const geometry = new THREE.SphereGeometry(1, detail, detail);
         const material = createPBRMaterial(matName);
         const mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
@@ -260,6 +263,12 @@ function updateMaterialTextures(matName) {
         pbr.needsUpdate = true;
     }
 
+    if (textureSet.height) {
+        pbr.displacementMap = textureSet.height;
+        pbr.displacementScale = state.displacementScale;
+        pbr.needsUpdate = true;
+    }
+
     // Update blend indicator
     updateBlendIndicator(matName, blend);
 }
@@ -303,6 +312,66 @@ function handleTextureUpload(event) {
         });
     };
     reader.readAsDataURL(file);
+}
+
+// ===== Rebuild All Geometries =====
+function rebuildAllGeometries() {
+    const detail = state.geometryDetail;
+
+    // Rebuild quad view geometries
+    Object.keys(materials).forEach(matName => {
+        const mat = materials[matName];
+        if (!mat.mesh || !mat.scene) return;
+
+        // Store old material
+        const oldMaterial = mat.mesh.material;
+
+        // Remove old mesh
+        mat.scene.remove(mat.mesh);
+        mat.mesh.geometry.dispose();
+
+        // Create new geometry
+        const newGeometry = new THREE.SphereGeometry(1, detail, detail);
+        const newMesh = new THREE.Mesh(newGeometry, oldMaterial);
+
+        // Add new mesh
+        mat.scene.add(newMesh);
+        mat.mesh = newMesh;
+
+        // Reapply textures
+        updateMaterialTextures(matName);
+    });
+
+    // Rebuild single view geometry
+    if (singleView.mesh && singleView.scene) {
+        const oldMaterial = singleView.mesh.material;
+        singleView.scene.remove(singleView.mesh);
+        singleView.mesh.geometry.dispose();
+
+        const newGeometry = new THREE.SphereGeometry(1, detail, detail);
+        const newMesh = new THREE.Mesh(newGeometry, oldMaterial);
+
+        singleView.scene.add(newMesh);
+        singleView.mesh = newMesh;
+    }
+
+    // Rebuild compare view geometries
+    ['left', 'right'].forEach(side => {
+        const view = compareView[side];
+        if (!view.mesh || !view.scene) return;
+
+        const oldMaterial = view.mesh.material;
+        view.scene.remove(view.mesh);
+        view.mesh.geometry.dispose();
+
+        const newGeometry = new THREE.SphereGeometry(1, detail, detail);
+        const newMesh = new THREE.Mesh(newGeometry, oldMaterial);
+
+        view.scene.add(newMesh);
+        view.mesh = newMesh;
+    });
+
+    console.log(`Rebuilt all geometries with detail: ${detail}`);
 }
 
 // ===== Setup Event Listeners =====
@@ -390,6 +459,44 @@ function setupEventListeners() {
         if (singleView.controls) singleView.controls.autoRotate = state.autoRotateEnabled;
         if (compareView.left.controls) compareView.left.controls.autoRotate = state.autoRotateEnabled;
         if (compareView.right.controls) compareView.right.controls.autoRotate = state.autoRotateEnabled;
+    });
+
+    // Displacement scale
+    const displacementScale = document.getElementById('displacementScale');
+    const displacementValue = document.getElementById('displacementValue');
+
+    displacementScale.addEventListener('input', (e) => {
+        state.displacementScale = parseFloat(e.target.value);
+        displacementValue.textContent = state.displacementScale.toFixed(2);
+
+        // Update all materials
+        Object.keys(materials).forEach(matName => {
+            if (materials[matName].mesh && materials[matName].mesh.material) {
+                materials[matName].mesh.material.displacementScale = state.displacementScale;
+            }
+        });
+
+        if (singleView.mesh && singleView.mesh.material) {
+            singleView.mesh.material.displacementScale = state.displacementScale;
+        }
+
+        if (compareView.left.mesh && compareView.left.mesh.material) {
+            compareView.left.mesh.material.displacementScale = state.displacementScale;
+        }
+
+        if (compareView.right.mesh && compareView.right.mesh.material) {
+            compareView.right.mesh.material.displacementScale = state.displacementScale;
+        }
+    });
+
+    // Geometry detail
+    const geometryDetail = document.getElementById('geometryDetail');
+
+    geometryDetail.addEventListener('change', (e) => {
+        state.geometryDetail = parseInt(e.target.value);
+
+        // Rebuild all geometries
+        rebuildAllGeometries();
     });
 
     // Upload tabs
@@ -482,7 +589,8 @@ function initSingleView() {
     controls.autoRotate = state.autoRotateEnabled;
 
     // Create mesh
-    const geometry = new THREE.SphereGeometry(1, 64, 64);
+    const detail = state.geometryDetail;
+    const geometry = new THREE.SphereGeometry(1, detail, detail);
     const material = createPBRMaterial(state.currentMaterial);
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
@@ -583,7 +691,8 @@ function initCompareViewport(side, containerId, style) {
     controls.autoRotate = state.autoRotateEnabled;
 
     // Create mesh
-    const geometry = new THREE.SphereGeometry(1, 64, 64);
+    const detail = state.geometryDetail;
+    const geometry = new THREE.SphereGeometry(1, detail, detail);
     const material = createPBRMaterial(state.currentMaterial);
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);

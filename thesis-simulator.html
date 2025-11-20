@@ -83,6 +83,30 @@
                 </div>
             </div>
 
+            <!-- Displacement Controls -->
+            <div class="control-section">
+                <h2>⛰️ Displacement & Tessellation</h2>
+                <div class="displacement-controls">
+                    <div class="control-group-inline">
+                        <label>Displacement Scale:</label>
+                        <input type="range" id="displacementScale" min="0" max="2" step="0.01" value="0.5">
+                        <span id="displacementValue">0.50</span>
+                    </div>
+                    <div class="control-group-inline">
+                        <label>Geometry Detail:</label>
+                        <select id="geometryDetail">
+                            <option value="32">Low (32)</option>
+                            <option value="64" selected>Medium (64)</option>
+                            <option value="128">High (128)</option>
+                            <option value="256">Very High (256)</option>
+                        </select>
+                    </div>
+                    <div class="displacement-info">
+                        <small>💡 Higher geometry detail shows displacement better but may impact performance</small>
+                    </div>
+                </div>
+            </div>
+
             <!-- Texture Upload -->
             <div class="control-section">
                 <h2>📦 Texture Upload</h2>
@@ -117,6 +141,10 @@
                                 <input type="file" class="texture-input" data-material="wood" data-style="realistic" data-map="ao" accept="image/*">
                                 <small>AO</small>
                             </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="realistic" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
+                            </div>
                         </div>
                         <div class="texture-upload-group">
                             <div class="upload-item">
@@ -135,6 +163,10 @@
                             <div class="upload-item">
                                 <input type="file" class="texture-input" data-material="wood" data-style="stylized" data-map="ao" accept="image/*">
                                 <small>AO</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="stylized" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
                             </div>
                         </div>
                     </div>
@@ -160,6 +192,10 @@
                                 <input type="file" class="texture-input" data-material="stone" data-style="realistic" data-map="ao" accept="image/*">
                                 <small>AO</small>
                             </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="realistic" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
+                            </div>
                         </div>
                         <div class="texture-upload-group">
                             <div class="upload-item">
@@ -178,6 +214,10 @@
                             <div class="upload-item">
                                 <input type="file" class="texture-input" data-material="stone" data-style="stylized" data-map="ao" accept="image/*">
                                 <small>AO</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="stylized" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
                             </div>
                         </div>
                     </div>
@@ -207,6 +247,10 @@
                                 <input type="file" class="texture-input" data-material="metal" data-style="realistic" data-map="ao" accept="image/*">
                                 <small>AO</small>
                             </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="realistic" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
+                            </div>
                         </div>
                         <div class="texture-upload-group">
                             <div class="upload-item">
@@ -229,6 +273,10 @@
                             <div class="upload-item">
                                 <input type="file" class="texture-input" data-material="metal" data-style="stylized" data-map="ao" accept="image/*">
                                 <small>AO</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="stylized" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
                             </div>
                         </div>
                     </div>
@@ -254,6 +302,10 @@
                                 <input type="file" class="texture-input" data-material="cloth" data-style="realistic" data-map="ao" accept="image/*">
                                 <small>AO</small>
                             </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="realistic" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
+                            </div>
                         </div>
                         <div class="texture-upload-group">
                             <div class="upload-item">
@@ -272,6 +324,10 @@
                             <div class="upload-item">
                                 <input type="file" class="texture-input" data-material="cloth" data-style="stylized" data-map="ao" accept="image/*">
                                 <small>AO</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="stylized" data-map="height" accept="image/*">
+                                <small>Height/Displacement</small>
                             </div>
                         </div>
                     </div>
