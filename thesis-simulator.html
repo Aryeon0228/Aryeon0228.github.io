@@ -334,6 +334,105 @@
                 </div>
             </div>
 
+            <!-- Expert Evaluation -->
+            <div class="control-section">
+                <h2>📊 Expert Evaluation</h2>
+                <div class="evaluation-controls">
+                    <div class="evaluation-info">
+                        <p>전문가 평가 모드: 현재 슬라이더 위치에서 스타일 평가</p>
+                    </div>
+
+                    <div class="likert-scale-selector">
+                        <label>척도 선택:</label>
+                        <div class="scale-buttons">
+                            <button class="scale-btn active" data-scale="5">5점 척도</button>
+                            <button class="scale-btn" data-scale="7">7점 척도</button>
+                        </div>
+                    </div>
+
+                    <div class="likert-scale-container" id="likertScaleContainer">
+                        <!-- 5-point Likert Scale (default) -->
+                        <div class="likert-scale active" id="likert5">
+                            <div class="likert-labels">
+                                <span class="likert-label-left">완전 실사</span>
+                                <span class="likert-label-right">완전 스타일라이즈</span>
+                            </div>
+                            <div class="likert-points">
+                                <label class="likert-point">
+                                    <input type="radio" name="likert5-rating" value="1">
+                                    <span class="likert-circle">1</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert5-rating" value="2">
+                                    <span class="likert-circle">2</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert5-rating" value="3">
+                                    <span class="likert-circle">3</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert5-rating" value="4">
+                                    <span class="likert-circle">4</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert5-rating" value="5">
+                                    <span class="likert-circle">5</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 7-point Likert Scale -->
+                        <div class="likert-scale" id="likert7">
+                            <div class="likert-labels">
+                                <span class="likert-label-left">완전 실사</span>
+                                <span class="likert-label-right">완전 스타일라이즈</span>
+                            </div>
+                            <div class="likert-points">
+                                <label class="likert-point">
+                                    <input type="radio" name="likert7-rating" value="1">
+                                    <span class="likert-circle">1</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert7-rating" value="2">
+                                    <span class="likert-circle">2</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert7-rating" value="3">
+                                    <span class="likert-circle">3</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert7-rating" value="4">
+                                    <span class="likert-circle">4</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert7-rating" value="5">
+                                    <span class="likert-circle">5</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert7-rating" value="6">
+                                    <span class="likert-circle">6</span>
+                                </label>
+                                <label class="likert-point">
+                                    <input type="radio" name="likert7-rating" value="7">
+                                    <span class="likert-circle">7</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="evaluation-actions">
+                        <button class="eval-btn" id="recordEvaluation">📝 Record Evaluation</button>
+                        <button class="eval-btn" id="exportEvaluations">💾 Export Data (CSV)</button>
+                        <button class="eval-btn" id="clearEvaluations">🗑️ Clear All</button>
+                    </div>
+
+                    <div class="evaluation-summary" id="evaluationSummary">
+                        <h4>Recorded Evaluations: <span id="evalCount">0</span></h4>
+                        <div id="evalList"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Research Info -->
             <div class="control-section research-info">
                 <h2>📄 Research Information</h2>
