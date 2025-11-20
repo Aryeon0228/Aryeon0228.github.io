@@ -389,17 +389,55 @@ function rebuildAllGeometries() {
     console.log(`Rebuilt all geometries with detail: ${detail}`);
 }
 
+// ===== Snap to Segment =====
+function snapToSegment(value) {
+    // 7 segments: 0, 16.67, 33.33, 50, 66.67, 83.33, 100
+    const segments = [0, 16.67, 33.33, 50, 66.67, 83.33, 100];
+
+    // Find closest segment
+    let closest = segments[0];
+    let minDiff = Math.abs(value - closest);
+
+    for (let i = 1; i < segments.length; i++) {
+        const diff = Math.abs(value - segments[i]);
+        if (diff < minDiff) {
+            minDiff = diff;
+            closest = segments[i];
+        }
+    }
+
+    return closest;
+}
+
 // ===== Setup Event Listeners =====
 function setupEventListeners() {
     // Style slider
     const styleSlider = document.getElementById('globalStyleSlider');
     const styleValue = document.getElementById('styleValue');
 
+    // Input event for smooth preview (optional - can be removed for immediate snapping)
     styleSlider.addEventListener('input', (e) => {
-        state.styleBlend = parseFloat(e.target.value);
-        styleValue.textContent = Math.round(state.styleBlend);
+        const rawValue = parseFloat(e.target.value);
+        state.styleBlend = rawValue;
+        styleValue.textContent = Math.round(rawValue);
 
         // Update all materials
+        Object.keys(materials).forEach(matName => {
+            updateMaterialTextures(matName);
+        });
+    });
+
+    // Change event for snapping
+    styleSlider.addEventListener('change', (e) => {
+        const rawValue = parseFloat(e.target.value);
+        const snappedValue = snapToSegment(rawValue);
+
+        // Update slider to snapped value
+        e.target.value = snappedValue;
+        state.styleBlend = snappedValue;
+        styleValue.textContent = Math.round(snappedValue);
+
+        // Update all materials with snapped value
         Object.keys(materials).forEach(matName => {
             updateMaterialTextures(matName);
         });
