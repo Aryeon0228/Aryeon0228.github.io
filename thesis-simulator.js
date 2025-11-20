@@ -11,7 +11,9 @@ const state = {
     autoRotateEnabled: false,
     currentEnvironment: 'indoor',
     displacementScale: 0.5,
-    geometryDetail: 64
+    geometryDetail: 64,
+    likertScale: 5, // 5 or 7
+    evaluations: [] // Store expert evaluations
 };
 
 // ===== Material Data Storage =====
@@ -520,8 +522,157 @@ function setupEventListeners() {
         input.addEventListener('change', handleTextureUpload);
     });
 
+    // Likert scale selector
+    const scaleBtns = document.querySelectorAll('.scale-btn');
+    scaleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            scaleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const scale = parseInt(btn.dataset.scale);
+            state.likertScale = scale;
+
+            // Switch Likert scale display
+            document.getElementById('likert5').classList.toggle('active', scale === 5);
+            document.getElementById('likert7').classList.toggle('active', scale === 7);
+        });
+    });
+
+    // Record evaluation
+    const recordBtn = document.getElementById('recordEvaluation');
+    recordBtn.addEventListener('click', recordEvaluation);
+
+    // Export evaluations
+    const exportBtn = document.getElementById('exportEvaluations');
+    exportBtn.addEventListener('click', exportEvaluationsToCSV);
+
+    // Clear evaluations
+    const clearBtn = document.getElementById('clearEvaluations');
+    clearBtn.addEventListener('click', () => {
+        if (confirm('모든 평가 데이터를 삭제하시겠습니까?')) {
+            state.evaluations = [];
+            updateEvaluationDisplay();
+        }
+    });
+
     // Window resize
     window.addEventListener('resize', onWindowResize);
+}
+
+// ===== Record Evaluation =====
+function recordEvaluation() {
+    // Get selected rating
+    const scaleType = state.likertScale;
+    const radioName = `likert${scaleType}-rating`;
+    const selectedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
+
+    if (!selectedRadio) {
+        alert('평가 점수를 선택해주세요!');
+        return;
+    }
+
+    const rating = parseInt(selectedRadio.value);
+
+    // Create evaluation record
+    const evaluation = {
+        timestamp: new Date().toISOString(),
+        material: state.currentMaterial,
+        styleBlend: state.styleBlend,
+        scaleType: scaleType,
+        rating: rating,
+        viewMode: state.currentViewMode,
+        displacementScale: state.displacementScale,
+        geometryDetail: state.geometryDetail,
+        environment: state.currentEnvironment
+    };
+
+    // Store evaluation
+    state.evaluations.push(evaluation);
+
+    // Clear selection
+    selectedRadio.checked = false;
+
+    // Update display
+    updateEvaluationDisplay();
+
+    console.log('Evaluation recorded:', evaluation);
+}
+
+// ===== Update Evaluation Display =====
+function updateEvaluationDisplay() {
+    const evalCount = document.getElementById('evalCount');
+    const evalList = document.getElementById('evalList');
+
+    evalCount.textContent = state.evaluations.length;
+
+    if (state.evaluations.length === 0) {
+        evalList.innerHTML = '<p style="color: #a0a0b0; font-size: 0.85rem;">아직 기록된 평가가 없습니다.</p>';
+        return;
+    }
+
+    evalList.innerHTML = state.evaluations.slice(-10).reverse().map((eval, index) => `
+        <div class="eval-item">
+            <strong>#${state.evaluations.length - index}</strong> - ${eval.material.toUpperCase()} |
+            Blend: ${eval.styleBlend}% |
+            Rating: ${eval.rating}/${eval.scaleType} |
+            ${new Date(eval.timestamp).toLocaleTimeString('ko-KR')}
+        </div>
+    `).join('');
+}
+
+// ===== Export Evaluations to CSV =====
+function exportEvaluationsToCSV() {
+    if (state.evaluations.length === 0) {
+        alert('내보낼 평가 데이터가 없습니다!');
+        return;
+    }
+
+    // Create CSV header
+    const headers = [
+        'Timestamp',
+        'Material',
+        'Style_Blend_Percent',
+        'Scale_Type',
+        'Likert_Rating',
+        'View_Mode',
+        'Displacement_Scale',
+        'Geometry_Detail',
+        'Environment'
+    ];
+
+    // Create CSV rows
+    const rows = state.evaluations.map(eval => [
+        eval.timestamp,
+        eval.material,
+        eval.styleBlend,
+        eval.scaleType,
+        eval.rating,
+        eval.viewMode,
+        eval.displacementScale,
+        eval.geometryDetail,
+        eval.environment
+    ]);
+
+    // Combine header and rows
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `thesis_evaluations_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    console.log(`Exported ${state.evaluations.length} evaluations to CSV`);
 }
 
 // ===== Switch View Mode =====
