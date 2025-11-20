@@ -831,19 +831,42 @@ body {
     padding: 0.8rem 1rem;
     border-top: 1px solid rgba(100, 255, 218, 0.2);
     display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.viewport-header {
+    display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 0.6rem;
 }
 
 .material-icon {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
 }
 
 .material-name {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #e0e0e0;
     flex: 1;
+}
+
+.viewport-slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.viewport-slider-container .spectrum-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+}
+
+.viewport-slider-container .style-slider {
+    height: 10px;
+    margin-bottom: 0;
 }
 
 /* ===== Style Indicator ===== */
