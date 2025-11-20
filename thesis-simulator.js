@@ -123,24 +123,30 @@ function loadEnvironment(envName) {
 function updateAllEnvironments() {
     if (!envMap) return;
 
+    const backgroundColor = new THREE.Color(0x0a0a1e);
+
     // Update quad view scenes
     Object.keys(materials).forEach(matName => {
         if (materials[matName].scene) {
             materials[matName].scene.environment = state.iblEnabled ? envMap : null;
+            materials[matName].scene.background = state.iblEnabled ? envMap : backgroundColor;
         }
     });
 
     // Update single view
     if (singleView.scene) {
         singleView.scene.environment = state.iblEnabled ? envMap : null;
+        singleView.scene.background = state.iblEnabled ? envMap : backgroundColor;
     }
 
     // Update compare view
     if (compareView.left.scene) {
         compareView.left.scene.environment = state.iblEnabled ? envMap : null;
+        compareView.left.scene.background = state.iblEnabled ? envMap : backgroundColor;
     }
     if (compareView.right.scene) {
         compareView.right.scene.environment = state.iblEnabled ? envMap : null;
+        compareView.right.scene.background = state.iblEnabled ? envMap : backgroundColor;
     }
 }
 
@@ -163,7 +169,7 @@ function initQuadView() {
 
         // Create scene
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0a1e);
+        scene.background = (envMap && state.iblEnabled) ? envMap : new THREE.Color(0x0a0a1e);
 
         // Create camera
         const camera = new THREE.PerspectiveCamera(
@@ -793,7 +799,7 @@ function initSingleView() {
 
     // Create scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0a1e);
+    scene.background = (envMap && state.iblEnabled) ? envMap : new THREE.Color(0x0a0a1e);
     scene.environment = state.iblEnabled ? envMap : null;
 
     // Create camera
@@ -895,7 +901,7 @@ function initCompareViewport(side, containerId, style) {
 
     // Create scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0a1e);
+    scene.background = (envMap && state.iblEnabled) ? envMap : new THREE.Color(0x0a0a1e);
     scene.environment = state.iblEnabled ? envMap : null;
 
     // Create camera
