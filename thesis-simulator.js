@@ -4,7 +4,6 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 // ===== Global State =====
 const state = {
-    styleBlend: 0, // 0 = realistic, 100 = stylized
     currentViewMode: 'quad',
     currentMaterial: 'wood',
     iblEnabled: true,
@@ -25,7 +24,8 @@ const materials = {
         camera: null,
         renderer: null,
         controls: null,
-        mesh: null
+        mesh: null,
+        styleBlend: 0
     },
     stone: {
         realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
@@ -34,7 +34,8 @@ const materials = {
         camera: null,
         renderer: null,
         controls: null,
-        mesh: null
+        mesh: null,
+        styleBlend: 0
     },
     metal: {
         realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
@@ -43,7 +44,8 @@ const materials = {
         camera: null,
         renderer: null,
         controls: null,
-        mesh: null
+        mesh: null,
+        styleBlend: 0
     },
     cloth: {
         realistic: { albedo: null, normal: null, roughness: null, metallic: null, ao: null, height: null },
@@ -52,7 +54,8 @@ const materials = {
         camera: null,
         renderer: null,
         controls: null,
-        mesh: null
+        mesh: null,
+        styleBlend: 0
     }
 };
 
@@ -241,7 +244,7 @@ function updateMaterialTextures(matName) {
     const mat = materials[matName];
     if (!mat || !mat.mesh) return;
 
-    const blend = state.styleBlend / 100; // 0 to 1
+    const blend = mat.styleBlend / 100; // 0 to 1
     const pbr = mat.mesh.material;
 
     // If we have both realistic and stylized textures, blend them
@@ -283,9 +286,6 @@ function updateMaterialTextures(matName) {
         pbr.displacementScale = state.displacementScale;
         pbr.needsUpdate = true;
     }
-
-    // Update blend indicator
-    updateBlendIndicator(matName, blend);
 }
 
 // ===== Update Blend Indicator =====
@@ -420,37 +420,50 @@ function snapToSegment(value) {
 
 // ===== Setup Event Listeners =====
 function setupEventListeners() {
-    // Style slider
-    const styleSlider = document.getElementById('globalStyleSlider');
-    const styleValue = document.getElementById('styleValue');
+    // Individual material sliders (quad view)
+    const quadSliders = document.querySelectorAll('.viewport-item .style-slider');
+    quadSliders.forEach(slider => {
+        const matName = slider.dataset.material;
 
-    // Input event for smooth preview (optional - can be removed for immediate snapping)
-    styleSlider.addEventListener('input', (e) => {
-        const rawValue = parseFloat(e.target.value);
-        state.styleBlend = rawValue;
-        styleValue.textContent = Math.round(rawValue);
+        // Input event for smooth preview
+        slider.addEventListener('input', (e) => {
+            const rawValue = parseFloat(e.target.value);
+            materials[matName].styleBlend = rawValue;
+            updateMaterialTextures(matName);
+        });
 
-        // Update all materials
-        Object.keys(materials).forEach(matName => {
+        // Change event for snapping
+        slider.addEventListener('change', (e) => {
+            const rawValue = parseFloat(e.target.value);
+            const snappedValue = snapToSegment(rawValue);
+
+            // Update slider to snapped value
+            e.target.value = snappedValue;
+            materials[matName].styleBlend = snappedValue;
             updateMaterialTextures(matName);
         });
     });
 
-    // Change event for snapping
-    styleSlider.addEventListener('change', (e) => {
-        const rawValue = parseFloat(e.target.value);
-        const snappedValue = snapToSegment(rawValue);
-
-        // Update slider to snapped value
-        e.target.value = snappedValue;
-        state.styleBlend = snappedValue;
-        styleValue.textContent = Math.round(snappedValue);
-
-        // Update all materials with snapped value
-        Object.keys(materials).forEach(matName => {
-            updateMaterialTextures(matName);
+    // Single view slider
+    const singleSlider = document.getElementById('single-slider');
+    if (singleSlider) {
+        singleSlider.addEventListener('input', (e) => {
+            const matName = e.target.dataset.material;
+            const rawValue = parseFloat(e.target.value);
+            materials[matName].styleBlend = rawValue;
+            updateSingleView();
         });
-    });
+
+        singleSlider.addEventListener('change', (e) => {
+            const matName = e.target.dataset.material;
+            const rawValue = parseFloat(e.target.value);
+            const snappedValue = snapToSegment(rawValue);
+
+            e.target.value = snappedValue;
+            materials[matName].styleBlend = snappedValue;
+            updateSingleView();
+        });
+    }
 
     // View mode buttons
     const viewBtns = document.querySelectorAll('.view-btn');
@@ -473,6 +486,14 @@ function setupEventListeners() {
             btn.classList.add('active');
 
             state.currentMaterial = btn.dataset.material;
+
+            // Update single view slider value
+            const singleSlider = document.getElementById('single-slider');
+            if (singleSlider) {
+                singleSlider.dataset.material = state.currentMaterial;
+                singleSlider.value = materials[state.currentMaterial].styleBlend;
+            }
+
             updateSingleView();
             updateCompareView();
         });
@@ -637,7 +658,7 @@ function recordEvaluation() {
     const evaluation = {
         timestamp: new Date().toISOString(),
         material: state.currentMaterial,
-        styleBlend: state.styleBlend,
+        styleBlend: materials[state.currentMaterial].styleBlend,
         scaleType: scaleType,
         rating: rating,
         viewMode: state.currentViewMode,
@@ -833,7 +854,7 @@ function updateSingleView() {
     if (!mat) return;
 
     // Copy material properties
-    const blend = state.styleBlend / 100;
+    const blend = mat.styleBlend / 100;
     const useStylized = blend > 0.5;
     const textureSet = useStylized ? mat.stylized : mat.realistic;
 

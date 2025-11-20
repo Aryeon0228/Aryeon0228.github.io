@@ -22,20 +22,6 @@
     <div class="main-container">
         <!-- Left Sidebar - Controls -->
         <aside class="control-sidebar">
-            <div class="control-section">
-                <h2>🎨 Style Spectrum Control</h2>
-                <div class="spectrum-control">
-                    <div class="spectrum-labels">
-                        <span class="label-realistic">실사 Realistic</span>
-                        <span class="label-stylized">스타일라이즈 Stylized</span>
-                    </div>
-                    <input type="range" id="globalStyleSlider" min="0" max="100" value="0" class="style-slider">
-                    <div class="spectrum-value">
-                        <span id="styleValue">0</span>%
-                    </div>
-                </div>
-            </div>
-
             <!-- View Mode -->
             <div class="control-section">
                 <h2>📐 View Mode</h2>
@@ -449,12 +435,16 @@
                 <div class="viewport-item" data-material="wood">
                     <div class="viewport-canvas" id="canvas-wood"></div>
                     <div class="viewport-label">
-                        <span class="material-icon">🪵</span>
-                        <span class="material-name">Wood (나무)</span>
-                        <div class="style-indicator">
-                            <span class="realistic-badge">Realistic</span>
-                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
-                            <span class="stylized-badge">Stylized</span>
+                        <div class="viewport-header">
+                            <span class="material-icon">🪵</span>
+                            <span class="material-name">Wood (나무)</span>
+                        </div>
+                        <div class="viewport-slider-container">
+                            <div class="spectrum-labels">
+                                <span class="label-realistic">Realistic</span>
+                                <span class="label-stylized">Stylized</span>
+                            </div>
+                            <input type="range" class="style-slider" data-material="wood" min="0" max="100" value="0">
                         </div>
                     </div>
                 </div>
@@ -462,12 +452,16 @@
                 <div class="viewport-item" data-material="stone">
                     <div class="viewport-canvas" id="canvas-stone"></div>
                     <div class="viewport-label">
-                        <span class="material-icon">🪨</span>
-                        <span class="material-name">Stone (돌)</span>
-                        <div class="style-indicator">
-                            <span class="realistic-badge">Realistic</span>
-                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
-                            <span class="stylized-badge">Stylized</span>
+                        <div class="viewport-header">
+                            <span class="material-icon">🪨</span>
+                            <span class="material-name">Stone (돌)</span>
+                        </div>
+                        <div class="viewport-slider-container">
+                            <div class="spectrum-labels">
+                                <span class="label-realistic">Realistic</span>
+                                <span class="label-stylized">Stylized</span>
+                            </div>
+                            <input type="range" class="style-slider" data-material="stone" min="0" max="100" value="0">
                         </div>
                     </div>
                 </div>
@@ -475,12 +469,16 @@
                 <div class="viewport-item" data-material="metal">
                     <div class="viewport-canvas" id="canvas-metal"></div>
                     <div class="viewport-label">
-                        <span class="material-icon">⚙️</span>
-                        <span class="material-name">Metal (금속)</span>
-                        <div class="style-indicator">
-                            <span class="realistic-badge">Realistic</span>
-                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
-                            <span class="stylized-badge">Stylized</span>
+                        <div class="viewport-header">
+                            <span class="material-icon">⚙️</span>
+                            <span class="material-name">Metal (금속)</span>
+                        </div>
+                        <div class="viewport-slider-container">
+                            <div class="spectrum-labels">
+                                <span class="label-realistic">Realistic</span>
+                                <span class="label-stylized">Stylized</span>
+                            </div>
+                            <input type="range" class="style-slider" data-material="metal" min="0" max="100" value="0">
                         </div>
                     </div>
                 </div>
@@ -488,12 +486,16 @@
                 <div class="viewport-item" data-material="cloth">
                     <div class="viewport-canvas" id="canvas-cloth"></div>
                     <div class="viewport-label">
-                        <span class="material-icon">🧵</span>
-                        <span class="material-name">Cloth (천)</span>
-                        <div class="style-indicator">
-                            <span class="realistic-badge">Realistic</span>
-                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
-                            <span class="stylized-badge">Stylized</span>
+                        <div class="viewport-header">
+                            <span class="material-icon">🧵</span>
+                            <span class="material-name">Cloth (천)</span>
+                        </div>
+                        <div class="viewport-slider-container">
+                            <div class="spectrum-labels">
+                                <span class="label-realistic">Realistic</span>
+                                <span class="label-stylized">Stylized</span>
+                            </div>
+                            <input type="range" class="style-slider" data-material="cloth" min="0" max="100" value="0">
                         </div>
                     </div>
                 </div>
@@ -504,12 +506,16 @@
                 <div class="viewport-item-large">
                     <div class="viewport-canvas" id="canvas-single"></div>
                     <div class="viewport-label">
-                        <span class="material-icon">🪵</span>
-                        <span class="material-name">Wood (나무)</span>
-                        <div class="style-indicator">
-                            <span class="realistic-badge">Realistic</span>
-                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
-                            <span class="stylized-badge">Stylized</span>
+                        <div class="viewport-header">
+                            <span class="material-icon" id="single-icon">🪵</span>
+                            <span class="material-name" id="single-name">Wood (나무)</span>
+                        </div>
+                        <div class="viewport-slider-container">
+                            <div class="spectrum-labels">
+                                <span class="label-realistic">Realistic</span>
+                                <span class="label-stylized">Stylized</span>
+                            </div>
+                            <input type="range" class="style-slider" id="single-slider" data-material="wood" min="0" max="100" value="0">
                         </div>
                     </div>
                 </div>
@@ -520,15 +526,19 @@
                 <div class="viewport-item-large">
                     <div class="viewport-canvas" id="canvas-compare-left"></div>
                     <div class="viewport-label">
-                        <span class="material-icon">🪵</span>
-                        <span class="material-name">Wood - Realistic</span>
+                        <div class="viewport-header">
+                            <span class="material-icon" id="compare-left-icon">🪵</span>
+                            <span class="material-name">Wood - Realistic</span>
+                        </div>
                     </div>
                 </div>
                 <div class="viewport-item-large">
                     <div class="viewport-canvas" id="canvas-compare-right"></div>
                     <div class="viewport-label">
-                        <span class="material-icon">🪵</span>
-                        <span class="material-name">Wood - Stylized</span>
+                        <div class="viewport-header">
+                            <span class="material-icon" id="compare-right-icon">🪵</span>
+                            <span class="material-name">Wood - Stylized</span>
+                        </div>
                     </div>
                 </div>
             </div>
