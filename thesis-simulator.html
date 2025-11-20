@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBR Texture Style Spectrum Simulator - 석사논문 연구</title>
+    <link rel="stylesheet" href="thesis-simulator.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="simulator-header">
+        <div class="header-content">
+            <h1>PBR Texture Style Spectrum Simulator</h1>
+            <p class="subtitle">실사-스타일라이즈 전환 연구 | Realistic ↔ Stylized Transition Research</p>
+        </div>
+        <div class="header-actions">
+            <a href="index.html" class="back-btn">← Back to Portfolio</a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar - Controls -->
+        <aside class="control-sidebar">
+            <div class="control-section">
+                <h2>🎨 Style Spectrum Control</h2>
+                <div class="spectrum-control">
+                    <div class="spectrum-labels">
+                        <span class="label-realistic">실사 Realistic</span>
+                        <span class="label-stylized">스타일라이즈 Stylized</span>
+                    </div>
+                    <input type="range" id="globalStyleSlider" min="0" max="100" value="0" class="style-slider">
+                    <div class="spectrum-value">
+                        <span id="styleValue">0</span>%
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Mode -->
+            <div class="control-section">
+                <h2>📐 View Mode</h2>
+                <div class="view-mode-buttons">
+                    <button class="view-btn active" data-mode="quad">🔲 Quad View</button>
+                    <button class="view-btn" data-mode="single">⬜ Single View</button>
+                    <button class="view-btn" data-mode="compare">⚖️ Compare Mode</button>
+                </div>
+            </div>
+
+            <!-- Material Selection (for Single/Compare mode) -->
+            <div class="control-section" id="materialSelection">
+                <h2>🎯 Material Selection</h2>
+                <div class="material-buttons">
+                    <button class="material-btn" data-material="wood">🪵 Wood (나무)</button>
+                    <button class="material-btn" data-material="stone">🪨 Stone (돌)</button>
+                    <button class="material-btn" data-material="metal">⚙️ Metal (금속)</button>
+                    <button class="material-btn" data-material="cloth">🧵 Cloth (천)</button>
+                </div>
+            </div>
+
+            <!-- Lighting & Environment -->
+            <div class="control-section">
+                <h2>💡 Lighting & Environment</h2>
+                <div class="lighting-controls">
+                    <button class="toggle-btn active" id="iblToggle">🌍 IBL: ON</button>
+                    <div class="env-selector">
+                        <label>Environment:</label>
+                        <select id="envSelect">
+                            <option value="indoor" selected>🏛️ Indoor Bright</option>
+                            <option value="sunset">🌅 Sunset</option>
+                            <option value="studio">🏢 Studio</option>
+                            <option value="outdoor">🌳 Outdoor</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Controls -->
+            <div class="control-section">
+                <h2>📷 Camera Controls</h2>
+                <div class="camera-controls">
+                    <button class="camera-btn" id="resetCamera">🔄 Reset Camera</button>
+                    <button class="camera-btn" id="autoRotate">🔄 Auto Rotate</button>
+                </div>
+            </div>
+
+            <!-- Texture Upload -->
+            <div class="control-section">
+                <h2>📦 Texture Upload</h2>
+                <div class="upload-info">
+                    <p>Substance Designer에서 만든 텍스처 세트를 업로드하세요</p>
+                </div>
+                <div class="material-upload-tabs">
+                    <button class="upload-tab active" data-material="wood">Wood</button>
+                    <button class="upload-tab" data-material="stone">Stone</button>
+                    <button class="upload-tab" data-material="metal">Metal</button>
+                    <button class="upload-tab" data-material="cloth">Cloth</button>
+                </div>
+                <div class="upload-panels">
+                    <!-- Wood Upload Panel -->
+                    <div class="upload-panel active" data-material="wood">
+                        <h3>🪵 Wood Textures</h3>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Realistic Set:</label>
+                                <input type="file" class="texture-input" data-material="wood" data-style="realistic" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="realistic" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="realistic" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="realistic" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Stylized Set:</label>
+                                <input type="file" class="texture-input" data-material="wood" data-style="stylized" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="stylized" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="stylized" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="wood" data-style="stylized" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stone Upload Panel -->
+                    <div class="upload-panel" data-material="stone">
+                        <h3>🪨 Stone Textures</h3>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Realistic Set:</label>
+                                <input type="file" class="texture-input" data-material="stone" data-style="realistic" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="realistic" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="realistic" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="realistic" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Stylized Set:</label>
+                                <input type="file" class="texture-input" data-material="stone" data-style="stylized" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="stylized" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="stylized" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="stone" data-style="stylized" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metal Upload Panel -->
+                    <div class="upload-panel" data-material="metal">
+                        <h3>⚙️ Metal Textures</h3>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Realistic Set:</label>
+                                <input type="file" class="texture-input" data-material="metal" data-style="realistic" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="realistic" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="realistic" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="realistic" data-map="metallic" accept="image/*">
+                                <small>Metallic</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="realistic" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Stylized Set:</label>
+                                <input type="file" class="texture-input" data-material="metal" data-style="stylized" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="stylized" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="stylized" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="stylized" data-map="metallic" accept="image/*">
+                                <small>Metallic</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="metal" data-style="stylized" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cloth Upload Panel -->
+                    <div class="upload-panel" data-material="cloth">
+                        <h3>🧵 Cloth Textures</h3>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Realistic Set:</label>
+                                <input type="file" class="texture-input" data-material="cloth" data-style="realistic" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="realistic" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="realistic" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="realistic" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                        <div class="texture-upload-group">
+                            <div class="upload-item">
+                                <label>Stylized Set:</label>
+                                <input type="file" class="texture-input" data-material="cloth" data-style="stylized" data-map="albedo" accept="image/*">
+                                <small>Albedo</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="stylized" data-map="normal" accept="image/*">
+                                <small>Normal</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="stylized" data-map="roughness" accept="image/*">
+                                <small>Roughness</small>
+                            </div>
+                            <div class="upload-item">
+                                <input type="file" class="texture-input" data-material="cloth" data-style="stylized" data-map="ao" accept="image/*">
+                                <small>AO</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Research Info -->
+            <div class="control-section research-info">
+                <h2>📄 Research Information</h2>
+                <p><strong>주제:</strong> PBR 텍스처 스타일 스펙트럼의 실사-스타일라이즈 전환연구</p>
+                <p><strong>방법론:</strong> Substance Designer 프로시저럴 워크플로우</p>
+                <p><strong>재질:</strong> Wood, Stone, Metal, Cloth</p>
+            </div>
+        </aside>
+
+        <!-- Viewport Area -->
+        <main class="viewport-container">
+            <!-- Quad View (default) -->
+            <div class="viewport-grid quad-view active" id="quadView">
+                <div class="viewport-item" data-material="wood">
+                    <div class="viewport-canvas" id="canvas-wood"></div>
+                    <div class="viewport-label">
+                        <span class="material-icon">🪵</span>
+                        <span class="material-name">Wood (나무)</span>
+                        <div class="style-indicator">
+                            <span class="realistic-badge">Realistic</span>
+                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
+                            <span class="stylized-badge">Stylized</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="viewport-item" data-material="stone">
+                    <div class="viewport-canvas" id="canvas-stone"></div>
+                    <div class="viewport-label">
+                        <span class="material-icon">🪨</span>
+                        <span class="material-name">Stone (돌)</span>
+                        <div class="style-indicator">
+                            <span class="realistic-badge">Realistic</span>
+                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
+                            <span class="stylized-badge">Stylized</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="viewport-item" data-material="metal">
+                    <div class="viewport-canvas" id="canvas-metal"></div>
+                    <div class="viewport-label">
+                        <span class="material-icon">⚙️</span>
+                        <span class="material-name">Metal (금속)</span>
+                        <div class="style-indicator">
+                            <span class="realistic-badge">Realistic</span>
+                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
+                            <span class="stylized-badge">Stylized</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="viewport-item" data-material="cloth">
+                    <div class="viewport-canvas" id="canvas-cloth"></div>
+                    <div class="viewport-label">
+                        <span class="material-icon">🧵</span>
+                        <span class="material-name">Cloth (천)</span>
+                        <div class="style-indicator">
+                            <span class="realistic-badge">Realistic</span>
+                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
+                            <span class="stylized-badge">Stylized</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single View -->
+            <div class="viewport-grid single-view" id="singleView">
+                <div class="viewport-item-large">
+                    <div class="viewport-canvas" id="canvas-single"></div>
+                    <div class="viewport-label">
+                        <span class="material-icon">🪵</span>
+                        <span class="material-name">Wood (나무)</span>
+                        <div class="style-indicator">
+                            <span class="realistic-badge">Realistic</span>
+                            <div class="blend-bar"><div class="blend-fill" style="width: 0%"></div></div>
+                            <span class="stylized-badge">Stylized</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compare View -->
+            <div class="viewport-grid compare-view" id="compareView">
+                <div class="viewport-item-large">
+                    <div class="viewport-canvas" id="canvas-compare-left"></div>
+                    <div class="viewport-label">
+                        <span class="material-icon">🪵</span>
+                        <span class="material-name">Wood - Realistic</span>
+                    </div>
+                </div>
+                <div class="viewport-item-large">
+                    <div class="viewport-canvas" id="canvas-compare-right"></div>
+                    <div class="viewport-label">
+                        <span class="material-icon">🪵</span>
+                        <span class="material-name">Wood - Stylized</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module" src="thesis-simulator.js"></script>
+</body>
+</html>
