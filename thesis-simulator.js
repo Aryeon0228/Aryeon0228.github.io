@@ -391,8 +391,17 @@ function rebuildAllGeometries() {
 
 // ===== Snap to Segment =====
 function snapToSegment(value) {
-    // 7 segments: 0, 16.67, 33.33, 50, 66.67, 83.33, 100
-    const segments = [0, 16.67, 33.33, 50, 66.67, 83.33, 100];
+    // 7 segments = 8 positions: 0, 14.29, 28.57, 42.86, 57.14, 71.43, 85.71, 100
+    const segments = [
+        0,
+        100 / 7,      // 14.29
+        200 / 7,      // 28.57
+        300 / 7,      // 42.86
+        400 / 7,      // 57.14
+        500 / 7,      // 71.43
+        600 / 7,      // 85.71
+        100
+    ];
 
     // Find closest segment
     let closest = segments[0];
