@@ -232,52 +232,39 @@ nav {
     overflow: hidden;
 }
 
-/* Floating Particles */
-.particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+/* Cursor Halo Effect */
+.cursor-halo {
+    position: fixed;
+    width: 400px;
+    height: 400px;
     pointer-events: none;
-    z-index: 0;
-}
-
-.particle {
-    position: absolute;
-    bottom: -50px;
+    z-index: 9999;
+    background: radial-gradient(
+        circle,
+        rgba(138, 85, 254, 0.15) 0%,
+        rgba(92, 223, 230, 0.1) 30%,
+        rgba(138, 85, 254, 0.05) 50%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
     opacity: 0;
-    pointer-events: none;
-    background: linear-gradient(135deg, rgba(138, 85, 254, 0.9), rgba(92, 223, 230, 0.9));
-    box-shadow: 0 0 15px rgba(138, 85, 254, 0.6),
-                0 0 30px rgba(92, 223, 230, 0.4);
-    animation: floatParticle 8s ease-in-out forwards;
-    border-radius: 2px;
+    transition: opacity 0.3s ease;
+    mix-blend-mode: screen;
 }
 
-@keyframes floatParticle {
-    0% {
-        transform: translateY(0) rotate(0deg) scale(1);
-        opacity: 0;
-    }
-    10% {
-        opacity: 0.8;
-    }
-    25%, 75% {
-        transform: translateY(-25vh) rotate(90deg) scale(1.2);
-    }
-    50% {
-        transform: translateY(-50vh) rotate(180deg) scale(1.4);
-        box-shadow: 0 0 25px rgba(138, 85, 254, 0.9),
-                    0 0 50px rgba(92, 223, 230, 0.7);
-    }
-    90% {
-        opacity: 0.8;
-    }
-    100% {
-        transform: translateY(-100vh) rotate(360deg) scale(1);
-        opacity: 0;
-    }
+[data-theme="dark"] .cursor-halo {
+    background: radial-gradient(
+        circle,
+        rgba(138, 85, 254, 0.25) 0%,
+        rgba(92, 223, 230, 0.15) 30%,
+        rgba(138, 85, 254, 0.08) 50%,
+        transparent 70%
+    );
+}
+
+.cursor-halo.active {
+    opacity: 1;
 }
 
 .hero-content {
@@ -1209,6 +1196,11 @@ footer p {
     /* Disable 3D effects on mobile for better performance */
     .portfolio-image-wrapper.portfolio-3d {
         perspective: none;
+    }
+
+    /* Hide cursor halo on touch devices */
+    .cursor-halo {
+        display: none;
     }
 
     .portfolio-layer-back,
