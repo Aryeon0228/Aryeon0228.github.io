@@ -240,6 +240,7 @@ portfolioImageWrappers.forEach(wrapper => {
     const layerBack = wrapper.querySelector('.portfolio-layer-back');
     const layerMid = wrapper.querySelector('.portfolio-layer-mid');
     const layerFront = wrapper.querySelector('.portfolio-layer-front');
+    const card = wrapper.closest('.portfolio-card');
 
     // Skip if required layers are missing
     if (!layerBack || !layerMid || !layerFront) {
@@ -251,6 +252,11 @@ portfolioImageWrappers.forEach(wrapper => {
 
     wrapper.addEventListener('mouseenter', () => {
         isHovering = true;
+        // Add scale and glow effect on hover
+        if (card) {
+            card.style.transform = 'scale(1.03)';
+            card.style.boxShadow = '0 25px 50px rgba(138, 85, 254, 0.3), 0 15px 30px rgba(92, 223, 230, 0.2)';
+        }
     });
 
     wrapper.addEventListener('mouseleave', () => {
@@ -263,6 +269,11 @@ portfolioImageWrappers.forEach(wrapper => {
         layerMid.style.transform = 'translateZ(-15px) rotateX(0deg) rotateY(0deg)';
         layerFront.style.transform = 'translateZ(0) rotateX(0deg) rotateY(0deg)';
         wrapper.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        // Reset card effects
+        if (card) {
+            card.style.transform = '';
+            card.style.boxShadow = '';
+        }
     });
 
     wrapper.addEventListener('mousemove', (e) => {
@@ -280,20 +291,29 @@ portfolioImageWrappers.forEach(wrapper => {
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
 
-            const rotateX = ((y - centerY) / centerY) * -8; // Max 8 degrees
-            const rotateY = ((x - centerX) / centerX) * 8;  // Max 8 degrees
+            const rotateX = ((y - centerY) / centerY) * -20; // Max 20 degrees (increased from 8)
+            const rotateY = ((x - centerX) / centerX) * 20;  // Max 20 degrees (increased from 8)
 
             // Apply transforms with different intensities for parallax effect
             wrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
             // Back layer moves more (stronger parallax)
-            layerBack.style.transform = `translateZ(-30px) rotateX(${rotateX * 1.5}deg) rotateY(${rotateY * 1.5}deg)`;
+            layerBack.style.transform = `translateZ(-40px) rotateX(${rotateX * 1.8}deg) rotateY(${rotateY * 1.8}deg) translateX(${rotateY * 2}px) translateY(${-rotateX * 2}px)`;
+            layerBack.style.opacity = '0.6';
 
             // Mid layer moves moderately
-            layerMid.style.transform = `translateZ(-15px) rotateX(${rotateX * 1.2}deg) rotateY(${rotateY * 1.2}deg)`;
+            layerMid.style.transform = `translateZ(-20px) rotateX(${rotateX * 1.4}deg) rotateY(${rotateY * 1.4}deg) translateX(${rotateY}px) translateY(${-rotateX}px)`;
+            layerMid.style.opacity = '0.7';
 
             // Front layer moves least (subtle effect)
-            layerFront.style.transform = `translateZ(0) rotateX(${rotateX * 0.5}deg) rotateY(${rotateY * 0.5}deg)`;
+            layerFront.style.transform = `translateZ(10px) rotateX(${rotateX * 0.6}deg) rotateY(${rotateY * 0.6}deg)`;
+
+            // Dynamic shadow based on tilt
+            if (card) {
+                const shadowX = rotateY * 1.5;
+                const shadowY = -rotateX * 1.5;
+                card.style.boxShadow = `${shadowX}px ${shadowY + 20}px 50px rgba(138, 85, 254, 0.35), ${shadowX * 0.5}px ${shadowY * 0.5 + 10}px 25px rgba(92, 223, 230, 0.25)`;
+            }
         });
     });
 });
