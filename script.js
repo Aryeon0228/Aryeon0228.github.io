@@ -16,37 +16,65 @@ if (themeToggle) {
     });
 }
 
-// ==================== Floating Particles ====================
-const particlesContainer = document.querySelector('.particles');
+// ==================== Cursor Halo Effect ====================
+const cursorHalo = document.getElementById('cursorHalo');
 
-if (particlesContainer) {
-    function createParticle() {
-        const particle = document.createElement('span');
-        particle.className = 'particle';
+if (cursorHalo) {
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let isMoving = false;
+    let hideTimeout = null;
 
-        // Random size
-        const size = Math.random() * 8 + 4;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
+    // Smooth follow animation
+    function animateHalo() {
+        // Easing for smooth follow
+        const ease = 0.15;
+        currentX += (mouseX - currentX) * ease;
+        currentY += (mouseY - currentY) * ease;
 
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
-        particle.style.animationDelay = Math.random() * 2 + 's';
+        cursorHalo.style.left = currentX + 'px';
+        cursorHalo.style.top = currentY + 'px';
 
-        particlesContainer.appendChild(particle);
-
-        setTimeout(() => {
-            particle.remove();
-        }, 12000);
+        requestAnimationFrame(animateHalo);
     }
 
-    // Create initial particles
-    for (let i = 0; i < 12; i++) {
-        setTimeout(() => createParticle(), i * 500);
-    }
+    // Start animation loop
+    animateHalo();
 
-    // Keep creating particles
-    setInterval(createParticle, 1500);
+    // Track mouse movement
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // Show halo
+        cursorHalo.classList.add('active');
+        isMoving = true;
+
+        // Hide after inactivity
+        if (hideTimeout) {
+            clearTimeout(hideTimeout);
+        }
+        hideTimeout = setTimeout(() => {
+            cursorHalo.classList.remove('active');
+            isMoving = false;
+        }, 3000);
+    });
+
+    // Hide halo when mouse leaves window
+    document.addEventListener('mouseleave', () => {
+        cursorHalo.classList.remove('active');
+    });
+
+    // Show halo when mouse enters window
+    document.addEventListener('mouseenter', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        currentX = mouseX;
+        currentY = mouseY;
+        cursorHalo.classList.add('active');
+    });
 }
 
 // ==================== Home Link ====================
