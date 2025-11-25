@@ -707,6 +707,24 @@ nav {
     border-top: none;
 }
 
+/* Skills Card Wide Layout */
+.card-wide {
+    grid-column: 1 / -1;
+}
+
+/* Skills Grid Layout */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+}
+
+.skills-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 /* Skills Bar System */
 .skills-progress-list {
     display: flex;
@@ -721,7 +739,9 @@ nav {
     color: var(--gradient-start);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: -0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
 }
 
 .skill-divider {
@@ -1127,6 +1147,12 @@ footer p {
 }
 
 /* ==================== Responsive Design ==================== */
+@media (max-width: 1024px) {
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .nav-menu {
         position: fixed;
@@ -1178,6 +1204,14 @@ footer p {
     .contact-grid,
     .awards-grid {
         grid-template-columns: 1fr;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-wide {
+        grid-column: 1;
     }
 
     .experience-header {
