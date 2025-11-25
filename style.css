@@ -11,8 +11,8 @@
 
     /* Gradient Colors */
     --gradient-start: #8a55fe;
-    --gradient-mid: #6f9af8;
-    --gradient-end: #5cdfe6;
+    --gradient-mid: #c084fc;
+    --gradient-end: #f472b6;
     --gradient: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
 
     /* Spacing */
@@ -243,7 +243,7 @@ nav {
     background: radial-gradient(
         circle,
         rgba(138, 85, 254, 0.15) 0%,
-        rgba(92, 223, 230, 0.1) 30%,
+        rgba(244, 114, 182, 0.1) 30%,
         rgba(138, 85, 254, 0.05) 50%,
         transparent 70%
     );
@@ -258,7 +258,7 @@ nav {
     background: radial-gradient(
         circle,
         rgba(138, 85, 254, 0.25) 0%,
-        rgba(92, 223, 230, 0.15) 30%,
+        rgba(244, 114, 182, 0.15) 30%,
         rgba(138, 85, 254, 0.08) 50%,
         transparent 70%
     );
@@ -291,7 +291,7 @@ nav {
 }
 
 .gradient-text {
-    background: linear-gradient(90deg, #8a55fe 0%, #5cdfe6 50%, #8a55fe 100%);
+    background: linear-gradient(90deg, #8a55fe 0%, #f472b6 50%, #8a55fe 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -471,7 +471,7 @@ nav {
     background: linear-gradient(
         135deg,
         transparent 30%,
-        rgba(92, 223, 230, 0.3) 50%,
+        rgba(244, 114, 182, 0.3) 50%,
         transparent 70%
     );
     background-size: 200% 200%;
@@ -871,7 +871,7 @@ nav {
 }
 
 .portfolio-layer-back {
-    background: linear-gradient(135deg, rgba(138, 85, 254, 0.4), rgba(92, 223, 230, 0.4));
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.4), rgba(244, 114, 182, 0.4));
     border: 2px solid rgba(138, 85, 254, 0.3);
     transform: translateZ(-40px);
     opacity: 0.5;
@@ -879,11 +879,11 @@ nav {
 }
 
 .portfolio-layer-mid {
-    background: linear-gradient(135deg, rgba(138, 85, 254, 0.25), rgba(92, 223, 230, 0.25));
-    border: 1px solid rgba(92, 223, 230, 0.2);
+    background: linear-gradient(135deg, rgba(138, 85, 254, 0.25), rgba(244, 114, 182, 0.25));
+    border: 1px solid rgba(244, 114, 182, 0.2);
     transform: translateZ(-20px);
     opacity: 0.6;
-    box-shadow: 0 5px 20px rgba(92, 223, 230, 0.15);
+    box-shadow: 0 5px 20px rgba(244, 114, 182, 0.15);
 }
 
 .portfolio-layer-front {
@@ -936,7 +936,7 @@ nav {
 }
 
 .portfolio-gradient-2 .portfolio-placeholder::before {
-    background: linear-gradient(180deg, #5cdfe6, #7ee8ed);
+    background: linear-gradient(180deg, #f472b6, #f9a8d4);
 }
 
 .portfolio-gradient-3 .portfolio-placeholder::before {
@@ -1017,7 +1017,7 @@ nav {
 }
 
 .portfolio-btn-primary {
-    background: linear-gradient(90deg, #8a55fe 0%, #6f9af8 50%, #5cdfe6 100%);
+    background: linear-gradient(90deg, #8a55fe 0%, #c084fc 50%, #f472b6 100%);
     color: white;
     border-color: transparent;
 }
@@ -1055,7 +1055,7 @@ nav {
 }
 
 .portfolio-gradient-2 .portfolio-content h3::before {
-    background: #5cdfe6;
+    background: #f472b6;
 }
 
 .portfolio-gradient-3 .portfolio-content h3::before {
