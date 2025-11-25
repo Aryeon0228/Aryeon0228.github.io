@@ -11,8 +11,9 @@
 
     /* Gradient Colors */
     --gradient-start: #8a55fe;
+    --gradient-mid: #6f9af8;
     --gradient-end: #5cdfe6;
-    --gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    --gradient: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
 
     /* Spacing */
     --spacing-xs: 0.5rem;
@@ -303,7 +304,7 @@ nav {
         background-position: 0% center;
     }
     100% {
-        background-position: 100% center;
+        background-position: -100% center;
     }
 }
 
@@ -993,7 +994,7 @@ nav {
 }
 
 .portfolio-btn-primary {
-    background: linear-gradient(90deg, #8a55fe 0%, #5cdfe6 100%);
+    background: linear-gradient(90deg, #8a55fe 0%, #6f9af8 50%, #5cdfe6 100%);
     color: white;
     border-color: transparent;
 }
