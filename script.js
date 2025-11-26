@@ -16,64 +16,89 @@ if (themeToggle) {
     });
 }
 
-// ==================== Cursor Halo Effect ====================
-const cursorHalo = document.getElementById('cursorHalo');
+// ==================== Cursor Tail Effect ====================
+const cursorTail = document.getElementById('cursorTail');
 
-if (cursorHalo) {
-    let mouseX = 0;
-    let mouseY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    let isMoving = false;
-    let hideTimeout = null;
+if (cursorTail) {
+    const tailLength = 20; // Number of trail segments
+    const positions = [];
+    const segments = [];
 
-    // Smooth follow animation
-    function animateHalo() {
-        // Easing for smooth follow
-        const ease = 0.15;
-        currentX += (mouseX - currentX) * ease;
-        currentY += (mouseY - currentY) * ease;
+    // Create tail segments
+    for (let i = 0; i < tailLength; i++) {
+        const segment = document.createElement('div');
+        segment.className = 'cursor-tail-segment';
 
-        cursorHalo.style.left = currentX + 'px';
-        cursorHalo.style.top = currentY + 'px';
+        // Calculate gradient color from purple (#8a55fe) to cyan (#5cdfe6)
+        const ratio = i / (tailLength - 1);
+        const r = Math.round(138 + (92 - 138) * ratio);
+        const g = Math.round(85 + (223 - 85) * ratio);
+        const b = Math.round(254 + (230 - 254) * ratio);
 
-        requestAnimationFrame(animateHalo);
+        segment.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        segment.style.opacity = (1 - ratio * 0.8).toFixed(2);
+        segment.style.width = `${4 - ratio * 2}px`;
+        segment.style.height = `${4 - ratio * 2}px`;
+
+        cursorTail.appendChild(segment);
+        segments.push(segment);
+        positions.push({ x: 0, y: 0 });
     }
 
-    // Start animation loop
-    animateHalo();
+    let mouseX = 0;
+    let mouseY = 0;
 
     // Track mouse movement
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
+    });
 
-        // Show halo
-        cursorHalo.classList.add('active');
-        isMoving = true;
+    // Animation loop
+    function animateTail() {
+        // Update first position to mouse
+        positions[0].x = mouseX;
+        positions[0].y = mouseY;
 
-        // Hide after inactivity
-        if (hideTimeout) {
-            clearTimeout(hideTimeout);
+        // Each segment follows the previous one
+        for (let i = 1; i < tailLength; i++) {
+            const ease = 0.35;
+            positions[i].x += (positions[i - 1].x - positions[i].x) * ease;
+            positions[i].y += (positions[i - 1].y - positions[i].y) * ease;
         }
-        hideTimeout = setTimeout(() => {
-            cursorHalo.classList.remove('active');
-            isMoving = false;
-        }, 3000);
-    });
 
-    // Hide halo when mouse leaves window
+        // Update segment positions
+        segments.forEach((segment, i) => {
+            segment.style.left = `${positions[i].x}px`;
+            segment.style.top = `${positions[i].y}px`;
+            segment.style.transform = 'translate(-50%, -50%)';
+        });
+
+        requestAnimationFrame(animateTail);
+    }
+
+    animateTail();
+
+    // Hide tail when mouse leaves window
     document.addEventListener('mouseleave', () => {
-        cursorHalo.classList.remove('active');
+        segments.forEach(segment => {
+            segment.style.opacity = '0';
+        });
     });
 
-    // Show halo when mouse enters window
+    // Show tail when mouse enters window
     document.addEventListener('mouseenter', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        currentX = mouseX;
-        currentY = mouseY;
-        cursorHalo.classList.add('active');
+        // Reset all positions to mouse position
+        positions.forEach(pos => {
+            pos.x = mouseX;
+            pos.y = mouseY;
+        });
+        segments.forEach((segment, i) => {
+            const ratio = i / (tailLength - 1);
+            segment.style.opacity = (1 - ratio * 0.8).toFixed(2);
+        });
     });
 }
 
