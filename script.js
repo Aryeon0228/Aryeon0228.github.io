@@ -16,21 +16,17 @@ if (themeToggle) {
     });
 }
 
-// ==================== Cursor Trail Effect (Canvas) ====================
+// ==================== Cursor Glow Dot + Click Ripple Effect ====================
 const cursorCanvas = document.getElementById('cursorTrailCanvas');
 
 if (cursorCanvas) {
     const ctx = cursorCanvas.getContext('2d');
-    const trailLength = 8; // Very short trail
-    const positions = [];
     let mouseX = 0;
     let mouseY = 0;
+    let dotX = 0;
+    let dotY = 0;
     let isMouseInWindow = true;
-
-    // Initialize positions
-    for (let i = 0; i < trailLength; i++) {
-        positions.push({ x: 0, y: 0 });
-    }
+    const ripples = [];
 
     // Resize canvas to window size
     function resizeCanvas() {
@@ -46,141 +42,84 @@ if (cursorCanvas) {
         mouseY = e.clientY;
     });
 
-    // Hide trail when mouse leaves window
+    // Hide when mouse leaves window
     document.addEventListener('mouseleave', () => {
         isMouseInWindow = false;
     });
 
-    // Show trail when mouse enters window
+    // Show when mouse enters window
     document.addEventListener('mouseenter', (e) => {
         isMouseInWindow = true;
         mouseX = e.clientX;
         mouseY = e.clientY;
-        // Reset all positions to mouse position
-        positions.forEach(pos => {
-            pos.x = mouseX;
-            pos.y = mouseY;
+        dotX = mouseX;
+        dotY = mouseY;
+    });
+
+    // Add ripple on click
+    document.addEventListener('click', (e) => {
+        ripples.push({
+            x: e.clientX,
+            y: e.clientY,
+            radius: 0,
+            alpha: 1
         });
     });
 
-    // Draw smooth curve through points using quadratic bezier curves
-    function drawSmoothCurve() {
+    // Animation loop
+    function animate() {
         ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 
-        if (!isMouseInWindow || positions.length < 2) return;
+        if (isMouseInWindow) {
+            // Smooth follow for the dot
+            dotX += (mouseX - dotX) * 0.15;
+            dotY += (mouseY - dotY) * 0.15;
 
-        // Create gradient along the trail
-        const gradient = ctx.createLinearGradient(
-            positions[0].x, positions[0].y,
-            positions[trailLength - 1].x, positions[trailLength - 1].y
-        );
-        gradient.addColorStop(0, 'rgba(138, 85, 254, 1)');     // Purple - start
-        gradient.addColorStop(0.5, 'rgba(111, 154, 248, 0.7)'); // Blue - middle
-        gradient.addColorStop(1, 'rgba(92, 223, 230, 0)');      // Cyan - end (fade out)
-
-        // Draw glow effect (outer layer)
-        ctx.beginPath();
-        ctx.moveTo(positions[0].x, positions[0].y);
-
-        for (let i = 1; i < positions.length - 2; i++) {
-            const xc = (positions[i].x + positions[i + 1].x) / 2;
-            const yc = (positions[i].y + positions[i + 1].y) / 2;
-            ctx.quadraticCurveTo(positions[i].x, positions[i].y, xc, yc);
-        }
-
-        // Finish curve to last point
-        if (positions.length >= 2) {
-            ctx.quadraticCurveTo(
-                positions[positions.length - 2].x,
-                positions[positions.length - 2].y,
-                positions[positions.length - 1].x,
-                positions[positions.length - 1].y
-            );
-        }
-
-        ctx.strokeStyle = 'rgba(138, 85, 254, 0.3)';
-        ctx.lineWidth = 20;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.shadowColor = 'rgba(138, 85, 254, 0.5)';
-        ctx.shadowBlur = 25;
-        ctx.stroke();
-
-        // Draw main trail with varying width
-        ctx.shadowBlur = 0;
-
-        // Draw segments with decreasing width
-        for (let i = 0; i < positions.length - 1; i++) {
-            const ratio = i / (positions.length - 1);
-            const width = 12 - ratio * 9; // 12px to 3px
-            const alpha = 1 - ratio * 0.9;
-
-            // Calculate color along gradient
-            const r = Math.round(138 + (92 - 138) * ratio);
-            const g = Math.round(85 + (223 - 85) * ratio);
-            const b = Math.round(254 + (230 - 254) * ratio);
+            // Draw outer glow
+            const gradient = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 30);
+            gradient.addColorStop(0, 'rgba(138, 85, 254, 0.4)');
+            gradient.addColorStop(0.5, 'rgba(92, 223, 230, 0.2)');
+            gradient.addColorStop(1, 'rgba(92, 223, 230, 0)');
 
             ctx.beginPath();
-            ctx.moveTo(positions[i].x, positions[i].y);
+            ctx.arc(dotX, dotY, 30, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
 
-            if (i < positions.length - 2) {
-                const xc = (positions[i].x + positions[i + 1].x) / 2;
-                const yc = (positions[i].y + positions[i + 1].y) / 2;
-                ctx.quadraticCurveTo(positions[i].x, positions[i].y, xc, yc);
-            } else {
-                ctx.lineTo(positions[i + 1].x, positions[i + 1].y);
-            }
+            // Draw main dot
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, 8, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.shadowColor = 'rgba(138, 85, 254, 1)';
+            ctx.shadowBlur = 20;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
 
-            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-            ctx.lineWidth = width;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+        // Draw and update ripples
+        for (let i = ripples.length - 1; i >= 0; i--) {
+            const ripple = ripples[i];
+
+            ctx.beginPath();
+            ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(138, 85, 254, ${ripple.alpha})`;
+            ctx.lineWidth = 2;
             ctx.stroke();
+
+            // Update ripple
+            ripple.radius += 4;
+            ripple.alpha -= 0.02;
+
+            // Remove faded ripples
+            if (ripple.alpha <= 0) {
+                ripples.splice(i, 1);
+            }
         }
 
-        // Draw bright core (inner glow)
-        ctx.beginPath();
-        ctx.moveTo(positions[0].x, positions[0].y);
-
-        for (let i = 1; i < Math.min(15, positions.length - 2); i++) {
-            const xc = (positions[i].x + positions[i + 1].x) / 2;
-            const yc = (positions[i].y + positions[i + 1].y) / 2;
-            ctx.quadraticCurveTo(positions[i].x, positions[i].y, xc, yc);
-        }
-
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.lineWidth = 3;
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
-        ctx.shadowBlur = 10;
-        ctx.stroke();
-
-        // Draw cursor dot
-        ctx.beginPath();
-        ctx.arc(positions[0].x, positions[0].y, 6, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.shadowColor = 'rgba(138, 85, 254, 1)';
-        ctx.shadowBlur = 15;
-        ctx.fill();
+        requestAnimationFrame(animate);
     }
 
-    // Animation loop
-    function animateTrail() {
-        // Update first position to mouse
-        positions[0].x = mouseX;
-        positions[0].y = mouseY;
-
-        // Each point follows the previous one with smooth easing
-        for (let i = 1; i < trailLength; i++) {
-            const ease = 0.6; // Fast, consistent follow
-            positions[i].x += (positions[i - 1].x - positions[i].x) * ease;
-            positions[i].y += (positions[i - 1].y - positions[i].y) * ease;
-        }
-
-        drawSmoothCurve();
-        requestAnimationFrame(animateTrail);
-    }
-
-    animateTrail();
+    animate();
 }
 
 // ==================== Home Link ====================
