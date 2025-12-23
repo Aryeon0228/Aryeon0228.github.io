@@ -677,6 +677,18 @@ nav {
     font-size: 0.875rem;
 }
 
+.award-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
 .award-group .award-subitem {
     margin-top: 1rem;
     padding-top: 1rem;
