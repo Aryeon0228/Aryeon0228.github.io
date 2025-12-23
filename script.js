@@ -21,7 +21,7 @@ const cursorCanvas = document.getElementById('cursorTrailCanvas');
 
 if (cursorCanvas) {
     const ctx = cursorCanvas.getContext('2d');
-    const trailLength = 50; // More points for smoother curve
+    const trailLength = 8; // Very short trail
     const positions = [];
     let mouseX = 0;
     let mouseY = 0;
@@ -171,7 +171,7 @@ if (cursorCanvas) {
 
         // Each point follows the previous one with smooth easing
         for (let i = 1; i < trailLength; i++) {
-            const ease = 0.4 - (i / trailLength) * 0.15; // Slower easing for tail
+            const ease = 0.6; // Fast, consistent follow
             positions[i].x += (positions[i - 1].x - positions[i].x) * ease;
             positions[i].y += (positions[i - 1].y - positions[i].y) * ease;
         }
