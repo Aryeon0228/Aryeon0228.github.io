@@ -1,1343 +1,1428 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>실시간 PBR 머티리얼 시뮬레이터 - Disney BRDF</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1a2e;
-            color: #fff;
-            overflow: hidden;
-        }
-
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        /* 좌측 상단 메뉴 버튼들 */
-        .top-left-menu {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-        }
-
-        .menu-btn {
-            background: rgba(30, 30, 50, 0.95);
-            border: 1px solid rgba(100, 100, 150, 0.3);
-            border-radius: 8px;
-            padding: 10px 15px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .menu-btn:hover {
-            background: rgba(50, 50, 80, 0.95);
-            border-color: rgba(100, 150, 255, 0.5);
-        }
-
-        .menu-btn i {
-            margin-right: 6px;
-        }
-
-        /* 컨트롤 패널 */
-        .control-panel {
-            position: fixed;
-            top: 70px;
-            left: 15px;
-            width: 320px;
-            max-height: calc(100vh - 90px);
-            background: rgba(30, 30, 50, 0.95);
-            border-radius: 12px;
-            padding: 20px;
-            z-index: 50;
-            overflow-y: auto;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(100, 100, 150, 0.3);
-        }
-
-        .control-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .control-panel::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 3px;
-        }
-
-        .control-panel::-webkit-scrollbar-thumb {
-            background: rgba(100, 100, 150, 0.5);
-            border-radius: 3px;
-        }
-
-        .panel-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(100, 100, 150, 0.3);
-            /* 단어 잘림 방지 */
-            word-break: keep-all;
-            white-space: nowrap;
-            overflow: visible;
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #8888aa;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            /* 단어 잘림 방지 */
-            word-break: keep-all;
-            white-space: nowrap;
-        }
-
-        .control-group {
-            margin-bottom: 12px;
-        }
-
-        .control-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 13px;
-            color: #ccc;
-        }
-
-        .control-value {
-            color: #88aaff;
-            font-family: monospace;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            background: rgba(100, 100, 150, 0.3);
-            border-radius: 3px;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #6688ff;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        input[type="color"] {
-            width: 100%;
-            height: 35px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: transparent;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            margin-bottom: 8px;
-        }
-
-        .file-input-btn {
-            width: 100%;
-            padding: 10px;
-            background: rgba(100, 100, 150, 0.2);
-            border: 1px dashed rgba(100, 100, 150, 0.5);
-            border-radius: 6px;
-            color: #aaa;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
-            font-size: 13px;
-        }
-
-        .file-input-btn:hover {
-            background: rgba(100, 100, 150, 0.3);
-            border-color: #6688ff;
-            color: #fff;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-hint {
-            font-size: 11px;
-            color: #777;
-            margin-top: 4px;
-            /* 단어 잘림 방지 */
-            word-break: keep-all;
-        }
-
-        /* 프리셋 모달 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 200;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: rgba(30, 30, 50, 0.98);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 1px solid rgba(100, 100, 150, 0.3);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(100, 100, 150, 0.3);
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            /* 단어 잘림 방지 */
-            word-break: keep-all;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px;
-            line-height: 1;
-        }
-
-        .modal-close:hover {
-            color: #fff;
-        }
-
-        .preset-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .preset-btn {
-            padding: 15px;
-            background: rgba(100, 100, 150, 0.2);
-            border: 1px solid rgba(100, 100, 150, 0.3);
-            border-radius: 10px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-        }
-
-        .preset-btn:hover {
-            background: rgba(100, 100, 150, 0.4);
-            border-color: #6688ff;
-            transform: translateY(-2px);
-        }
-
-        .preset-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .preset-desc {
-            font-size: 11px;
-            color: #888;
-        }
-
-        .preset-color {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* 정보 모달 스타일 */
-        .info-modal .modal {
-            max-width: 700px;
-        }
-
-        .info-section {
-            margin-bottom: 25px;
-        }
-
-        .info-section h3 {
-            color: #6688ff;
-            margin-bottom: 12px;
-            font-size: 16px;
-            /* 단어 잘림 방지 */
-            word-break: keep-all;
-        }
-
-        .info-section p {
-            line-height: 1.7;
-            color: #ccc;
-            font-size: 14px;
-            text-align: justify;
-            /* 단어 잘림 방지 */
-            word-break: keep-all;
-        }
-
-        .info-section ul {
-            padding-left: 20px;
-            color: #ccc;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-
-        /* 메탈 레퍼런스 패널 */
-        .reference-panel {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            width: 280px;
-            background: rgba(30, 30, 50, 0.95);
-            border-radius: 12px;
-            padding: 15px;
-            z-index: 50;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(100, 100, 150, 0.3);
-            display: none;
-        }
-
-        .reference-panel.active {
-            display: block;
-        }
-
-        .reference-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            /* 단어 잘림 방지 */
-            word-break: keep-all;
-        }
-
-        .reference-close {
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .reference-table {
-            width: 100%;
-            font-size: 12px;
-        }
-
-        .reference-table th,
-        .reference-table td {
-            padding: 6px 8px;
-            text-align: left;
-            border-bottom: 1px solid rgba(100, 100, 150, 0.2);
-        }
-
-        .reference-table th {
-            color: #888;
-            font-weight: 600;
-        }
-
-        .reference-table td {
-            color: #ccc;
-        }
-
-        .reference-table .material-name {
-            color: #88aaff;
-        }
-
-        /* 모바일 반응형 */
-        @media (max-width: 768px) {
-            .top-left-menu {
-                top: 10px;
-                left: 10px;
-                flex-wrap: wrap;
-                max-width: calc(100% - 20px);
-            }
-
-            .menu-btn {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-
-            .control-panel {
-                top: auto;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                max-height: 50vh;
-                border-radius: 20px 20px 0 0;
-                padding: 15px;
-            }
-
-            .panel-title {
-                font-size: 16px;
-            }
-
-            .reference-panel {
-                top: auto;
-                bottom: 55vh;
-                right: 10px;
-                left: 10px;
-                width: auto;
-            }
-
-            .modal {
-                width: 95%;
-                padding: 20px;
-                max-height: 85vh;
-            }
-
-            .preset-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* 체크박스 토글 */
-        .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 44px;
-            height: 24px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(100, 100, 150, 0.3);
-            border-radius: 24px;
-            transition: 0.3s;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background: #fff;
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-
-        .toggle-switch input:checked + .toggle-slider {
-            background: #6688ff;
-        }
-
-        .toggle-switch input:checked + .toggle-slider:before {
-            transform: translateX(20px);
-        }
-
-        /* 섹션 구분선 */
-        .section-divider {
-            height: 1px;
-            background: rgba(100, 100, 150, 0.3);
-            margin: 15px 0;
-        }
-
-        /* 버튼 공통 스타일 */
-        .action-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #6688ff 0%, #5566dd 100%);
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 136, 255, 0.3);
-        }
-
-        /* 로딩 인디케이터 */
-        .loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 300;
-            background: rgba(30, 30, 50, 0.95);
-            padding: 30px 50px;
-            border-radius: 12px;
-            text-align: center;
-            display: none;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(100, 100, 150, 0.3);
-            border-top-color: #6688ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real-time PBR Material Simulator - Disney BRDF</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: #1a1a2e;
+color: #fff;
+overflow: hidden;
+}
+
+#canvas-container {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: 0;
+}
+
+/* Top right menu buttons */
+.top-right-menu {
+position: fixed;
+top: 15px;
+right: 15px;
+z-index: 100;
+display: flex;
+gap: 10px;
+}
+
+.menu-btn {
+background: rgba(30, 30, 50, 0.95);
+border: 1px solid rgba(100, 100, 150, 0.3);
+border-radius: 8px;
+padding: 10px 15px;
+color: #fff;
+cursor: pointer;
+font-size: 13px;
+transition: all 0.3s ease;
+white-space: nowrap;
+}
+
+.menu-btn:hover {
+background: rgba(50, 50, 80, 0.95);
+border-color: rgba(100, 150, 255, 0.5);
+}
+
+.menu-btn i {
+margin-right: 6px;
+}
+
+/* Control panel */
+.control-panel {
+position: fixed;
+top: 15px;
+left: 15px;
+width: 320px;
+max-height: calc(100vh - 30px);
+background: rgba(30, 30, 50, 0.95);
+border-radius: 12px;
+padding: 20px;
+z-index: 50;
+overflow-y: auto;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(100, 100, 150, 0.3);
+}
+
+.control-panel::-webkit-scrollbar {
+width: 6px;
+}
+
+.control-panel::-webkit-scrollbar-track {
+background: rgba(0, 0, 0, 0.2);
+border-radius: 3px;
+}
+
+.control-panel::-webkit-scrollbar-thumb {
+background: rgba(100, 100, 150, 0.5);
+border-radius: 3px;
+}
+
+.panel-title {
+font-size: 16px;
+font-weight: 600;
+margin-bottom: 20px;
+padding-bottom: 10px;
+border-bottom: 1px solid rgba(100, 100, 150, 0.3);
+word-break: keep-all;
+overflow-wrap: break-word;
+line-height: 1.4;
+}
+
+.section {
+margin-bottom: 20px;
+}
+
+.section-title {
+font-size: 13px;
+font-weight: 600;
+color: #8888aa;
+margin-bottom: 12px;
+text-transform: uppercase;
+letter-spacing: 1px;
+word-break: keep-all;
+white-space: nowrap;
+}
+
+.control-group {
+margin-bottom: 12px;
+}
+
+.control-label {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 6px;
+font-size: 13px;
+color: #ccc;
+}
+
+.control-value {
+color: #88aaff;
+font-family: monospace;
+}
+
+input[type="range"] {
+width: 100%;
+height: 6px;
+background: rgba(100, 100, 150, 0.3);
+border-radius: 3px;
+appearance: none;
+cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+appearance: none;
+width: 16px;
+height: 16px;
+background: #6688ff;
+border-radius: 50%;
+cursor: pointer;
+transition: transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+transform: scale(1.2);
+}
+
+input[type="color"] {
+width: 100%;
+height: 35px;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+background: transparent;
+}
+
+select {
+width: 100%;
+padding: 10px;
+background: rgba(100, 100, 150, 0.2);
+border: 1px solid rgba(100, 100, 150, 0.3);
+border-radius: 6px;
+color: #fff;
+font-size: 13px;
+cursor: pointer;
+appearance: none;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+background-repeat: no-repeat;
+background-position: right 10px center;
+}
+
+select:hover {
+border-color: #6688ff;
+}
+
+select option {
+background: #1a1a2e;
+color: #fff;
+}
+
+.file-input-wrapper {
+position: relative;
+margin-bottom: 8px;
+}
+
+.file-input-btn {
+width: 100%;
+padding: 10px;
+background: rgba(100, 100, 150, 0.2);
+border: 1px dashed rgba(100, 100, 150, 0.5);
+border-radius: 6px;
+color: #aaa;
+cursor: pointer;
+text-align: center;
+transition: all 0.3s;
+font-size: 13px;
+}
+
+.file-input-btn:hover {
+background: rgba(100, 100, 150, 0.3);
+border-color: #6688ff;
+color: #fff;
+}
+
+.file-input-wrapper input[type="file"] {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+opacity: 0;
+cursor: pointer;
+}
+
+.file-hint {
+font-size: 11px;
+color: #777;
+margin-top: 4px;
+word-break: keep-all;
+}
+
+/* Preset modal */
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.7);
+z-index: 200;
+display: none;
+justify-content: center;
+align-items: center;
+backdrop-filter: blur(5px);
+}
+
+.modal-overlay.active {
+display: flex;
+}
+
+.modal {
+background: rgba(30, 30, 50, 0.98);
+border-radius: 16px;
+padding: 30px;
+max-width: 500px;
+width: 90%;
+max-height: 80vh;
+overflow-y: auto;
+border: 1px solid rgba(100, 100, 150, 0.3);
+}
+
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+padding-bottom: 15px;
+border-bottom: 1px solid rgba(100, 100, 150, 0.3);
+}
+
+.modal-title {
+font-size: 20px;
+font-weight: 600;
+word-break: keep-all;
+}
+
+.modal-close {
+background: none;
+border: none;
+color: #888;
+font-size: 24px;
+cursor: pointer;
+padding: 5px;
+line-height: 1;
+}
+
+.modal-close:hover {
+color: #fff;
+}
+
+.preset-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+
+.preset-btn {
+padding: 15px;
+background: rgba(100, 100, 150, 0.2);
+border: 1px solid rgba(100, 100, 150, 0.3);
+border-radius: 10px;
+color: #fff;
+cursor: pointer;
+transition: all 0.3s;
+text-align: left;
+}
+
+.preset-btn:hover {
+background: rgba(100, 100, 150, 0.4);
+border-color: #6688ff;
+transform: translateY(-2px);
+}
+
+.preset-name {
+font-weight: 600;
+margin-bottom: 4px;
+}
+
+.preset-desc {
+font-size: 11px;
+color: #888;
+}
+
+.preset-color {
+width: 30px;
+height: 30px;
+border-radius: 50%;
+margin-bottom: 8px;
+border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Info modal style */
+.info-modal .modal {
+max-width: 700px;
+}
+
+.info-section {
+margin-bottom: 25px;
+}
+
+.info-section h3 {
+color: #6688ff;
+margin-bottom: 12px;
+font-size: 16px;
+word-break: keep-all;
+}
+
+.info-section p {
+line-height: 1.7;
+color: #ccc;
+font-size: 14px;
+text-align: justify;
+word-break: keep-all;
+}
+
+.info-section ul {
+padding-left: 20px;
+color: #ccc;
+font-size: 14px;
+line-height: 1.8;
+}
+
+/* Metal reference panel */
+.reference-panel {
+position: fixed;
+top: 70px;
+right: 15px;
+width: 280px;
+background: rgba(30, 30, 50, 0.95);
+border-radius: 12px;
+padding: 15px;
+z-index: 50;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(100, 100, 150, 0.3);
+display: none;
+}
+
+.reference-panel.active {
+display: block;
+}
+
+.reference-title {
+font-size: 14px;
+font-weight: 600;
+margin-bottom: 12px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+word-break: keep-all;
+}
+
+.reference-close {
+background: none;
+border: none;
+color: #888;
+cursor: pointer;
+font-size: 16px;
+}
+
+.reference-table {
+width: 100%;
+font-size: 12px;
+}
+
+.reference-table th,
+.reference-table td {
+padding: 6px 8px;
+text-align: left;
+border-bottom: 1px solid rgba(100, 100, 150, 0.2);
+}
+
+.reference-table th {
+color: #888;
+font-weight: 600;
+}
+
+.reference-table td {
+color: #ccc;
+}
+
+.reference-table .material-name {
+color: #88aaff;
+}
+
+/* Checkbox toggle */
+.toggle-wrapper {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 10px;
+}
+
+.toggle-switch {
+position: relative;
+width: 44px;
+height: 24px;
+}
+
+.toggle-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+.toggle-slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(100, 100, 150, 0.3);
+border-radius: 24px;
+transition: 0.3s;
+}
+
+.toggle-slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+left: 3px;
+bottom: 3px;
+background: #fff;
+border-radius: 50%;
+transition: 0.3s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+background: #6688ff;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+transform: translateX(20px);
+}
+
+/* Section divider */
+.section-divider {
+height: 1px;
+background: rgba(100, 100, 150, 0.3);
+margin: 15px 0;
+}
+
+/* Common button style */
+.action-btn {
+width: 100%;
+padding: 12px;
+background: linear-gradient(135deg, #6688ff 0%, #5566dd 100%);
+border: none;
+border-radius: 8px;
+color: #fff;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.action-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 20px rgba(102, 136, 255, 0.3);
+}
+
+/* Loading indicator */
+.loading {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+z-index: 300;
+background: rgba(30, 30, 50, 0.95);
+padding: 30px 50px;
+border-radius: 12px;
+text-align: center;
+display: none;
+}
+
+.loading.active {
+display: block;
+}
+
+.spinner {
+width: 40px;
+height: 40px;
+border: 3px solid rgba(100, 100, 150, 0.3);
+border-top-color: #6688ff;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+margin: 0 auto 15px;
+}
+
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+</style>
 </head>
 <body>
-    <div id="canvas-container"></div>
-
-    <!-- 좌측 상단 메뉴 버튼들 -->
-    <div class="top-left-menu">
-        <button class="menu-btn" onclick="toggleReference()">
-            📖 메탈 레퍼런스
-        </button>
-        <button class="menu-btn" onclick="openInfoModal()">
-            ℹ️ PBR/BRDF 가이드
-        </button>
-        <button class="menu-btn" onclick="openPresetModal()">
-            🎨 머티리얼 프리셋
-        </button>
-    </div>
-
-    <!-- 메탈 레퍼런스 패널 -->
-    <div class="reference-panel" id="referencePanel">
-        <div class="reference-title">
-            📖 메탈릭 값 레퍼런스
-            <button class="reference-close" onclick="toggleReference()">✕</button>
-        </div>
-        <table class="reference-table">
-            <thead>
-                <tr>
-                    <th>재질</th>
-                    <th>Metallic</th>
-                    <th>Roughness</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td class="material-name">금 (Gold)</td><td>1.0</td><td>0.1-0.3</td></tr>
-                <tr><td class="material-name">은 (Silver)</td><td>1.0</td><td>0.1-0.2</td></tr>
-                <tr><td class="material-name">구리 (Copper)</td><td>1.0</td><td>0.2-0.4</td></tr>
-                <tr><td class="material-name">알루미늄</td><td>1.0</td><td>0.3-0.5</td></tr>
-                <tr><td class="material-name">크롬</td><td>1.0</td><td>0.0-0.1</td></tr>
-                <tr><td class="material-name">철</td><td>1.0</td><td>0.4-0.6</td></tr>
-                <tr><td class="material-name">플라스틱</td><td>0.0</td><td>0.3-0.5</td></tr>
-                <tr><td class="material-name">고무</td><td>0.0</td><td>0.8-1.0</td></tr>
-                <tr><td class="material-name">나무</td><td>0.0</td><td>0.5-0.8</td></tr>
-                <tr><td class="material-name">피부</td><td>0.0</td><td>0.4-0.6</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- 컨트롤 패널 -->
-    <div class="control-panel">
-        <h2 class="panel-title">실시간 PBR 머티리얼 시뮬레이터</h2>
-
-        <!-- 베이스 컬러 -->
-        <div class="section">
-            <div class="section-title">베이스 컬러</div>
-            <div class="control-group">
-                <input type="color" id="baseColor" value="#808080" onchange="updateMaterial()">
-            </div>
-        </div>
-
-        <!-- 머티리얼 속성 (러프니스, 메탈릭 등) -->
-        <div class="section">
-            <div class="section-title">머티리얼 속성</div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>러프니스 (Roughness)</span>
-                    <span class="control-value" id="roughnessValue">0.50</span>
-                </div>
-                <input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>메탈릭 (Metallic)</span>
-                    <span class="control-value" id="metallicValue">0.00</span>
-                </div>
-                <input type="range" id="metallic" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>스페큘러 (IOR)</span>
-                    <span class="control-value" id="specularValue">0.50</span>
-                </div>
-                <input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>클리어코트</span>
-                    <span class="control-value" id="clearcoatValue">0.00</span>
-                </div>
-                <input type="range" id="clearcoat" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>클리어코트 러프니스</span>
-                    <span class="control-value" id="clearcoatRoughnessValue">0.00</span>
-                </div>
-                <input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
-            </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- 라이팅 & 인바이러먼트 -->
-        <div class="section">
-            <div class="section-title">라이팅 & 인바이러먼트</div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>주조명 강도</span>
-                    <span class="control-value" id="mainLightValue">1.00</span>
-                </div>
-                <input type="range" id="mainLight" min="0" max="3" step="0.1" value="1" oninput="updateLighting()">
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>환경광 강도</span>
-                    <span class="control-value" id="ambientLightValue">0.30</span>
-                </div>
-                <input type="range" id="ambientLight" min="0" max="1" step="0.01" value="0.3" oninput="updateLighting()">
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>환경맵 강도</span>
-                    <span class="control-value" id="envMapValue">1.00</span>
-                </div>
-                <input type="range" id="envMapIntensity" min="0" max="3" step="0.1" value="1" oninput="updateMaterial()">
-            </div>
-
-            <div class="toggle-wrapper">
-                <span>SSAO (Ambient Occlusion)</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="ssaoToggle" checked onchange="toggleSSAO()">
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- 커스텀 모델 & 노멀맵 -->
-        <div class="section">
-            <div class="section-title">커스텀 모델 & 노멀맵</div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>커스텀 3D 모델</span>
-                </div>
-                <div class="file-input-wrapper">
-                    <div class="file-input-btn">📁 모델 파일 선택</div>
-                    <input type="file" id="modelFile" accept=".obj,.gltf,.glb" onchange="loadCustomModel(this)">
-                </div>
-                <div class="file-hint">지원 형식: .OBJ, .GLTF, .GLB</div>
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">
-                    <span>노멀맵</span>
-                </div>
-                <div class="file-input-wrapper">
-                    <div class="file-input-btn">📁 노멀맵 이미지 선택</div>
-                    <input type="file" id="normalMapFile" accept=".png,.jpg,.jpeg,.webp,.tga" onchange="loadNormalMap(this)">
-                </div>
-                <div class="file-hint">지원 형식: .PNG, .JPG, .JPEG, .WEBP, .TGA</div>
-            </div>
-
-            <button class="action-btn" onclick="resetModel()" style="margin-top: 10px; background: rgba(100, 100, 150, 0.3);">
-                🔄 기본 모델로 복원
-            </button>
-        </div>
-    </div>
-
-    <!-- 머티리얼 프리셋 모달 -->
-    <div class="modal-overlay" id="presetModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">🎨 머티리얼 프리셋</h3>
-                <button class="modal-close" onclick="closePresetModal()">✕</button>
-            </div>
-            <div class="preset-grid">
-                <button class="preset-btn" onclick="applyPreset('gold')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #ffd700, #b8860b);"></div>
-                    <div class="preset-name">골드 (Gold)</div>
-                    <div class="preset-desc">반짝이는 금속 질감</div>
-                </button>
-                <button class="preset-btn" onclick="applyPreset('chrome')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #e0e0e0, #a0a0a0);"></div>
-                    <div class="preset-name">크롬 (Chrome)</div>
-                    <div class="preset-desc">거울 같은 반사</div>
-                </button>
-                <button class="preset-btn" onclick="applyPreset('copper')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #b87333, #8b4513);"></div>
-                    <div class="preset-name">구리 (Copper)</div>
-                    <div class="preset-desc">따뜻한 금속 색상</div>
-                </button>
-                <button class="preset-btn" onclick="applyPreset('plastic')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #cc3333, #991111);"></div>
-                    <div class="preset-name">플라스틱 (Plastic)</div>
-                    <div class="preset-desc">비금속 광택 재질</div>
-                </button>
-                <button class="preset-btn" onclick="applyPreset('rubber')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #333333, #1a1a1a);"></div>
-                    <div class="preset-name">고무 (Rubber)</div>
-                    <div class="preset-desc">무광 재질</div>
-                </button>
-                <button class="preset-btn" onclick="applyPreset('wood')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #8b4513, #654321);"></div>
-                    <div class="preset-name">나무 (Wood)</div>
-                    <div class="preset-desc">자연스러운 목재</div>
-                </button>
-                <button class="preset-btn" onclick="applyPreset('carPaint')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #cc0000, #990000);"></div>
-                    <div class="preset-name">자동차 페인트</div>
-                    <div class="preset-desc">클리어코트 적용</div>
-                </button>
-                <button class="preset-btn" onclick="applyPreset('brushedMetal')">
-                    <div class="preset-color" style="background: linear-gradient(135deg, #b0b0b0, #808080);"></div>
-                    <div class="preset-name">브러시드 메탈</div>
-                    <div class="preset-desc">헤어라인 금속</div>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PBR/BRDF 가이드 모달 -->
-    <div class="modal-overlay info-modal" id="infoModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">ℹ️ PBR/BRDF 가이드</h3>
-                <button class="modal-close" onclick="closeInfoModal()">✕</button>
-            </div>
-
-            <div class="info-section">
-                <h3>🎨 PBR (Physically Based Rendering)</h3>
-                <p>
-                    <strong>물리 기반 렌더링(PBR)</strong>은 현실 세계의 물리 법칙을 기반으로 재질과 조명을
-                    시뮬레이션하는 렌더링 기술입니다. 2010년대 초반부터 게임 및 영화 산업에서 표준으로
-                    자리잡았습니다.
-                </p>
-                <p style="margin-top: 10px;">
-                    <strong>역사:</strong> PBR의 개념은 1980년대 Jim Kajiya의 렌더링 방정식에서 시작되었으며,
-                    2012년 Disney의 "Principled BRDF" 발표와 함께 실용적인 워크플로우가 확립되었습니다.
-                    현재 Unreal Engine, Unity, Blender 등 대부분의 3D 소프트웨어에서 표준으로 사용됩니다.
-                </p>
-                <p style="margin-top: 10px;">
-                    <strong>핵심 원칙:</strong>
-                </p>
-                <ul>
-                    <li><strong>에너지 보존</strong> - 반사된 빛은 입사된 빛보다 많을 수 없음</li>
-                    <li><strong>마이크로패싯 이론</strong> - 표면은 미세한 거울들의 집합</li>
-                    <li><strong>프레넬 효과</strong> - 시야각에 따른 반사율 변화</li>
-                </ul>
-            </div>
-
-            <div class="info-section">
-                <h3>💡 BRDF (Bidirectional Reflectance Distribution Function)</h3>
-                <p>
-                    <strong>양방향 반사 분포 함수(BRDF)</strong>는 빛이 표면에서 어떻게 반사되는지를
-                    수학적으로 정의하는 함수입니다. 입사각과 반사각을 입력으로 받아 반사되는 빛의
-                    양과 방향을 결정합니다.
-                </p>
-                <p style="margin-top: 10px;">
-                    <strong>역사:</strong> BRDF 개념은 1965년 Fred Nicodemus에 의해 처음 정의되었습니다.
-                    이후 Cook-Torrance(1982), Oren-Nayar(1994), GGX(2007) 등 다양한 BRDF 모델이 개발되었습니다.
-                </p>
-                <p style="margin-top: 10px;">
-                    <strong>구성 요소:</strong>
-                </p>
-                <ul>
-                    <li><strong>Diffuse</strong> - 표면에서 균일하게 산란되는 빛</li>
-                    <li><strong>Specular</strong> - 표면에서 거울처럼 반사되는 빛</li>
-                    <li><strong>Fresnel</strong> - 시야각에 따른 반사율 변화</li>
-                </ul>
-            </div>
-
-            <div class="info-section">
-                <h3>✨ Disney BRDF (Principled BRDF)</h3>
-                <p>
-                    <strong>Disney BRDF</strong>는 2012년 Walt Disney Animation Studios의 Brent Burley가
-                    발표한 "아티스트 친화적" 물리 기반 셰이딩 모델입니다. "Physically Based Shading at Disney"
-                    논문에서 처음 소개되었습니다.
-                </p>
-                <p style="margin-top: 10px;">
-                    <strong>특징:</strong> 기존의 복잡한 물리 파라미터들을 아티스트가 직관적으로 이해할 수 있는
-                    0~1 범위의 파라미터로 단순화했습니다. 물리적 정확성과 사용 편의성의 균형을 추구합니다.
-                </p>
-                <p style="margin-top: 10px;">
-                    <strong>주요 파라미터:</strong>
-                </p>
-                <ul>
-                    <li><strong>Base Color</strong> - 기본 색상 (Diffuse/Metal 공용)</li>
-                    <li><strong>Metallic</strong> - 금속성 (0=비금속, 1=금속)</li>
-                    <li><strong>Roughness</strong> - 표면 거칠기 (0=매끄러움, 1=거침)</li>
-                    <li><strong>Specular</strong> - 비금속의 반사 강도</li>
-                    <li><strong>Clearcoat</strong> - 투명 코팅층 (자동차 페인트 등)</li>
-                    <li><strong>Anisotropic</strong> - 비등방성 반사 (브러시드 메탈)</li>
-                    <li><strong>Subsurface</strong> - 피하 산란 (피부, 왁스)</li>
-                    <li><strong>Sheen</strong> - 천 재질의 가장자리 광택</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- 로딩 인디케이터 -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <div>로딩 중...</div>
-    </div>
-
-    <script>
-        // 글로벌 변수
-        let scene, camera, renderer, controls;
-        let sphere, torusKnot;
-        let mainLight, fillLight, backLight, ambientLight;
-        let currentMaterial;
-        let composer;
-
-        // 프리셋 정의
-        const presets = {
-            gold: {
-                color: '#ffd700',
-                metallic: 1.0,
-                roughness: 0.2,
-                specular: 0.5,
-                clearcoat: 0,
-                clearcoatRoughness: 0
-            },
-            chrome: {
-                color: '#e0e0e0',
-                metallic: 1.0,
-                roughness: 0.05,
-                specular: 0.5,
-                clearcoat: 0,
-                clearcoatRoughness: 0
-            },
-            copper: {
-                color: '#b87333',
-                metallic: 1.0,
-                roughness: 0.3,
-                specular: 0.5,
-                clearcoat: 0,
-                clearcoatRoughness: 0
-            },
-            plastic: {
-                color: '#cc3333',
-                metallic: 0,
-                roughness: 0.3,
-                specular: 0.5,
-                clearcoat: 0.5,
-                clearcoatRoughness: 0.1
-            },
-            rubber: {
-                color: '#262626',
-                metallic: 0,
-                roughness: 0.9,
-                specular: 0.5,
-                clearcoat: 0,
-                clearcoatRoughness: 0
-            },
-            wood: {
-                color: '#6b3310',
-                metallic: 0,
-                roughness: 0.7,
-                specular: 0.5,
-                clearcoat: 0.1,
-                clearcoatRoughness: 0.2
-            },
-            carPaint: {
-                color: '#cc0000',
-                metallic: 0,
-                roughness: 0.1,
-                specular: 0.5,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.05
-            },
-            brushedMetal: {
-                color: '#b0b0b0',
-                metallic: 1.0,
-                roughness: 0.35,
-                specular: 0.5,
-                clearcoat: 0,
-                clearcoatRoughness: 0
-            }
-        };
-
-        // 초기화
-        function init() {
-            // 씬 생성
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x1a1a2e);
-
-            // 카메라 생성
-            camera = new THREE.PerspectiveCamera(
-                45,
-                window.innerWidth / window.innerHeight,
-                0.1,
-                1000
-            );
-            camera.position.set(0, 0, 8);
-
-            // 렌더러 생성
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.physicallyCorrectLights = true;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
-            renderer.outputEncoding = THREE.sRGBEncoding;
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-            // 컨트롤
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-
-            // 머티리얼 생성
-            currentMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0x808080,
-                metalness: 0,
-                roughness: 0.5,
-                clearcoat: 0,
-                clearcoatRoughness: 0,
-                reflectivity: 0.5
-            });
-
-            // 구체 생성
-            const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
-            sphere = new THREE.Mesh(sphereGeometry, currentMaterial);
-            sphere.position.x = -2;
-            scene.add(sphere);
-
-            // 토러스 노트 생성
-            const torusKnotGeometry = new THREE.TorusKnotGeometry(0.7, 0.25, 100, 16);
-            torusKnot = new THREE.Mesh(torusKnotGeometry, currentMaterial);
-            torusKnot.position.x = 2;
-            scene.add(torusKnot);
-
-            // 조명 설정
-            setupLights();
-
-            // 환경맵 생성 (간단한 큐브맵)
-            setupEnvironment();
-
-            // 리사이즈 핸들러
-            window.addEventListener('resize', onWindowResize);
-
-            // 애니메이션 시작
-            animate();
-        }
-
-        function setupLights() {
-            // 주조명
-            mainLight = new THREE.DirectionalLight(0xffffff, 1);
-            mainLight.position.set(5, 5, 5);
-            scene.add(mainLight);
-
-            // 필 라이트
-            fillLight = new THREE.DirectionalLight(0x6688ff, 0.6);
-            fillLight.position.set(-5, -3, 3);
-            scene.add(fillLight);
-
-            // 백라이트
-            backLight = new THREE.DirectionalLight(0xffaa66, 0.4);
-            backLight.position.set(0, -5, -3);
-            scene.add(backLight);
-
-            // 환경광
-            ambientLight = new THREE.AmbientLight(0x404040, 0.3);
-            scene.add(ambientLight);
-        }
-
-        function setupEnvironment() {
-            // PMREMGenerator로 환경맵 생성
-            const pmremGenerator = new THREE.PMREMGenerator(renderer);
-            pmremGenerator.compileEquirectangularShader();
-
-            // 간단한 환경맵 (그라데이션 스카이)
-            const envScene = new THREE.Scene();
-            const envGeometry = new THREE.SphereGeometry(50, 32, 32);
-
-            // 그라데이션 셰이더 머티리얼
-            const envMaterial = new THREE.ShaderMaterial({
-                uniforms: {
-                    topColor: { value: new THREE.Color(0x0077ff) },
-                    bottomColor: { value: new THREE.Color(0x1a1a2e) }
-                },
-                vertexShader: `
-                    varying vec3 vWorldPosition;
-                    void main() {
-                        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-                        vWorldPosition = worldPosition.xyz;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 topColor;
-                    uniform vec3 bottomColor;
-                    varying vec3 vWorldPosition;
-                    void main() {
-                        float h = normalize(vWorldPosition).y;
-                        gl_FragColor = vec4(mix(bottomColor, topColor, max(h, 0.0)), 1.0);
-                    }
-                `,
-                side: THREE.BackSide
-            });
-
-            const envMesh = new THREE.Mesh(envGeometry, envMaterial);
-            envScene.add(envMesh);
-
-            // 환경맵 생성
-            const envMap = pmremGenerator.fromScene(envScene, 0.04).texture;
-            scene.environment = envMap;
-
-            pmremGenerator.dispose();
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-
-            // 약간의 자동 회전
-            if (sphere) sphere.rotation.y += 0.002;
-            if (torusKnot) torusKnot.rotation.y += 0.003;
-
-            renderer.render(scene, camera);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // 머티리얼 업데이트
-        function updateMaterial() {
-            const color = document.getElementById('baseColor').value;
-            const roughness = parseFloat(document.getElementById('roughness').value);
-            const metallic = parseFloat(document.getElementById('metallic').value);
-            const specular = parseFloat(document.getElementById('specular').value);
-            const clearcoat = parseFloat(document.getElementById('clearcoat').value);
-            const clearcoatRoughness = parseFloat(document.getElementById('clearcoatRoughness').value);
-            const envMapIntensity = parseFloat(document.getElementById('envMapIntensity').value);
-
-            // 값 표시 업데이트
-            document.getElementById('roughnessValue').textContent = roughness.toFixed(2);
-            document.getElementById('metallicValue').textContent = metallic.toFixed(2);
-            document.getElementById('specularValue').textContent = specular.toFixed(2);
-            document.getElementById('clearcoatValue').textContent = clearcoat.toFixed(2);
-            document.getElementById('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
-            document.getElementById('envMapValue').textContent = envMapIntensity.toFixed(2);
-
-            // 머티리얼 업데이트
-            currentMaterial.color.set(color);
-            currentMaterial.roughness = roughness;
-            currentMaterial.metalness = metallic;
-            currentMaterial.reflectivity = specular;
-            currentMaterial.clearcoat = clearcoat;
-            currentMaterial.clearcoatRoughness = clearcoatRoughness;
-            currentMaterial.envMapIntensity = envMapIntensity;
-
-            // IOR 계산 (specular 0-1 -> IOR 1.0-1.8)
-            currentMaterial.ior = 1.0 + specular * 0.8;
-        }
-
-        // 라이팅 업데이트
-        function updateLighting() {
-            const mainIntensity = parseFloat(document.getElementById('mainLight').value);
-            const ambientIntensity = parseFloat(document.getElementById('ambientLight').value);
-
-            document.getElementById('mainLightValue').textContent = mainIntensity.toFixed(2);
-            document.getElementById('ambientLightValue').textContent = ambientIntensity.toFixed(2);
-
-            mainLight.intensity = mainIntensity;
-            fillLight.intensity = mainIntensity * 0.6;
-            backLight.intensity = mainIntensity * 0.4;
-            ambientLight.intensity = ambientIntensity;
-        }
-
-        // SSAO 토글 (시뮬레이션)
-        function toggleSSAO() {
-            const enabled = document.getElementById('ssaoToggle').checked;
-            // Three.js에서 SSAO는 포스트프로세싱이 필요하므로 여기선 톤매핑으로 시뮬레이션
-            renderer.toneMappingExposure = enabled ? 1.2 : 1.0;
-        }
-
-        // 커스텀 모델 로드
-        function loadCustomModel(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            showLoading(true);
-            const fileName = file.name.toLowerCase();
-            const url = URL.createObjectURL(file);
-
-            // 기존 메쉬 제거
-            if (sphere) scene.remove(sphere);
-            if (torusKnot) scene.remove(torusKnot);
-
-            if (fileName.endsWith('.obj')) {
-                const loader = new THREE.OBJLoader();
-                loader.load(url, function(object) {
-                    object.traverse(function(child) {
-                        if (child.isMesh) {
-                            child.material = currentMaterial;
-                        }
-                    });
-
-                    // 중앙 정렬 및 크기 조정
-                    const box = new THREE.Box3().setFromObject(object);
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    const scale = 3 / maxDim;
-
-                    object.position.sub(center);
-                    object.scale.multiplyScalar(scale);
-
-                    sphere = object;
-                    torusKnot = null;
-                    scene.add(object);
-                    showLoading(false);
-                    URL.revokeObjectURL(url);
-                }, undefined, function(error) {
-                    console.error(error);
-                    showLoading(false);
-                    alert('모델 로드 실패');
-                });
-            } else if (fileName.endsWith('.gltf') || fileName.endsWith('.glb')) {
-                const loader = new THREE.GLTFLoader();
-                loader.load(url, function(gltf) {
-                    gltf.scene.traverse(function(child) {
-                        if (child.isMesh) {
-                            child.material = currentMaterial;
-                        }
-                    });
-
-                    // 중앙 정렬 및 크기 조정
-                    const box = new THREE.Box3().setFromObject(gltf.scene);
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    const scale = 3 / maxDim;
-
-                    gltf.scene.position.sub(center);
-                    gltf.scene.scale.multiplyScalar(scale);
-
-                    sphere = gltf.scene;
-                    torusKnot = null;
-                    scene.add(gltf.scene);
-                    showLoading(false);
-                    URL.revokeObjectURL(url);
-                }, undefined, function(error) {
-                    console.error(error);
-                    showLoading(false);
-                    alert('모델 로드 실패');
-                });
-            }
-        }
-
-        // 노멀맵 로드
-        function loadNormalMap(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const url = URL.createObjectURL(file);
-            const textureLoader = new THREE.TextureLoader();
-
-            textureLoader.load(url, function(texture) {
-                currentMaterial.normalMap = texture;
-                currentMaterial.normalScale.set(1, 1);
-                currentMaterial.needsUpdate = true;
-                URL.revokeObjectURL(url);
-            }, undefined, function(error) {
-                console.error(error);
-                alert('노멀맵 로드 실패');
-            });
-        }
-
-        // 기본 모델로 복원
-        function resetModel() {
-            // 기존 메쉬 제거
-            if (sphere) scene.remove(sphere);
-            if (torusKnot) scene.remove(torusKnot);
-
-            // 새 메쉬 생성
-            const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
-            sphere = new THREE.Mesh(sphereGeometry, currentMaterial);
-            sphere.position.x = -2;
-            scene.add(sphere);
-
-            const torusKnotGeometry = new THREE.TorusKnotGeometry(0.7, 0.25, 100, 16);
-            torusKnot = new THREE.Mesh(torusKnotGeometry, currentMaterial);
-            torusKnot.position.x = 2;
-            scene.add(torusKnot);
-
-            // 노멀맵 제거
-            currentMaterial.normalMap = null;
-            currentMaterial.needsUpdate = true;
-
-            // 파일 입력 초기화
-            document.getElementById('modelFile').value = '';
-            document.getElementById('normalMapFile').value = '';
-        }
-
-        // 프리셋 적용
-        function applyPreset(name) {
-            const preset = presets[name];
-            if (!preset) return;
-
-            document.getElementById('baseColor').value = preset.color;
-            document.getElementById('roughness').value = preset.roughness;
-            document.getElementById('metallic').value = preset.metallic;
-            document.getElementById('specular').value = preset.specular;
-            document.getElementById('clearcoat').value = preset.clearcoat;
-            document.getElementById('clearcoatRoughness').value = preset.clearcoatRoughness;
-
-            updateMaterial();
-            closePresetModal();
-        }
-
-        // 레퍼런스 패널 토글
-        function toggleReference() {
-            const panel = document.getElementById('referencePanel');
-            panel.classList.toggle('active');
-        }
-
-        // 프리셋 모달
-        function openPresetModal() {
-            document.getElementById('presetModal').classList.add('active');
-        }
-
-        function closePresetModal() {
-            document.getElementById('presetModal').classList.remove('active');
-        }
-
-        // 정보 모달
-        function openInfoModal() {
-            document.getElementById('infoModal').classList.add('active');
-        }
-
-        function closeInfoModal() {
-            document.getElementById('infoModal').classList.remove('active');
-        }
-
-        // 로딩 표시
-        function showLoading(show) {
-            document.getElementById('loading').classList.toggle('active', show);
-        }
-
-        // 모달 외부 클릭시 닫기
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal-overlay')) {
-                e.target.classList.remove('active');
-            }
-        });
-
-        // ESC 키로 모달 닫기
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal-overlay').forEach(modal => {
-                    modal.classList.remove('active');
-                });
-            }
-        });
-
-        // 초기화 실행
-        init();
-    </script>
+<div id="canvas-container"></div>
+
+<!-- Top right menu buttons -->
+<div class="top-right-menu">
+<button class="menu-btn" onclick="toggleReference()">
+📖 Metal Reference
+</button>
+<button class="menu-btn" onclick="openInfoModal()">
+ℹ️ PBR/BRDF Guide
+</button>
+<button class="menu-btn" onclick="openPresetModal()">
+🎨 Material Presets
+</button>
+</div>
+
+<!-- Metal reference panel -->
+<div class="reference-panel" id="referencePanel">
+<div class="reference-title">
+📖 Metallic Value Reference
+<button class="reference-close" onclick="toggleReference()">✕</button>
+</div>
+<table class="reference-table">
+<thead>
+<tr>
+<th>Material</th>
+<th>Metallic</th>
+<th>Roughness</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="material-name">Gold</td><td>1.0</td><td>0.1-0.3</td></tr>
+<tr><td class="material-name">Silver</td><td>1.0</td><td>0.1-0.2</td></tr>
+<tr><td class="material-name">Copper</td><td>1.0</td><td>0.2-0.4</td></tr>
+<tr><td class="material-name">Aluminum</td><td>1.0</td><td>0.3-0.5</td></tr>
+<tr><td class="material-name">Chrome</td><td>1.0</td><td>0.0-0.1</td></tr>
+<tr><td class="material-name">Iron</td><td>1.0</td><td>0.4-0.6</td></tr>
+<tr><td class="material-name">Plastic</td><td>0.0</td><td>0.3-0.5</td></tr>
+<tr><td class="material-name">Rubber</td><td>0.0</td><td>0.8-1.0</td></tr>
+<tr><td class="material-name">Wood</td><td>0.0</td><td>0.5-0.8</td></tr>
+<tr><td class="material-name">Skin</td><td>0.0</td><td>0.4-0.6</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Control panel -->
+<div class="control-panel">
+<h2 class="panel-title">Real-time PBR Material Simulator</h2>
+
+<!-- Geometry Selection -->
+<div class="section">
+<div class="section-title">Geometry</div>
+<div class="control-group">
+<select id="geometrySelect" onchange="changeGeometry()">
+<option value="sphere">Sphere</option>
+<option value="torusKnot">Torus Knot</option>
+<option value="cube">Cube</option>
+<option value="cylinder">Cylinder</option>
+<option value="cone">Cone</option>
+<option value="torus">Torus</option>
+<option value="icosahedron">Icosahedron</option>
+<option value="octahedron">Octahedron</option>
+</select>
+</div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- Base Color -->
+<div class="section">
+<div class="section-title">Base Color</div>
+<div class="control-group">
+<input type="color" id="baseColor" value="#808080" onchange="updateMaterial()">
+</div>
+</div>
+
+<!-- Material Properties -->
+<div class="section">
+<div class="section-title">Material Properties</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Roughness</span>
+<span class="control-value" id="roughnessValue">0.50</span>
+</div>
+<input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Metallic</span>
+<span class="control-value" id="metallicValue">0.00</span>
+</div>
+<input type="range" id="metallic" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Specular (IOR)</span>
+<span class="control-value" id="specularValue">0.50</span>
+</div>
+<input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Clearcoat</span>
+<span class="control-value" id="clearcoatValue">0.00</span>
+</div>
+<input type="range" id="clearcoat" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Clearcoat Roughness</span>
+<span class="control-value" id="clearcoatRoughnessValue">0.00</span>
+</div>
+<input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
+</div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- Lighting & Environment -->
+<div class="section">
+<div class="section-title">Lighting & Environment</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Environment Map</span>
+</div>
+<select id="envMapSelect" onchange="changeEnvironment()">
+<option value="studio">Studio</option>
+<option value="sunset">Sunset</option>
+<option value="night">Night</option>
+<option value="forest">Forest</option>
+<option value="warehouse">Warehouse</option>
+</select>
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Main Light Intensity</span>
+<span class="control-value" id="mainLightValue">1.00</span>
+</div>
+<input type="range" id="mainLight" min="0" max="3" step="0.1" value="1" oninput="updateLighting()">
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Ambient Light Intensity</span>
+<span class="control-value" id="ambientLightValue">0.30</span>
+</div>
+<input type="range" id="ambientLight" min="0" max="1" step="0.01" value="0.3" oninput="updateLighting()">
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Environment Map Intensity</span>
+<span class="control-value" id="envMapValue">1.00</span>
+</div>
+<input type="range" id="envMapIntensity" min="0" max="3" step="0.1" value="1" oninput="updateMaterial()">
+</div>
+
+<div class="toggle-wrapper">
+<span>SSAO (Ambient Occlusion)</span>
+<label class="toggle-switch">
+<input type="checkbox" id="ssaoToggle" checked onchange="toggleSSAO()">
+<span class="toggle-slider"></span>
+</label>
+</div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- Custom Model & Normal Map -->
+<div class="section">
+<div class="section-title">Custom Model & Normal Map</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Custom 3D Model</span>
+</div>
+<div class="file-input-wrapper">
+<div class="file-input-btn">📁 Select Model File</div>
+<input type="file" id="modelFile" accept=".obj,.gltf,.glb" onchange="loadCustomModel(this)">
+</div>
+<div class="file-hint">Supported: .OBJ, .GLTF, .GLB</div>
+</div>
+
+<div class="control-group">
+<div class="control-label">
+<span>Normal Map</span>
+</div>
+<div class="file-input-wrapper">
+<div class="file-input-btn">📁 Select Normal Map Image</div>
+<input type="file" id="normalMapFile" accept=".png,.jpg,.jpeg,.webp,.tga" onchange="loadNormalMap(this)">
+</div>
+<div class="file-hint">Supported: .PNG, .JPG, .JPEG, .WEBP, .TGA</div>
+</div>
+
+<button class="action-btn" onclick="resetModel()" style="margin-top: 10px; background: rgba(100, 100, 150, 0.3);">
+🔄 Reset to Default Model
+</button>
+</div>
+</div>
+
+<!-- Material Presets Modal -->
+<div class="modal-overlay" id="presetModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title">🎨 Material Presets</h3>
+<button class="modal-close" onclick="closePresetModal()">✕</button>
+</div>
+<div class="preset-grid">
+<button class="preset-btn" onclick="applyPreset('gold')">
+<div class="preset-color" style="background: linear-gradient(135deg, #ffd700, #b8860b);"></div>
+<div class="preset-name">Gold</div>
+<div class="preset-desc">Shiny metallic texture</div>
+</button>
+<button class="preset-btn" onclick="applyPreset('chrome')">
+<div class="preset-color" style="background: linear-gradient(135deg, #e0e0e0, #a0a0a0);"></div>
+<div class="preset-name">Chrome</div>
+<div class="preset-desc">Mirror-like reflection</div>
+</button>
+<button class="preset-btn" onclick="applyPreset('copper')">
+<div class="preset-color" style="background: linear-gradient(135deg, #b87333, #8b4513);"></div>
+<div class="preset-name">Copper</div>
+<div class="preset-desc">Warm metallic color</div>
+</button>
+<button class="preset-btn" onclick="applyPreset('plastic')">
+<div class="preset-color" style="background: linear-gradient(135deg, #cc3333, #991111);"></div>
+<div class="preset-name">Plastic</div>
+<div class="preset-desc">Non-metallic glossy</div>
+</button>
+<button class="preset-btn" onclick="applyPreset('rubber')">
+<div class="preset-color" style="background: linear-gradient(135deg, #333333, #1a1a1a);"></div>
+<div class="preset-name">Rubber</div>
+<div class="preset-desc">Matte finish</div>
+</button>
+<button class="preset-btn" onclick="applyPreset('wood')">
+<div class="preset-color" style="background: linear-gradient(135deg, #8b4513, #654321);"></div>
+<div class="preset-name">Wood</div>
+<div class="preset-desc">Natural wood texture</div>
+</button>
+<button class="preset-btn" onclick="applyPreset('carPaint')">
+<div class="preset-color" style="background: linear-gradient(135deg, #cc0000, #990000);"></div>
+<div class="preset-name">Car Paint</div>
+<div class="preset-desc">Clearcoat applied</div>
+</button>
+<button class="preset-btn" onclick="applyPreset('brushedMetal')">
+<div class="preset-color" style="background: linear-gradient(135deg, #b0b0b0, #808080);"></div>
+<div class="preset-name">Brushed Metal</div>
+<div class="preset-desc">Hairline finish</div>
+</button>
+</div>
+</div>
+</div>
+
+<!-- PBR/BRDF Guide Modal -->
+<div class="modal-overlay info-modal" id="infoModal">
+<div class="modal">
+<div class="modal-header">
+<h3 class="modal-title">ℹ️ PBR/BRDF Guide</h3>
+<button class="modal-close" onclick="closeInfoModal()">✕</button>
+</div>
+
+<div class="info-section">
+<h3>🎨 PBR (Physically Based Rendering)</h3>
+<p>
+<strong>Physically Based Rendering (PBR)</strong> is a rendering technique that simulates
+materials and lighting based on real-world physics laws. It has become the standard
+in the game and film industry since the early 2010s.
+</p>
+<p style="margin-top: 10px;">
+<strong>History:</strong> The concept of PBR originated from Jim Kajiya's rendering equation
+in the 1980s, and a practical workflow was established with Disney's "Principled BRDF"
+announcement in 2012. It is now used as standard in most 3D software including
+Unreal Engine, Unity, and Blender.
+</p>
+<p style="margin-top: 10px;">
+<strong>Core Principles:</strong>
+</p>
+<ul>
+<li><strong>Energy Conservation</strong> - Reflected light cannot exceed incident light</li>
+<li><strong>Microfacet Theory</strong> - Surface is a collection of microscopic mirrors</li>
+<li><strong>Fresnel Effect</strong> - Reflectivity changes with viewing angle</li>
+</ul>
+</div>
+
+<div class="info-section">
+<h3>💡 BRDF (Bidirectional Reflectance Distribution Function)</h3>
+<p>
+<strong>Bidirectional Reflectance Distribution Function (BRDF)</strong> is a function
+that mathematically defines how light reflects from a surface. It takes incident
+and reflection angles as input to determine the amount and direction of reflected light.
+</p>
+<p style="margin-top: 10px;">
+<strong>History:</strong> The BRDF concept was first defined by Fred Nicodemus in 1965.
+Since then, various BRDF models have been developed including Cook-Torrance (1982),
+Oren-Nayar (1994), and GGX (2007).
+</p>
+<p style="margin-top: 10px;">
+<strong>Components:</strong>
+</p>
+<ul>
+<li><strong>Diffuse</strong> - Light that scatters uniformly from the surface</li>
+<li><strong>Specular</strong> - Light that reflects like a mirror from the surface</li>
+<li><strong>Fresnel</strong> - Reflectivity change based on viewing angle</li>
+</ul>
+</div>
+
+<div class="info-section">
+<h3>✨ Disney BRDF (Principled BRDF)</h3>
+<p>
+<strong>Disney BRDF</strong> is an "artist-friendly" physically based shading model
+presented by Brent Burley of Walt Disney Animation Studios in 2012. It was first
+introduced in the paper "Physically Based Shading at Disney".
+</p>
+<p style="margin-top: 10px;">
+<strong>Features:</strong> Complex physical parameters have been simplified into
+intuitive 0-1 range parameters that artists can easily understand. It pursues
+a balance between physical accuracy and ease of use.
+</p>
+<p style="margin-top: 10px;">
+<strong>Key Parameters:</strong>
+</p>
+<ul>
+<li><strong>Base Color</strong> - Base color (shared for Diffuse/Metal)</li>
+<li><strong>Metallic</strong> - Metalness (0=non-metal, 1=metal)</li>
+<li><strong>Roughness</strong> - Surface roughness (0=smooth, 1=rough)</li>
+<li><strong>Specular</strong> - Reflection intensity for non-metals</li>
+<li><strong>Clearcoat</strong> - Transparent coating layer (car paint, etc.)</li>
+<li><strong>Anisotropic</strong> - Anisotropic reflection (brushed metal)</li>
+<li><strong>Subsurface</strong> - Subsurface scattering (skin, wax)</li>
+<li><strong>Sheen</strong> - Edge gloss for cloth materials</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- Loading indicator -->
+<div class="loading" id="loading">
+<div class="spinner"></div>
+<div>Loading...</div>
+</div>
+
+<script>
+// Global variables
+let scene, camera, renderer, controls;
+let currentMesh;
+let mainLight, fillLight, backLight, ambientLight;
+let currentMaterial;
+let composer;
+let isCustomModel = false;
+
+// Environment presets
+const envPresets = {
+studio: {
+topColor: 0x0077ff,
+bottomColor: 0x1a1a2e,
+mainLightColor: 0xffffff,
+fillLightColor: 0x6688ff,
+backLightColor: 0xffaa66
+},
+sunset: {
+topColor: 0xff6600,
+bottomColor: 0x1a0a2e,
+mainLightColor: 0xffcc88,
+fillLightColor: 0xff8844,
+backLightColor: 0xff4400
+},
+night: {
+topColor: 0x000033,
+bottomColor: 0x000011,
+mainLightColor: 0x8888ff,
+fillLightColor: 0x4444aa,
+backLightColor: 0x2222aa
+},
+forest: {
+topColor: 0x44aa44,
+bottomColor: 0x1a2e1a,
+mainLightColor: 0xffffcc,
+fillLightColor: 0x88cc88,
+backLightColor: 0x66aa66
+},
+warehouse: {
+topColor: 0x888888,
+bottomColor: 0x333333,
+mainLightColor: 0xffffff,
+fillLightColor: 0xaaaaaa,
+backLightColor: 0x666666
+}
+};
+
+// Presets definition
+const presets = {
+gold: {
+color: '#ffd700',
+metallic: 1.0,
+roughness: 0.2,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
+},
+chrome: {
+color: '#e0e0e0',
+metallic: 1.0,
+roughness: 0.05,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
+},
+copper: {
+color: '#b87333',
+metallic: 1.0,
+roughness: 0.3,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
+},
+plastic: {
+color: '#cc3333',
+metallic: 0,
+roughness: 0.3,
+specular: 0.5,
+clearcoat: 0.5,
+clearcoatRoughness: 0.1
+},
+rubber: {
+color: '#262626',
+metallic: 0,
+roughness: 0.9,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
+},
+wood: {
+color: '#6b3310',
+metallic: 0,
+roughness: 0.7,
+specular: 0.5,
+clearcoat: 0.1,
+clearcoatRoughness: 0.2
+},
+carPaint: {
+color: '#cc0000',
+metallic: 0,
+roughness: 0.1,
+specular: 0.5,
+clearcoat: 1.0,
+clearcoatRoughness: 0.05
+},
+brushedMetal: {
+color: '#b0b0b0',
+metallic: 1.0,
+roughness: 0.35,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
+}
+};
+
+// Initialize
+function init() {
+// Create scene
+scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+
+// Create camera
+camera = new THREE.PerspectiveCamera(
+45,
+window.innerWidth / window.innerHeight,
+0.1,
+1000
+);
+camera.position.set(0, 0, 5);
+
+// Create renderer
+renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.physicallyCorrectLights = true;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+renderer.outputEncoding = THREE.sRGBEncoding;
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+// Controls
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+
+// Create material
+currentMaterial = new THREE.MeshPhysicalMaterial({
+color: 0x808080,
+metalness: 0,
+roughness: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0,
+reflectivity: 0.5
+});
+
+// Create initial geometry (sphere)
+createGeometry('sphere');
+
+// Setup lights
+setupLights();
+
+// Setup environment
+setupEnvironment('studio');
+
+// Resize handler
+window.addEventListener('resize', onWindowResize);
+
+// Start animation
+animate();
+}
+
+function createGeometry(type) {
+// Remove existing mesh
+if (currentMesh) {
+scene.remove(currentMesh);
+}
+
+let geometry;
+
+switch(type) {
+case 'sphere':
+geometry = new THREE.SphereGeometry(1.2, 64, 64);
+break;
+case 'torusKnot':
+geometry = new THREE.TorusKnotGeometry(0.8, 0.3, 100, 16);
+break;
+case 'cube':
+geometry = new THREE.BoxGeometry(1.8, 1.8, 1.8, 4, 4, 4);
+break;
+case 'cylinder':
+geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
+break;
+case 'cone':
+geometry = new THREE.ConeGeometry(1, 2, 32);
+break;
+case 'torus':
+geometry = new THREE.TorusGeometry(0.9, 0.4, 32, 100);
+break;
+case 'icosahedron':
+geometry = new THREE.IcosahedronGeometry(1.2, 0);
+break;
+case 'octahedron':
+geometry = new THREE.OctahedronGeometry(1.2, 0);
+break;
+default:
+geometry = new THREE.SphereGeometry(1.2, 64, 64);
+}
+
+currentMesh = new THREE.Mesh(geometry, currentMaterial);
+scene.add(currentMesh);
+isCustomModel = false;
+}
+
+function changeGeometry() {
+const type = document.getElementById('geometrySelect').value;
+createGeometry(type);
+}
+
+function setupLights() {
+// Main light
+mainLight = new THREE.DirectionalLight(0xffffff, 1);
+mainLight.position.set(5, 5, 5);
+scene.add(mainLight);
+
+// Fill light
+fillLight = new THREE.DirectionalLight(0x6688ff, 0.6);
+fillLight.position.set(-5, -3, 3);
+scene.add(fillLight);
+
+// Back light
+backLight = new THREE.DirectionalLight(0xffaa66, 0.4);
+backLight.position.set(0, -5, -3);
+scene.add(backLight);
+
+// Ambient light
+ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+scene.add(ambientLight);
+}
+
+function setupEnvironment(preset) {
+const env = envPresets[preset] || envPresets.studio;
+
+// PMREMGenerator for environment map
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+
+// Create environment scene
+const envScene = new THREE.Scene();
+const envGeometry = new THREE.SphereGeometry(50, 32, 32);
+
+// Gradient shader material
+const envMaterial = new THREE.ShaderMaterial({
+uniforms: {
+topColor: { value: new THREE.Color(env.topColor) },
+bottomColor: { value: new THREE.Color(env.bottomColor) }
+},
+vertexShader: `
+varying vec3 vWorldPosition;
+void main() {
+vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+vWorldPosition = worldPosition.xyz;
+gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`,
+fragmentShader: `
+uniform vec3 topColor;
+uniform vec3 bottomColor;
+varying vec3 vWorldPosition;
+void main() {
+float h = normalize(vWorldPosition).y;
+gl_FragColor = vec4(mix(bottomColor, topColor, max(h, 0.0)), 1.0);
+}
+`,
+side: THREE.BackSide
+});
+
+const envMesh = new THREE.Mesh(envGeometry, envMaterial);
+envScene.add(envMesh);
+
+// Generate environment map
+const envMap = pmremGenerator.fromScene(envScene, 0.04).texture;
+scene.environment = envMap;
+scene.background = new THREE.Color(env.bottomColor);
+
+// Update light colors
+mainLight.color.set(env.mainLightColor);
+fillLight.color.set(env.fillLightColor);
+backLight.color.set(env.backLightColor);
+
+pmremGenerator.dispose();
+}
+
+function changeEnvironment() {
+const preset = document.getElementById('envMapSelect').value;
+setupEnvironment(preset);
+}
+
+function animate() {
+requestAnimationFrame(animate);
+controls.update();
+
+// Slight auto rotation
+if (currentMesh && !isCustomModel) {
+currentMesh.rotation.y += 0.002;
+}
+
+renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// Update material
+function updateMaterial() {
+const color = document.getElementById('baseColor').value;
+const roughness = parseFloat(document.getElementById('roughness').value);
+const metallic = parseFloat(document.getElementById('metallic').value);
+const specular = parseFloat(document.getElementById('specular').value);
+const clearcoat = parseFloat(document.getElementById('clearcoat').value);
+const clearcoatRoughness = parseFloat(document.getElementById('clearcoatRoughness').value);
+const envMapIntensity = parseFloat(document.getElementById('envMapIntensity').value);
+
+// Update value displays
+document.getElementById('roughnessValue').textContent = roughness.toFixed(2);
+document.getElementById('metallicValue').textContent = metallic.toFixed(2);
+document.getElementById('specularValue').textContent = specular.toFixed(2);
+document.getElementById('clearcoatValue').textContent = clearcoat.toFixed(2);
+document.getElementById('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
+document.getElementById('envMapValue').textContent = envMapIntensity.toFixed(2);
+
+// Update material
+currentMaterial.color.set(color);
+currentMaterial.roughness = roughness;
+currentMaterial.metalness = metallic;
+currentMaterial.reflectivity = specular;
+currentMaterial.clearcoat = clearcoat;
+currentMaterial.clearcoatRoughness = clearcoatRoughness;
+currentMaterial.envMapIntensity = envMapIntensity;
+
+// Calculate IOR (specular 0-1 -> IOR 1.0-1.8)
+currentMaterial.ior = 1.0 + specular * 0.8;
+}
+
+// Update lighting
+function updateLighting() {
+const mainIntensity = parseFloat(document.getElementById('mainLight').value);
+const ambientIntensity = parseFloat(document.getElementById('ambientLight').value);
+
+document.getElementById('mainLightValue').textContent = mainIntensity.toFixed(2);
+document.getElementById('ambientLightValue').textContent = ambientIntensity.toFixed(2);
+
+mainLight.intensity = mainIntensity;
+fillLight.intensity = mainIntensity * 0.6;
+backLight.intensity = mainIntensity * 0.4;
+ambientLight.intensity = ambientIntensity;
+}
+
+// SSAO toggle (simulation)
+function toggleSSAO() {
+const enabled = document.getElementById('ssaoToggle').checked;
+// In Three.js, SSAO requires post-processing, so we simulate with tone mapping
+renderer.toneMappingExposure = enabled ? 1.2 : 1.0;
+}
+
+// Load custom model
+function loadCustomModel(input) {
+const file = input.files[0];
+if (!file) return;
+
+showLoading(true);
+const fileName = file.name.toLowerCase();
+const url = URL.createObjectURL(file);
+
+// Remove existing mesh
+if (currentMesh) scene.remove(currentMesh);
+
+if (fileName.endsWith('.obj')) {
+const loader = new THREE.OBJLoader();
+loader.load(url, function(object) {
+object.traverse(function(child) {
+if (child.isMesh) {
+child.material = currentMaterial;
+}
+});
+
+// Center and scale
+const box = new THREE.Box3().setFromObject(object);
+const center = box.getCenter(new THREE.Vector3());
+const size = box.getSize(new THREE.Vector3());
+const maxDim = Math.max(size.x, size.y, size.z);
+const scale = 3 / maxDim;
+
+object.position.sub(center);
+object.scale.multiplyScalar(scale);
+
+currentMesh = object;
+isCustomModel = true;
+scene.add(object);
+showLoading(false);
+URL.revokeObjectURL(url);
+}, undefined, function(error) {
+console.error(error);
+showLoading(false);
+alert('Failed to load model');
+});
+} else if (fileName.endsWith('.gltf') || fileName.endsWith('.glb')) {
+const loader = new THREE.GLTFLoader();
+loader.load(url, function(gltf) {
+gltf.scene.traverse(function(child) {
+if (child.isMesh) {
+child.material = currentMaterial;
+}
+});
+
+// Center and scale
+const box = new THREE.Box3().setFromObject(gltf.scene);
+const center = box.getCenter(new THREE.Vector3());
+const size = box.getSize(new THREE.Vector3());
+const maxDim = Math.max(size.x, size.y, size.z);
+const scale = 3 / maxDim;
+
+gltf.scene.position.sub(center);
+gltf.scene.scale.multiplyScalar(scale);
+
+currentMesh = gltf.scene;
+isCustomModel = true;
+scene.add(gltf.scene);
+showLoading(false);
+URL.revokeObjectURL(url);
+}, undefined, function(error) {
+console.error(error);
+showLoading(false);
+alert('Failed to load model');
+});
+}
+}
+
+// Load normal map
+function loadNormalMap(input) {
+const file = input.files[0];
+if (!file) return;
+
+const url = URL.createObjectURL(file);
+const textureLoader = new THREE.TextureLoader();
+
+textureLoader.load(url, function(texture) {
+currentMaterial.normalMap = texture;
+currentMaterial.normalScale.set(1, 1);
+currentMaterial.needsUpdate = true;
+URL.revokeObjectURL(url);
+}, undefined, function(error) {
+console.error(error);
+alert('Failed to load normal map');
+});
+}
+
+// Reset to default model
+function resetModel() {
+// Reset to sphere
+document.getElementById('geometrySelect').value = 'sphere';
+createGeometry('sphere');
+
+// Remove normal map
+currentMaterial.normalMap = null;
+currentMaterial.needsUpdate = true;
+
+// Reset file inputs
+document.getElementById('modelFile').value = '';
+document.getElementById('normalMapFile').value = '';
+}
+
+// Apply preset
+function applyPreset(name) {
+const preset = presets[name];
+if (!preset) return;
+
+document.getElementById('baseColor').value = preset.color;
+document.getElementById('roughness').value = preset.roughness;
+document.getElementById('metallic').value = preset.metallic;
+document.getElementById('specular').value = preset.specular;
+document.getElementById('clearcoat').value = preset.clearcoat;
+document.getElementById('clearcoatRoughness').value = preset.clearcoatRoughness;
+
+updateMaterial();
+closePresetModal();
+}
+
+// Reference panel toggle
+function toggleReference() {
+const panel = document.getElementById('referencePanel');
+panel.classList.toggle('active');
+}
+
+// Preset modal
+function openPresetModal() {
+document.getElementById('presetModal').classList.add('active');
+}
+
+function closePresetModal() {
+document.getElementById('presetModal').classList.remove('active');
+}
+
+// Info modal
+function openInfoModal() {
+document.getElementById('infoModal').classList.add('active');
+}
+
+function closeInfoModal() {
+document.getElementById('infoModal').classList.remove('active');
+}
+
+// Show loading
+function showLoading(show) {
+document.getElementById('loading').classList.toggle('active', show);
+}
+
+// Close modal on outside click
+document.addEventListener('click', function(e) {
+if (e.target.classList.contains('modal-overlay')) {
+e.target.classList.remove('active');
+}
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape') {
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+modal.classList.remove('active');
+});
+}
+});
+
+// Initialize
+init();
+</script>
 </body>
 </html>
