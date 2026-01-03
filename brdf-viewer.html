@@ -544,40 +544,41 @@ to { transform: rotate(360deg); }
 <!-- Top right menu buttons -->
 <div class="top-right-menu">
 <button class="menu-btn" onclick="toggleReference()">
-📖 Metallic Reference
+📖 Metal Reference
 </button>
 <button class="menu-btn" onclick="openInfoModal()">
 ℹ️ PBR/BRDF Guide
 </button>
+<button class="menu-btn" onclick="openPresetModal()">
+🎨 Material Presets
+</button>
 </div>
 
-<!-- Metallic reference panel -->
+<!-- Metal reference panel -->
 <div class="reference-panel" id="referencePanel">
 <div class="reference-title">
-📖 Metallic Reference
+📖 Metallic Value Reference
 <button class="reference-close" onclick="toggleReference()">✕</button>
 </div>
 <table class="reference-table">
 <thead>
 <tr>
 <th>Material</th>
-<th>Base Color</th>
 <th>Metallic</th>
 <th>Roughness</th>
 </tr>
 </thead>
 <tbody>
-<tr><td class="material-name">Gold</td><td style="color:#ffd700">■ #FFD700</td><td>1.0</td><td>0.1-0.3</td></tr>
-<tr><td class="material-name">Silver</td><td style="color:#c0c0c0">■ #C0C0C0</td><td>1.0</td><td>0.1-0.2</td></tr>
-<tr><td class="material-name">Copper</td><td style="color:#b87333">■ #B87333</td><td>1.0</td><td>0.2-0.4</td></tr>
-<tr><td class="material-name">Aluminum</td><td style="color:#d6d6d6">■ #D6D6D6</td><td>1.0</td><td>0.3-0.5</td></tr>
-<tr><td class="material-name">Chrome</td><td style="color:#e0e0e0">■ #E0E0E0</td><td>1.0</td><td>0.0-0.1</td></tr>
-<tr><td class="material-name">Iron</td><td style="color:#4a4a4a">■ #4A4A4A</td><td>1.0</td><td>0.4-0.6</td></tr>
-<tr><td class="material-name">Titanium</td><td style="color:#878681">■ #878681</td><td>1.0</td><td>0.3-0.5</td></tr>
-<tr><td class="material-name">Plastic</td><td style="color:#cc3333">■ Varies</td><td>0.0</td><td>0.3-0.5</td></tr>
-<tr><td class="material-name">Rubber</td><td style="color:#262626">■ #262626</td><td>0.0</td><td>0.8-1.0</td></tr>
-<tr><td class="material-name">Wood</td><td style="color:#6b3310">■ #6B3310</td><td>0.0</td><td>0.5-0.8</td></tr>
-<tr><td class="material-name">Skin</td><td style="color:#e0ac69">■ #E0AC69</td><td>0.0</td><td>0.4-0.6</td></tr>
+<tr><td class="material-name">Gold</td><td>1.0</td><td>0.1-0.3</td></tr>
+<tr><td class="material-name">Silver</td><td>1.0</td><td>0.1-0.2</td></tr>
+<tr><td class="material-name">Copper</td><td>1.0</td><td>0.2-0.4</td></tr>
+<tr><td class="material-name">Aluminum</td><td>1.0</td><td>0.3-0.5</td></tr>
+<tr><td class="material-name">Chrome</td><td>1.0</td><td>0.0-0.1</td></tr>
+<tr><td class="material-name">Iron</td><td>1.0</td><td>0.4-0.6</td></tr>
+<tr><td class="material-name">Plastic</td><td>0.0</td><td>0.3-0.5</td></tr>
+<tr><td class="material-name">Rubber</td><td>0.0</td><td>0.8-1.0</td></tr>
+<tr><td class="material-name">Wood</td><td>0.0</td><td>0.5-0.8</td></tr>
+<tr><td class="material-name">Skin</td><td>0.0</td><td>0.4-0.6</td></tr>
 </tbody>
 </table>
 </div>
@@ -612,25 +613,6 @@ to { transform: rotate(360deg); }
 <input type="color" id="baseColor" value="#808080" onchange="updateMaterial()">
 </div>
 </div>
-
-<!-- Material Presets -->
-<div class="section">
-<div class="section-title">Material Presets</div>
-<div class="control-group">
-<select id="presetCategory" onchange="updatePresetList()">
-<option value="metals">Metals</option>
-<option value="nonmetals">Non-Metals</option>
-<option value="special">Special Effects</option>
-</select>
-</div>
-<div class="control-group">
-<select id="presetSelect" onchange="applyPresetFromSelect()">
-<option value="">-- Select Preset --</option>
-</select>
-</div>
-</div>
-
-<div class="section-divider"></div>
 
 <!-- Material Properties -->
 <div class="section">
@@ -675,38 +657,6 @@ to { transform: rotate(360deg); }
 </div>
 <input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
 </div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Sheen</span>
-<span class="control-value" id="sheenValue">0.00</span>
-</div>
-<input type="range" id="sheen" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
-</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Sheen Roughness</span>
-<span class="control-value" id="sheenRoughnessValue">1.00</span>
-</div>
-<input type="range" id="sheenRoughness" min="0" max="1" step="0.01" value="1" oninput="updateMaterial()">
-</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Iridescence</span>
-<span class="control-value" id="iridescenceValue">0.00</span>
-</div>
-<input type="range" id="iridescence" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
-</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Iridescence IOR</span>
-<span class="control-value" id="iridescenceIORValue">1.30</span>
-</div>
-<input type="range" id="iridescenceIOR" min="1" max="2.333" step="0.01" value="1.3" oninput="updateMaterial()">
-</div>
 </div>
 
 <div class="section-divider"></div>
@@ -731,17 +681,17 @@ to { transform: rotate(360deg); }
 <div class="control-group">
 <div class="control-label">
 <span>Main Light Intensity</span>
-<span class="control-value" id="mainLightValue">1.50</span>
+<span class="control-value" id="mainLightValue">1.00</span>
 </div>
-<input type="range" id="mainLight" min="0" max="3" step="0.1" value="1.5" oninput="updateLighting()">
+<input type="range" id="mainLight" min="0" max="3" step="0.1" value="1" oninput="updateLighting()">
 </div>
 
 <div class="control-group">
 <div class="control-label">
 <span>Ambient Light Intensity</span>
-<span class="control-value" id="ambientLightValue">0.50</span>
+<span class="control-value" id="ambientLightValue">0.30</span>
 </div>
-<input type="range" id="ambientLight" min="0" max="1" step="0.01" value="0.5" oninput="updateLighting()">
+<input type="range" id="ambientLight" min="0" max="1" step="0.01" value="0.3" oninput="updateLighting()">
 </div>
 
 <div class="control-group">
@@ -983,197 +933,71 @@ backLightColor: 0x666666
 }
 };
 
-// Preset categories
-const presetCategories = {
-metals: [
-{ id: 'gold', name: 'Gold' },
-{ id: 'goldRose', name: 'Rose Gold' },
-{ id: 'silver', name: 'Silver' },
-{ id: 'chrome', name: 'Chrome' },
-{ id: 'copper', name: 'Copper' },
-{ id: 'copperOxidized', name: 'Copper (Oxidized)' },
-{ id: 'iron', name: 'Iron' },
-{ id: 'ironRust', name: 'Iron (Rust)' },
-{ id: 'aluminum', name: 'Aluminum' },
-{ id: 'aluminumOxidized', name: 'Aluminum (Oxidized)' },
-{ id: 'aluminumAnodized', name: 'Aluminum (Anodized)' },
-{ id: 'titanium', name: 'Titanium' },
-{ id: 'brushedMetal', name: 'Brushed Metal' },
-{ id: 'brass', name: 'Brass' },
-{ id: 'bronze', name: 'Bronze' }
-],
-nonmetals: [
-{ id: 'plastic', name: 'Plastic (Red)' },
-{ id: 'plasticWhite', name: 'Plastic (White)' },
-{ id: 'plasticBlack', name: 'Plastic (Black)' },
-{ id: 'rubber', name: 'Rubber' },
-{ id: 'wood', name: 'Wood' },
-{ id: 'woodPolished', name: 'Wood (Polished)' },
-{ id: 'leather', name: 'Leather' },
-{ id: 'ceramic', name: 'Ceramic' },
-{ id: 'glass', name: 'Glass' },
-{ id: 'fabric', name: 'Fabric' },
-{ id: 'velvet', name: 'Velvet' },
-{ id: 'skin', name: 'Skin' }
-],
-special: [
-{ id: 'carPaint', name: 'Car Paint (Red)' },
-{ id: 'carPaintBlue', name: 'Car Paint (Blue)' },
-{ id: 'carPaintBlack', name: 'Car Paint (Black)' },
-{ id: 'pearl', name: 'Pearl' },
-{ id: 'iridescent', name: 'Iridescent' },
-{ id: 'holographic', name: 'Holographic' },
-{ id: 'silk', name: 'Silk' },
-{ id: 'satin', name: 'Satin' }
-]
-};
-
 // Presets definition
 const presets = {
-// Metals
 gold: {
-color: '#ffd700', metallic: 1.0, roughness: 0.2, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-goldRose: {
-color: '#e8b4b8', metallic: 1.0, roughness: 0.25, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-silver: {
-color: '#c0c0c0', metallic: 1.0, roughness: 0.15, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
+color: '#ffd700',
+metallic: 1.0,
+roughness: 0.2,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
 },
 chrome: {
-color: '#e0e0e0', metallic: 1.0, roughness: 0.05, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
+color: '#e0e0e0',
+metallic: 1.0,
+roughness: 0.05,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
 },
 copper: {
-color: '#b87333', metallic: 1.0, roughness: 0.3, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
+color: '#b87333',
+metallic: 1.0,
+roughness: 0.3,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
 },
-copperOxidized: {
-color: '#4a8c7a', metallic: 0.7, roughness: 0.6, specular: 0.4,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-iron: {
-color: '#4a4a4a', metallic: 1.0, roughness: 0.5, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-ironRust: {
-color: '#8b4513', metallic: 0.3, roughness: 0.8, specular: 0.3,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-aluminum: {
-color: '#d6d6d6', metallic: 1.0, roughness: 0.4, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-aluminumOxidized: {
-color: '#a8a8a8', metallic: 0.8, roughness: 0.55, specular: 0.4,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-aluminumAnodized: {
-color: '#4169e1', metallic: 0.9, roughness: 0.3, specular: 0.5,
-clearcoat: 0.3, clearcoatRoughness: 0.1, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-titanium: {
-color: '#878681', metallic: 1.0, roughness: 0.4, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-brushedMetal: {
-color: '#b0b0b0', metallic: 1.0, roughness: 0.35, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-brass: {
-color: '#b5a642', metallic: 1.0, roughness: 0.25, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-bronze: {
-color: '#cd7f32', metallic: 1.0, roughness: 0.35, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-
-// Non-metals
 plastic: {
-color: '#cc3333', metallic: 0, roughness: 0.3, specular: 0.5,
-clearcoat: 0.5, clearcoatRoughness: 0.1, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-plasticWhite: {
-color: '#f0f0f0', metallic: 0, roughness: 0.35, specular: 0.5,
-clearcoat: 0.3, clearcoatRoughness: 0.1, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-plasticBlack: {
-color: '#1a1a1a', metallic: 0, roughness: 0.25, specular: 0.5,
-clearcoat: 0.6, clearcoatRoughness: 0.05, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
+color: '#cc3333',
+metallic: 0,
+roughness: 0.3,
+specular: 0.5,
+clearcoat: 0.5,
+clearcoatRoughness: 0.1
 },
 rubber: {
-color: '#262626', metallic: 0, roughness: 0.9, specular: 0.5,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
+color: '#262626',
+metallic: 0,
+roughness: 0.9,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
 },
 wood: {
-color: '#6b3310', metallic: 0, roughness: 0.7, specular: 0.5,
-clearcoat: 0.1, clearcoatRoughness: 0.2, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
+color: '#6b3310',
+metallic: 0,
+roughness: 0.7,
+specular: 0.5,
+clearcoat: 0.1,
+clearcoatRoughness: 0.2
 },
-woodPolished: {
-color: '#8b4513', metallic: 0, roughness: 0.3, specular: 0.5,
-clearcoat: 0.8, clearcoatRoughness: 0.05, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-leather: {
-color: '#3d2314', metallic: 0, roughness: 0.6, specular: 0.4,
-clearcoat: 0.1, clearcoatRoughness: 0.3, sheen: 0.3, sheenRoughness: 0.8, iridescence: 0, iridescenceIOR: 1.3
-},
-ceramic: {
-color: '#f5f5f5', metallic: 0, roughness: 0.1, specular: 0.6,
-clearcoat: 0.8, clearcoatRoughness: 0.02, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-glass: {
-color: '#e0f0ff', metallic: 0, roughness: 0.05, specular: 0.9,
-clearcoat: 1.0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.5
-},
-fabric: {
-color: '#6b7b8c', metallic: 0, roughness: 0.8, specular: 0.3,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0.5, sheenRoughness: 0.5, iridescence: 0, iridescenceIOR: 1.3
-},
-velvet: {
-color: '#8b0000', metallic: 0, roughness: 0.9, specular: 0.2,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 1.0, sheenRoughness: 0.3, iridescence: 0, iridescenceIOR: 1.3
-},
-skin: {
-color: '#e0ac69', metallic: 0, roughness: 0.5, specular: 0.4,
-clearcoat: 0.1, clearcoatRoughness: 0.3, sheen: 0.2, sheenRoughness: 0.6, iridescence: 0, iridescenceIOR: 1.3
-},
-
-// Special effects
 carPaint: {
-color: '#cc0000', metallic: 0, roughness: 0.1, specular: 0.5,
-clearcoat: 1.0, clearcoatRoughness: 0.05, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
+color: '#cc0000',
+metallic: 0,
+roughness: 0.1,
+specular: 0.5,
+clearcoat: 1.0,
+clearcoatRoughness: 0.05
 },
-carPaintBlue: {
-color: '#0044cc', metallic: 0, roughness: 0.1, specular: 0.5,
-clearcoat: 1.0, clearcoatRoughness: 0.05, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-carPaintBlack: {
-color: '#0a0a0a', metallic: 0, roughness: 0.05, specular: 0.5,
-clearcoat: 1.0, clearcoatRoughness: 0.02, sheen: 0, sheenRoughness: 1, iridescence: 0, iridescenceIOR: 1.3
-},
-pearl: {
-color: '#f5e6d3', metallic: 0, roughness: 0.25, specular: 0.6,
-clearcoat: 0.8, clearcoatRoughness: 0.1, sheen: 0.5, sheenRoughness: 0.5, iridescence: 0.5, iridescenceIOR: 1.5
-},
-iridescent: {
-color: '#c0c0ff', metallic: 0.3, roughness: 0.2, specular: 0.5,
-clearcoat: 0.5, clearcoatRoughness: 0.1, sheen: 0.3, sheenRoughness: 0.5, iridescence: 1.0, iridescenceIOR: 1.8
-},
-holographic: {
-color: '#e0e0e0', metallic: 0.5, roughness: 0.1, specular: 0.7,
-clearcoat: 1.0, clearcoatRoughness: 0, sheen: 0, sheenRoughness: 1, iridescence: 1.0, iridescenceIOR: 2.2
-},
-silk: {
-color: '#f5deb3', metallic: 0, roughness: 0.4, specular: 0.4,
-clearcoat: 0, clearcoatRoughness: 0, sheen: 0.8, sheenRoughness: 0.4, iridescence: 0.2, iridescenceIOR: 1.3
-},
-satin: {
-color: '#b8b8d0', metallic: 0, roughness: 0.35, specular: 0.4,
-clearcoat: 0.2, clearcoatRoughness: 0.15, sheen: 0.6, sheenRoughness: 0.5, iridescence: 0.1, iridescenceIOR: 1.3
+brushedMetal: {
+color: '#b0b0b0',
+metallic: 1.0,
+roughness: 0.35,
+specular: 0.5,
+clearcoat: 0,
+clearcoatRoughness: 0
 }
 };
 
@@ -1214,14 +1038,7 @@ metalness: 0,
 roughness: 0.5,
 clearcoat: 0,
 clearcoatRoughness: 0,
-reflectivity: 0.5,
-envMapIntensity: 1.0,
-sheen: 0,
-sheenRoughness: 1.0,
-sheenColor: new THREE.Color(0xffffff),
-iridescence: 0,
-iridescenceIOR: 1.3,
-iridescenceThicknessRange: [100, 400]
+reflectivity: 0.5
 });
 
 // Create initial geometry (sphere)
@@ -1232,9 +1049,6 @@ setupLights();
 
 // Setup environment
 setupEnvironment('studio');
-
-// Initialize preset list
-updatePresetList();
 
 // Resize handler
 window.addEventListener('resize', onWindowResize);
@@ -1292,22 +1106,22 @@ createGeometry(type);
 
 function setupLights() {
 // Main light
-mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
+mainLight = new THREE.DirectionalLight(0xffffff, 1);
 mainLight.position.set(5, 5, 5);
 scene.add(mainLight);
 
 // Fill light
-fillLight = new THREE.DirectionalLight(0x6688ff, 0.8);
+fillLight = new THREE.DirectionalLight(0x6688ff, 0.6);
 fillLight.position.set(-5, -3, 3);
 scene.add(fillLight);
 
 // Back light
-backLight = new THREE.DirectionalLight(0xffaa66, 0.5);
+backLight = new THREE.DirectionalLight(0xffaa66, 0.4);
 backLight.position.set(0, -5, -3);
 scene.add(backLight);
 
 // Ambient light
-ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+ambientLight = new THREE.AmbientLight(0x404040, 0.3);
 scene.add(ambientLight);
 }
 
@@ -1395,10 +1209,6 @@ const metallic = parseFloat(document.getElementById('metallic').value);
 const specular = parseFloat(document.getElementById('specular').value);
 const clearcoat = parseFloat(document.getElementById('clearcoat').value);
 const clearcoatRoughness = parseFloat(document.getElementById('clearcoatRoughness').value);
-const sheen = parseFloat(document.getElementById('sheen').value);
-const sheenRoughness = parseFloat(document.getElementById('sheenRoughness').value);
-const iridescence = parseFloat(document.getElementById('iridescence').value);
-const iridescenceIOR = parseFloat(document.getElementById('iridescenceIOR').value);
 const envMapIntensity = parseFloat(document.getElementById('envMapIntensity').value);
 
 // Update value displays
@@ -1407,10 +1217,6 @@ document.getElementById('metallicValue').textContent = metallic.toFixed(2);
 document.getElementById('specularValue').textContent = specular.toFixed(2);
 document.getElementById('clearcoatValue').textContent = clearcoat.toFixed(2);
 document.getElementById('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
-document.getElementById('sheenValue').textContent = sheen.toFixed(2);
-document.getElementById('sheenRoughnessValue').textContent = sheenRoughness.toFixed(2);
-document.getElementById('iridescenceValue').textContent = iridescence.toFixed(2);
-document.getElementById('iridescenceIORValue').textContent = iridescenceIOR.toFixed(2);
 document.getElementById('envMapValue').textContent = envMapIntensity.toFixed(2);
 
 // Update material
@@ -1420,10 +1226,6 @@ currentMaterial.metalness = metallic;
 currentMaterial.reflectivity = specular;
 currentMaterial.clearcoat = clearcoat;
 currentMaterial.clearcoatRoughness = clearcoatRoughness;
-currentMaterial.sheen = sheen;
-currentMaterial.sheenRoughness = sheenRoughness;
-currentMaterial.iridescence = iridescence;
-currentMaterial.iridescenceIOR = iridescenceIOR;
 currentMaterial.envMapIntensity = envMapIntensity;
 
 // Calculate IOR (specular 0-1 -> IOR 1.0-1.8)
@@ -1558,29 +1360,6 @@ document.getElementById('modelFile').value = '';
 document.getElementById('normalMapFile').value = '';
 }
 
-// Update preset list based on category
-function updatePresetList() {
-const category = document.getElementById('presetCategory').value;
-const select = document.getElementById('presetSelect');
-const items = presetCategories[category] || [];
-
-select.innerHTML = '<option value="">-- Select Preset --</option>';
-items.forEach(item => {
-const option = document.createElement('option');
-option.value = item.id;
-option.textContent = item.name;
-select.appendChild(option);
-});
-}
-
-// Apply preset from dropdown
-function applyPresetFromSelect() {
-const name = document.getElementById('presetSelect').value;
-if (name) {
-applyPreset(name);
-}
-}
-
 // Apply preset
 function applyPreset(name) {
 const preset = presets[name];
@@ -1592,18 +1371,9 @@ document.getElementById('metallic').value = preset.metallic;
 document.getElementById('specular').value = preset.specular;
 document.getElementById('clearcoat').value = preset.clearcoat;
 document.getElementById('clearcoatRoughness').value = preset.clearcoatRoughness;
-document.getElementById('sheen').value = preset.sheen;
-document.getElementById('sheenRoughness').value = preset.sheenRoughness;
-document.getElementById('iridescence').value = preset.iridescence;
-document.getElementById('iridescenceIOR').value = preset.iridescenceIOR;
 
 updateMaterial();
-
-// Close modal if open
-const modal = document.getElementById('presetModal');
-if (modal.classList.contains('active')) {
 closePresetModal();
-}
 }
 
 // Reference panel toggle
