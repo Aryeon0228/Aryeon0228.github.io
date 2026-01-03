@@ -3,310 +3,1341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disney BRDF Interactive Viewer</title>
-    <link rel="stylesheet" href="brdf-viewer.css">
+    <title>실시간 PBR 머티리얼 시뮬레이터 - Disney BRDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* 좌측 상단 메뉴 버튼들 */
+        .top-left-menu {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .menu-btn {
+            background: rgba(30, 30, 50, 0.95);
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .menu-btn:hover {
+            background: rgba(50, 50, 80, 0.95);
+            border-color: rgba(100, 150, 255, 0.5);
+        }
+
+        .menu-btn i {
+            margin-right: 6px;
+        }
+
+        /* 컨트롤 패널 */
+        .control-panel {
+            position: fixed;
+            top: 70px;
+            left: 15px;
+            width: 320px;
+            max-height: calc(100vh - 90px);
+            background: rgba(30, 30, 50, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 50;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 100, 150, 0.3);
+        }
+
+        .control-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .control-panel::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb {
+            background: rgba(100, 100, 150, 0.5);
+            border-radius: 3px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(100, 100, 150, 0.3);
+            /* 단어 잘림 방지 */
+            word-break: keep-all;
+            white-space: nowrap;
+            overflow: visible;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8888aa;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            /* 단어 잘림 방지 */
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .control-value {
+            color: #88aaff;
+            font-family: monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(100, 100, 150, 0.3);
+            border-radius: 3px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #6688ff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 35px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .file-input-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(100, 100, 150, 0.2);
+            border: 1px dashed rgba(100, 100, 150, 0.5);
+            border-radius: 6px;
+            color: #aaa;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .file-input-btn:hover {
+            background: rgba(100, 100, 150, 0.3);
+            border-color: #6688ff;
+            color: #fff;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-hint {
+            font-size: 11px;
+            color: #777;
+            margin-top: 4px;
+            /* 단어 잘림 방지 */
+            word-break: keep-all;
+        }
+
+        /* 프리셋 모달 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: rgba(30, 30, 50, 0.98);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(100, 100, 150, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(100, 100, 150, 0.3);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            /* 단어 잘림 방지 */
+            word-break: keep-all;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .preset-btn {
+            padding: 15px;
+            background: rgba(100, 100, 150, 0.2);
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .preset-btn:hover {
+            background: rgba(100, 100, 150, 0.4);
+            border-color: #6688ff;
+            transform: translateY(-2px);
+        }
+
+        .preset-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .preset-desc {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .preset-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 정보 모달 스타일 */
+        .info-modal .modal {
+            max-width: 700px;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+        }
+
+        .info-section h3 {
+            color: #6688ff;
+            margin-bottom: 12px;
+            font-size: 16px;
+            /* 단어 잘림 방지 */
+            word-break: keep-all;
+        }
+
+        .info-section p {
+            line-height: 1.7;
+            color: #ccc;
+            font-size: 14px;
+            text-align: justify;
+            /* 단어 잘림 방지 */
+            word-break: keep-all;
+        }
+
+        .info-section ul {
+            padding-left: 20px;
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* 메탈 레퍼런스 패널 */
+        .reference-panel {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 280px;
+            background: rgba(30, 30, 50, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            display: none;
+        }
+
+        .reference-panel.active {
+            display: block;
+        }
+
+        .reference-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* 단어 잘림 방지 */
+            word-break: keep-all;
+        }
+
+        .reference-close {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .reference-table {
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .reference-table th,
+        .reference-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(100, 100, 150, 0.2);
+        }
+
+        .reference-table th {
+            color: #888;
+            font-weight: 600;
+        }
+
+        .reference-table td {
+            color: #ccc;
+        }
+
+        .reference-table .material-name {
+            color: #88aaff;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .top-left-menu {
+                top: 10px;
+                left: 10px;
+                flex-wrap: wrap;
+                max-width: calc(100% - 20px);
+            }
+
+            .menu-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .control-panel {
+                top: auto;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                max-height: 50vh;
+                border-radius: 20px 20px 0 0;
+                padding: 15px;
+            }
+
+            .panel-title {
+                font-size: 16px;
+            }
+
+            .reference-panel {
+                top: auto;
+                bottom: 55vh;
+                right: 10px;
+                left: 10px;
+                width: auto;
+            }
+
+            .modal {
+                width: 95%;
+                padding: 20px;
+                max-height: 85vh;
+            }
+
+            .preset-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 체크박스 토글 */
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(100, 100, 150, 0.3);
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: #6688ff;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* 섹션 구분선 */
+        .section-divider {
+            height: 1px;
+            background: rgba(100, 100, 150, 0.3);
+            margin: 15px 0;
+        }
+
+        /* 버튼 공통 스타일 */
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #6688ff 0%, #5566dd 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 136, 255, 0.3);
+        }
+
+        /* 로딩 인디케이터 */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 300;
+            background: rgba(30, 30, 50, 0.95);
+            padding: 30px 50px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(100, 100, 150, 0.3);
+            border-top-color: #6688ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <div id="canvas-container"></div>
 
-    <!-- Reference Toggle Button -->
-    <button class="reference-toggle" id="refToggle" aria-label="Toggle metal reference panel">📚</button>
+    <!-- 좌측 상단 메뉴 버튼들 -->
+    <div class="top-left-menu">
+        <button class="menu-btn" onclick="toggleReference()">
+            📖 메탈 레퍼런스
+        </button>
+        <button class="menu-btn" onclick="openInfoModal()">
+            ℹ️ PBR/BRDF 가이드
+        </button>
+        <button class="menu-btn" onclick="openPresetModal()">
+            🎨 머티리얼 프리셋
+        </button>
+    </div>
 
-    <!-- Reference Panel (Left) - Content generated by JavaScript -->
-    <div class="reference-panel" id="refPanel"></div>
+    <!-- 메탈 레퍼런스 패널 -->
+    <div class="reference-panel" id="referencePanel">
+        <div class="reference-title">
+            📖 메탈릭 값 레퍼런스
+            <button class="reference-close" onclick="toggleReference()">✕</button>
+        </div>
+        <table class="reference-table">
+            <thead>
+                <tr>
+                    <th>재질</th>
+                    <th>Metallic</th>
+                    <th>Roughness</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td class="material-name">금 (Gold)</td><td>1.0</td><td>0.1-0.3</td></tr>
+                <tr><td class="material-name">은 (Silver)</td><td>1.0</td><td>0.1-0.2</td></tr>
+                <tr><td class="material-name">구리 (Copper)</td><td>1.0</td><td>0.2-0.4</td></tr>
+                <tr><td class="material-name">알루미늄</td><td>1.0</td><td>0.3-0.5</td></tr>
+                <tr><td class="material-name">크롬</td><td>1.0</td><td>0.0-0.1</td></tr>
+                <tr><td class="material-name">철</td><td>1.0</td><td>0.4-0.6</td></tr>
+                <tr><td class="material-name">플라스틱</td><td>0.0</td><td>0.3-0.5</td></tr>
+                <tr><td class="material-name">고무</td><td>0.0</td><td>0.8-1.0</td></tr>
+                <tr><td class="material-name">나무</td><td>0.0</td><td>0.5-0.8</td></tr>
+                <tr><td class="material-name">피부</td><td>0.0</td><td>0.4-0.6</td></tr>
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Control Panel (Right) -->
-    <div class="ui-panel">
-        <div class="header-with-reset">
-            <div>
-                <h1>Disney BRDF Viewer</h1>
-                <p class="subtitle">실시간 PBR 머티리얼 시뮬레이터</p>
+    <!-- 컨트롤 패널 -->
+    <div class="control-panel">
+        <h2 class="panel-title">실시간 PBR 머티리얼 시뮬레이터</h2>
+
+        <!-- 베이스 컬러 -->
+        <div class="section">
+            <div class="section-title">베이스 컬러</div>
+            <div class="control-group">
+                <input type="color" id="baseColor" value="#808080" onchange="updateMaterial()">
             </div>
-            <button class="reset-btn" id="resetBtn" aria-label="Reset all parameters">🔄 Reset</button>
         </div>
 
-        <div class="control-group">
-            <div class="control-label">
-                <span>Base Color (HSV)</span>
-            </div>
-            <div class="color-hsv-group">
-                <div class="color-slider-row">
-                    <label>Hue</label>
-                    <input type="range" id="colorH" class="slider-hue" min="0" max="360" step="1" value="0" aria-label="Hue">
+        <!-- 머티리얼 속성 (러프니스, 메탈릭 등) -->
+        <div class="section">
+            <div class="section-title">머티리얼 속성</div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>러프니스 (Roughness)</span>
+                    <span class="control-value" id="roughnessValue">0.50</span>
                 </div>
-                <div class="color-slider-row">
-                    <label>Saturation</label>
-                    <input type="range" id="colorS" class="slider-saturation" min="0" max="100" step="1" value="0" aria-label="Saturation">
+                <input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>메탈릭 (Metallic)</span>
+                    <span class="control-value" id="metallicValue">0.00</span>
                 </div>
-                <div class="color-slider-row">
-                    <label>Value</label>
-                    <input type="range" id="colorV" class="slider-value" min="0" max="100" step="1" value="50" aria-label="Value">
+                <input type="range" id="metallic" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>스페큘러 (IOR)</span>
+                    <span class="control-value" id="specularValue">0.50</span>
                 </div>
+                <input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
             </div>
-            <div class="color-display">
-                <div class="color-preview" id="colorPreview"></div>
-                <div class="color-rgb-text" id="colorRGBText">HSV(0°, 0%, 50%)</div>
-            </div>
-        </div>
 
-        <div class="lighting-section">
-            <div class="lighting-title">💡 Lighting</div>
-            <button class="toggle-btn active" id="iblToggle" aria-label="Toggle IBL environment">🌍 IBL Environment: ON</button>
-        </div>
-
-        <div class="geometry-section">
-            <div class="section-title">🔷 Geometry</div>
-            <div class="geometry-grid">
-                <button class="geometry-btn active" data-geometry="sphere">⚪ Sphere</button>
-                <button class="geometry-btn" data-geometry="plane">▫️ Plane</button>
-                <button class="geometry-btn" data-geometry="torus">🍩 Torus</button>
-                <button class="geometry-btn" data-geometry="cube">🔲 Cube</button>
-                <button class="geometry-btn" data-geometry="cylinder">🥫 Cylinder</button>
-                <button class="geometry-btn" data-geometry="icosahedron">💎 Icosahedron</button>
-            </div>
-        </div>
-
-        <div class="texture-section">
-            <div class="section-title">📦 Custom Model</div>
-            <input type="file" id="modelUpload" accept=".obj" aria-label="Upload OBJ model">
-            <div class="texture-info" id="modelInfo">No model loaded</div>
-        </div>
-
-        <div class="geometry-section">
-            <div class="section-title">🌍 Environment</div>
-            <div class="geometry-grid">
-                <button class="environment-btn active" data-environment="indoor">🏛️ Indoor Bright</button>
-                <button class="environment-btn" data-environment="sunset">🌅 Sunset</button>
-                <button class="environment-btn" data-environment="night">🌙 Night</button>
-                <button class="environment-btn" data-environment="overpass">🌉 Overpass</button>
-                <button class="environment-btn" data-environment="quarry">⛰️ Quarry</button>
-                <button class="environment-btn" data-environment="blouberg">🌄 Sunrise Beach</button>
-                <button class="environment-btn" data-environment="lobe">🏢 Studio</button>
-                <button class="environment-btn" data-environment="bridge">🌉 Bridge</button>
-                <button class="environment-btn" data-environment="spotlight">💡 Spotlight</button>
-                <button class="environment-btn" data-environment="dawn">🌅 Dawn</button>
-            </div>
-        </div>
-
-        <div class="texture-section">
-            <div class="section-title">🗺️ Normal Map</div>
-            <input type="file" id="normalMapUpload" accept="image/*" aria-label="Upload normal map">
-            <button class="clear-btn" id="clearNormalMap">✖️ Clear Normal Map</button>
-            <div class="texture-info" id="normalMapInfo">No normal map loaded</div>
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Metallic</span>
-                <span class="control-value" id="metallicValue">0.00</span>
-            </div>
-            <input type="range" id="metallic" min="0" max="1" step="0.01" value="0.0" aria-label="Metallic value">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Roughness</span>
-                <span class="control-value" id="roughnessValue">0.50</span>
-            </div>
-            <input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" aria-label="Roughness value">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Specular (IOR)</span>
-                <span class="control-value" id="specularValue">0.50</span>
-            </div>
-            <input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" aria-label="Specular reflectivity">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Clearcoat</span>
-                <span class="control-value" id="clearcoatValue">0.00</span>
-            </div>
-            <input type="range" id="clearcoat" min="0" max="1" step="0.01" value="0.0" aria-label="Clearcoat intensity">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Clearcoat Gloss</span>
-                <span class="control-value" id="clearcoatGlossValue">1.00</span>
-            </div>
-            <input type="range" id="clearcoatGloss" min="0" max="1" step="0.01" value="1.0" aria-label="Clearcoat gloss">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Sheen (Rim Light)</span>
-                <span class="control-value" id="sheenValue">0.00</span>
-            </div>
-            <input type="range" id="sheen" min="0" max="1" step="0.01" value="0.0" aria-label="Sheen intensity">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Iridescence (산화막)</span>
-                <span class="control-value" id="iridescenceValue">0.00</span>
-            </div>
-            <input type="range" id="iridescence" min="0" max="1" step="0.01" value="0.0" aria-label="Iridescence intensity">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Iridescence IOR</span>
-                <span class="control-value" id="iridescenceIORValue">1.30</span>
-            </div>
-            <input type="range" id="iridescenceIOR" min="1" max="2.333" step="0.01" value="1.3" aria-label="Iridescence IOR">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Transmission (투명도)</span>
-                <span class="control-value" id="transmissionValue">0.00</span>
-            </div>
-            <input type="range" id="transmission" min="0" max="1" step="0.01" value="0.0" aria-label="Transmission">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Anisotropy (이방성)</span>
-                <span class="control-value" id="anisotropyValue">0.00</span>
-            </div>
-            <input type="range" id="anisotropy" min="0" max="1" step="0.01" value="0.0" aria-label="Anisotropy">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Anisotropy Rotation</span>
-                <span class="control-value" id="anisotropyRotationValue">0.00π</span>
-            </div>
-            <input type="range" id="anisotropyRotation" min="0" max="6.283" step="0.01" value="0.0" aria-label="Anisotropy Rotation">
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">
-                <span>Emissive (발광 강도)</span>
-                <span class="control-value" id="emissiveValue">0.00</span>
-            </div>
-            <input type="range" id="emissive" min="0" max="2" step="0.01" value="0.0" aria-label="Emissive intensity">
-        </div>
-
-        <div class="presets">
-            <h3>Material Presets</h3>
-
-            <div class="preset-section">
-                <div class="preset-section-title">⚙️ Iron</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="iron">Iron</button>
-                    <button class="preset-btn" data-preset="iron_rust">Iron Rust</button>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>클리어코트</span>
+                    <span class="control-value" id="clearcoatValue">0.00</span>
                 </div>
+                <input type="range" id="clearcoat" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
             </div>
 
-            <div class="preset-section">
-                <div class="preset-section-title">✈️ Aluminum</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="aluminum">Aluminum</button>
-                    <button class="preset-btn" data-preset="aluminum_oxidized">Al Oxidized</button>
-                    <button class="preset-btn" data-preset="aluminum_anodized">Al Anodized</button>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>클리어코트 러프니스</span>
+                    <span class="control-value" id="clearcoatRoughnessValue">0.00</span>
                 </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">🔔 Copper</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="copper">Copper</button>
-                    <button class="preset-btn" data-preset="copper_patina">Cu Patina</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">👑 Gold</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="gold">Gold</button>
-                    <button class="preset-btn" data-preset="gold_tarnished">Gold Tarnish</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">💍 Silver</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="silver">Silver</button>
-                    <button class="preset-btn" data-preset="silver_tarnished">Silver Tarnish</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">🏺 Bronze</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="bronze">Bronze</button>
-                    <button class="preset-btn" data-preset="bronze_patina">Bronze Patina</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">🎺 Brass</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="brass">Brass</button>
-                    <button class="preset-btn" data-preset="brass_tarnished">Brass Tarnish</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">🛡️ Titanium</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="titanium">Titanium</button>
-                    <button class="preset-btn" data-preset="titanium_oxidized">Ti Oxidized</button>
-                    <button class="preset-btn" data-preset="titanium_anodized">Ti Anodized</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">✨ Sheen 효과</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="velvet">🌹 Velvet</button>
-                    <button class="preset-btn" data-preset="peach">🍑 Peach</button>
-                    <button class="preset-btn" data-preset="satin">🎀 Satin</button>
-                    <button class="preset-btn" data-preset="dusty_metal">💨 Dusty Metal</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">🌈 Iridescence 효과</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="soap_bubble">💧 Soap Bubble</button>
-                    <button class="preset-btn" data-preset="oil_slick">🛢️ Oil Slick</button>
-                    <button class="preset-btn" data-preset="cd_surface">💿 CD Surface</button>
-                    <button class="preset-btn" data-preset="bismuth">🌈 Bismuth</button>
-                </div>
-            </div>
-
-            <div class="preset-section">
-                <div class="preset-section-title">🎨 기타 머티리얼</div>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-preset="chrome">Chrome</button>
-                    <button class="preset-btn" data-preset="plastic">Plastic</button>
-                    <button class="preset-btn" data-preset="rubber">Rubber</button>
-                    <button class="preset-btn" data-preset="wood">Wood</button>
-                    <button class="preset-btn" data-preset="carpaint">Car Paint</button>
-                    <button class="preset-btn" data-preset="brushedmetal">Brushed</button>
-                </div>
+                <input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
             </div>
         </div>
 
-        <div class="info">
-            💡 <strong>Tip:</strong> 왼쪽 📚 버튼을 클릭하여 금속 레퍼런스를 확인하세요
+        <div class="section-divider"></div>
+
+        <!-- 라이팅 & 인바이러먼트 -->
+        <div class="section">
+            <div class="section-title">라이팅 & 인바이러먼트</div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>주조명 강도</span>
+                    <span class="control-value" id="mainLightValue">1.00</span>
+                </div>
+                <input type="range" id="mainLight" min="0" max="3" step="0.1" value="1" oninput="updateLighting()">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>환경광 강도</span>
+                    <span class="control-value" id="ambientLightValue">0.30</span>
+                </div>
+                <input type="range" id="ambientLight" min="0" max="1" step="0.01" value="0.3" oninput="updateLighting()">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>환경맵 강도</span>
+                    <span class="control-value" id="envMapValue">1.00</span>
+                </div>
+                <input type="range" id="envMapIntensity" min="0" max="3" step="0.1" value="1" oninput="updateMaterial()">
+            </div>
+
+            <div class="toggle-wrapper">
+                <span>SSAO (Ambient Occlusion)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="ssaoToggle" checked onchange="toggleSSAO()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 커스텀 모델 & 노멀맵 -->
+        <div class="section">
+            <div class="section-title">커스텀 모델 & 노멀맵</div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>커스텀 3D 모델</span>
+                </div>
+                <div class="file-input-wrapper">
+                    <div class="file-input-btn">📁 모델 파일 선택</div>
+                    <input type="file" id="modelFile" accept=".obj,.gltf,.glb" onchange="loadCustomModel(this)">
+                </div>
+                <div class="file-hint">지원 형식: .OBJ, .GLTF, .GLB</div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>노멀맵</span>
+                </div>
+                <div class="file-input-wrapper">
+                    <div class="file-input-btn">📁 노멀맵 이미지 선택</div>
+                    <input type="file" id="normalMapFile" accept=".png,.jpg,.jpeg,.webp,.tga" onchange="loadNormalMap(this)">
+                </div>
+                <div class="file-hint">지원 형식: .PNG, .JPG, .JPEG, .WEBP, .TGA</div>
+            </div>
+
+            <button class="action-btn" onclick="resetModel()" style="margin-top: 10px; background: rgba(100, 100, 150, 0.3);">
+                🔄 기본 모델로 복원
+            </button>
         </div>
     </div>
 
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
+    <!-- 머티리얼 프리셋 모달 -->
+    <div class="modal-overlay" id="presetModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">🎨 머티리얼 프리셋</h3>
+                <button class="modal-close" onclick="closePresetModal()">✕</button>
+            </div>
+            <div class="preset-grid">
+                <button class="preset-btn" onclick="applyPreset('gold')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #ffd700, #b8860b);"></div>
+                    <div class="preset-name">골드 (Gold)</div>
+                    <div class="preset-desc">반짝이는 금속 질감</div>
+                </button>
+                <button class="preset-btn" onclick="applyPreset('chrome')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #e0e0e0, #a0a0a0);"></div>
+                    <div class="preset-name">크롬 (Chrome)</div>
+                    <div class="preset-desc">거울 같은 반사</div>
+                </button>
+                <button class="preset-btn" onclick="applyPreset('copper')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #b87333, #8b4513);"></div>
+                    <div class="preset-name">구리 (Copper)</div>
+                    <div class="preset-desc">따뜻한 금속 색상</div>
+                </button>
+                <button class="preset-btn" onclick="applyPreset('plastic')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #cc3333, #991111);"></div>
+                    <div class="preset-name">플라스틱 (Plastic)</div>
+                    <div class="preset-desc">비금속 광택 재질</div>
+                </button>
+                <button class="preset-btn" onclick="applyPreset('rubber')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #333333, #1a1a1a);"></div>
+                    <div class="preset-name">고무 (Rubber)</div>
+                    <div class="preset-desc">무광 재질</div>
+                </button>
+                <button class="preset-btn" onclick="applyPreset('wood')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #8b4513, #654321);"></div>
+                    <div class="preset-name">나무 (Wood)</div>
+                    <div class="preset-desc">자연스러운 목재</div>
+                </button>
+                <button class="preset-btn" onclick="applyPreset('carPaint')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #cc0000, #990000);"></div>
+                    <div class="preset-name">자동차 페인트</div>
+                    <div class="preset-desc">클리어코트 적용</div>
+                </button>
+                <button class="preset-btn" onclick="applyPreset('brushedMetal')">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #b0b0b0, #808080);"></div>
+                    <div class="preset-name">브러시드 메탈</div>
+                    <div class="preset-desc">헤어라인 금속</div>
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <script type="module" src="brdf-viewer.js"></script>
+    <!-- PBR/BRDF 가이드 모달 -->
+    <div class="modal-overlay info-modal" id="infoModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">ℹ️ PBR/BRDF 가이드</h3>
+                <button class="modal-close" onclick="closeInfoModal()">✕</button>
+            </div>
+
+            <div class="info-section">
+                <h3>🎨 PBR (Physically Based Rendering)</h3>
+                <p>
+                    <strong>물리 기반 렌더링(PBR)</strong>은 현실 세계의 물리 법칙을 기반으로 재질과 조명을
+                    시뮬레이션하는 렌더링 기술입니다. 2010년대 초반부터 게임 및 영화 산업에서 표준으로
+                    자리잡았습니다.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>역사:</strong> PBR의 개념은 1980년대 Jim Kajiya의 렌더링 방정식에서 시작되었으며,
+                    2012년 Disney의 "Principled BRDF" 발표와 함께 실용적인 워크플로우가 확립되었습니다.
+                    현재 Unreal Engine, Unity, Blender 등 대부분의 3D 소프트웨어에서 표준으로 사용됩니다.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>핵심 원칙:</strong>
+                </p>
+                <ul>
+                    <li><strong>에너지 보존</strong> - 반사된 빛은 입사된 빛보다 많을 수 없음</li>
+                    <li><strong>마이크로패싯 이론</strong> - 표면은 미세한 거울들의 집합</li>
+                    <li><strong>프레넬 효과</strong> - 시야각에 따른 반사율 변화</li>
+                </ul>
+            </div>
+
+            <div class="info-section">
+                <h3>💡 BRDF (Bidirectional Reflectance Distribution Function)</h3>
+                <p>
+                    <strong>양방향 반사 분포 함수(BRDF)</strong>는 빛이 표면에서 어떻게 반사되는지를
+                    수학적으로 정의하는 함수입니다. 입사각과 반사각을 입력으로 받아 반사되는 빛의
+                    양과 방향을 결정합니다.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>역사:</strong> BRDF 개념은 1965년 Fred Nicodemus에 의해 처음 정의되었습니다.
+                    이후 Cook-Torrance(1982), Oren-Nayar(1994), GGX(2007) 등 다양한 BRDF 모델이 개발되었습니다.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>구성 요소:</strong>
+                </p>
+                <ul>
+                    <li><strong>Diffuse</strong> - 표면에서 균일하게 산란되는 빛</li>
+                    <li><strong>Specular</strong> - 표면에서 거울처럼 반사되는 빛</li>
+                    <li><strong>Fresnel</strong> - 시야각에 따른 반사율 변화</li>
+                </ul>
+            </div>
+
+            <div class="info-section">
+                <h3>✨ Disney BRDF (Principled BRDF)</h3>
+                <p>
+                    <strong>Disney BRDF</strong>는 2012년 Walt Disney Animation Studios의 Brent Burley가
+                    발표한 "아티스트 친화적" 물리 기반 셰이딩 모델입니다. "Physically Based Shading at Disney"
+                    논문에서 처음 소개되었습니다.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>특징:</strong> 기존의 복잡한 물리 파라미터들을 아티스트가 직관적으로 이해할 수 있는
+                    0~1 범위의 파라미터로 단순화했습니다. 물리적 정확성과 사용 편의성의 균형을 추구합니다.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>주요 파라미터:</strong>
+                </p>
+                <ul>
+                    <li><strong>Base Color</strong> - 기본 색상 (Diffuse/Metal 공용)</li>
+                    <li><strong>Metallic</strong> - 금속성 (0=비금속, 1=금속)</li>
+                    <li><strong>Roughness</strong> - 표면 거칠기 (0=매끄러움, 1=거침)</li>
+                    <li><strong>Specular</strong> - 비금속의 반사 강도</li>
+                    <li><strong>Clearcoat</strong> - 투명 코팅층 (자동차 페인트 등)</li>
+                    <li><strong>Anisotropic</strong> - 비등방성 반사 (브러시드 메탈)</li>
+                    <li><strong>Subsurface</strong> - 피하 산란 (피부, 왁스)</li>
+                    <li><strong>Sheen</strong> - 천 재질의 가장자리 광택</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로딩 인디케이터 -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>로딩 중...</div>
+    </div>
+
+    <script>
+        // 글로벌 변수
+        let scene, camera, renderer, controls;
+        let sphere, torusKnot;
+        let mainLight, fillLight, backLight, ambientLight;
+        let currentMaterial;
+        let composer;
+
+        // 프리셋 정의
+        const presets = {
+            gold: {
+                color: '#ffd700',
+                metallic: 1.0,
+                roughness: 0.2,
+                specular: 0.5,
+                clearcoat: 0,
+                clearcoatRoughness: 0
+            },
+            chrome: {
+                color: '#e0e0e0',
+                metallic: 1.0,
+                roughness: 0.05,
+                specular: 0.5,
+                clearcoat: 0,
+                clearcoatRoughness: 0
+            },
+            copper: {
+                color: '#b87333',
+                metallic: 1.0,
+                roughness: 0.3,
+                specular: 0.5,
+                clearcoat: 0,
+                clearcoatRoughness: 0
+            },
+            plastic: {
+                color: '#cc3333',
+                metallic: 0,
+                roughness: 0.3,
+                specular: 0.5,
+                clearcoat: 0.5,
+                clearcoatRoughness: 0.1
+            },
+            rubber: {
+                color: '#262626',
+                metallic: 0,
+                roughness: 0.9,
+                specular: 0.5,
+                clearcoat: 0,
+                clearcoatRoughness: 0
+            },
+            wood: {
+                color: '#6b3310',
+                metallic: 0,
+                roughness: 0.7,
+                specular: 0.5,
+                clearcoat: 0.1,
+                clearcoatRoughness: 0.2
+            },
+            carPaint: {
+                color: '#cc0000',
+                metallic: 0,
+                roughness: 0.1,
+                specular: 0.5,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.05
+            },
+            brushedMetal: {
+                color: '#b0b0b0',
+                metallic: 1.0,
+                roughness: 0.35,
+                specular: 0.5,
+                clearcoat: 0,
+                clearcoatRoughness: 0
+            }
+        };
+
+        // 초기화
+        function init() {
+            // 씬 생성
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+
+            // 카메라 생성
+            camera = new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 0, 8);
+
+            // 렌더러 생성
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.physicallyCorrectLights = true;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // 컨트롤
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // 머티리얼 생성
+            currentMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x808080,
+                metalness: 0,
+                roughness: 0.5,
+                clearcoat: 0,
+                clearcoatRoughness: 0,
+                reflectivity: 0.5
+            });
+
+            // 구체 생성
+            const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
+            sphere = new THREE.Mesh(sphereGeometry, currentMaterial);
+            sphere.position.x = -2;
+            scene.add(sphere);
+
+            // 토러스 노트 생성
+            const torusKnotGeometry = new THREE.TorusKnotGeometry(0.7, 0.25, 100, 16);
+            torusKnot = new THREE.Mesh(torusKnotGeometry, currentMaterial);
+            torusKnot.position.x = 2;
+            scene.add(torusKnot);
+
+            // 조명 설정
+            setupLights();
+
+            // 환경맵 생성 (간단한 큐브맵)
+            setupEnvironment();
+
+            // 리사이즈 핸들러
+            window.addEventListener('resize', onWindowResize);
+
+            // 애니메이션 시작
+            animate();
+        }
+
+        function setupLights() {
+            // 주조명
+            mainLight = new THREE.DirectionalLight(0xffffff, 1);
+            mainLight.position.set(5, 5, 5);
+            scene.add(mainLight);
+
+            // 필 라이트
+            fillLight = new THREE.DirectionalLight(0x6688ff, 0.6);
+            fillLight.position.set(-5, -3, 3);
+            scene.add(fillLight);
+
+            // 백라이트
+            backLight = new THREE.DirectionalLight(0xffaa66, 0.4);
+            backLight.position.set(0, -5, -3);
+            scene.add(backLight);
+
+            // 환경광
+            ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+            scene.add(ambientLight);
+        }
+
+        function setupEnvironment() {
+            // PMREMGenerator로 환경맵 생성
+            const pmremGenerator = new THREE.PMREMGenerator(renderer);
+            pmremGenerator.compileEquirectangularShader();
+
+            // 간단한 환경맵 (그라데이션 스카이)
+            const envScene = new THREE.Scene();
+            const envGeometry = new THREE.SphereGeometry(50, 32, 32);
+
+            // 그라데이션 셰이더 머티리얼
+            const envMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    topColor: { value: new THREE.Color(0x0077ff) },
+                    bottomColor: { value: new THREE.Color(0x1a1a2e) }
+                },
+                vertexShader: `
+                    varying vec3 vWorldPosition;
+                    void main() {
+                        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                        vWorldPosition = worldPosition.xyz;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 topColor;
+                    uniform vec3 bottomColor;
+                    varying vec3 vWorldPosition;
+                    void main() {
+                        float h = normalize(vWorldPosition).y;
+                        gl_FragColor = vec4(mix(bottomColor, topColor, max(h, 0.0)), 1.0);
+                    }
+                `,
+                side: THREE.BackSide
+            });
+
+            const envMesh = new THREE.Mesh(envGeometry, envMaterial);
+            envScene.add(envMesh);
+
+            // 환경맵 생성
+            const envMap = pmremGenerator.fromScene(envScene, 0.04).texture;
+            scene.environment = envMap;
+
+            pmremGenerator.dispose();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+
+            // 약간의 자동 회전
+            if (sphere) sphere.rotation.y += 0.002;
+            if (torusKnot) torusKnot.rotation.y += 0.003;
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // 머티리얼 업데이트
+        function updateMaterial() {
+            const color = document.getElementById('baseColor').value;
+            const roughness = parseFloat(document.getElementById('roughness').value);
+            const metallic = parseFloat(document.getElementById('metallic').value);
+            const specular = parseFloat(document.getElementById('specular').value);
+            const clearcoat = parseFloat(document.getElementById('clearcoat').value);
+            const clearcoatRoughness = parseFloat(document.getElementById('clearcoatRoughness').value);
+            const envMapIntensity = parseFloat(document.getElementById('envMapIntensity').value);
+
+            // 값 표시 업데이트
+            document.getElementById('roughnessValue').textContent = roughness.toFixed(2);
+            document.getElementById('metallicValue').textContent = metallic.toFixed(2);
+            document.getElementById('specularValue').textContent = specular.toFixed(2);
+            document.getElementById('clearcoatValue').textContent = clearcoat.toFixed(2);
+            document.getElementById('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
+            document.getElementById('envMapValue').textContent = envMapIntensity.toFixed(2);
+
+            // 머티리얼 업데이트
+            currentMaterial.color.set(color);
+            currentMaterial.roughness = roughness;
+            currentMaterial.metalness = metallic;
+            currentMaterial.reflectivity = specular;
+            currentMaterial.clearcoat = clearcoat;
+            currentMaterial.clearcoatRoughness = clearcoatRoughness;
+            currentMaterial.envMapIntensity = envMapIntensity;
+
+            // IOR 계산 (specular 0-1 -> IOR 1.0-1.8)
+            currentMaterial.ior = 1.0 + specular * 0.8;
+        }
+
+        // 라이팅 업데이트
+        function updateLighting() {
+            const mainIntensity = parseFloat(document.getElementById('mainLight').value);
+            const ambientIntensity = parseFloat(document.getElementById('ambientLight').value);
+
+            document.getElementById('mainLightValue').textContent = mainIntensity.toFixed(2);
+            document.getElementById('ambientLightValue').textContent = ambientIntensity.toFixed(2);
+
+            mainLight.intensity = mainIntensity;
+            fillLight.intensity = mainIntensity * 0.6;
+            backLight.intensity = mainIntensity * 0.4;
+            ambientLight.intensity = ambientIntensity;
+        }
+
+        // SSAO 토글 (시뮬레이션)
+        function toggleSSAO() {
+            const enabled = document.getElementById('ssaoToggle').checked;
+            // Three.js에서 SSAO는 포스트프로세싱이 필요하므로 여기선 톤매핑으로 시뮬레이션
+            renderer.toneMappingExposure = enabled ? 1.2 : 1.0;
+        }
+
+        // 커스텀 모델 로드
+        function loadCustomModel(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            showLoading(true);
+            const fileName = file.name.toLowerCase();
+            const url = URL.createObjectURL(file);
+
+            // 기존 메쉬 제거
+            if (sphere) scene.remove(sphere);
+            if (torusKnot) scene.remove(torusKnot);
+
+            if (fileName.endsWith('.obj')) {
+                const loader = new THREE.OBJLoader();
+                loader.load(url, function(object) {
+                    object.traverse(function(child) {
+                        if (child.isMesh) {
+                            child.material = currentMaterial;
+                        }
+                    });
+
+                    // 중앙 정렬 및 크기 조정
+                    const box = new THREE.Box3().setFromObject(object);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 3 / maxDim;
+
+                    object.position.sub(center);
+                    object.scale.multiplyScalar(scale);
+
+                    sphere = object;
+                    torusKnot = null;
+                    scene.add(object);
+                    showLoading(false);
+                    URL.revokeObjectURL(url);
+                }, undefined, function(error) {
+                    console.error(error);
+                    showLoading(false);
+                    alert('모델 로드 실패');
+                });
+            } else if (fileName.endsWith('.gltf') || fileName.endsWith('.glb')) {
+                const loader = new THREE.GLTFLoader();
+                loader.load(url, function(gltf) {
+                    gltf.scene.traverse(function(child) {
+                        if (child.isMesh) {
+                            child.material = currentMaterial;
+                        }
+                    });
+
+                    // 중앙 정렬 및 크기 조정
+                    const box = new THREE.Box3().setFromObject(gltf.scene);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 3 / maxDim;
+
+                    gltf.scene.position.sub(center);
+                    gltf.scene.scale.multiplyScalar(scale);
+
+                    sphere = gltf.scene;
+                    torusKnot = null;
+                    scene.add(gltf.scene);
+                    showLoading(false);
+                    URL.revokeObjectURL(url);
+                }, undefined, function(error) {
+                    console.error(error);
+                    showLoading(false);
+                    alert('모델 로드 실패');
+                });
+            }
+        }
+
+        // 노멀맵 로드
+        function loadNormalMap(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const url = URL.createObjectURL(file);
+            const textureLoader = new THREE.TextureLoader();
+
+            textureLoader.load(url, function(texture) {
+                currentMaterial.normalMap = texture;
+                currentMaterial.normalScale.set(1, 1);
+                currentMaterial.needsUpdate = true;
+                URL.revokeObjectURL(url);
+            }, undefined, function(error) {
+                console.error(error);
+                alert('노멀맵 로드 실패');
+            });
+        }
+
+        // 기본 모델로 복원
+        function resetModel() {
+            // 기존 메쉬 제거
+            if (sphere) scene.remove(sphere);
+            if (torusKnot) scene.remove(torusKnot);
+
+            // 새 메쉬 생성
+            const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
+            sphere = new THREE.Mesh(sphereGeometry, currentMaterial);
+            sphere.position.x = -2;
+            scene.add(sphere);
+
+            const torusKnotGeometry = new THREE.TorusKnotGeometry(0.7, 0.25, 100, 16);
+            torusKnot = new THREE.Mesh(torusKnotGeometry, currentMaterial);
+            torusKnot.position.x = 2;
+            scene.add(torusKnot);
+
+            // 노멀맵 제거
+            currentMaterial.normalMap = null;
+            currentMaterial.needsUpdate = true;
+
+            // 파일 입력 초기화
+            document.getElementById('modelFile').value = '';
+            document.getElementById('normalMapFile').value = '';
+        }
+
+        // 프리셋 적용
+        function applyPreset(name) {
+            const preset = presets[name];
+            if (!preset) return;
+
+            document.getElementById('baseColor').value = preset.color;
+            document.getElementById('roughness').value = preset.roughness;
+            document.getElementById('metallic').value = preset.metallic;
+            document.getElementById('specular').value = preset.specular;
+            document.getElementById('clearcoat').value = preset.clearcoat;
+            document.getElementById('clearcoatRoughness').value = preset.clearcoatRoughness;
+
+            updateMaterial();
+            closePresetModal();
+        }
+
+        // 레퍼런스 패널 토글
+        function toggleReference() {
+            const panel = document.getElementById('referencePanel');
+            panel.classList.toggle('active');
+        }
+
+        // 프리셋 모달
+        function openPresetModal() {
+            document.getElementById('presetModal').classList.add('active');
+        }
+
+        function closePresetModal() {
+            document.getElementById('presetModal').classList.remove('active');
+        }
+
+        // 정보 모달
+        function openInfoModal() {
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        // 로딩 표시
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        // 모달 외부 클릭시 닫기
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+
+        // 초기화 실행
+        init();
+    </script>
 </body>
 </html>
