@@ -733,6 +733,7 @@ to { transform: rotate(360deg); }
 </div>
 <select id="envMapSelect" onchange="changeEnvironment()">
 <option value="studio">Studio</option>
+<option value="clearsky">Clear Sky</option>
 <option value="sunset">Sunset</option>
 <option value="night">Night</option>
 <option value="forest">Forest</option>
@@ -974,11 +975,18 @@ mainLightColor: 0xffffff,
 fillLightColor: 0x6688ff,
 backLightColor: 0xffaa66
 },
-sunset: {
+clearsky: {
 hdrUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr',
+backgroundColor: 0x87ceeb,
+mainLightColor: 0xffffff,
+fillLightColor: 0x88bbff,
+backLightColor: 0xffffcc
+},
+sunset: {
+hdrUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/venice_sunset_1k.hdr',
 backgroundColor: 0x1a0a2e,
-mainLightColor: 0xffcc88,
-fillLightColor: 0xff8844,
+mainLightColor: 0xffaa66,
+fillLightColor: 0xff6633,
 backLightColor: 0xff4400
 },
 night: {
