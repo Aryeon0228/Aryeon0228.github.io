@@ -952,6 +952,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 // Make THREE available globally
 window.THREE = THREE;
@@ -964,39 +965,39 @@ let currentMaterial;
 let composer;
 let isCustomModel = false;
 
-// Environment presets
+// Environment presets with HDR URLs from Poly Haven (CC0 License)
 const envPresets = {
 studio: {
-topColor: 0x0077ff,
-bottomColor: 0x1a1a2e,
+hdrUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr',
+backgroundColor: 0x1a1a2e,
 mainLightColor: 0xffffff,
 fillLightColor: 0x6688ff,
 backLightColor: 0xffaa66
 },
 sunset: {
-topColor: 0xff6600,
-bottomColor: 0x1a0a2e,
+hdrUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr',
+backgroundColor: 0x1a0a2e,
 mainLightColor: 0xffcc88,
 fillLightColor: 0xff8844,
 backLightColor: 0xff4400
 },
 night: {
-topColor: 0x000033,
-bottomColor: 0x000011,
+hdrUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/moonlit_golf_1k.hdr',
+backgroundColor: 0x000011,
 mainLightColor: 0x8888ff,
 fillLightColor: 0x4444aa,
 backLightColor: 0x2222aa
 },
 forest: {
-topColor: 0x44aa44,
-bottomColor: 0x1a2e1a,
+hdrUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/forest_slope_1k.hdr',
+backgroundColor: 0x1a2e1a,
 mainLightColor: 0xffffcc,
 fillLightColor: 0x88cc88,
 backLightColor: 0x66aa66
 },
 warehouse: {
-topColor: 0x888888,
-bottomColor: 0x333333,
+hdrUrl: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/empty_warehouse_01_1k.hdr',
+backgroundColor: 0x333333,
 mainLightColor: 0xffffff,
 fillLightColor: 0xaaaaaa,
 backLightColor: 0x666666
@@ -1354,136 +1355,41 @@ scene.add(ambientLight);
 function setupEnvironment(preset) {
 const env = envPresets[preset] || envPresets.studio;
 
+// Show loading indicator
+const loading = document.getElementById('loading');
+if (loading) loading.classList.add('active');
+
 // PMREMGenerator for environment map
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
-// Create environment scene
-const envScene = new THREE.Scene();
-const envGeometry = new THREE.SphereGeometry(50, 64, 64);
+// Load HDR environment map
+const rgbeLoader = new RGBELoader();
+rgbeLoader.load(env.hdrUrl, function(texture) {
+texture.mapping = THREE.EquirectangularReflectionMapping;
 
-// Advanced studio environment shader with lighting spots and ground reflection
-const envMaterial = new THREE.ShaderMaterial({
-uniforms: {
-topColor: { value: new THREE.Color(env.topColor) },
-bottomColor: { value: new THREE.Color(env.bottomColor) },
-mainLightColor: { value: new THREE.Color(env.mainLightColor) },
-fillLightColor: { value: new THREE.Color(env.fillLightColor) },
-backLightColor: { value: new THREE.Color(env.backLightColor) }
-},
-vertexShader: `
-varying vec3 vWorldPosition;
-varying vec3 vNormal;
-void main() {
-vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-vWorldPosition = worldPosition.xyz;
-vNormal = normalize(normalMatrix * normal);
-gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-`,
-fragmentShader: `
-uniform vec3 topColor;
-uniform vec3 bottomColor;
-uniform vec3 mainLightColor;
-uniform vec3 fillLightColor;
-uniform vec3 backLightColor;
-varying vec3 vWorldPosition;
-varying vec3 vNormal;
+// Generate environment map from HDR
+const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
-// Smooth step function
-float smootherstep(float edge0, float edge1, float x) {
-x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
-return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-}
-
-void main() {
-vec3 dir = normalize(vWorldPosition);
-float h = dir.y;
-
-// Base gradient (sky to ground)
-vec3 baseColor = mix(bottomColor, topColor, smootherstep(-0.3, 0.8, h));
-
-// Ground plane with checker pattern for better reflection visibility
-if (h < -0.05) {
-    float groundH = abs(h + 0.05);
-    vec3 groundColor = bottomColor * 0.6;
-
-    // Add subtle checker/grid pattern on ground
-    float scale = 0.3;
-    vec2 groundUV = vec2(atan(dir.x, dir.z) * 3.0, 1.0 / (groundH + 0.1));
-    float checker = mod(floor(groundUV.x * scale) + floor(groundUV.y * scale * 0.5), 2.0);
-    groundColor = mix(groundColor, groundColor * 1.3, checker * 0.3);
-
-    baseColor = mix(baseColor, groundColor, smootherstep(-0.05, -0.15, h));
-}
-
-// Horizon glow
-float horizonGlow = exp(-abs(h) * 8.0) * 0.5;
-baseColor += mainLightColor * horizonGlow * 0.3;
-
-// Main light (upper right, large soft area light)
-vec3 mainLightDir = normalize(vec3(0.5, 0.6, 0.5));
-float mainLightDist = 1.0 - dot(dir, mainLightDir);
-float mainLightIntensity = exp(-mainLightDist * 3.0) * 2.5;
-baseColor += mainLightColor * mainLightIntensity;
-
-// Secondary main light (softer, wider)
-vec3 mainLight2Dir = normalize(vec3(0.3, 0.8, 0.3));
-float mainLight2Dist = 1.0 - dot(dir, mainLight2Dir);
-float mainLight2Intensity = exp(-mainLight2Dist * 2.0) * 1.5;
-baseColor += mainLightColor * mainLight2Intensity * 0.5;
-
-// Fill light (left side, cooler)
-vec3 fillLightDir = normalize(vec3(-0.6, 0.3, 0.4));
-float fillLightDist = 1.0 - dot(dir, fillLightDir);
-float fillLightIntensity = exp(-fillLightDist * 4.0) * 1.8;
-baseColor += fillLightColor * fillLightIntensity;
-
-// Back/rim light (behind and below)
-vec3 backLightDir = normalize(vec3(0.0, -0.3, -0.8));
-float backLightDist = 1.0 - dot(dir, backLightDir);
-float backLightIntensity = exp(-backLightDist * 5.0) * 1.5;
-baseColor += backLightColor * backLightIntensity;
-
-// Additional accent lights for more interesting reflections
-vec3 accent1Dir = normalize(vec3(-0.8, 0.5, -0.3));
-float accent1Dist = 1.0 - dot(dir, accent1Dir);
-float accent1Intensity = exp(-accent1Dist * 6.0) * 1.2;
-baseColor += vec3(0.8, 0.9, 1.0) * accent1Intensity;
-
-vec3 accent2Dir = normalize(vec3(0.7, 0.2, -0.6));
-float accent2Dist = 1.0 - dot(dir, accent2Dir);
-float accent2Intensity = exp(-accent2Dist * 6.0) * 1.0;
-baseColor += vec3(1.0, 0.95, 0.9) * accent2Intensity;
-
-// Soft top light
-float topLight = max(0.0, h);
-baseColor += mainLightColor * topLight * topLight * 0.4;
-
-// Subtle noise variation for more natural look
-float noise = fract(sin(dot(dir.xz, vec2(12.9898, 78.233))) * 43758.5453);
-baseColor += (noise - 0.5) * 0.02;
-
-gl_FragColor = vec4(baseColor, 1.0);
-}
-`,
-side: THREE.BackSide
-});
-
-const envMesh = new THREE.Mesh(envGeometry, envMaterial);
-envScene.add(envMesh);
-
-// Generate environment map with higher quality sigma
-const envMap = pmremGenerator.fromScene(envScene, 0.02).texture;
 scene.environment = envMap;
-scene.background = new THREE.Color(env.bottomColor);
+scene.background = envMap; // Use HDR as background too!
 
-// Update light colors
+// Update light colors to match environment
 mainLight.color.set(env.mainLightColor);
 fillLight.color.set(env.fillLightColor);
 backLight.color.set(env.backLightColor);
 
+texture.dispose();
 pmremGenerator.dispose();
+
+// Hide loading indicator
+if (loading) loading.classList.remove('active');
+}, undefined, function(error) {
+console.error('HDR load error:', error);
+// Fallback to solid color background
+scene.background = new THREE.Color(env.backgroundColor);
+if (loading) loading.classList.remove('active');
+});
 }
 
 function changeEnvironment() {
