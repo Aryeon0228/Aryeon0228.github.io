@@ -28,6 +28,11 @@ if (cursorCanvas) {
     let isMouseInWindow = true;
     const ripples = [];
 
+    // Check if dark mode
+    function isDarkMode() {
+        return document.documentElement.getAttribute('data-theme') === 'dark';
+    }
+
     // Resize canvas to window size
     function resizeCanvas() {
         cursorCanvas.width = window.innerWidth;
@@ -62,7 +67,7 @@ if (cursorCanvas) {
             x: e.clientX,
             y: e.clientY,
             radius: 0,
-            alpha: 1
+            alpha: 0.6
         });
     });
 
@@ -70,30 +75,31 @@ if (cursorCanvas) {
     function animate() {
         ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 
+        const dark = isDarkMode();
+        const dotColor = dark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)';
+        const glowColor = dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)';
+        const rippleColor = dark ? '255, 255, 255' : '0, 0, 0';
+
         if (isMouseInWindow) {
             // Smooth follow for the dot
-            dotX += (mouseX - dotX) * 0.15;
-            dotY += (mouseY - dotY) * 0.15;
+            dotX += (mouseX - dotX) * 0.2;
+            dotY += (mouseY - dotY) * 0.2;
 
-            // Draw outer glow
-            const gradient = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 30);
-            gradient.addColorStop(0, 'rgba(138, 85, 254, 0.4)');
-            gradient.addColorStop(0.5, 'rgba(92, 223, 230, 0.2)');
-            gradient.addColorStop(1, 'rgba(92, 223, 230, 0)');
+            // Draw subtle outer glow
+            const gradient = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 20);
+            gradient.addColorStop(0, glowColor);
+            gradient.addColorStop(1, 'transparent');
 
             ctx.beginPath();
-            ctx.arc(dotX, dotY, 30, 0, Math.PI * 2);
+            ctx.arc(dotX, dotY, 20, 0, Math.PI * 2);
             ctx.fillStyle = gradient;
             ctx.fill();
 
-            // Draw main dot
+            // Draw main dot (smaller, cleaner)
             ctx.beginPath();
-            ctx.arc(dotX, dotY, 8, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.shadowColor = 'rgba(138, 85, 254, 1)';
-            ctx.shadowBlur = 20;
+            ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = dotColor;
             ctx.fill();
-            ctx.shadowBlur = 0;
         }
 
         // Draw and update ripples
@@ -102,13 +108,13 @@ if (cursorCanvas) {
 
             ctx.beginPath();
             ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(138, 85, 254, ${ripple.alpha})`;
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = `rgba(${rippleColor}, ${ripple.alpha})`;
+            ctx.lineWidth = 1;
             ctx.stroke();
 
             // Update ripple
-            ripple.radius += 4;
-            ripple.alpha -= 0.02;
+            ripple.radius += 3;
+            ripple.alpha -= 0.015;
 
             // Remove faded ripples
             if (ripple.alpha <= 0) {
