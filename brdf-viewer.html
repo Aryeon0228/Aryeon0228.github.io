@@ -1494,10 +1494,16 @@ if (enabled) {
 // IOR enabled: use specular value to calculate IOR
 currentMaterial.ior = 1.0 + specular * 0.8;
 currentMaterial.reflectivity = specular;
+// Restore environment background
+if (scene.environment) {
+scene.background = scene.environment;
+}
 } else {
 // IOR disabled: set to minimum (no Fresnel effect)
 currentMaterial.ior = 1.0;
 currentMaterial.reflectivity = 0;
+// Hide background (solid color)
+scene.background = new THREE.Color(0x1a1a2e);
 }
 currentMaterial.needsUpdate = true;
 }
