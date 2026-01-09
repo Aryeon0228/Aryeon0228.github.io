@@ -704,8 +704,26 @@ nav {
 .award-project {
     color: var(--text-secondary);
     font-size: 0.9rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     line-height: 1.5;
+}
+
+.award-meta {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.award-meta a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.award-meta a:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
 }
 
 .award-date {
