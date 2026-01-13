@@ -307,6 +307,14 @@ nav {
     background-clip: text;
 }
 
+[data-theme="dark"] .hero-image::before {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+}
+
+[data-theme="dark"] .hero-image::after {
+    background: radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%);
+}
+
 @keyframes gradientFlow {
     0% {
         background-position: 0% center;
@@ -327,12 +335,41 @@ nav {
 .hero-image {
     display: flex;
     justify-content: center;
+    align-items: flex-end;
     animation: fadeInUp 1s ease 0.2s both;
+    position: relative;
+}
+
+.hero-image::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    height: 320px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.hero-image::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 20px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.15) 0%, transparent 70%);
+    z-index: 0;
 }
 
 .hero-image img {
     width: 100%;
     max-width: 400px;
+    position: relative;
+    z-index: 1;
 }
 
 @keyframes float {
