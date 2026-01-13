@@ -333,8 +333,6 @@ nav {
 .hero-image img {
     width: 100%;
     max-width: 400px;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px var(--card-shadow);
     animation: float 3s ease-in-out infinite;
 }
 
