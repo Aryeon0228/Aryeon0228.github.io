@@ -31,7 +31,7 @@ struct AquariumWidgetEntryView: View {
                 WidgetStarsView()
             }
 
-            // 캐릭터들
+            // 캐릭터들 (엔트리 전환 시 위치가 스르륵 이동하는 애니메이션)
             GeometryReader { geo in
                 ForEach(entry.creatures) { creature in
                     WidgetCreatureView(creature: creature)
@@ -39,6 +39,8 @@ struct AquariumWidgetEntryView: View {
                             x: creature.xRatio * geo.size.width,
                             y: creature.yRatio * geo.size.height
                         )
+                        .animation(.easeInOut(duration: 1.5), value: creature.xRatio)
+                        .animation(.easeInOut(duration: 1.5), value: creature.yRatio)
                 }
             }
 
@@ -68,6 +70,7 @@ struct AquariumWidgetEntryView: View {
                 startPoint: .top,
                 endPoint: .bottom
             )
+            .animation(.easeInOut(duration: 2.0), value: entry.timeOfDay)
         }
     }
 
@@ -108,6 +111,7 @@ struct WidgetCreatureView: View {
             }
         }
         .scaleEffect(x: creature.isFlipped ? -1 : 1, y: 1)
+        .animation(.easeInOut(duration: 0.8), value: creature.isFlipped)
     }
 }
 
@@ -208,7 +212,7 @@ struct WidgetStarsView: View {
     }
 }
 
-// MARK: - Previews
+// MARK: - Previews (타임라인 엔트리 2개씩 → 전환 애니메이션 확인 가능)
 #Preview("Small", as: .systemSmall) {
     AquariumWidget()
 } timeline: {
@@ -216,9 +220,18 @@ struct WidgetStarsView: View {
         date: Date(),
         timeOfDay: .afternoon,
         creatures: [
-            WidgetCreature(emoji: "🐠", imageData: nil, size: 32, xRatio: 0.3, yRatio: 0.4, isFlipped: false),
-            WidgetCreature(emoji: "🦑", imageData: nil, size: 36, xRatio: 0.7, yRatio: 0.5, isFlipped: true),
-            WidgetCreature(emoji: "🐟", imageData: nil, size: 28, xRatio: 0.5, yRatio: 0.3, isFlipped: false),
+            WidgetCreature(id: 0, emoji: "🐠", imageData: nil, size: 32, xRatio: 0.3, yRatio: 0.4, isFlipped: false),
+            WidgetCreature(id: 1, emoji: "🦑", imageData: nil, size: 36, xRatio: 0.7, yRatio: 0.5, isFlipped: true),
+            WidgetCreature(id: 2, emoji: "🐟", imageData: nil, size: 28, xRatio: 0.5, yRatio: 0.3, isFlipped: false),
+        ]
+    )
+    AquariumEntry(
+        date: Date().addingTimeInterval(300),
+        timeOfDay: .afternoon,
+        creatures: [
+            WidgetCreature(id: 0, emoji: "🐠", imageData: nil, size: 32, xRatio: 0.7, yRatio: 0.5, isFlipped: true),
+            WidgetCreature(id: 1, emoji: "🦑", imageData: nil, size: 36, xRatio: 0.3, yRatio: 0.3, isFlipped: false),
+            WidgetCreature(id: 2, emoji: "🐟", imageData: nil, size: 28, xRatio: 0.6, yRatio: 0.6, isFlipped: true),
         ]
     )
 }
@@ -230,10 +243,20 @@ struct WidgetStarsView: View {
         date: Date(),
         timeOfDay: .night,
         creatures: [
-            WidgetCreature(emoji: "🐠", imageData: nil, size: 34, xRatio: 0.2, yRatio: 0.4, isFlipped: false),
-            WidgetCreature(emoji: "🦑", imageData: nil, size: 38, xRatio: 0.5, yRatio: 0.5, isFlipped: true),
-            WidgetCreature(emoji: "🐟", imageData: nil, size: 30, xRatio: 0.8, yRatio: 0.35, isFlipped: false),
-            WidgetCreature(emoji: "🪼", imageData: nil, size: 28, xRatio: 0.35, yRatio: 0.55, isFlipped: false),
+            WidgetCreature(id: 0, emoji: "🐠", imageData: nil, size: 34, xRatio: 0.2, yRatio: 0.4, isFlipped: false),
+            WidgetCreature(id: 1, emoji: "🦑", imageData: nil, size: 38, xRatio: 0.5, yRatio: 0.5, isFlipped: true),
+            WidgetCreature(id: 2, emoji: "🐟", imageData: nil, size: 30, xRatio: 0.8, yRatio: 0.35, isFlipped: false),
+            WidgetCreature(id: 3, emoji: "🪼", imageData: nil, size: 28, xRatio: 0.35, yRatio: 0.55, isFlipped: false),
+        ]
+    )
+    AquariumEntry(
+        date: Date().addingTimeInterval(300),
+        timeOfDay: .night,
+        creatures: [
+            WidgetCreature(id: 0, emoji: "🐠", imageData: nil, size: 34, xRatio: 0.6, yRatio: 0.3, isFlipped: true),
+            WidgetCreature(id: 1, emoji: "🦑", imageData: nil, size: 38, xRatio: 0.2, yRatio: 0.6, isFlipped: false),
+            WidgetCreature(id: 2, emoji: "🐟", imageData: nil, size: 30, xRatio: 0.5, yRatio: 0.5, isFlipped: true),
+            WidgetCreature(id: 3, emoji: "🪼", imageData: nil, size: 28, xRatio: 0.75, yRatio: 0.4, isFlipped: true),
         ]
     )
 }
@@ -245,11 +268,22 @@ struct WidgetStarsView: View {
         date: Date(),
         timeOfDay: .evening,
         creatures: [
-            WidgetCreature(emoji: "🐠", imageData: nil, size: 38, xRatio: 0.25, yRatio: 0.3, isFlipped: false),
-            WidgetCreature(emoji: "🦑", imageData: nil, size: 42, xRatio: 0.6, yRatio: 0.45, isFlipped: true),
-            WidgetCreature(emoji: "🐟", imageData: nil, size: 32, xRatio: 0.8, yRatio: 0.25, isFlipped: false),
-            WidgetCreature(emoji: "🪼", imageData: nil, size: 30, xRatio: 0.15, yRatio: 0.55, isFlipped: false),
-            WidgetCreature(emoji: "🐡", imageData: nil, size: 35, xRatio: 0.45, yRatio: 0.6, isFlipped: true),
+            WidgetCreature(id: 0, emoji: "🐠", imageData: nil, size: 38, xRatio: 0.25, yRatio: 0.3, isFlipped: false),
+            WidgetCreature(id: 1, emoji: "🦑", imageData: nil, size: 42, xRatio: 0.6, yRatio: 0.45, isFlipped: true),
+            WidgetCreature(id: 2, emoji: "🐟", imageData: nil, size: 32, xRatio: 0.8, yRatio: 0.25, isFlipped: false),
+            WidgetCreature(id: 3, emoji: "🪼", imageData: nil, size: 30, xRatio: 0.15, yRatio: 0.55, isFlipped: false),
+            WidgetCreature(id: 4, emoji: "🐡", imageData: nil, size: 35, xRatio: 0.45, yRatio: 0.6, isFlipped: true),
+        ]
+    )
+    AquariumEntry(
+        date: Date().addingTimeInterval(300),
+        timeOfDay: .night,
+        creatures: [
+            WidgetCreature(id: 0, emoji: "🐠", imageData: nil, size: 38, xRatio: 0.7, yRatio: 0.5, isFlipped: true),
+            WidgetCreature(id: 1, emoji: "🦑", imageData: nil, size: 42, xRatio: 0.3, yRatio: 0.3, isFlipped: false),
+            WidgetCreature(id: 2, emoji: "🐟", imageData: nil, size: 32, xRatio: 0.5, yRatio: 0.55, isFlipped: true),
+            WidgetCreature(id: 3, emoji: "🪼", imageData: nil, size: 30, xRatio: 0.8, yRatio: 0.35, isFlipped: true),
+            WidgetCreature(id: 4, emoji: "🐡", imageData: nil, size: 35, xRatio: 0.2, yRatio: 0.4, isFlipped: false),
         ]
     )
 }

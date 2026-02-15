@@ -10,7 +10,7 @@ struct AquariumEntry: TimelineEntry {
 
 /// 위젯에 표시될 캐릭터 (위치 포함)
 struct WidgetCreature: Identifiable {
-    let id = UUID()
+    let id: Int          // 안정적 ID → SwiftUI가 같은 캐릭터를 추적해서 애니메이션 적용
     let emoji: String?
     let imageData: Data?
     let size: CGFloat
@@ -37,9 +37,9 @@ struct AquariumTimelineProvider: TimelineProvider {
         // 현재 시간대 엔트리
         entries.append(makeEntry(date: now))
 
-        // 15분 간격으로 캐릭터 위치 변경 (움직이는 느낌)
-        for i in 1...8 {
-            let futureDate = Calendar.current.date(byAdding: .minute, value: 15 * i, to: now)!
+        // 5분 간격으로 캐릭터 위치 변경 (헤엄치는 느낌의 전환 애니메이션)
+        for i in 1...12 {
+            let futureDate = Calendar.current.date(byAdding: .minute, value: 5 * i, to: now)!
             entries.append(makeEntry(date: futureDate))
         }
 
@@ -54,9 +54,10 @@ struct AquariumTimelineProvider: TimelineProvider {
         let timeOfDay = SharedTimeOfDay.current
         let savedCreatures = SharedDataManager.loadCreatures()
 
-        // 캐릭터를 위젯 안에 랜덤 배치
-        let widgetCreatures = savedCreatures.prefix(8).map { creature in
+        // 캐릭터를 위젯 안에 랜덤 배치 (인덱스 기반 ID로 SwiftUI 전환 애니메이션 활성화)
+        let widgetCreatures = savedCreatures.prefix(8).enumerated().map { index, creature in
             WidgetCreature(
+                id: index,
                 emoji: creature.emoji,
                 imageData: creature.imageData,
                 size: creature.size * 0.6,  // 위젯용 축소
