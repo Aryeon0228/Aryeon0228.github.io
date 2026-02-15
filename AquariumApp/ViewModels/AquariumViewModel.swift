@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import WidgetKit
 
 class AquariumViewModel: ObservableObject {
 
@@ -184,11 +185,27 @@ class AquariumViewModel: ObservableObject {
         if let data = try? JSONEncoder().encode(creatures) {
             UserDefaults.standard.set(data, forKey: storageKey)
         }
+        // 위젯에도 공유
+        syncToWidget()
     }
 
     private func loadCreatures() {
         guard let data = UserDefaults.standard.data(forKey: storageKey),
               let saved = try? JSONDecoder().decode([Creature].self, from: data) else { return }
         creatures = saved
+    }
+
+    /// 위젯과 데이터 동기화
+    private func syncToWidget() {
+        let shared = creatures.map { c in
+            if let emoji = c.emoji {
+                return SharedCreature(emoji: emoji, size: c.size)
+            } else if let data = c.imageData {
+                return SharedCreature(imageData: data, size: c.size)
+            }
+            return SharedCreature(emoji: "🐠", size: c.size)
+        }
+        SharedDataManager.saveCreatures(shared)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
