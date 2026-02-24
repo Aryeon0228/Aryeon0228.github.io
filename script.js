@@ -16,17 +16,20 @@ if (themeToggle) {
     });
 }
 
-// ==================== Cursor Glow Dot + Click Ripple Effect ====================
+// ==================== Cursor Particle Trail + Click Ripple Effect ====================
 const cursorCanvas = document.getElementById('cursorTrailCanvas');
 
 if (cursorCanvas) {
     const ctx = cursorCanvas.getContext('2d');
     let mouseX = 0;
     let mouseY = 0;
-    let dotX = 0;
-    let dotY = 0;
+    let prevMouseX = 0;
+    let prevMouseY = 0;
     let isMouseInWindow = true;
+    const particles = [];
     const ripples = [];
+    const MAX_PARTICLES = 120;
+    let spawnAccumulator = 0;
 
     // Check if dark mode
     function isDarkMode() {
@@ -57,8 +60,8 @@ if (cursorCanvas) {
         isMouseInWindow = true;
         mouseX = e.clientX;
         mouseY = e.clientY;
-        dotX = mouseX;
-        dotY = mouseY;
+        prevMouseX = mouseX;
+        prevMouseY = mouseY;
     });
 
     // Add ripple on click
@@ -71,34 +74,72 @@ if (cursorCanvas) {
         });
     });
 
+    // Create a particle at (x, y) with random drift
+    function spawnParticle(x, y) {
+        if (particles.length >= MAX_PARTICLES) return;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 0.5 + 0.2;
+        particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size: Math.random() * 3 + 2,   // 2~5px
+            alpha: Math.random() * 0.4 + 0.4, // 0.4~0.8
+            decay: Math.random() * 0.01 + 0.008 // fade speed
+        });
+    }
+
     // Animation loop
     function animate() {
         ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 
         const dark = isDarkMode();
-        const dotColor = dark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)';
-        const glowColor = dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)';
+        const particleRGB = dark ? '255, 255, 255' : '0, 0, 0';
         const rippleColor = dark ? '255, 255, 255' : '0, 0, 0';
 
+        // Spawn particles along the mouse path
         if (isMouseInWindow) {
-            // Smooth follow for the dot
-            dotX += (mouseX - dotX) * 0.2;
-            dotY += (mouseY - dotY) * 0.2;
+            const dx = mouseX - prevMouseX;
+            const dy = mouseY - prevMouseY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
 
-            // Draw subtle outer glow
-            const gradient = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 20);
-            gradient.addColorStop(0, glowColor);
-            gradient.addColorStop(1, 'transparent');
+            // Spawn particles proportional to movement distance
+            spawnAccumulator += dist;
+            const spawnInterval = 6; // spawn one particle every 6px of movement
 
+            while (spawnAccumulator >= spawnInterval) {
+                spawnAccumulator -= spawnInterval;
+                const t = spawnAccumulator / (dist || 1);
+                const sx = mouseX - dx * t;
+                const sy = mouseY - dy * t;
+                spawnParticle(sx, sy);
+            }
+
+            prevMouseX = mouseX;
+            prevMouseY = mouseY;
+        }
+
+        // Update and draw particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+
+            // Update position with drift
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Fade out
+            p.alpha -= p.decay;
+
+            if (p.alpha <= 0) {
+                particles.splice(i, 1);
+                continue;
+            }
+
+            // Draw particle
             ctx.beginPath();
-            ctx.arc(dotX, dotY, 20, 0, Math.PI * 2);
-            ctx.fillStyle = gradient;
-            ctx.fill();
-
-            // Draw main dot (smaller, cleaner)
-            ctx.beginPath();
-            ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
-            ctx.fillStyle = dotColor;
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${particleRGB}, ${p.alpha})`;
             ctx.fill();
         }
 
