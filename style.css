@@ -686,8 +686,31 @@ nav {
 /* ==================== Resume Section ==================== */
 .resume-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
     gap: var(--spacing-md);
+}
+
+/* Left column: Education → Skills → Download */
+/* Right column: Experience spans all rows */
+.resume-grid > .card:first-child {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.resume-grid > .card-skills {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.resume-grid > .card-download {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.resume-grid > .card-experience {
+    grid-column: 2;
+    grid-row: 1 / -1;
 }
 
 .resume-item {
@@ -1505,6 +1528,14 @@ footer p {
     .contact-grid,
     .awards-grid {
         grid-template-columns: 1fr;
+    }
+
+    .resume-grid > .card:first-child,
+    .resume-grid > .card-skills,
+    .resume-grid > .card-download,
+    .resume-grid > .card-experience {
+        grid-column: 1;
+        grid-row: auto;
     }
 
     .skills-grid {
