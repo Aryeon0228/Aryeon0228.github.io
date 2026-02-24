@@ -16,20 +16,23 @@ if (themeToggle) {
     });
 }
 
-// ==================== Cursor Particle Trail + Click Ripple Effect ====================
+// ==================== Cursor Watercolor Line Trail ====================
 const cursorCanvas = document.getElementById('cursorTrailCanvas');
 
 if (cursorCanvas) {
     const ctx = cursorCanvas.getContext('2d');
     let mouseX = 0;
     let mouseY = 0;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
     let isMouseInWindow = true;
+
+    // Store trail points with timestamps
+    const trail = [];
+    const MAX_TRAIL = 40;
+    const TRAIL_LIFETIME = 350; // ms before fully faded
+
+    // Particles that spawn from the tail
     const particles = [];
-    const ripples = [];
-    const MAX_PARTICLES = 120;
-    let spawnAccumulator = 0;
+    const MAX_PARTICLES = 60;
 
     // Check if dark mode
     function isDarkMode() {
@@ -44,10 +47,31 @@ if (cursorCanvas) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Track mouse movement
+    // Track mouse movement - add points to trail
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
+
+        if (!isMouseInWindow) return;
+
+        // Only add point if moved enough distance from last point
+        const last = trail[trail.length - 1];
+        if (last) {
+            const dx = mouseX - last.x;
+            const dy = mouseY - last.y;
+            if (dx * dx + dy * dy < 9) return; // min 3px distance
+        }
+
+        trail.push({
+            x: mouseX,
+            y: mouseY,
+            time: performance.now()
+        });
+
+        // Limit trail length
+        if (trail.length > MAX_TRAIL) {
+            trail.shift();
+        }
     });
 
     // Hide when mouse leaves window
@@ -60,75 +84,74 @@ if (cursorCanvas) {
         isMouseInWindow = true;
         mouseX = e.clientX;
         mouseY = e.clientY;
-        prevMouseX = mouseX;
-        prevMouseY = mouseY;
+        // Clear trail on re-enter to avoid jump lines
+        trail.length = 0;
     });
 
-    // Add ripple on click
-    document.addEventListener('click', (e) => {
-        ripples.push({
-            x: e.clientX,
-            y: e.clientY,
-            radius: 0,
-            alpha: 0.6
-        });
-    });
-
-    // Create a particle at (x, y) with random drift
-    function spawnParticle(x, y) {
-        if (particles.length >= MAX_PARTICLES) return;
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 0.5 + 0.2;
-        particles.push({
-            x: x,
-            y: y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            size: Math.random() * 3 + 2,   // 2~5px
-            alpha: Math.random() * 0.4 + 0.4, // 0.4~0.8
-            decay: Math.random() * 0.01 + 0.008 // fade speed
-        });
-    }
-
-    // Animation loop
+    // Draw smooth watercolor line
     function animate() {
         ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 
+        const now = performance.now();
         const dark = isDarkMode();
-        const particleRGB = dark ? '255, 255, 255' : '0, 0, 0';
-        const rippleColor = dark ? '255, 255, 255' : '0, 0, 0';
 
-        // Spawn particles along the mouse path
-        if (isMouseInWindow) {
-            const dx = mouseX - prevMouseX;
-            const dy = mouseY - prevMouseY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-
-            // Spawn particles proportional to movement distance
-            spawnAccumulator += dist;
-            const spawnInterval = 6; // spawn one particle every 6px of movement
-
-            while (spawnAccumulator >= spawnInterval) {
-                spawnAccumulator -= spawnInterval;
-                const t = spawnAccumulator / (dist || 1);
-                const sx = mouseX - dx * t;
-                const sy = mouseY - dy * t;
-                spawnParticle(sx, sy);
+        // Remove expired points — spawn particles at the dying tail
+        while (trail.length > 0 && now - trail[0].time > TRAIL_LIFETIME) {
+            const dead = trail.shift();
+            if (particles.length < MAX_PARTICLES) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 0.6 + 0.2;
+                particles.push({
+                    x: dead.x,
+                    y: dead.y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 2 + 1,
+                    alpha: 0.2 + Math.random() * 0.1,
+                    decay: 0.006 + Math.random() * 0.006
+                });
             }
-
-            prevMouseX = mouseX;
-            prevMouseY = mouseY;
         }
 
-        // Update and draw particles
+        if (trail.length < 2) {
+            requestAnimationFrame(animate);
+            return;
+        }
+
+        // 3 watercolor layers: [alpha, lineWidth]
+        const layers = [
+            [0.18, 1.5],
+            [0.07, 3.5],
+            [0.025, 6]
+        ];
+
+        for (const [alpha, width] of layers) {
+            ctx.beginPath();
+            ctx.moveTo(trail[0].x, trail[0].y);
+
+            // Smooth curve through all points using quadratic bezier
+            for (let i = 1; i < trail.length - 1; i++) {
+                const xc = (trail[i].x + trail[i + 1].x) / 2;
+                const yc = (trail[i].y + trail[i + 1].y) / 2;
+                ctx.quadraticCurveTo(trail[i].x, trail[i].y, xc, yc);
+            }
+            ctx.lineTo(trail[trail.length - 1].x, trail[trail.length - 1].y);
+
+            ctx.strokeStyle = dark
+                ? `rgba(255, 255, 255, ${alpha})`
+                : `rgba(0, 0, 0, ${alpha})`;
+            ctx.lineWidth = width;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+        }
+
+        // Draw and update tail particles
+        const rgb = dark ? '255,255,255' : '0,0,0';
         for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
-
-            // Update position with drift
             p.x += p.vx;
             p.y += p.vy;
-
-            // Fade out
             p.alpha -= p.decay;
 
             if (p.alpha <= 0) {
@@ -136,31 +159,10 @@ if (cursorCanvas) {
                 continue;
             }
 
-            // Draw particle
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${particleRGB}, ${p.alpha})`;
+            ctx.fillStyle = `rgba(${rgb},${p.alpha})`;
             ctx.fill();
-        }
-
-        // Draw and update ripples
-        for (let i = ripples.length - 1; i >= 0; i--) {
-            const ripple = ripples[i];
-
-            ctx.beginPath();
-            ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(${rippleColor}, ${ripple.alpha})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            // Update ripple
-            ripple.radius += 3;
-            ripple.alpha -= 0.015;
-
-            // Remove faded ripples
-            if (ripple.alpha <= 0) {
-                ripples.splice(i, 1);
-            }
         }
 
         requestAnimationFrame(animate);
@@ -227,11 +229,11 @@ if (header) {
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
 
-        // Add shadow to header on scroll
+        // Add scrolled class for glow effect
         if (currentScroll > 10) {
-            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            header.classList.add('scrolled');
         } else {
-            header.style.boxShadow = 'none';
+            header.classList.remove('scrolled');
         }
     });
 }
@@ -253,7 +255,7 @@ const observer = new IntersectionObserver((entries) => {
 
 // Observe all cards and sections for animation
 document.addEventListener('DOMContentLoaded', () => {
-    const animatedElements = document.querySelectorAll('.card, .section-title');
+    const animatedElements = document.querySelectorAll('.card, .section-title, .portfolio-card, .experience-item, .award-item');
 
     animatedElements.forEach(el => {
         el.style.opacity = '0';
@@ -347,7 +349,7 @@ portfolioImageWrappers.forEach(wrapper => {
         // Add scale and glow effect on hover
         if (card) {
             card.style.transform = 'scale(1.03)';
-            card.style.boxShadow = '0 25px 50px rgba(138, 85, 254, 0.3), 0 15px 30px rgba(92, 223, 230, 0.2)';
+            card.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.15)';
         }
     });
 
@@ -404,7 +406,7 @@ portfolioImageWrappers.forEach(wrapper => {
             if (card) {
                 const shadowX = rotateY * 1.5;
                 const shadowY = -rotateX * 1.5;
-                card.style.boxShadow = `${shadowX}px ${shadowY + 20}px 50px rgba(138, 85, 254, 0.35), ${shadowX * 0.5}px ${shadowY * 0.5 + 10}px 25px rgba(92, 223, 230, 0.25)`;
+                card.style.boxShadow = `${shadowX}px ${shadowY + 20}px 50px rgba(0, 0, 0, 0.15)`;
             }
         });
     });
