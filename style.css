@@ -968,6 +968,33 @@ nav {
     letter-spacing: 0.1em;
 }
 
+/* Experience Category Divider & Title */
+.experience-category {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.experience-category-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+
+.experience-category-title svg {
+    opacity: 0.5;
+}
+
+.experience-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 1rem 0;
+}
+
 .skill-tags {
     display: flex;
     flex-wrap: wrap;
