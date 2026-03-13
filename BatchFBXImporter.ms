@@ -26,15 +26,19 @@ rollout BatchFBXImporter "Batch FBX Importer" width:400 height:320
 	-- 파일 추가
 	on btnAdd pressed do
 	(
-		local files = getOpenFileNames caption:"FBX 파일 선택" \
-			types:"FBX Files (*.fbx)|*.fbx|All Files (*.*)|*.*"
+		local dlg = dotNetObject "System.Windows.Forms.OpenFileDialog"
+		dlg.title = "FBX 파일 선택"
+		dlg.filter = "FBX Files (*.fbx)|*.fbx|All Files (*.*)|*.*"
+		dlg.multiSelect = true
 
-		if files != undefined do
+		local result = dlg.showDialog()
+		if result == (dotNetClass "System.Windows.Forms.DialogResult").OK do
 		(
-			for f in files do
+			local files = dlg.fileNames
+			for i = 1 to files.count do
 			(
+				local f = files[i]
 				append filePaths f
-				-- 리스트에는 파일명만 표시
 				local items = lbxFiles.items
 				append items (getFilenameFile f + ".fbx")
 				lbxFiles.items = items
