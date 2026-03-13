@@ -1,6 +1,6 @@
 /*
 	Batch FBX Importer
-	여러 FBX 파일을 한번에 임포트하는 맥스스크립트
+	Import multiple FBX files at once into 3ds Max
 */
 
 try(destroyDialog BatchFBXImporter) catch()
@@ -8,26 +8,26 @@ try(destroyDialog BatchFBXImporter) catch()
 rollout BatchFBXImporter "Batch FBX Importer" width:400 height:320
 (
 	-- UI
-	label lblInfo "임포트할 FBX 파일들을 추가하세요." pos:[10,10]
+	label lblInfo "Add FBX files to import." pos:[10,10]
 	listbox lbxFiles "" pos:[10,30] width:380 height:10
 
-	button btnAdd "파일 추가" pos:[10,210] width:120 height:30
-	button btnRemove "선택 제거" pos:[140,210] width:120 height:30
-	button btnClear "전체 제거" pos:[270,210] width:120 height:30
+	button btnAdd "Add Files" pos:[10,210] width:120 height:30
+	button btnRemove "Remove Selected" pos:[140,210] width:120 height:30
+	button btnClear "Clear All" pos:[270,210] width:120 height:30
 
-	checkbox chkNewScene "파일마다 새 씬으로 임포트" pos:[10,250]
-	checkbox chkMerge "현재 씬에 합치기" pos:[10,270] checked:true
+	checkbox chkNewScene "Import each file into a new scene" pos:[10,250]
+	checkbox chkMerge "Merge into current scene" pos:[10,270] checked:true
 
-	button btnImport "임포트 시작" pos:[10,295] width:380 height:30
+	button btnImport "Import" pos:[10,295] width:380 height:30
 
-	-- 파일 경로 저장용 배열
+	-- File path storage
 	local filePaths = #()
 
-	-- 파일 추가
+	-- Add files
 	on btnAdd pressed do
 	(
 		local dlg = dotNetObject "System.Windows.Forms.OpenFileDialog"
-		dlg.title = "FBX 파일 선택"
+		dlg.title = "Select FBX Files"
 		dlg.filter = "FBX Files (*.fbx)|*.fbx|All Files (*.*)|*.*"
 		dlg.multiSelect = true
 
@@ -46,7 +46,7 @@ rollout BatchFBXImporter "Batch FBX Importer" width:400 height:320
 		)
 	)
 
-	-- 선택 항목 제거
+	-- Remove selected item
 	on btnRemove pressed do
 	(
 		local sel = lbxFiles.selection
@@ -59,14 +59,14 @@ rollout BatchFBXImporter "Batch FBX Importer" width:400 height:320
 		)
 	)
 
-	-- 전체 제거
+	-- Clear all
 	on btnClear pressed do
 	(
 		filePaths = #()
 		lbxFiles.items = #()
 	)
 
-	-- 체크박스 상호 배타 처리
+	-- Mutually exclusive checkboxes
 	on chkNewScene changed state do
 	(
 		if state do chkMerge.checked = false
@@ -77,12 +77,12 @@ rollout BatchFBXImporter "Batch FBX Importer" width:400 height:320
 		if state do chkNewScene.checked = false
 	)
 
-	-- 임포트 실행
+	-- Run import
 	on btnImport pressed do
 	(
 		if filePaths.count == 0 then
 		(
-			messageBox "임포트할 파일이 없습니다." title:"알림"
+			messageBox "No files to import." title:"Notice"
 		)
 		else
 		(
@@ -104,18 +104,18 @@ rollout BatchFBXImporter "Batch FBX Importer" width:400 height:320
 					)
 					catch
 					(
-						format "*** 임포트 실패: % - %\n" f (getCurrentException())
+						format "*** Import failed: % - %\n" f (getCurrentException())
 						failCount += 1
 					)
 				)
 				else
 				(
-					format "*** 파일 없음: %\n" f
+					format "*** File not found: %\n" f
 					failCount += 1
 				)
 			)
 
-			messageBox (successCount as string + "개 성공, " + failCount as string + "개 실패") title:"임포트 완료"
+			messageBox (successCount as string + " succeeded, " + failCount as string + " failed") title:"Import Complete"
 		)
 	)
 )

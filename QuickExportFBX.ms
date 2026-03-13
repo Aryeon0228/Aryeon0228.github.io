@@ -1,7 +1,7 @@
 /*
 	Quick Export FBX
-	선택한 오브젝트에 Reset XForm, 피벗 센터 정렬, 원점 이동 후
-	Y-Up FBX로 지정 폴더에 익스포트하는 원클릭 스크립트
+	One-click script that applies Reset XForm, centers pivot, moves to origin,
+	and exports selected objects as Y-Up FBX
 */
 
 try(destroyDialog QuickExportFBX) catch()
@@ -9,24 +9,24 @@ try(destroyDialog QuickExportFBX) catch()
 rollout QuickExportFBX "Quick Export FBX" width:400 height:195
 (
 	-- UI
-	label lblFolder "익스포트 폴더:" pos:[10,10]
+	label lblFolder "Export Folder:" pos:[10,10]
 	edittext edtFolder "" pos:[10,28] width:310 readOnly:true
 	button btnBrowse "..." pos:[325,28] width:65 height:20
 
 	checkbox chkResetXForm "Reset XForm" pos:[10,60] checked:true
-	checkbox chkCenterPivot "피벗을 오브젝트 중심으로" pos:[10,80] checked:true
-	checkbox chkMoveOrigin "오브젝트를 원점(0,0,0)으로 이동" pos:[10,100] checked:true
-	checkbox chkIndividual "오브젝트별 개별 파일로 익스포트" pos:[10,120] checked:true
+	checkbox chkCenterPivot "Center pivot to object" pos:[10,80] checked:true
+	checkbox chkMoveOrigin "Move object to origin (0,0,0)" pos:[10,100] checked:true
+	checkbox chkIndividual "Export each object as separate file" pos:[10,120] checked:true
 
 	button btnExport "Export" pos:[10,150] width:380 height:35
 
-	-- 저장된 경로
+	-- Export path
 	local exportPath = ""
 
-	-- 폴더 선택
+	-- Browse folder
 	on btnBrowse pressed do
 	(
-		local dir = getSavePath caption:"익스포트 폴더 선택"
+		local dir = getSavePath caption:"Select Export Folder"
 		if dir != undefined do
 		(
 			exportPath = dir + "\\"
@@ -34,23 +34,20 @@ rollout QuickExportFBX "Quick Export FBX" width:400 height:195
 		)
 	)
 
-	-- 메인 처리 함수
+	-- Process object before export
 	fn processAndExport obj =
 	(
-		-- Reset XForm
 		if chkResetXForm.checked do
 		(
 			resetXForm obj
 			collapseStack obj
 		)
 
-		-- 피벗을 오브젝트 중심으로
 		if chkCenterPivot.checked do
 		(
 			obj.pivot = obj.center
 		)
 
-		-- 원점으로 이동
 		if chkMoveOrigin.checked do
 		(
 			obj.pos = [0, 0, 0]
@@ -59,9 +56,8 @@ rollout QuickExportFBX "Quick Export FBX" width:400 height:195
 
 	fn setupFBXExportSettings =
 	(
-		-- Y-Up 설정 (3ds Max는 Z-Up이므로 변환)
+		-- Y-Up (3ds Max is Z-Up, so convert)
 		FBXExporterSetParam "UpAxis" "Y"
-		-- 기본 설정
 		FBXExporterSetParam "SmoothingGroups" true
 		FBXExporterSetParam "TangentSpaceExport" true
 		FBXExporterSetParam "Preserveinstances" false
@@ -69,30 +65,29 @@ rollout QuickExportFBX "Quick Export FBX" width:400 height:195
 		FBXExporterSetParam "FileVersion" "FBX202000"
 	)
 
-	-- 익스포트 실행
+	-- Run export
 	on btnExport pressed do
 	(
 		if exportPath == "" then
 		(
-			messageBox "익스포트 폴더를 먼저 선택하세요." title:"알림"
+			messageBox "Please select an export folder first." title:"Notice"
 			return undefined
 		)
 
 		if selection.count == 0 then
 		(
-			messageBox "익스포트할 오브젝트를 선택하세요." title:"알림"
+			messageBox "Please select objects to export." title:"Notice"
 			return undefined
 		)
 
 		local objs = selection as array
 		local successCount = 0
 
-		-- FBX 익스포트 설정
 		setupFBXExportSettings()
 
 		if chkIndividual.checked then
 		(
-			-- 개별 파일로 익스포트
+			-- Export as individual files
 			for obj in objs do
 			(
 				try
@@ -107,13 +102,13 @@ rollout QuickExportFBX "Quick Export FBX" width:400 height:195
 				)
 				catch
 				(
-					format "*** 실패: % - %\n" obj.name (getCurrentException())
+					format "*** Export failed: % - %\n" obj.name (getCurrentException())
 				)
 			)
 		)
 		else
 		(
-			-- 전체를 하나의 파일로 익스포트
+			-- Export all as single file
 			try
 			(
 				for obj in objs do processAndExport obj
@@ -126,13 +121,12 @@ rollout QuickExportFBX "Quick Export FBX" width:400 height:195
 			)
 			catch
 			(
-				format "*** 익스포트 실패: %\n" (getCurrentException())
+				format "*** Export failed: %\n" (getCurrentException())
 			)
 		)
 
-		-- 결과
 		select objs
-		messageBox (successCount as string + "개 오브젝트 익스포트 완료") title:"완료"
+		messageBox (successCount as string + " object(s) exported successfully") title:"Done"
 	)
 )
 
