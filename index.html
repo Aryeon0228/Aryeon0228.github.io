@@ -336,6 +336,9 @@
     <section id="agentic" class="section">
         <div class="container">
             <h2 class="section-title">Agentic Coding</h2>
+
+            <!-- Web / App -->
+            <h3 class="section-subtitle">Web / App</h3>
             <div class="portfolio-grid">
                 <!-- Portfolio Website -->
                 <div class="portfolio-card portfolio-gradient-1">
@@ -382,12 +385,16 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <!-- 3ds Max Scripts -->
+            <h3 class="section-subtitle">3ds Max Scripts</h3>
+            <div class="portfolio-grid">
                 <!-- UV Exporter -->
                 <div class="portfolio-card portfolio-gradient-5">
                     <div class="portfolio-content">
                         <h3>UV Exporter</h3>
-                        <p>선택한 오브젝트의 UV를 원클릭으로 PNG 익스포트하는 3ds Max 스크립트입니다. 1024 / 2048 / 4096 해상도를 지원하며, Unwrap UVW 모디파이어 자동 적용 및 익스포트 후 폴더 자동 오픈 기능을 제공합니다.</p>
+                        <p>선택한 오브젝트의 UV를 원클릭으로 PNG 익스포트하는 스크립트입니다. 1024 / 2048 / 4096 해상도를 지원하며, Unwrap UVW 모디파이어 자동 적용 및 익스포트 후 폴더 자동 오픈 기능을 제공합니다.</p>
                         <div class="portfolio-actions">
                             <a href="UVWscript01.ms" class="portfolio-btn portfolio-btn-primary" download>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -397,13 +404,41 @@
                     </div>
                 </div>
 
-                <!-- Normal Smoothing Baker -->
+                <!-- Snap UV Vertices -->
+                <div class="portfolio-card portfolio-gradient-3">
+                    <div class="portfolio-content">
+                        <h3>Snap UV Vertices</h3>
+                        <p>Unwrap UVW에서 일정 거리 안의 UV 버텍스들을 평균 위치로 스냅하는 스크립트입니다. 살짝 다른 모델링의 UV 아일랜드를 겹친 뒤 버텍스를 한점으로 정렬할 때 유용합니다.</p>
+                        <div class="portfolio-actions">
+                            <a href="SnapUVVerts.ms" class="portfolio-btn portfolio-btn-primary" download>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Download .ms
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outline Normal Baker -->
                 <div class="portfolio-card portfolio-gradient-6">
                     <div class="portfolio-content">
                         <h3>Outline Normal Baker</h3>
-                        <p>MK Toon 쉐이더의 아웃라인을 위해 스무딩된 노말을 UV7 채널에 베이크하는 3ds Max 스크립트입니다. 오브젝트를 선택하고 BAKE 버튼 하나로 간편하게 적용할 수 있으며, Unity에서 아웃라인 렌더링 품질을 개선합니다.</p>
+                        <p>MK Toon 쉐이더의 아웃라인을 위해 스무딩된 노말을 UV7 채널에 베이크하는 스크립트입니다. BAKE 버튼 하나로 간편하게 적용할 수 있으며, Unity에서 아웃라인 렌더링 품질을 개선합니다.</p>
                         <div class="portfolio-actions">
                             <a href="NormalSmoothing.ms" class="portfolio-btn portfolio-btn-primary" download>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Download .ms
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remove Collinear Verts -->
+                <div class="portfolio-card portfolio-gradient-4">
+                    <div class="portfolio-content">
+                        <h3>Remove Collinear Verts</h3>
+                        <p>직선 위의 불필요한 중간 버텍스를 자동으로 제거하는 스크립트입니다. 선택한 오브젝트의 지오메트리를 정리하여 폴리곤 수를 최적화합니다.</p>
+                        <div class="portfolio-actions">
+                            <a href="RemoveCollinearVerts.ms" class="portfolio-btn portfolio-btn-primary" download>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                                 Download .ms
                             </a>
@@ -415,7 +450,7 @@
                 <div class="portfolio-card portfolio-gradient-1">
                     <div class="portfolio-content">
                         <h3>Quick Export FBX</h3>
-                        <p>선택한 오브젝트를 원클릭으로 FBX 익스포트하는 3ds Max 스크립트입니다. Reset XForm, 피벗 센터링, 월드 원점 이동, Y-Up 좌표계 변환을 자동 처리하며, 개별/통합 익스포트를 지원합니다. Unreal/Unity 등 게임 엔진용 에셋 파이프라인에 최적화되어 있습니다.</p>
+                        <p>선택한 오브젝트를 원클릭으로 FBX 익스포트하는 스크립트입니다. Reset XForm, 피벗 센터링, 월드 원점 이동, Y-Up 좌표계 변환을 자동 처리하며, 개별/통합 익스포트를 지원합니다.</p>
                         <div class="portfolio-actions">
                             <a href="QuickExportFBX.ms" class="portfolio-btn portfolio-btn-primary" download>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -429,7 +464,7 @@
                 <div class="portfolio-card portfolio-gradient-2">
                     <div class="portfolio-content">
                         <h3>Batch FBX Importer</h3>
-                        <p>여러 FBX 파일을 한 번에 임포트하는 3ds Max 배치 스크립트입니다. 파일별 새 씬 생성 또는 현재 씬에 병합하는 두 가지 모드를 지원하며, 다중 파일 선택과 성공/실패 카운트 리포트 기능을 제공합니다.</p>
+                        <p>여러 FBX 파일을 한 번에 임포트하는 배치 스크립트입니다. 파일별 새 씬 생성 또는 현재 씬에 병합하는 두 가지 모드를 지원하며, 다중 파일 선택과 성공/실패 카운트 리포트 기능을 제공합니다.</p>
                         <div class="portfolio-actions">
                             <a href="BatchFBXImporter.ms" class="portfolio-btn portfolio-btn-primary" download>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
