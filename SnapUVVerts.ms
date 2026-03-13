@@ -202,7 +202,8 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 
 		-- 완료 사운드
 		windows.processPostedMessages()
-		sysInfo.beep 1
+		dotNetClass "System.Media.SystemSounds"
+		(dotNetClass "System.Media.SystemSounds").Beep.Play()
 
 		-- 결과 메시지
 		local msg = ""
