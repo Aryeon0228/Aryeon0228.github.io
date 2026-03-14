@@ -1136,6 +1136,38 @@ nav {
     border: none;
     border-radius: 20px;
     box-shadow: 6px 6px 20px #d4d4d4, -6px -6px 14px #ffffff, 0 0 8px rgba(0,0,0,0.04);
+    position: relative;
+}
+
+/* Colorzzle background image */
+.colorzzle-card .colorzzle-bg {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    width: 65%;
+    max-width: 280px;
+    opacity: 0.10;
+    pointer-events: none;
+    z-index: 0;
+    filter: grayscale(0.2);
+    transition: opacity 0.3s ease;
+}
+
+.colorzzle-card:hover .colorzzle-bg {
+    opacity: 0.18;
+}
+
+[data-theme="dark"] .colorzzle-card .colorzzle-bg {
+    opacity: 0.08;
+}
+
+[data-theme="dark"] .colorzzle-card:hover .colorzzle-bg {
+    opacity: 0.14;
+}
+
+.colorzzle-card .portfolio-content {
+    position: relative;
+    z-index: 1;
 }
 
 [data-theme="dark"] .portfolio-card {
