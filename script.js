@@ -131,8 +131,8 @@ if (themeToggle) {
                 <!-- head -->
                 <ellipse cx="8" cy="12" rx="7" ry="6" fill="${bodyColor}"/>
                 <!-- ears (back ear flipped) -->
-                <polygon points="5,8 3,3 8,6" fill="${bodyColor}"/>
-                <polygon points="11,8 13,3 8,6" fill="${bodyColor}"/>
+                <polygon points="4,8 1,3 7,6" fill="${bodyColor}"/>
+                <polygon points="12,8 15,3 9,6" fill="${bodyColor}"/>
                 <!-- closed eyes -->
                 <path d="M5,12 Q6.5,13 8,12" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
                 <path d="M9,11 Q10.5,12 12,11" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
@@ -159,11 +159,11 @@ if (themeToggle) {
             <!-- head -->
             <ellipse cx="20" cy="14" rx="7" ry="6" fill="${bodyColor}"/>
             <!-- ears (back ear original, front ear flipped to hug head) -->
-            <polygon points="17,10 15.5,4 20,8" fill="${bodyColor}"/>
-            <polygon points="25,10 26.5,4 22,8" fill="${bodyColor}"/>
+            <polygon points="15,10 13.5,4 18,8" fill="${bodyColor}"/>
+            <polygon points="27,10 28.5,4 24,8" fill="${bodyColor}"/>
             <!-- ear inner -->
-            <polygon points="17.5,9.5 16.5,5.5 19.5,8" fill="${noseColor}" opacity="0.3"/>
-            <polygon points="24.5,9.5 25.5,5.5 22.5,8" fill="${noseColor}" opacity="0.3"/>
+            <polygon points="15.5,9.5 14.5,5.5 17.5,8" fill="${noseColor}" opacity="0.3"/>
+            <polygon points="26.5,9.5 27.5,5.5 24.5,8" fill="${noseColor}" opacity="0.3"/>
             <!-- eyes -->
             <circle cx="18" cy="14" r="1.8" fill="${eyeColor}"/>
             <circle cx="23" cy="14" r="1.8" fill="${eyeColor}"/>
