@@ -1,6 +1,6 @@
 try(destroyDialog rlSmoothNormalBaker)catch()
 
-rollout rlSmoothNormalBaker "Outline Normal Baker v1.3" width:280
+rollout rlSmoothNormalBaker "Outline Normal Baker v1.4" width:280
 (
     group "Info"
     (
@@ -60,21 +60,61 @@ rollout rlSmoothNormalBaker "Outline Normal Baker v1.3" width:280
         if currentMaps <= 8 then
             meshop.setNumMaps obj 9
         
-        -- Calculate smoothed normals per vertex
+        -- Helper: get triangle area from 3 points
+        fn getTriArea p1 p2 p3 =
+        (
+            local e1 = p2 - p1
+            local e2 = p3 - p1
+            length (cross e1 e2) * 0.5
+        )
+
+        -- Helper: get angle at vertex in a triangle
+        fn getVertAngle pivot p1 p2 =
+        (
+            local e1 = normalize (p1 - pivot)
+            local e2 = normalize (p2 - pivot)
+            local d = dot e1 e2
+            d = amax (-1.0) (amin 1.0 d)
+            acos d
+        )
+
+        -- Calculate smoothed normals per vertex (area + angle weighted)
         local smoothNormals = #()
         for v = 1 to numVerts do
         (
             local vertFaces = meshop.getFacesUsingVert obj v as array
             local avgNormal = [0,0,0]
-            
+            local vertPos = meshop.getVert obj v
+
             for f in vertFaces do
-                avgNormal += getFaceNormal obj f
-            
+            (
+                local faceVerts = getFace obj f
+                local i1 = faceVerts.x as integer
+                local i2 = faceVerts.y as integer
+                local i3 = faceVerts.z as integer
+
+                local p1 = meshop.getVert obj i1
+                local p2 = meshop.getVert obj i2
+                local p3 = meshop.getVert obj i3
+
+                local area = getTriArea p1 p2 p3
+
+                -- Find the angle at the current vertex
+                local angle = 0.0
+                if i1 == v then angle = getVertAngle p1 p2 p3
+                else if i2 == v then angle = getVertAngle p2 p1 p3
+                else if i3 == v then angle = getVertAngle p3 p1 p2
+
+                local weight = area * angle
+                local fn_ = getFaceNormal obj f
+                avgNormal += fn_ * weight
+            )
+
             if length avgNormal > 0 then
                 avgNormal = normalize avgNormal
             else
                 avgNormal = [0,0,1]
-                
+
             smoothNormals[v] = (avgNormal + [1,1,1]) / 2.0
         )
         
