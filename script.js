@@ -127,15 +127,15 @@ if (themeToggle) {
             const zzFloat = Math.sin(Date.now() * 0.003) * 2;
             return `<svg width="32" height="34" viewBox="0 -14 32 38" style="transform: ${flip}">
                 <!-- body curled -->
-                <ellipse cx="16" cy="16" rx="12" ry="7" fill="${bodyColor}"/>
+                <ellipse cx="16" cy="16" rx="12.5" ry="7.8" fill="${bodyColor}"/>
                 <!-- head -->
-                <ellipse cx="8" cy="12" rx="7" ry="6" fill="${bodyColor}"/>
+                <ellipse cx="8" cy="12" rx="7.8" ry="7" fill="${bodyColor}"/>
                 <!-- ears (back ear flipped) -->
                 <polygon points="4,8 1,3 7,6" fill="${bodyColor}"/>
                 <polygon points="12,8 15,3 9,6" fill="${bodyColor}"/>
                 <!-- closed eyes -->
-                <path d="M5,12 Q6.5,13 8,12" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                <path d="M9,11 Q10.5,12 12,11" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M3.4,12.4 Q5,13.4 6.6,12.4" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M9.4,11.6 Q11,12.6 12.6,11.6" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
                 <!-- tail wrapping around -->
                 <path d="M27,17 Q29,11 25,9 Q22,7 20,11" stroke="${bodyColor}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
                 <!-- zzz above head -->
@@ -149,15 +149,15 @@ if (themeToggle) {
             <!-- tail -->
             <path d="M7,19 Q${3 + tailAngle * 0.1},${11 - Math.abs(tailAngle) * 0.05} ${3 + tailAngle * 0.05},7" stroke="${bodyColor}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             <!-- body -->
-            <ellipse cx="14" cy="19" rx="8" ry="5" fill="${bodyColor}"/>
+            <ellipse cx="14" cy="19" rx="8.5" ry="6.2" fill="${bodyColor}"/>
             <!-- back paws -->
-            <rect x="${7 - pawOffset * 0.3}" y="23" width="3" height="${moving ? 3 + pawOffset * 0.3 : 3}" rx="1" fill="${bodyColor}"/>
-            <rect x="${18 + pawOffset * 0.3}" y="23" width="3" height="${moving ? 3 - pawOffset * 0.3 : 3}" rx="1" fill="${bodyColor}"/>
+            <rect x="${6.5 - pawOffset * 0.3}" y="24" width="3.4" height="${moving ? 3 + pawOffset * 0.3 : 3}" rx="1.6" fill="${bodyColor}"/>
+            <rect x="${18 + pawOffset * 0.3}" y="24" width="3.4" height="${moving ? 3 - pawOffset * 0.3 : 3}" rx="1.6" fill="${bodyColor}"/>
             <!-- front paws -->
-            <rect x="${10 + pawOffset * 0.5}" y="23" width="2.5" height="${moving ? 3 - pawOffset * 0.4 : 3}" rx="1" fill="${bodyColor}"/>
-            <rect x="${15 - pawOffset * 0.5}" y="23" width="2.5" height="${moving ? 3 + pawOffset * 0.4 : 3}" rx="1" fill="${bodyColor}"/>
+            <rect x="${10 + pawOffset * 0.5}" y="24" width="3" height="${moving ? 3 - pawOffset * 0.4 : 3}" rx="1.5" fill="${bodyColor}"/>
+            <rect x="${15 - pawOffset * 0.5}" y="24" width="3" height="${moving ? 3 + pawOffset * 0.4 : 3}" rx="1.5" fill="${bodyColor}"/>
             <!-- head -->
-            <ellipse cx="20" cy="14" rx="7" ry="6" fill="${bodyColor}"/>
+            <ellipse cx="20" cy="14" rx="7.6" ry="7" fill="${bodyColor}"/>
             <!-- ears (back ear original, front ear flipped to hug head) -->
             <polygon points="15,10 13.5,4 18,8" fill="${bodyColor}"/>
             <polygon points="27,10 28.5,4 24,8" fill="${bodyColor}"/>
