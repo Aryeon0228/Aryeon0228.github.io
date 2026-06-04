@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고양이 편집기 (임시)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif; background: #eceef1; color: #222; }
+  header { padding: 12px 18px; background: #fff; border-bottom: 1px solid #dde; }
+  header h1 { margin: 0 0 4px; font-size: 17px; }
+  header p { margin: 0; font-size: 12.5px; color: #667; line-height: 1.5; }
+  .wrap { display: flex; gap: 16px; padding: 16px; align-items: flex-start; flex-wrap: wrap; }
+  .stage { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .stage.dark { background: #181c24; }
+  svg.canvas { display: block; touch-action: none; cursor: crosshair; }
+  .side { width: 340px; max-width: 100%; display: flex; flex-direction: column; gap: 12px; }
+  .panel { background: #fff; border-radius: 12px; padding: 12px 14px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .panel h2 { margin: 0 0 8px; font-size: 13px; color: #445; text-transform: uppercase; letter-spacing: .04em; }
+  .parts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .parts button { font-size: 12px; padding: 5px 9px; border: 1px solid #ccd; background: #f6f7f9; border-radius: 7px; cursor: pointer; }
+  .parts button.sel { background: #2b6cff; color: #fff; border-color: #2b6cff; }
+  .row { display: flex; gap: 8px; align-items: center; margin: 6px 0; font-size: 13px; }
+  .row label { width: 24px; color: #667; }
+  .row input[type=range] { flex: 1; }
+  .row .val { width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btns button { font-size: 13px; padding: 7px 12px; border-radius: 8px; border: 1px solid #ccd; background: #f6f7f9; cursor: pointer; }
+  .btns button.primary { background: #2b6cff; color: #fff; border-color: #2b6cff; }
+  textarea { width: 100%; height: 220px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; border: 1px solid #ccd; border-radius: 8px; padding: 8px; resize: vertical; }
+  .hint { font-size: 12px; color: #778; line-height: 1.6; }
+  .coord { font-variant-numeric: tabular-nums; color: #2b6cff; font-weight: 600; }
+  kbd { background:#eef; border:1px solid #ccd; border-radius:4px; padding:0 5px; font-size:11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🐈‍⬛ 고양이 편집기 <span style="font-size:12px;color:#99a;font-weight:400">(임시 — 좌표 조절용)</span></h1>
+  <p>
+    부위를 <b>클릭하면 선택</b> · <b>드래그로 이동</b> · <b>마우스 휠로 크기조절</b> · <b>방향키</b> 미세이동(0.1, Shift=0.5) · <kbd>+</kbd>/<kbd>-</kbd> 크기 ·
+    오른쪽 아래 출력값을 복사해서 저(클로드)에게 주시면 코드에 반영해요.
+  </p>
+</header>
+
+<div class="wrap">
+  <div class="stage" id="stage">
+    <svg class="canvas" id="svg" width="600" height="540" viewBox="0 -2 40 36"></svg>
+  </div>
+
+  <div class="side">
+    <div class="panel">
+      <h2>부위 선택</h2>
+      <div class="parts" id="partList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>선택: <span id="selName" style="color:#2b6cff">없음</span></h2>
+      <div id="ctrls"></div>
+      <div class="hint" id="cursorReadout">커서: –</div>
+    </div>
+
+    <div class="panel">
+      <h2>출력값 (이걸 복사해서 주세요)</h2>
+      <div class="btns" style="margin-bottom:8px">
+        <button class="primary" id="copyBtn">📋 복사</button>
+        <button id="themeBtn">🌙 다크 미리보기</button>
+        <button id="resetBtn">↺ 초기화</button>
+      </div>
+      <textarea id="out" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+const COL = { body: "#1f1f1f", pink: "#ff9fb6", white: "#ffffff", pupil: "#202020" };
+const DARK = { body: "#a3a3a3", pink: "#ff9fb6", white: "#ffffff", pupil: "#2a2a2a" };
+
+// --- initial parts (matches current script.js drawCat, facing right, resting) ---
+function defaults() {
+  return [
+    { id: "tail",   kind: "path", label: "꼬리", colorKey: "body",
+      d: "M10,24 Q2,22 2.5,13 Q3,6 10,8", w: 4.2, dx: 0, dy: 0 },
+    { id: "body1",  kind: "circle", label: "몸통1", colorKey: "body", cx: 15, cy: 21, r: 10 },
+    { id: "body2",  kind: "circle", label: "몸통2", colorKey: "body", cx: 22, cy: 21, r: 9 },
+    { id: "paw1",   kind: "circle", label: "왼발",  colorKey: "body", cx: 14, cy: 31, r: 2.8 },
+    { id: "paw2",   kind: "circle", label: "오른발", colorKey: "body", cx: 22, cy: 31, r: 2.8 },
+    { id: "head",   kind: "circle", label: "머리",  colorKey: "body", cx: 27, cy: 15, r: 11 },
+    { id: "cheek",  kind: "circle", label: "볼살",  colorKey: "body", cx: 34.5, cy: 21.5, r: 4.1 },
+    { id: "earLb",  kind: "poly", label: "왼귀",   colorKey: "body", pts: [[21.5,8],[19,0],[29,5]] },
+    { id: "earRb",  kind: "poly", label: "오른귀", colorKey: "body", pts: [[35.5,6.75],[38,-0.75],[30,3.75]] },
+    { id: "earLp",  kind: "poly", label: "왼귀分홍", colorKey: "pink", pts: [[22.73,7.01],[21.13,3.01],[27.13,5.17]] },
+    { id: "earRp",  kind: "poly", label: "오른귀分홍", colorKey: "pink", pts: [[34.37,5.78],[36.21,1.94],[30.93,3.94]] },
+    { id: "eyeL",   kind: "circle", label: "왼눈흰", colorKey: "white", cx: 23.8, cy: 15.8, r: 3.8 },
+    { id: "eyeR",   kind: "circle", label: "오른눈흰", colorKey: "white", cx: 33.1, cy: 15.8, r: 3.8 },
+    { id: "pupL",   kind: "circle", label: "왼동공", colorKey: "pupil", cx: 23.8, cy: 16.04, r: 2.7 },
+    { id: "pupR",   kind: "circle", label: "오른동공", colorKey: "pupil", cx: 33.1, cy: 16.04, r: 2.7 },
+    { id: "sparkL", kind: "circle", label: "왼하이라이트", colorKey: "white", cx: 22.8, cy: 14.9, r: 0.9 },
+    { id: "sparkR", kind: "circle", label: "오른하이라이트", colorKey: "white", cx: 32.1, cy: 14.9, r: 0.9 },
+    { id: "mouth",  kind: "poly", label: "입(다이아)", colorKey: "pink", pts: [[27.3,18.6],[28.7,20],[27.3,21.4],[25.9,20]] },
+  ];
+}
+
+let parts = defaults();
+let selected = null;
+let dark = false;
+
+const svg = document.getElementById("svg");
+const out = document.getElementById("out");
+const partListEl = document.getElementById("partList");
+const selNameEl = document.getElementById("selName");
+const ctrlsEl = document.getElementById("ctrls");
+const cursorReadout = document.getElementById("cursorReadout");
+
+function col(key) { return (dark ? DARK : COL)[key]; }
+function r1(n) { return Math.round(n * 100) / 100; }
+
+// convert a mouse event to SVG user coordinates
+function toSvg(e) {
+  const pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const m = svg.getScreenCTM().inverse();
+  const p = pt.matrixTransform(m);
+  return { x: p.x, y: p.y };
+}
+
+function centroid(pts) {
+  let x = 0, y = 0; pts.forEach(p => { x += p[0]; y += p[1]; });
+  return [x / pts.length, y / pts.length];
+}
+
+function render() {
+  // clear
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  // light grid for reference
+  for (let gx = 0; gx <= 40; gx += 5) addLine(gx, -2, gx, 34, "#00000010");
+  for (let gy = 0; gy <= 34; gy += 5) addLine(0, gy, 40, gy, "#00000010");
+
+  parts.forEach(p => {
+    let el;
+    if (p.kind === "circle") {
+      el = document.createElementNS(SVG_NS, "circle");
+      el.setAttribute("cx", p.cx); el.setAttribute("cy", p.cy); el.setAttribute("r", p.r);
+      el.setAttribute("fill", col(p.colorKey));
+    } else if (p.kind === "poly") {
+      el = document.createElementNS(SVG_NS, "polygon");
+      el.setAttribute("points", p.pts.map(a => a.join(",")).join(" "));
+      el.setAttribute("fill", col(p.colorKey));
+    } else if (p.kind === "path") {
+      el = document.createElementNS(SVG_NS, "path");
+      el.setAttribute("d", p.d);
+      el.setAttribute("transform", `translate(${p.dx},${p.dy})`);
+      el.setAttribute("stroke", col(p.colorKey));
+      el.setAttribute("stroke-width", p.w);
+      el.setAttribute("fill", "none");
+      el.setAttribute("stroke-linecap", "round");
+    }
+    el.style.cursor = "move";
+    el.dataset.id = p.id;
+    el.addEventListener("pointerdown", startDrag);
+    svg.appendChild(el);
+  });
+
+  // selection outline
+  if (selected) {
+    const p = parts.find(x => x.id === selected);
+    if (p) {
+      let o;
+      if (p.kind === "circle") {
+        o = document.createElementNS(SVG_NS, "circle");
+        o.setAttribute("cx", p.cx); o.setAttribute("cy", p.cy); o.setAttribute("r", Math.max(0.6, p.r));
+      } else if (p.kind === "poly") {
+        o = document.createElementNS(SVG_NS, "polygon");
+        o.setAttribute("points", p.pts.map(a => a.join(",")).join(" "));
+      } else {
+        o = document.createElementNS(SVG_NS, "path");
+        o.setAttribute("d", p.d); o.setAttribute("transform", `translate(${p.dx},${p.dy})`);
+      }
+      o.setAttribute("fill", "none");
+      o.setAttribute("stroke", "#2b6cff");
+      o.setAttribute("stroke-width", "0.4");
+      o.setAttribute("stroke-dasharray", "1,0.8");
+      o.style.pointerEvents = "none";
+      svg.appendChild(o);
+    }
+  }
+  updateOut();
+}
+
+function addLine(x1, y1, x2, y2, color) {
+  const l = document.createElementNS(SVG_NS, "line");
+  l.setAttribute("x1", x1); l.setAttribute("y1", y1); l.setAttribute("x2", x2); l.setAttribute("y2", y2);
+  l.setAttribute("stroke", color); l.setAttribute("stroke-width", "0.1");
+  l.style.pointerEvents = "none";
+  svg.appendChild(l);
+}
+
+// --- dragging ---
+let dragging = false, last = null;
+function startDrag(e) {
+  e.preventDefault();
+  selectPart(e.currentTarget.dataset.id);
+  dragging = true;
+  last = toSvg(e);
+  svg.setPointerCapture(e.pointerId);
+}
+svg.addEventListener("pointermove", e => {
+  const pt = toSvg(e);
+  cursorReadout.innerHTML = `커서: <span class="coord">${r1(pt.x)}, ${r1(pt.y)}</span>`;
+  if (!dragging || !selected) return;
+  const dx = pt.x - last.x, dy = pt.y - last.y;
+  moveSel(dx, dy);
+  last = pt;
+});
+svg.addEventListener("pointerup", e => { dragging = false; });
+svg.addEventListener("pointercancel", e => { dragging = false; });
+
+function moveSel(dx, dy) {
+  const p = parts.find(x => x.id === selected); if (!p) return;
+  if (p.kind === "circle") { p.cx += dx; p.cy += dy; }
+  else if (p.kind === "poly") { p.pts = p.pts.map(a => [a[0] + dx, a[1] + dy]); }
+  else { p.dx += dx; p.dy += dy; }
+  render();
+}
+
+function resizeSel(f) {
+  const p = parts.find(x => x.id === selected); if (!p) return;
+  if (p.kind === "circle") { p.r = Math.max(0.3, p.r + f); }
+  else if (p.kind === "poly") {
+    const c = centroid(p.pts); const s = f > 0 ? 1.05 : 0.952;
+    p.pts = p.pts.map(a => [c[0] + (a[0]-c[0])*s, c[1] + (a[1]-c[1])*s]);
+  } else { p.w = Math.max(0.5, p.w + f); }
+  render();
+}
+
+svg.addEventListener("wheel", e => {
+  if (!selected) return;
+  e.preventDefault();
+  resizeSel(e.deltaY < 0 ? 0.1 : -0.1);
+}, { passive: false });
+
+window.addEventListener("keydown", e => {
+  if (!selected) return;
+  const step = e.shiftKey ? 0.5 : 0.1;
+  if (e.key === "ArrowLeft") { moveSel(-step, 0); e.preventDefault(); }
+  else if (e.key === "ArrowRight") { moveSel(step, 0); e.preventDefault(); }
+  else if (e.key === "ArrowUp") { moveSel(0, -step); e.preventDefault(); }
+  else if (e.key === "ArrowDown") { moveSel(0, step); e.preventDefault(); }
+  else if (e.key === "+" || e.key === "=") { resizeSel(step); e.preventDefault(); }
+  else if (e.key === "-" || e.key === "_") { resizeSel(-step); e.preventDefault(); }
+});
+
+// --- selection + side controls ---
+function selectPart(id) {
+  selected = id;
+  [...partListEl.children].forEach(b => b.classList.toggle("sel", b.dataset.id === id));
+  const p = parts.find(x => x.id === id);
+  selNameEl.textContent = p ? p.label : "없음";
+  buildCtrls(p);
+  render();
+}
+
+function buildCtrls(p) {
+  ctrlsEl.innerHTML = "";
+  if (!p) return;
+  const mk = (lab, get, set, min, max, stepv) => {
+    const row = document.createElement("div"); row.className = "row";
+    const l = document.createElement("label"); l.textContent = lab;
+    const inp = document.createElement("input"); inp.type = "range";
+    inp.min = min; inp.max = max; inp.step = stepv; inp.value = get();
+    const v = document.createElement("span"); v.className = "val"; v.textContent = r1(get());
+    inp.addEventListener("input", () => { set(parseFloat(inp.value)); v.textContent = r1(get()); render(); });
+    row.append(l, inp, v); ctrlsEl.appendChild(row);
+  };
+  if (p.kind === "circle") {
+    mk("X", () => p.cx, x => p.cx = x, 0, 40, 0.1);
+    mk("Y", () => p.cy, y => p.cy = y, -2, 34, 0.1);
+    mk("크기", () => p.r, r => p.r = r, 0.3, 16, 0.1);
+  } else if (p.kind === "path") {
+    mk("X", () => p.dx, x => p.dx = x, -15, 15, 0.1);
+    mk("Y", () => p.dy, y => p.dy = y, -15, 15, 0.1);
+    mk("굵기", () => p.w, w => p.w = w, 0.5, 8, 0.1);
+  } else {
+    const c = centroid(p.pts);
+    mk("X(중심)", () => centroid(p.pts)[0], nx => { const cc = centroid(p.pts); const d = nx - cc[0]; p.pts = p.pts.map(a=>[a[0]+d,a[1]]); }, 0, 40, 0.1);
+    mk("Y(중심)", () => centroid(p.pts)[1], ny => { const cc = centroid(p.pts); const d = ny - cc[1]; p.pts = p.pts.map(a=>[a[0],a[1]+d]); }, -2, 34, 0.1);
+  }
+}
+
+// build part buttons
+parts.forEach(p => {
+  const b = document.createElement("button");
+  b.textContent = p.label; b.dataset.id = p.id;
+  b.addEventListener("click", () => selectPart(p.id));
+  partListEl.appendChild(b);
+});
+
+// --- export ---
+function updateOut() {
+  const L = [];
+  parts.forEach(p => {
+    if (p.kind === "circle") L.push(`${p.id.padEnd(7)} circle  cx=${r1(p.cx)}  cy=${r1(p.cy)}  r=${r1(p.r)}`);
+    else if (p.kind === "poly") L.push(`${p.id.padEnd(7)} poly    ${p.pts.map(a => r1(a[0])+","+r1(a[1])).join("  ")}`);
+    else L.push(`${p.id.padEnd(7)} path    offset dx=${r1(p.dx)} dy=${r1(p.dy)}  width=${r1(p.w)}`);
+  });
+  out.value = L.join("\n");
+}
+
+document.getElementById("copyBtn").addEventListener("click", () => {
+  out.select(); document.execCommand("copy");
+  navigator.clipboard && navigator.clipboard.writeText(out.value);
+  document.getElementById("copyBtn").textContent = "✓ 복사됨";
+  setTimeout(() => document.getElementById("copyBtn").textContent = "📋 복사", 1200);
+});
+document.getElementById("themeBtn").addEventListener("click", () => {
+  dark = !dark; document.getElementById("stage").classList.toggle("dark", dark); render();
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (!confirm("모든 좌표를 초기값으로 되돌릴까요?")) return;
+  parts = defaults(); selected = null; selNameEl.textContent = "없음"; ctrlsEl.innerHTML = "";
+  [...partListEl.children].forEach(b => b.classList.remove("sel"));
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
