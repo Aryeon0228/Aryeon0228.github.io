@@ -168,20 +168,23 @@ if (themeToggle) {
             <circle cx="${22 + pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
             <!-- head on the upper right (enlarged ~30%) -->
             <circle cx="27" cy="15" r="11" fill="${bodyColor}"/>
+            <!-- chubby cheeks (~1/4 face size) poking out at the whisker area -->
+            <circle cx="19.5" cy="21.5" r="2.75" fill="${bodyColor}"/>
+            <circle cx="34.5" cy="21.5" r="2.75" fill="${bodyColor}"/>
             <!-- ears -->
             <polygon points="21.5,8 19,0 29,5" fill="${bodyColor}"/>
             <polygon points="33.5,8 36,0.5 28,5" fill="${bodyColor}"/>
             <polygon points="22.73,7.01 21.13,3.01 27.13,5.17" fill="${pinkColor}"/>
             <polygon points="32.37,7.03 34.21,3.19 28.93,5.19" fill="${pinkColor}"/>
             <!-- round eyes (80% size) -->
-            <circle cx="23" cy="15" r="3.8" fill="${eyeWhite}"/>
-            <circle cx="32.3" cy="15" r="3.8" fill="${eyeWhite}"/>
+            <circle cx="23.8" cy="15.8" r="3.8" fill="${eyeWhite}"/>
+            <circle cx="33.1" cy="15.8" r="3.8" fill="${eyeWhite}"/>
             <!-- pupils (glance forward) -->
-            <circle cx="${23 + lookX}" cy="${15.24 + lookY}" r="2.7" fill="${pupilColor}"/>
-            <circle cx="${32.3 + lookX}" cy="${15.24 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <circle cx="${23.8 + lookX}" cy="${16.04 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <circle cx="${33.1 + lookX}" cy="${16.04 + lookY}" r="2.7" fill="${pupilColor}"/>
             <!-- eye sparkle (top-left) -->
-            <circle cx="${22 + lookX}" cy="${14.1 + lookY}" r="0.9" fill="#fff"/>
-            <circle cx="${31.3 + lookX}" cy="${14.1 + lookY}" r="0.9" fill="#fff"/>
+            <circle cx="${22.8 + lookX}" cy="${14.9 + lookY}" r="0.9" fill="#fff"/>
+            <circle cx="${32.1 + lookX}" cy="${14.9 + lookY}" r="0.9" fill="#fff"/>
             <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
             <ellipse cx="27.3" cy="20.5" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
