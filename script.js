@@ -158,14 +158,6 @@ if (themeToggle) {
             <g transform="rotate(${tailAngle}, ${tailBaseX}, ${tailBaseY})">
                 <path d="M${tailBaseX},${tailBaseY} Q2,21 3,14 Q4,8 10,9.5" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
             </g>
-            <!-- fluffy cheek tufts (left) -->
-            <polygon points="6,14 1.5,15 6,16.8" fill="${bodyColor}"/>
-            <polygon points="5,18 0.8,19.8 5.5,20.8" fill="${bodyColor}"/>
-            <polygon points="6,22 2.8,24.5 7,24.5" fill="${bodyColor}"/>
-            <!-- fluffy cheek tufts (right) -->
-            <polygon points="30,14 34.5,15 30,16.8" fill="${bodyColor}"/>
-            <polygon points="31,18 35.2,19.8 30.5,20.8" fill="${bodyColor}"/>
-            <polygon points="30,22 33.2,24.5 29,24.5" fill="${bodyColor}"/>
             <!-- chubby round body -->
             <ellipse cx="18" cy="19" rx="13.5" ry="11.5" fill="${bodyColor}"/>
             <!-- little paws at the bottom -->
