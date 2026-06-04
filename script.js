@@ -155,7 +155,7 @@ if (themeToggle) {
         // Tail base at the left rear — rotated by tailAngle for the swish
         const tailBaseX = 10, tailBaseY = 24;
 
-        return `<svg width="40" height="34" viewBox="0 0 40 34" style="transform: ${flip} translateY(${bobY}px)">
+        return `<svg width="40" height="36" viewBox="0 -2 40 36" style="transform: ${flip} translateY(${bobY}px)">
             <!-- tail: fat curl rising at the left rear, sways while walking -->
             <g transform="rotate(${tailAngle}, ${tailBaseX}, ${tailBaseY})">
                 <path d="M${tailBaseX},${tailBaseY} Q2,22 2.5,13 Q3,6 10,8" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
@@ -172,9 +172,9 @@ if (themeToggle) {
             <circle cx="34.5" cy="21.5" r="4.1" fill="${bodyColor}"/>
             <!-- ears -->
             <polygon points="21.5,8 19,0 29,5" fill="${bodyColor}"/>
-            <polygon points="35.5,10.5 38,3 30,7.5" fill="${bodyColor}"/>
+            <polygon points="35.5,6.75 38,-0.75 30,3.75" fill="${bodyColor}"/>
             <polygon points="22.73,7.01 21.13,3.01 27.13,5.17" fill="${pinkColor}"/>
-            <polygon points="34.37,9.53 36.21,5.69 30.93,7.69" fill="${pinkColor}"/>
+            <polygon points="34.37,5.78 36.21,1.94 30.93,3.94" fill="${pinkColor}"/>
             <!-- round eyes (80% size) -->
             <circle cx="23.8" cy="15.8" r="3.8" fill="${eyeWhite}"/>
             <circle cx="33.1" cy="15.8" r="3.8" fill="${eyeWhite}"/>
@@ -322,7 +322,7 @@ if (themeToggle) {
         if (isMouseInWindow) {
             cat.style.display = 'block';
             cat.style.left = (catX - 20) + 'px';
-            cat.style.top = (catY - 17) + 'px';
+            cat.style.top = (catY - 19) + 'px';
 
             // Dangling grass toy at cursor
             toy.style.display = 'block';
