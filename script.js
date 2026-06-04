@@ -168,14 +168,13 @@ if (themeToggle) {
             <circle cx="${22 + pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
             <!-- head on the upper right (enlarged ~30%) -->
             <circle cx="27" cy="15" r="11" fill="${bodyColor}"/>
-            <!-- chubby cheeks (~1/4 face size) poking out at the whisker area -->
-            <circle cx="19.5" cy="21.5" r="2.75" fill="${bodyColor}"/>
-            <circle cx="34.5" cy="21.5" r="2.75" fill="${bodyColor}"/>
+            <!-- chubby cheek (front) poking out at the whisker area -->
+            <circle cx="34.5" cy="21.5" r="4.1" fill="${bodyColor}"/>
             <!-- ears -->
             <polygon points="21.5,8 19,0 29,5" fill="${bodyColor}"/>
-            <polygon points="33.5,8 36,0.5 28,5" fill="${bodyColor}"/>
+            <polygon points="35.5,10.5 38,3 30,7.5" fill="${bodyColor}"/>
             <polygon points="22.73,7.01 21.13,3.01 27.13,5.17" fill="${pinkColor}"/>
-            <polygon points="32.37,7.03 34.21,3.19 28.93,5.19" fill="${pinkColor}"/>
+            <polygon points="34.37,9.53 36.21,5.69 30.93,7.69" fill="${pinkColor}"/>
             <!-- round eyes (80% size) -->
             <circle cx="23.8" cy="15.8" r="3.8" fill="${eyeWhite}"/>
             <circle cx="33.1" cy="15.8" r="3.8" fill="${eyeWhite}"/>
