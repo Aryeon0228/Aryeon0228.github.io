@@ -155,7 +155,7 @@ if (themeToggle) {
         // Tail base at the left rear — rotated by tailAngle for the swish
         const tailBaseX = 10, tailBaseY = 24;
 
-        return `<svg width="38" height="34" viewBox="0 0 38 34" style="transform: ${flip} translateY(${bobY}px)">
+        return `<svg width="40" height="34" viewBox="0 0 40 34" style="transform: ${flip} translateY(${bobY}px)">
             <!-- tail: fat curl rising at the left rear, sways while walking -->
             <g transform="rotate(${tailAngle}, ${tailBaseX}, ${tailBaseY})">
                 <path d="M${tailBaseX},${tailBaseY} Q2,22 2.5,13 Q3,6 10,8" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
@@ -166,28 +166,28 @@ if (themeToggle) {
             <!-- round paws at the bottom -->
             <circle cx="${14 - pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
             <circle cx="${22 + pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
-            <!-- head on the upper right -->
-            <circle cx="27" cy="14" r="8.5" fill="${bodyColor}"/>
+            <!-- head on the upper right (enlarged ~30%) -->
+            <circle cx="27" cy="15" r="11" fill="${bodyColor}"/>
             <!-- ears -->
-            <polygon points="22,8 20,0.5 27.5,6" fill="${bodyColor}"/>
-            <polygon points="32,8 34,1 27,6" fill="${bodyColor}"/>
-            <polygon points="23,7.5 21.5,3 26.5,6" fill="${pinkColor}"/>
-            <polygon points="31.5,7.5 33,3 27.5,6" fill="${pinkColor}"/>
+            <polygon points="21.5,8 19,0 29,5" fill="${bodyColor}"/>
+            <polygon points="33.5,8 36,0.5 28,5" fill="${bodyColor}"/>
+            <polygon points="22.5,7.5 20.5,2.5 28,5.2" fill="${pinkColor}"/>
+            <polygon points="32.5,7.5 34.8,2.7 28.2,5.2" fill="${pinkColor}"/>
             <!-- big round eyes -->
-            <circle cx="23.5" cy="14.5" r="4" fill="${eyeWhite}"/>
-            <circle cx="30.5" cy="14.5" r="4" fill="${eyeWhite}"/>
+            <circle cx="23" cy="15" r="4.8" fill="${eyeWhite}"/>
+            <circle cx="31.5" cy="15" r="4.8" fill="${eyeWhite}"/>
             <!-- pupils (glance forward) -->
-            <circle cx="${23.5 + lookX}" cy="${14.8 + lookY}" r="2.8" fill="${pupilColor}"/>
-            <circle cx="${30.5 + lookX}" cy="${14.8 + lookY}" r="2.8" fill="${pupilColor}"/>
+            <circle cx="${23 + lookX}" cy="${15.3 + lookY}" r="3.4" fill="${pupilColor}"/>
+            <circle cx="${31.5 + lookX}" cy="${15.3 + lookY}" r="3.4" fill="${pupilColor}"/>
             <!-- eye sparkle (top-left) -->
-            <circle cx="${22.5 + lookX}" cy="${13.5 + lookY}" r="1" fill="#fff"/>
-            <circle cx="${29.5 + lookX}" cy="${13.5 + lookY}" r="1" fill="#fff"/>
+            <circle cx="${21.8 + lookX}" cy="${13.9 + lookY}" r="1.1" fill="#fff"/>
+            <circle cx="${30.3 + lookX}" cy="${13.9 + lookY}" r="1.1" fill="#fff"/>
             <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
-            <ellipse cx="27" cy="19.5" rx="1.9" ry="1.5" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
-            <ellipse cx="27" cy="20" rx="1" ry="0.6" fill="${pinkColor}"/>
+            <ellipse cx="27.3" cy="20.5" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
+            <ellipse cx="27.3" cy="21" rx="1.1" ry="0.7" fill="${pinkColor}"/>
             ` : `
-            <polygon points="27,17.4 28.2,18.6 27,19.8 25.8,18.6" fill="${pinkColor}"/>
+            <polygon points="27.3,18.6 28.7,20 27.3,21.4 25.9,20" fill="${pinkColor}"/>
             `}
         </svg>`;
     }
@@ -319,7 +319,7 @@ if (themeToggle) {
 
         if (isMouseInWindow) {
             cat.style.display = 'block';
-            cat.style.left = (catX - 19) + 'px';
+            cat.style.left = (catX - 20) + 'px';
             cat.style.top = (catY - 17) + 'px';
 
             // Dangling grass toy at cursor
