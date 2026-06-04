@@ -121,9 +121,11 @@ if (themeToggle) {
         const pinkColor = '#ff9fb6';
         const pupilColor = dark ? '#2a2a2a' : '#202020';
 
-        // Eyes glance toward the toy / direction of travel for charm
-        const lookX = moving ? (left ? -1.4 : 1.4) : Math.sin(Date.now() * 0.0015) * 0.7;
-        const lookY = moving ? -0.7 : 0;
+        // Flip to face the direction of travel (cat faces right by default)
+        const flip = left ? 'scaleX(-1)' : '';
+        // Eyes glance forward (toward the toy the cat chases)
+        const lookX = moving ? 1.1 : Math.sin(Date.now() * 0.0015) * 0.6;
+        const lookY = moving ? 0.4 : 0.2;
 
         // Sleeping cat — plump rounded loaf, head raised to the right, sleepy closed eyes
         if (idle) {
@@ -150,41 +152,42 @@ if (themeToggle) {
             </svg>`;
         }
 
-        // Tail base (left side of body) — rotated by tailAngle for the swish
-        const tailBaseX = 9, tailBaseY = 24;
+        // Tail base at the left rear — rotated by tailAngle for the swish
+        const tailBaseX = 10, tailBaseY = 24;
 
-        return `<svg width="36" height="34" viewBox="0 0 36 34" style="transform: translateY(${bobY}px)">
-            <!-- tail: fat curl rising on the left, sways while walking -->
+        return `<svg width="38" height="34" viewBox="0 0 38 34" style="transform: ${flip} translateY(${bobY}px)">
+            <!-- tail: fat curl rising at the left rear, sways while walking -->
             <g transform="rotate(${tailAngle}, ${tailBaseX}, ${tailBaseY})">
-                <path d="M${tailBaseX},${tailBaseY} Q0,21 1.5,12 Q3,6 9.5,8.5" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
+                <path d="M${tailBaseX},${tailBaseY} Q2,22 2.5,13 Q3,6 10,8" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
             </g>
-            <!-- chubby body: two overlapping circles -->
-            <circle cx="13" cy="19" r="10.5" fill="${bodyColor}"/>
-            <circle cx="23" cy="19" r="10.5" fill="${bodyColor}"/>
+            <!-- chubby body: two overlapping circles (mass on the left) -->
+            <circle cx="15" cy="21" r="10" fill="${bodyColor}"/>
+            <circle cx="22" cy="21" r="9" fill="${bodyColor}"/>
             <!-- round paws at the bottom -->
-            <circle cx="${13 - pawOffset}" cy="${30.5 - Math.abs(pawOffset) * 0.4}" r="2.9" fill="${bodyColor}"/>
-            <circle cx="${23 + pawOffset}" cy="${30.5 - Math.abs(pawOffset) * 0.4}" r="2.9" fill="${bodyColor}"/>
+            <circle cx="${14 - pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${22 + pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <!-- head on the upper right -->
+            <circle cx="27" cy="14" r="8.5" fill="${bodyColor}"/>
             <!-- ears -->
-            <polygon points="8,11 6,1 16,9" fill="${bodyColor}"/>
-            <polygon points="28,11 30,1 20,9" fill="${bodyColor}"/>
-            <!-- pink inner ears -->
-            <polygon points="9.5,10 8.5,4 14,9" fill="${pinkColor}"/>
-            <polygon points="26.5,10 27.5,4 22,9" fill="${pinkColor}"/>
+            <polygon points="22,8 20,0.5 27.5,6" fill="${bodyColor}"/>
+            <polygon points="32,8 34,1 27,6" fill="${bodyColor}"/>
+            <polygon points="23,7.5 21.5,3 26.5,6" fill="${pinkColor}"/>
+            <polygon points="31.5,7.5 33,3 27.5,6" fill="${pinkColor}"/>
             <!-- big round eyes -->
-            <circle cx="12.5" cy="17" r="5" fill="${eyeWhite}"/>
-            <circle cx="23.5" cy="17" r="5" fill="${eyeWhite}"/>
-            <!-- pupils (glance toward movement) -->
-            <circle cx="${12.5 + lookX}" cy="${17.3 + lookY}" r="3.4" fill="${pupilColor}"/>
-            <circle cx="${23.5 + lookX}" cy="${17.3 + lookY}" r="3.4" fill="${pupilColor}"/>
+            <circle cx="23.5" cy="14.5" r="4" fill="${eyeWhite}"/>
+            <circle cx="30.5" cy="14.5" r="4" fill="${eyeWhite}"/>
+            <!-- pupils (glance forward) -->
+            <circle cx="${23.5 + lookX}" cy="${14.8 + lookY}" r="2.8" fill="${pupilColor}"/>
+            <circle cx="${30.5 + lookX}" cy="${14.8 + lookY}" r="2.8" fill="${pupilColor}"/>
             <!-- eye sparkle (top-left) -->
-            <circle cx="${11.3 + lookX}" cy="${15.9 + lookY}" r="1.2" fill="#fff"/>
-            <circle cx="${22.3 + lookX}" cy="${15.9 + lookY}" r="1.2" fill="#fff"/>
+            <circle cx="${22.5 + lookX}" cy="${13.5 + lookY}" r="1" fill="#fff"/>
+            <circle cx="${29.5 + lookX}" cy="${13.5 + lookY}" r="1" fill="#fff"/>
             <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
-            <ellipse cx="18" cy="22" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
-            <ellipse cx="18" cy="22.5" rx="1.1" ry="0.7" fill="${pinkColor}"/>
+            <ellipse cx="27" cy="19.5" rx="1.9" ry="1.5" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
+            <ellipse cx="27" cy="20" rx="1" ry="0.6" fill="${pinkColor}"/>
             ` : `
-            <polygon points="18,20 19.4,21.6 18,23.2 16.6,21.6" fill="${pinkColor}"/>
+            <polygon points="27,17.4 28.2,18.6 27,19.8 25.8,18.6" fill="${pinkColor}"/>
             `}
         </svg>`;
     }
@@ -316,7 +319,7 @@ if (themeToggle) {
 
         if (isMouseInWindow) {
             cat.style.display = 'block';
-            cat.style.left = (catX - 18) + 'px';
+            cat.style.left = (catX - 19) + 'px';
             cat.style.top = (catY - 17) + 'px';
 
             // Dangling grass toy at cursor
