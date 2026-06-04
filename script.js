@@ -151,20 +151,19 @@ if (themeToggle) {
         }
 
         // Tail base (left side of body) — rotated by tailAngle for the swish
-        const tailBaseX = 9, tailBaseY = 25;
+        const tailBaseX = 9, tailBaseY = 24;
 
         return `<svg width="36" height="34" viewBox="0 0 36 34" style="transform: translateY(${bobY}px)">
             <!-- tail: fat curl rising on the left, sways while walking -->
             <g transform="rotate(${tailAngle}, ${tailBaseX}, ${tailBaseY})">
-                <path d="M${tailBaseX},${tailBaseY} Q2,21 3,14 Q4,8 10,9.5" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
+                <path d="M${tailBaseX},${tailBaseY} Q0,21 1.5,12 Q3,6 9.5,8.5" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
             </g>
-            <!-- chubby round body -->
-            <ellipse cx="18" cy="19" rx="13.5" ry="11.5" fill="${bodyColor}"/>
-            <!-- little paws at the bottom -->
-            <ellipse cx="${13 - pawOffset}" cy="${30 - Math.abs(pawOffset) * 0.4}" rx="3.4" ry="2.4" fill="${bodyColor}"/>
-            <ellipse cx="${23 + pawOffset}" cy="${30 - Math.abs(pawOffset) * 0.4}" rx="3.4" ry="2.4" fill="${bodyColor}"/>
-            <ellipse cx="${13 - pawOffset}" cy="${30 - Math.abs(pawOffset) * 0.4}" rx="2.2" ry="1.4" fill="${dark ? '#8c8c8c' : '#000'}" opacity="0.35"/>
-            <ellipse cx="${23 + pawOffset}" cy="${30 - Math.abs(pawOffset) * 0.4}" rx="2.2" ry="1.4" fill="${dark ? '#8c8c8c' : '#000'}" opacity="0.35"/>
+            <!-- chubby body: two overlapping circles -->
+            <circle cx="13" cy="19" r="10.5" fill="${bodyColor}"/>
+            <circle cx="23" cy="19" r="10.5" fill="${bodyColor}"/>
+            <!-- round paws at the bottom -->
+            <circle cx="${13 - pawOffset}" cy="${30.5 - Math.abs(pawOffset) * 0.4}" r="2.9" fill="${bodyColor}"/>
+            <circle cx="${23 + pawOffset}" cy="${30.5 - Math.abs(pawOffset) * 0.4}" r="2.9" fill="${bodyColor}"/>
             <!-- ears -->
             <polygon points="8,11 6,1 16,9" fill="${bodyColor}"/>
             <polygon points="28,11 30,1 20,9" fill="${bodyColor}"/>
@@ -177,11 +176,9 @@ if (themeToggle) {
             <!-- pupils (glance toward movement) -->
             <circle cx="${12.5 + lookX}" cy="${17.3 + lookY}" r="3.4" fill="${pupilColor}"/>
             <circle cx="${23.5 + lookX}" cy="${17.3 + lookY}" r="3.4" fill="${pupilColor}"/>
-            <!-- eye sparkles -->
+            <!-- eye sparkle (top-left) -->
             <circle cx="${11.3 + lookX}" cy="${15.9 + lookY}" r="1.2" fill="#fff"/>
             <circle cx="${22.3 + lookX}" cy="${15.9 + lookY}" r="1.2" fill="#fff"/>
-            <circle cx="${13.6 + lookX}" cy="${18.4 + lookY}" r="0.6" fill="#fff" opacity="0.8"/>
-            <circle cx="${24.6 + lookX}" cy="${18.4 + lookY}" r="0.6" fill="#fff" opacity="0.8"/>
             <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
             <ellipse cx="18" cy="22" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
