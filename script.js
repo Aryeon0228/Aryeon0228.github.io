@@ -175,13 +175,13 @@ if (themeToggle) {
             <polygon points="32.37,7.03 34.21,3.19 28.93,5.19" fill="${pinkColor}"/>
             <!-- round eyes (80% size) -->
             <circle cx="23" cy="15" r="3.8" fill="${eyeWhite}"/>
-            <circle cx="31.5" cy="15" r="3.8" fill="${eyeWhite}"/>
+            <circle cx="32.3" cy="15" r="3.8" fill="${eyeWhite}"/>
             <!-- pupils (glance forward) -->
             <circle cx="${23 + lookX}" cy="${15.24 + lookY}" r="2.7" fill="${pupilColor}"/>
-            <circle cx="${31.5 + lookX}" cy="${15.24 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <circle cx="${32.3 + lookX}" cy="${15.24 + lookY}" r="2.7" fill="${pupilColor}"/>
             <!-- eye sparkle (top-left) -->
             <circle cx="${22 + lookX}" cy="${14.1 + lookY}" r="0.9" fill="#fff"/>
-            <circle cx="${30.5 + lookX}" cy="${14.1 + lookY}" r="0.9" fill="#fff"/>
+            <circle cx="${31.3 + lookX}" cy="${14.1 + lookY}" r="0.9" fill="#fff"/>
             <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
             <ellipse cx="27.3" cy="20.5" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
