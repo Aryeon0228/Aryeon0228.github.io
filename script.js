@@ -120,36 +120,36 @@ if (themeToggle) {
         const eyeWhite = '#ffffff';
         const pinkColor = '#ff9fb6';
         const pupilColor = dark ? '#2a2a2a' : '#202020';
-        const mouthColor = dark ? '#7a7a7a' : '#555555';
 
         // Eyes glance toward the toy / direction of travel for charm
         const lookX = moving ? (left ? -1.4 : 1.4) : Math.sin(Date.now() * 0.0015) * 0.7;
         const lookY = moving ? -0.7 : 0;
 
-        // Sleeping cat — chubby loaf with happy closed eyes (idle for too long)
+        // Sleeping cat — side-lying loaf, head raised to the right, sleepy closed eyes
         if (idle) {
             const zzFloat = Math.sin(Date.now() * 0.003) * 2;
-            const breathe = Math.sin(Date.now() * 0.0025) * 0.4;
-            return `<svg width="36" height="32" viewBox="0 0 36 32" style="transform: translateY(${2 + breathe}px)">
-                <!-- loafed body -->
-                <ellipse cx="18" cy="${22 + breathe}" rx="14" ry="8" fill="${bodyColor}"/>
-                <!-- head resting -->
-                <ellipse cx="18" cy="${17 + breathe}" rx="9.5" ry="7.5" fill="${bodyColor}"/>
+            const breathe = Math.sin(Date.now() * 0.0025) * 0.5;
+            return `<svg width="38" height="32" viewBox="0 0 38 32" style="transform: translateY(3px)">
+                <!-- loaf body lying down -->
+                <ellipse cx="17" cy="${21 + breathe}" rx="16" ry="8.5" fill="${bodyColor}"/>
+                <!-- rump fluff tufts (back, left) -->
+                <polygon points="3,17 -1,17 3,19" fill="${bodyColor}"/>
+                <polygon points="2.5,21 -1.5,23 3.5,23.5" fill="${bodyColor}"/>
+                <!-- raised head (right) -->
+                <ellipse cx="27" cy="${16 + breathe}" rx="8" ry="7" fill="${bodyColor}"/>
                 <!-- ears -->
-                <polygon points="10,12 8,4 16,11" fill="${bodyColor}"/>
-                <polygon points="26,12 28,4 20,11" fill="${bodyColor}"/>
-                <polygon points="11,11 10,6 14.5,10.5" fill="${pinkColor}" opacity="0.55"/>
-                <polygon points="25,11 26,6 21.5,10.5" fill="${pinkColor}" opacity="0.55"/>
-                <!-- happy closed eyes (^ ^) -->
-                <path d="M11,${17 + breathe} Q13.3,${14.6 + breathe} 15.6,${17 + breathe}" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                <path d="M20.4,${17 + breathe} Q22.7,${14.6 + breathe} 25,${17 + breathe}" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                <!-- nose -->
-                <polygon points="16.7,${19 + breathe} 19.3,${19 + breathe} 18,${21 + breathe}" fill="${pinkColor}"/>
-                <!-- tail curled around the front -->
-                <path d="M4,24 Q1,18 6,16 Q11,14 12,19" stroke="${bodyColor}" stroke-width="4" fill="none" stroke-linecap="round"/>
-                <!-- zzz floating up -->
-                <text x="24" y="${10 + zzFloat}" font-size="9" font-weight="bold" fill="${dark ? '#bbb' : '#999'}" font-family="sans-serif">z</text>
-                <text x="28" y="${5 + zzFloat * 0.7}" font-size="12" font-weight="bold" fill="${dark ? '#999' : '#bbb'}" font-family="sans-serif">Z</text>
+                <polygon points="22,10 20.5,3 27,8" fill="${bodyColor}"/>
+                <polygon points="31,10 33,4 26,8" fill="${bodyColor}"/>
+                <polygon points="23,9.5 22,5 26,8" fill="${pinkColor}" opacity="0.5"/>
+                <polygon points="30.5,9.5 31.8,5 26.5,8" fill="${pinkColor}" opacity="0.5"/>
+                <!-- sleepy closed eyes (droopy) -->
+                <path d="M21.5,${15.6 + breathe} Q23.5,${17.6 + breathe} 25.5,${15.6 + breathe}" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M27.5,${15.6 + breathe} Q29.3,${17.4 + breathe} 31,${15.6 + breathe}" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <!-- pink diamond mouth -->
+                <polygon points="26.3,${18.4 + breathe} 27.4,${19.5 + breathe} 26.3,${20.6 + breathe} 25.2,${19.5 + breathe}" fill="${pinkColor}"/>
+                <!-- zzz drifting up -->
+                <text x="29" y="${9 + zzFloat}" font-size="8" font-weight="bold" fill="${dark ? '#bbb' : '#999'}" font-family="sans-serif">z</text>
+                <text x="32.5" y="${4 + zzFloat * 0.7}" font-size="11" font-weight="bold" fill="${dark ? '#999' : '#bbb'}" font-family="sans-serif">Z</text>
             </svg>`;
         }
 
@@ -193,15 +193,12 @@ if (themeToggle) {
             <circle cx="${22.3 + lookX}" cy="${15.9 + lookY}" r="1.2" fill="#fff"/>
             <circle cx="${13.6 + lookX}" cy="${18.4 + lookY}" r="0.6" fill="#fff" opacity="0.8"/>
             <circle cx="${24.6 + lookX}" cy="${18.4 + lookY}" r="0.6" fill="#fff" opacity="0.8"/>
-            <!-- pink triangle nose -->
-            <polygon points="16.5,21 19.5,21 18,23" fill="${pinkColor}"/>
-            <!-- mouth -->
+            <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
-            <ellipse cx="18" cy="25" rx="2" ry="1.5" fill="${dark ? '#444' : '#a33'}"/>
-            <ellipse cx="18" cy="25.6" rx="1.1" ry="0.6" fill="${pinkColor}" opacity="0.7"/>
+            <ellipse cx="18" cy="22" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
+            <ellipse cx="18" cy="22.5" rx="1.1" ry="0.7" fill="${pinkColor}"/>
             ` : `
-            <path d="M18,23 Q18,24.3 16.6,24" stroke="${mouthColor}" stroke-width="0.7" fill="none" stroke-linecap="round"/>
-            <path d="M18,23 Q18,24.3 19.4,24" stroke="${mouthColor}" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+            <polygon points="18,20 19.4,21.6 18,23.2 16.6,21.6" fill="${pinkColor}"/>
             `}
         </svg>`;
     }
