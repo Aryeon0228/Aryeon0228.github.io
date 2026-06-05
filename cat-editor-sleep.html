@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자는 고양이 편집기 (임시)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif; background: #eceef1; color: #222; }
+  header { padding: 12px 18px; background: #fff; border-bottom: 1px solid #dde; }
+  header h1 { margin: 0 0 4px; font-size: 17px; }
+  header p { margin: 0; font-size: 12.5px; color: #667; line-height: 1.5; }
+  .wrap { display: flex; gap: 16px; padding: 16px; align-items: flex-start; flex-wrap: wrap; }
+  .stage { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .stage.dark { background: #181c24; }
+  svg.canvas { display: block; touch-action: none; cursor: crosshair; }
+  .side { width: 340px; max-width: 100%; display: flex; flex-direction: column; gap: 12px; }
+  .panel { background: #fff; border-radius: 12px; padding: 12px 14px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .panel h2 { margin: 0 0 8px; font-size: 13px; color: #445; text-transform: uppercase; letter-spacing: .04em; }
+  .parts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .parts button { font-size: 12px; padding: 5px 9px; border: 1px solid #ccd; background: #f6f7f9; border-radius: 7px; cursor: pointer; }
+  .parts button.sel { background: #2b6cff; color: #fff; border-color: #2b6cff; }
+  .row { display: flex; gap: 8px; align-items: center; margin: 6px 0; font-size: 13px; }
+  .row label { width: 30px; color: #667; }
+  .row input[type=range] { flex: 1; }
+  .row .val { width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btns button { font-size: 13px; padding: 7px 12px; border-radius: 8px; border: 1px solid #ccd; background: #f6f7f9; cursor: pointer; }
+  .btns button.primary { background: #2b6cff; color: #fff; border-color: #2b6cff; }
+  textarea { width: 100%; height: 200px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; border: 1px solid #ccd; border-radius: 8px; padding: 8px; resize: vertical; }
+  .hint { font-size: 12px; color: #778; line-height: 1.6; }
+  .coord { font-variant-numeric: tabular-nums; color: #2b6cff; font-weight: 600; }
+  kbd { background:#eef; border:1px solid #ccd; border-radius:4px; padding:0 5px; font-size:11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>😴 자는 고양이 편집기 <span style="font-size:12px;color:#99a;font-weight:400">(임시 — 좌표 조절용)</span></h1>
+  <p>
+    부위 <b>클릭 선택</b> · <b>드래그 이동</b> · <b>마우스 휠 크기</b> · <b>방향키</b> 미세이동(0.1, Shift=0.5) · <kbd>+</kbd>/<kbd>-</kbd> 크기 ·
+    타원은 오른쪽 슬라이더로 가로(rx)/세로(ry) 따로 조절 · 출력값 복사해서 클로드에게 주세요.
+  </p>
+</header>
+
+<div class="wrap">
+  <div class="stage" id="stage">
+    <svg class="canvas" id="svg" width="600" height="480" viewBox="0 0 40 32"></svg>
+  </div>
+
+  <div class="side">
+    <div class="panel">
+      <h2>부위 선택</h2>
+      <div class="parts" id="partList"></div>
+    </div>
+    <div class="panel">
+      <h2>선택: <span id="selName" style="color:#2b6cff">없음</span></h2>
+      <div id="ctrls"></div>
+      <div class="hint" id="cursorReadout">커서: –</div>
+    </div>
+    <div class="panel">
+      <h2>출력값 (이걸 복사해서 주세요)</h2>
+      <div class="btns" style="margin-bottom:8px">
+        <button class="primary" id="copyBtn">📋 복사</button>
+        <button id="themeBtn">🌙 다크 미리보기</button>
+        <button id="resetBtn">↺ 초기화</button>
+      </div>
+      <textarea id="out" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+const COL  = { body: "#1f1f1f", pink: "#ff9fb6", eye: "#111111", zz: "#999999" };
+const DARK = { body: "#a3a3a3", pink: "#ff9fb6", eye: "#3a3a3a", zz: "#bbbbbb" };
+
+// --- initial parts (matches current script.js sleeping cat) ---
+function defaults() {
+  return [
+    { id: "body",  kind: "ellipse", label: "몸통", colorKey: "body", cx: 16, cy: 20, rx: 15, ry: 10 },
+    { id: "head",  kind: "ellipse", label: "머리", colorKey: "body", cx: 25, cy: 15.5, rx: 9, ry: 8 },
+    { id: "earLb", kind: "poly", label: "왼귀",   colorKey: "body", pts: [[20,10],[18.5,3],[25.5,8]] },
+    { id: "earRb", kind: "poly", label: "오른귀", colorKey: "body", pts: [[30,10],[31.5,3.5],[25,8]] },
+    { id: "earLp", kind: "poly", label: "왼귀分홍", colorKey: "pink", opacity: 0.5, pts: [[21,9.5],[20,4.5],[24.5,8]] },
+    { id: "earRp", kind: "poly", label: "오른귀分홍", colorKey: "pink", opacity: 0.5, pts: [[29.5,9.5],[30.6,4.5],[25.5,8]] },
+    { id: "eyeL",  kind: "path", label: "왼눈(감)", colorKey: "eye", d: "M20,15.3 Q22,17.2 24,15.3", w: 1.1, dx: 0, dy: 0 },
+    { id: "eyeR",  kind: "path", label: "오른눈(감)", colorKey: "eye", d: "M26,15.3 Q28,17.2 30,15.3", w: 1.1, dx: 0, dy: 0 },
+    { id: "mouth", kind: "poly", label: "입(다이아)", colorKey: "pink", pts: [[25,17.2],[26.1,18.3],[25,19.4],[23.9,18.3]] },
+    { id: "zz1",   kind: "text", label: "z", colorKey: "zz", x: 30, y: 8, str: "z", size: 7 },
+    { id: "zz2",   kind: "text", label: "Z", colorKey: "zz", x: 33, y: 3.5, str: "Z", size: 10 },
+  ];
+}
+
+let parts = defaults();
+let selected = null;
+let dark = false;
+
+const svg = document.getElementById("svg");
+const out = document.getElementById("out");
+const partListEl = document.getElementById("partList");
+const selNameEl = document.getElementById("selName");
+const ctrlsEl = document.getElementById("ctrls");
+const cursorReadout = document.getElementById("cursorReadout");
+
+function col(key) { return (dark ? DARK : COL)[key]; }
+function r1(n) { return Math.round(n * 100) / 100; }
+function toSvg(e) {
+  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+  return { x: p.x, y: p.y };
+}
+function centroid(pts) { let x=0,y=0; pts.forEach(p=>{x+=p[0];y+=p[1];}); return [x/pts.length, y/pts.length]; }
+
+function render() {
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  for (let gx = 0; gx <= 40; gx += 5) addLine(gx, 0, gx, 32, "#00000010");
+  for (let gy = 0; gy <= 32; gy += 5) addLine(0, gy, 40, gy, "#00000010");
+
+  parts.forEach(p => {
+    let el;
+    if (p.kind === "ellipse") {
+      el = document.createElementNS(SVG_NS, "ellipse");
+      el.setAttribute("cx", p.cx); el.setAttribute("cy", p.cy);
+      el.setAttribute("rx", p.rx); el.setAttribute("ry", p.ry);
+      el.setAttribute("fill", col(p.colorKey));
+    } else if (p.kind === "poly") {
+      el = document.createElementNS(SVG_NS, "polygon");
+      el.setAttribute("points", p.pts.map(a => a.join(",")).join(" "));
+      el.setAttribute("fill", col(p.colorKey));
+      if (p.opacity != null) el.setAttribute("opacity", p.opacity);
+    } else if (p.kind === "path") {
+      el = document.createElementNS(SVG_NS, "path");
+      el.setAttribute("d", p.d);
+      el.setAttribute("transform", `translate(${p.dx},${p.dy})`);
+      el.setAttribute("stroke", col(p.colorKey));
+      el.setAttribute("stroke-width", p.w);
+      el.setAttribute("fill", "none"); el.setAttribute("stroke-linecap", "round");
+    } else if (p.kind === "text") {
+      el = document.createElementNS(SVG_NS, "text");
+      el.setAttribute("x", p.x); el.setAttribute("y", p.y);
+      el.setAttribute("font-size", p.size); el.setAttribute("font-weight", "bold");
+      el.setAttribute("font-family", "sans-serif"); el.setAttribute("fill", col(p.colorKey));
+      el.textContent = p.str;
+    }
+    el.style.cursor = "move"; el.dataset.id = p.id;
+    el.addEventListener("pointerdown", startDrag);
+    svg.appendChild(el);
+  });
+
+  if (selected) {
+    const p = parts.find(x => x.id === selected);
+    if (p) {
+      let o;
+      if (p.kind === "ellipse") {
+        o = document.createElementNS(SVG_NS, "ellipse");
+        o.setAttribute("cx", p.cx); o.setAttribute("cy", p.cy);
+        o.setAttribute("rx", Math.max(0.6,p.rx)); o.setAttribute("ry", Math.max(0.6,p.ry));
+      } else if (p.kind === "poly") {
+        o = document.createElementNS(SVG_NS, "polygon");
+        o.setAttribute("points", p.pts.map(a => a.join(",")).join(" "));
+      } else if (p.kind === "path") {
+        o = document.createElementNS(SVG_NS, "path");
+        o.setAttribute("d", p.d); o.setAttribute("transform", `translate(${p.dx},${p.dy})`);
+      } else {
+        o = document.createElementNS(SVG_NS, "circle");
+        o.setAttribute("cx", p.x + p.size*0.3); o.setAttribute("cy", p.y - p.size*0.3); o.setAttribute("r", p.size*0.7);
+      }
+      o.setAttribute("fill", "none"); o.setAttribute("stroke", "#2b6cff");
+      o.setAttribute("stroke-width", "0.4"); o.setAttribute("stroke-dasharray", "1,0.8");
+      o.style.pointerEvents = "none"; svg.appendChild(o);
+    }
+  }
+  updateOut();
+}
+function addLine(x1,y1,x2,y2,c){ const l=document.createElementNS(SVG_NS,"line"); l.setAttribute("x1",x1);l.setAttribute("y1",y1);l.setAttribute("x2",x2);l.setAttribute("y2",y2); l.setAttribute("stroke",c);l.setAttribute("stroke-width","0.1");l.style.pointerEvents="none"; svg.appendChild(l); }
+
+let dragging=false, last=null;
+function startDrag(e){ e.preventDefault(); selectPart(e.currentTarget.dataset.id); dragging=true; last=toSvg(e); svg.setPointerCapture(e.pointerId); }
+svg.addEventListener("pointermove", e=>{
+  const pt=toSvg(e);
+  cursorReadout.innerHTML = `커서: <span class="coord">${r1(pt.x)}, ${r1(pt.y)}</span>`;
+  if(!dragging||!selected) return;
+  moveSel(pt.x-last.x, pt.y-last.y); last=pt;
+});
+svg.addEventListener("pointerup", ()=>dragging=false);
+svg.addEventListener("pointercancel", ()=>dragging=false);
+
+function moveSel(dx,dy){
+  const p=parts.find(x=>x.id===selected); if(!p) return;
+  if(p.kind==="ellipse"){ p.cx+=dx; p.cy+=dy; }
+  else if(p.kind==="poly"){ p.pts=p.pts.map(a=>[a[0]+dx,a[1]+dy]); }
+  else if(p.kind==="path"){ p.dx+=dx; p.dy+=dy; }
+  else if(p.kind==="text"){ p.x+=dx; p.y+=dy; }
+  render();
+}
+function resizeSel(f){
+  const p=parts.find(x=>x.id===selected); if(!p) return;
+  if(p.kind==="ellipse"){ p.rx=Math.max(0.3,p.rx+f); p.ry=Math.max(0.3,p.ry+f); }
+  else if(p.kind==="poly"){ const c=centroid(p.pts); const s=f>0?1.05:0.952; p.pts=p.pts.map(a=>[c[0]+(a[0]-c[0])*s, c[1]+(a[1]-c[1])*s]); }
+  else if(p.kind==="path"){ p.w=Math.max(0.3,p.w+f); }
+  else if(p.kind==="text"){ p.size=Math.max(2,p.size+f*3); }
+  render();
+}
+svg.addEventListener("wheel", e=>{ if(!selected) return; e.preventDefault(); resizeSel(e.deltaY<0?0.1:-0.1); }, {passive:false});
+window.addEventListener("keydown", e=>{
+  if(!selected) return;
+  const s=e.shiftKey?0.5:0.1;
+  if(e.key==="ArrowLeft"){moveSel(-s,0);e.preventDefault();}
+  else if(e.key==="ArrowRight"){moveSel(s,0);e.preventDefault();}
+  else if(e.key==="ArrowUp"){moveSel(0,-s);e.preventDefault();}
+  else if(e.key==="ArrowDown"){moveSel(0,s);e.preventDefault();}
+  else if(e.key==="+"||e.key==="="){resizeSel(s);e.preventDefault();}
+  else if(e.key==="-"||e.key==="_"){resizeSel(-s);e.preventDefault();}
+});
+
+function selectPart(id){
+  selected=id;
+  [...partListEl.children].forEach(b=>b.classList.toggle("sel", b.dataset.id===id));
+  const p=parts.find(x=>x.id===id);
+  selNameEl.textContent=p?p.label:"없음";
+  buildCtrls(p); render();
+}
+function buildCtrls(p){
+  ctrlsEl.innerHTML=""; if(!p) return;
+  const mk=(lab,get,set,min,max,st)=>{
+    const row=document.createElement("div"); row.className="row";
+    const l=document.createElement("label"); l.textContent=lab;
+    const inp=document.createElement("input"); inp.type="range"; inp.min=min; inp.max=max; inp.step=st; inp.value=get();
+    const v=document.createElement("span"); v.className="val"; v.textContent=r1(get());
+    inp.addEventListener("input",()=>{set(parseFloat(inp.value)); v.textContent=r1(get()); render();});
+    row.append(l,inp,v); ctrlsEl.appendChild(row);
+  };
+  if(p.kind==="ellipse"){
+    mk("X",()=>p.cx,x=>p.cx=x,0,40,0.1); mk("Y",()=>p.cy,y=>p.cy=y,0,32,0.1);
+    mk("가로rx",()=>p.rx,r=>p.rx=r,0.3,20,0.1); mk("세로ry",()=>p.ry,r=>p.ry=r,0.3,16,0.1);
+  } else if(p.kind==="path"){
+    mk("X",()=>p.dx,x=>p.dx=x,-15,15,0.1); mk("Y",()=>p.dy,y=>p.dy=y,-15,15,0.1); mk("굵기",()=>p.w,w=>p.w=w,0.3,5,0.1);
+  } else if(p.kind==="text"){
+    mk("X",()=>p.x,x=>p.x=x,0,40,0.1); mk("Y",()=>p.y,y=>p.y=y,0,32,0.1); mk("크기",()=>p.size,s=>p.size=s,3,20,0.5);
+  } else {
+    mk("X(중심)",()=>centroid(p.pts)[0],nx=>{const c=centroid(p.pts);const d=nx-c[0];p.pts=p.pts.map(a=>[a[0]+d,a[1]]);},0,40,0.1);
+    mk("Y(중심)",()=>centroid(p.pts)[1],ny=>{const c=centroid(p.pts);const d=ny-c[1];p.pts=p.pts.map(a=>[a[0],a[1]+d]);},0,32,0.1);
+  }
+}
+
+parts.forEach(p=>{ const b=document.createElement("button"); b.textContent=p.label; b.dataset.id=p.id; b.addEventListener("click",()=>selectPart(p.id)); partListEl.appendChild(b); });
+
+function updateOut(){
+  const L=[];
+  parts.forEach(p=>{
+    if(p.kind==="ellipse") L.push(`${p.id.padEnd(6)} ellipse cx=${r1(p.cx)} cy=${r1(p.cy)} rx=${r1(p.rx)} ry=${r1(p.ry)}`);
+    else if(p.kind==="poly") L.push(`${p.id.padEnd(6)} poly    ${p.pts.map(a=>r1(a[0])+","+r1(a[1])).join("  ")}`);
+    else if(p.kind==="path") L.push(`${p.id.padEnd(6)} path    offset dx=${r1(p.dx)} dy=${r1(p.dy)} width=${r1(p.w)}`);
+    else L.push(`${p.id.padEnd(6)} text    x=${r1(p.x)} y=${r1(p.y)} size=${r1(p.size)}`);
+  });
+  out.value=L.join("\n");
+}
+document.getElementById("copyBtn").addEventListener("click",()=>{ out.select(); document.execCommand("copy"); navigator.clipboard&&navigator.clipboard.writeText(out.value); const b=document.getElementById("copyBtn"); b.textContent="✓ 복사됨"; setTimeout(()=>b.textContent="📋 복사",1200); });
+document.getElementById("themeBtn").addEventListener("click",()=>{ dark=!dark; document.getElementById("stage").classList.toggle("dark",dark); render(); });
+document.getElementById("resetBtn").addEventListener("click",()=>{ if(!confirm("모든 좌표를 초기값으로 되돌릴까요?")) return; parts=defaults(); selected=null; selNameEl.textContent="없음"; ctrlsEl.innerHTML=""; [...partListEl.children].forEach(b=>b.classList.remove("sel")); render(); });
+
+render();
+</script>
+</body>
+</html>
