@@ -132,10 +132,15 @@ if (themeToggle) {
             const zzFloat = Math.sin(Date.now() * 0.003) * 2;
             const breathe = Math.sin(Date.now() * 0.0025) * 0.5;
             return `<svg width="40" height="32" viewBox="0 0 40 32" style="transform: translateY(${3 + breathe}px)">
+                <!-- tail curl at the rear -->
+                <path d="M10,24 Q3,23.5 3,18 Q3,13 9,14.5" stroke="${bodyColor}" stroke-width="4" fill="none" stroke-linecap="round"/>
                 <!-- body -->
                 <ellipse cx="16.1" cy="20.34" rx="9.4" ry="8" fill="${bodyColor}"/>
                 <!-- head -->
                 <ellipse cx="24.83" cy="19.72" rx="9" ry="8" fill="${bodyColor}"/>
+                <!-- front paws -->
+                <ellipse cx="23" cy="28.6" rx="2.8" ry="2.8" fill="${bodyColor}"/>
+                <ellipse cx="27.5" cy="28.3" rx="2.8" ry="2.8" fill="${bodyColor}"/>
                 <!-- ears -->
                 <polygon points="17.7,20.14 16.2,13.14 23.2,18.14" fill="${bodyColor}"/>
                 <polygon points="33.24,19 34.74,12.5 28.24,17" fill="${bodyColor}"/>
@@ -164,10 +169,10 @@ if (themeToggle) {
             <circle cx="24.82" cy="20.57" r="10" fill="${bodyColor}"/>
             <circle cx="16.75" cy="20.59" r="9.4" fill="${bodyColor}"/>
             <!-- round paws: back pair + front pair (alternating gait) -->
-            <circle cx="${15.82 - pawOffset}" cy="${30.03 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
-            <circle cx="${20.5 + pawOffset}" cy="${30.5 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
-            <circle cx="${24.2 - pawOffset}" cy="${30.2 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
-            <circle cx="${29.06 + pawOffset}" cy="${29.37 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${11.89 - pawOffset}" cy="${28.37 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${19.6 + pawOffset}" cy="${30.24 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${24.83 - pawOffset}" cy="${30.17 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${31.69 + pawOffset}" cy="${27.91 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
             <!-- head -->
             <circle cx="27.92" cy="14.59" r="10.7" fill="${bodyColor}"/>
             <!-- chubby cheek (front) -->

@@ -77,8 +77,11 @@ const DARK = { body: "#a3a3a3", pink: "#ff9fb6", eye: "#3a3a3a", zz: "#bbbbbb" }
 // --- initial parts (matches current script.js sleeping cat) ---
 function defaults() {
   return [
+    { id: "tail",  kind: "path", label: "꼬리", colorKey: "body", d: "M10,24 Q3,23.5 3,18 Q3,13 9,14.5", w: 4, dx: 0, dy: 0 },
     { id: "body",  kind: "ellipse", label: "몸통", colorKey: "body", cx: 16.1, cy: 20.34, rx: 9.4, ry: 8 },
     { id: "head",  kind: "ellipse", label: "머리", colorKey: "body", cx: 24.83, cy: 19.72, rx: 9, ry: 8 },
+    { id: "pawF1", kind: "ellipse", label: "앞발1", colorKey: "body", cx: 23, cy: 28.6, rx: 2.8, ry: 2.8 },
+    { id: "pawF2", kind: "ellipse", label: "앞발2", colorKey: "body", cx: 27.5, cy: 28.3, rx: 2.8, ry: 2.8 },
     { id: "earLb", kind: "poly", label: "왼귀",   colorKey: "body", pts: [[17.7,20.14],[16.2,13.14],[23.2,18.14]] },
     { id: "earRb", kind: "poly", label: "오른귀", colorKey: "body", pts: [[33.24,19],[34.74,12.5],[28.24,17]] },
     { id: "earLp", kind: "poly", label: "왼귀分홍", colorKey: "pink", opacity: 0.5, pts: [[17.91,18.86],[17.28,15.7],[20.12,17.91]] },
