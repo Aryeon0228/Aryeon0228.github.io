@@ -123,9 +123,9 @@ if (themeToggle) {
 
         // Flip to face the direction of travel (cat faces right by default)
         const flip = left ? 'scaleX(-1)' : '';
-        // Eyes glance forward (toward the toy the cat chases)
-        const lookX = moving ? 1.1 : Math.sin(Date.now() * 0.0015) * 0.6;
-        const lookY = moving ? 0.4 : 0.2;
+        // Pupils are hand-placed (editor); auto-glance disabled so they stay in the eyes
+        const lookX = 0;
+        const lookY = 0;
 
         // Sleeping cat — plump rounded loaf, head raised to the right, sleepy closed eyes
         if (idle) {
@@ -153,43 +153,43 @@ if (themeToggle) {
         }
 
         // Tail base at the left rear — rotated by tailAngle for the swish
-        const tailBaseX = 10, tailBaseY = 24;
+        const tailBaseX = 10.25, tailBaseY = 22.81;
 
         return `<svg width="40" height="36" viewBox="0 -2 40 36" style="transform: ${flip} translateY(${bobY}px)">
             <!-- tail: fat curl rising at the left rear, sways while walking -->
             <g transform="rotate(${tailAngle}, ${tailBaseX}, ${tailBaseY})">
-                <path d="M${tailBaseX},${tailBaseY} Q2,22 2.5,13 Q3,6 10,8" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
+                <path d="M${tailBaseX},${tailBaseY} Q2.25,20.81 2.75,11.81 Q3.25,4.81 10.25,6.81" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
             </g>
-            <!-- chubby body: two overlapping circles (mass on the left) -->
-            <circle cx="15" cy="21" r="10" fill="${bodyColor}"/>
-            <circle cx="22" cy="21" r="9" fill="${bodyColor}"/>
+            <!-- chubby body: two overlapping circles -->
+            <circle cx="24.82" cy="20.57" r="10" fill="${bodyColor}"/>
+            <circle cx="16.75" cy="20.59" r="9.4" fill="${bodyColor}"/>
             <!-- round paws at the bottom -->
-            <circle cx="${14 - pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
-            <circle cx="${22 + pawOffset}" cy="${31 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
-            <!-- head on the upper right (enlarged ~30%) -->
-            <circle cx="27" cy="15" r="11" fill="${bodyColor}"/>
-            <!-- chubby cheek (front) poking out at the whisker area -->
-            <circle cx="34.5" cy="21.5" r="4.1" fill="${bodyColor}"/>
+            <circle cx="${15.82 - pawOffset}" cy="${30.03 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${29.06 + pawOffset}" cy="${29.37 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <!-- head -->
+            <circle cx="27.92" cy="14.59" r="10.7" fill="${bodyColor}"/>
+            <!-- chubby cheek (front) -->
+            <circle cx="32.27" cy="17.41" r="6.4" fill="${bodyColor}"/>
             <!-- ears -->
-            <polygon points="21.5,8 19,0 29,5" fill="${bodyColor}"/>
-            <polygon points="35.5,6.75 38,-0.75 30,3.75" fill="${bodyColor}"/>
-            <polygon points="22.73,7.01 21.13,3.01 27.13,5.17" fill="${pinkColor}"/>
-            <polygon points="34.37,5.78 36.21,1.94 30.93,3.94" fill="${pinkColor}"/>
-            <!-- round eyes (80% size) -->
-            <circle cx="23.8" cy="15.8" r="3.8" fill="${eyeWhite}"/>
-            <circle cx="33.1" cy="15.8" r="3.8" fill="${eyeWhite}"/>
-            <!-- pupils (glance forward) -->
-            <circle cx="${23.8 + lookX}" cy="${16.04 + lookY}" r="2.7" fill="${pupilColor}"/>
-            <circle cx="${33.1 + lookX}" cy="${16.04 + lookY}" r="2.7" fill="${pupilColor}"/>
-            <!-- eye sparkle (top-left) -->
-            <circle cx="${22.8 + lookX}" cy="${14.9 + lookY}" r="0.9" fill="#fff"/>
-            <circle cx="${32.1 + lookX}" cy="${14.9 + lookY}" r="0.9" fill="#fff"/>
+            <polygon points="19.8,8.73 17.3,0.73 27.3,5.73" fill="${bodyColor}"/>
+            <polygon points="37.3,10.08 39.8,2.58 31.8,7.08" fill="${bodyColor}"/>
+            <polygon points="20.5,6.16 19.52,3.71 23.2,5.04" fill="${pinkColor}"/>
+            <polygon points="37.32,7.49 38.67,4.69 34.82,6.15" fill="${pinkColor}"/>
+            <!-- round eyes -->
+            <circle cx="24.3" cy="15" r="3.8" fill="${eyeWhite}"/>
+            <circle cx="34.28" cy="14.44" r="3.8" fill="${eyeWhite}"/>
+            <!-- pupils -->
+            <circle cx="${25.46 + lookX}" cy="${14.71 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <circle cx="${34.95 + lookX}" cy="${14.44 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <!-- eye sparkle -->
+            <circle cx="${26.37 + lookX}" cy="${13.18 + lookY}" r="0.9" fill="#fff"/>
+            <circle cx="${36.02 + lookX}" cy="${13.06 + lookY}" r="0.9" fill="#fff"/>
             <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
-            <ellipse cx="27.3" cy="20.5" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
-            <ellipse cx="27.3" cy="21" rx="1.1" ry="0.7" fill="${pinkColor}"/>
+            <ellipse cx="29.81" cy="19.8" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
+            <ellipse cx="29.81" cy="20.3" rx="1.1" ry="0.7" fill="${pinkColor}"/>
             ` : `
-            <polygon points="27.3,18.6 28.7,20 27.3,21.4 25.9,20" fill="${pinkColor}"/>
+            <polygon points="29.81,18.14 31.21,19.54 29.81,20.94 28.41,19.54" fill="${pinkColor}"/>
             `}
         </svg>`;
     }
