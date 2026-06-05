@@ -77,17 +77,17 @@ const DARK = { body: "#a3a3a3", pink: "#ff9fb6", eye: "#3a3a3a", zz: "#bbbbbb" }
 // --- initial parts (matches current script.js sleeping cat) ---
 function defaults() {
   return [
-    { id: "body",  kind: "ellipse", label: "몸통", colorKey: "body", cx: 16, cy: 20, rx: 15, ry: 10 },
-    { id: "head",  kind: "ellipse", label: "머리", colorKey: "body", cx: 25, cy: 15.5, rx: 9, ry: 8 },
-    { id: "earLb", kind: "poly", label: "왼귀",   colorKey: "body", pts: [[20,10],[18.5,3],[25.5,8]] },
-    { id: "earRb", kind: "poly", label: "오른귀", colorKey: "body", pts: [[30,10],[31.5,3.5],[25,8]] },
-    { id: "earLp", kind: "poly", label: "왼귀分홍", colorKey: "pink", opacity: 0.5, pts: [[21,9.5],[20,4.5],[24.5,8]] },
-    { id: "earRp", kind: "poly", label: "오른귀分홍", colorKey: "pink", opacity: 0.5, pts: [[29.5,9.5],[30.6,4.5],[25.5,8]] },
-    { id: "eyeL",  kind: "path", label: "왼눈(감)", colorKey: "eye", d: "M20,15.3 Q22,17.2 24,15.3", w: 1.1, dx: 0, dy: 0 },
-    { id: "eyeR",  kind: "path", label: "오른눈(감)", colorKey: "eye", d: "M26,15.3 Q28,17.2 30,15.3", w: 1.1, dx: 0, dy: 0 },
-    { id: "mouth", kind: "poly", label: "입(다이아)", colorKey: "pink", pts: [[25,17.2],[26.1,18.3],[25,19.4],[23.9,18.3]] },
-    { id: "zz1",   kind: "text", label: "z", colorKey: "zz", x: 30, y: 8, str: "z", size: 7 },
-    { id: "zz2",   kind: "text", label: "Z", colorKey: "zz", x: 33, y: 3.5, str: "Z", size: 10 },
+    { id: "body",  kind: "ellipse", label: "몸통", colorKey: "body", cx: 16.1, cy: 20.34, rx: 9.4, ry: 8 },
+    { id: "head",  kind: "ellipse", label: "머리", colorKey: "body", cx: 24.83, cy: 19.72, rx: 9, ry: 8 },
+    { id: "earLb", kind: "poly", label: "왼귀",   colorKey: "body", pts: [[17.7,20.14],[16.2,13.14],[23.2,18.14]] },
+    { id: "earRb", kind: "poly", label: "오른귀", colorKey: "body", pts: [[33.24,19],[34.74,12.5],[28.24,17]] },
+    { id: "earLp", kind: "poly", label: "왼귀分홍", colorKey: "pink", opacity: 0.5, pts: [[17.91,18.86],[17.28,15.7],[20.12,17.91]] },
+    { id: "earRp", kind: "poly", label: "오른귀分홍", colorKey: "pink", opacity: 0.5, pts: [[32.9,16.6],[33.26,14.94],[31.56,16.1]] },
+    { id: "eyeL",  kind: "path", label: "왼눈(감)", colorKey: "eye", d: "M20.06,21.74 Q22.06,23.64 24.06,21.74", w: 1.1, dx: 0, dy: 0 },
+    { id: "eyeR",  kind: "path", label: "오른눈(감)", colorKey: "eye", d: "M27.61,21.64 Q29.61,23.54 31.61,21.64", w: 1.1, dx: 0, dy: 0 },
+    { id: "mouth", kind: "poly", label: "입(다이아)", colorKey: "pink", pts: [[26.18,23.92],[26.9,24.65],[26.18,25.38],[25.45,24.65]] },
+    { id: "zz1",   kind: "text", label: "z", colorKey: "zz", x: 27.45, y: 9.83, str: "z", size: 7 },
+    { id: "zz2",   kind: "text", label: "Z", colorKey: "zz", x: 31.61, y: 8.69, str: "Z", size: 10 },
   ];
 }
 
