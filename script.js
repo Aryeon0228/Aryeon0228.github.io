@@ -123,9 +123,9 @@ if (themeToggle) {
 
         // Flip to face the direction of travel (cat faces right by default)
         const flip = left ? 'scaleX(-1)' : '';
-        // Pupils are hand-placed (editor); auto-glance disabled so they stay in the eyes
-        const lookX = 0;
-        const lookY = 0;
+        // Subtle forward glance from the centered pupils (kept within the eye whites)
+        const lookX = moving ? 0.8 : Math.sin(Date.now() * 0.0015) * 0.4;
+        const lookY = moving ? 0.3 : 0.15;
 
         // Sleeping cat — plump rounded loaf, head raised to the right, sleepy closed eyes
         if (idle) {
@@ -163,8 +163,10 @@ if (themeToggle) {
             <!-- chubby body: two overlapping circles -->
             <circle cx="24.82" cy="20.57" r="10" fill="${bodyColor}"/>
             <circle cx="16.75" cy="20.59" r="9.4" fill="${bodyColor}"/>
-            <!-- round paws at the bottom -->
+            <!-- round paws: back pair + front pair (alternating gait) -->
             <circle cx="${15.82 - pawOffset}" cy="${30.03 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${20.5 + pawOffset}" cy="${30.5 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${24.2 - pawOffset}" cy="${30.2 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
             <circle cx="${29.06 + pawOffset}" cy="${29.37 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
             <!-- head -->
             <circle cx="27.92" cy="14.59" r="10.7" fill="${bodyColor}"/>
@@ -178,12 +180,12 @@ if (themeToggle) {
             <!-- round eyes -->
             <circle cx="24.3" cy="15" r="3.8" fill="${eyeWhite}"/>
             <circle cx="34.28" cy="14.44" r="3.8" fill="${eyeWhite}"/>
-            <!-- pupils -->
-            <circle cx="${25.46 + lookX}" cy="${14.71 + lookY}" r="2.7" fill="${pupilColor}"/>
-            <circle cx="${34.95 + lookX}" cy="${14.44 + lookY}" r="2.7" fill="${pupilColor}"/>
-            <!-- eye sparkle -->
-            <circle cx="${26.37 + lookX}" cy="${13.18 + lookY}" r="0.9" fill="#fff"/>
-            <circle cx="${36.02 + lookX}" cy="${13.06 + lookY}" r="0.9" fill="#fff"/>
+            <!-- pupils (centered in the eyes, with subtle glance) -->
+            <circle cx="${24.3 + lookX}" cy="${15 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <circle cx="${34.28 + lookX}" cy="${14.44 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <!-- eye sparkle (upper-left of pupil) -->
+            <circle cx="${23.3 + lookX}" cy="${13.9 + lookY}" r="0.9" fill="#fff"/>
+            <circle cx="${33.28 + lookX}" cy="${13.34 + lookY}" r="0.9" fill="#fff"/>
             <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
             <ellipse cx="29.81" cy="19.8" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
