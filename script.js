@@ -133,27 +133,27 @@ if (themeToggle) {
             const breathe = Math.sin(Date.now() * 0.0025) * 0.5;
             return `<svg width="40" height="32" viewBox="0 0 40 32" style="transform: translateY(${3 + breathe}px)">
                 <!-- tail curl at the rear -->
-                <path d="M10,24 Q3,23.5 3,18 Q3,13 9,14.5" stroke="${bodyColor}" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M14.23,29.92 Q7.23,29.42 7.23,23.92 Q7.23,18.92 13.23,20.42" stroke="${bodyColor}" stroke-width="3.3" fill="none" stroke-linecap="round"/>
                 <!-- body -->
-                <ellipse cx="16.1" cy="20.34" rx="9.4" ry="8" fill="${bodyColor}"/>
+                <ellipse cx="16.95" cy="20.63" rx="9.4" ry="8" fill="${bodyColor}"/>
                 <!-- head -->
-                <ellipse cx="24.83" cy="19.72" rx="9" ry="8" fill="${bodyColor}"/>
+                <ellipse cx="24.83" cy="19.72" rx="9" ry="8.4" fill="${bodyColor}"/>
                 <!-- front paws -->
-                <ellipse cx="23" cy="28.6" rx="2.8" ry="2.8" fill="${bodyColor}"/>
-                <ellipse cx="27.5" cy="28.3" rx="2.8" ry="2.8" fill="${bodyColor}"/>
+                <ellipse cx="21.83" cy="28.09" rx="2.1" ry="1.9" fill="${bodyColor}"/>
+                <ellipse cx="25.32" cy="27.95" rx="2" ry="1.9" fill="${bodyColor}"/>
                 <!-- ears -->
-                <polygon points="17.7,20.14 16.2,13.14 23.2,18.14" fill="${bodyColor}"/>
+                <polygon points="19.24,17.8 17.74,10.8 24.74,15.8" fill="${bodyColor}"/>
                 <polygon points="33.24,19 34.74,12.5 28.24,17" fill="${bodyColor}"/>
-                <polygon points="17.91,18.86 17.28,15.7 20.12,17.91" fill="${pinkColor}" opacity="0.5"/>
+                <polygon points="20.1,16.27 19.47,13.11 22.31,15.32" fill="${pinkColor}" opacity="0.5"/>
                 <polygon points="32.9,16.6 33.26,14.94 31.56,16.1" fill="${pinkColor}" opacity="0.5"/>
                 <!-- sleepy closed eyes -->
-                <path d="M20.06,21.74 Q22.06,23.64 24.06,21.74" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-                <path d="M27.61,21.64 Q29.61,23.54 31.61,21.64" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M20.57,21.58 Q22.57,23.48 24.57,21.58" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M28.26,21.62 Q30.26,23.52 32.26,21.62" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
                 <!-- pink diamond mouth -->
-                <polygon points="26.18,23.92 26.9,24.65 26.18,25.38 25.45,24.65" fill="${pinkColor}"/>
+                <polygon points="26.54,24.09 27.26,24.82 26.54,25.55 25.81,24.82" fill="${pinkColor}"/>
                 <!-- zzz drifting up -->
-                <text x="27.45" y="${9.83 + zzFloat}" font-size="7" font-weight="bold" fill="${dark ? '#bbb' : '#999'}" font-family="sans-serif">z</text>
-                <text x="31.61" y="${8.69 + zzFloat * 0.7}" font-size="10" font-weight="bold" fill="${dark ? '#999' : '#bbb'}" font-family="sans-serif">Z</text>
+                <text x="27.46" y="${9.84 + zzFloat}" font-size="7" font-weight="bold" fill="${dark ? '#bbb' : '#999'}" font-family="sans-serif">z</text>
+                <text x="32.08" y="${8.46 + zzFloat * 0.7}" font-size="10" font-weight="bold" fill="${dark ? '#999' : '#bbb'}" font-family="sans-serif">Z</text>
             </svg>`;
         }
 
