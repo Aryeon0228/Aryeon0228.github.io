@@ -970,8 +970,12 @@ nav {
 
 /* Experience Category Divider & Title */
 .experience-category {
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.experience-category:first-of-type {
+    margin-top: 0.5rem;
 }
 
 .experience-category-title {
@@ -979,20 +983,17 @@ nav {
     align-items: center;
     gap: 0.5rem;
     font-family: 'Pretendard', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
+    padding-bottom: 0.4rem;
+    border-bottom: 1.5px solid var(--border-color);
 }
 
 .experience-category-title svg {
-    opacity: 0.5;
-}
-
-.experience-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 1rem 0;
+    opacity: 1;
+    color: var(--gradient-start);
 }
 
 .skill-tags {

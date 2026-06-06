@@ -106,83 +106,98 @@ if (themeToggle) {
         </svg>`;
     }
 
-    // Cat SVG sprites — drawn with simple shapes
+    // Cat SVG sprites — chubby front-facing kawaii black cat
     function drawCat(moving, left, phase, idle) {
-        const flip = left ? 'scaleX(-1)' : '';
-        // Tail wave
-        const tailAngle = moving ? Math.sin(phase * 0.3) * 25 : Math.sin(Date.now() * 0.002) * 10;
+        // Tail wave (degrees of sway around its base)
+        const tailAngle = moving ? Math.sin(phase * 0.3) * 22 : Math.sin(Date.now() * 0.002) * 10;
         // Body bob when running
-        const bobY = moving ? Math.sin(phase * 0.6) * 2 : 0;
-        // Paw animation
-        const pawOffset = moving ? Math.sin(phase * 0.6) * 3 : 0;
+        const bobY = moving ? Math.sin(phase * 0.6) * 1.8 : Math.sin(Date.now() * 0.002) * 0.6;
+        // Paw shuffle when running
+        const pawOffset = moving ? Math.sin(phase * 0.6) * 1.4 : 0;
 
         const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-        const bodyColor = dark ? '#888888' : '#333333';
-        const eyeColor = '#fff';
-        const noseColor = '#ff8888';
-        const pupilColor = '#222';
+        const bodyColor = dark ? '#a3a3a3' : '#1f1f1f';
+        const eyeWhite = '#ffffff';
+        const pinkColor = '#ff9fb6';
+        const pupilColor = dark ? '#2a2a2a' : '#202020';
 
-        // Sleeping cat (idle for too long)
+        // Flip to face the direction of travel (cat faces right by default)
+        const flip = left ? 'scaleX(-1)' : '';
+        // Subtle forward glance from the centered pupils (kept within the eye whites)
+        const lookX = moving ? 0.8 : Math.sin(Date.now() * 0.0015) * 0.4;
+        const lookY = moving ? 0.3 : 0.15;
+
+        // Sleeping cat — plump rounded loaf, head raised to the right, sleepy closed eyes
         if (idle) {
             const zzFloat = Math.sin(Date.now() * 0.003) * 2;
-            return `<svg width="32" height="34" viewBox="0 -14 32 38" style="transform: ${flip}">
-                <!-- body curled -->
-                <ellipse cx="16" cy="16" rx="12.5" ry="7.8" fill="${bodyColor}"/>
+            const breathe = Math.sin(Date.now() * 0.0025) * 0.5;
+            return `<svg width="40" height="32" viewBox="0 0 40 32" style="transform: translateY(${3 + breathe}px)">
+                <!-- tail curl at the rear -->
+                <path d="M14.23,29.92 Q7.23,29.42 7.23,23.92 Q7.23,18.92 13.23,20.42" stroke="${bodyColor}" stroke-width="3.3" fill="none" stroke-linecap="round"/>
+                <!-- body -->
+                <ellipse cx="16.95" cy="20.63" rx="9.4" ry="8" fill="${bodyColor}"/>
                 <!-- head -->
-                <ellipse cx="8" cy="12" rx="7.8" ry="7" fill="${bodyColor}"/>
-                <!-- ears (back ear flipped) -->
-                <polygon points="4,8 1,3 7,6" fill="${bodyColor}"/>
-                <polygon points="12,8 15,3 9,6" fill="${bodyColor}"/>
-                <!-- closed eyes -->
-                <path d="M3.4,12.4 Q5,13.4 6.6,12.4" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                <path d="M9.4,11.6 Q11,12.6 12.6,11.6" stroke="${eyeColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                <!-- tail wrapping around -->
-                <path d="M27,17 Q29,11 25,9 Q22,7 20,11" stroke="${bodyColor}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <!-- zzz above head -->
-                <text x="4" y="${-1 + zzFloat}" font-size="10" font-weight="bold" fill="${dark ? '#bbb' : '#999'}" font-family="sans-serif">z</text>
-                <text x="10" y="${-6 + zzFloat * 0.7}" font-size="13" font-weight="bold" fill="${dark ? '#999' : '#bbb'}" font-family="sans-serif">Z</text>
-                <text x="18" y="${-10 + zzFloat * 0.5}" font-size="9" font-weight="bold" fill="${dark ? '#777' : '#ccc'}" font-family="sans-serif">z</text>
+                <ellipse cx="24.83" cy="19.72" rx="9" ry="8.4" fill="${bodyColor}"/>
+                <!-- front paws -->
+                <ellipse cx="21.83" cy="28.09" rx="2.1" ry="1.9" fill="${bodyColor}"/>
+                <ellipse cx="25.32" cy="27.95" rx="2" ry="1.9" fill="${bodyColor}"/>
+                <!-- ears -->
+                <polygon points="19.24,17.8 17.74,10.8 24.74,15.8" fill="${bodyColor}"/>
+                <polygon points="33.24,19 34.74,12.5 28.24,17" fill="${bodyColor}"/>
+                <polygon points="20.1,16.27 19.47,13.11 22.31,15.32" fill="${pinkColor}" opacity="0.5"/>
+                <polygon points="32.9,16.6 33.26,14.94 31.56,16.1" fill="${pinkColor}" opacity="0.5"/>
+                <!-- sleepy closed eyes -->
+                <path d="M20.57,21.58 Q22.57,23.48 24.57,21.58" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M28.26,21.62 Q30.26,23.52 32.26,21.62" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <!-- pink diamond mouth -->
+                <polygon points="26.54,24.09 27.26,24.82 26.54,25.55 25.81,24.82" fill="${pinkColor}"/>
+                <!-- zzz drifting up -->
+                <text x="27.46" y="${9.84 + zzFloat}" font-size="7" font-weight="bold" fill="${dark ? '#bbb' : '#999'}" font-family="sans-serif">z</text>
+                <text x="32.08" y="${8.46 + zzFloat * 0.7}" font-size="10" font-weight="bold" fill="${dark ? '#999' : '#bbb'}" font-family="sans-serif">Z</text>
             </svg>`;
         }
 
-        return `<svg width="28" height="28" viewBox="0 0 28 28" style="transform: ${flip} translateY(${bobY}px)">
-            <!-- tail -->
-            <path d="M7,19 Q${3 + tailAngle * 0.1},${11 - Math.abs(tailAngle) * 0.05} ${3 + tailAngle * 0.05},7" stroke="${bodyColor}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-            <!-- body -->
-            <ellipse cx="14" cy="19" rx="8.5" ry="6.2" fill="${bodyColor}"/>
-            <!-- back paws -->
-            <rect x="${6.5 - pawOffset * 0.3}" y="24" width="3.4" height="${moving ? 3 + pawOffset * 0.3 : 3}" rx="1.6" fill="${bodyColor}"/>
-            <rect x="${18 + pawOffset * 0.3}" y="24" width="3.4" height="${moving ? 3 - pawOffset * 0.3 : 3}" rx="1.6" fill="${bodyColor}"/>
-            <!-- front paws -->
-            <rect x="${10 + pawOffset * 0.5}" y="24" width="3" height="${moving ? 3 - pawOffset * 0.4 : 3}" rx="1.5" fill="${bodyColor}"/>
-            <rect x="${15 - pawOffset * 0.5}" y="24" width="3" height="${moving ? 3 + pawOffset * 0.4 : 3}" rx="1.5" fill="${bodyColor}"/>
+        // Tail base at the left rear — rotated by tailAngle for the swish
+        const tailBaseX = 10.25, tailBaseY = 22.81;
+
+        return `<svg width="40" height="36" viewBox="0 -2 40 36" style="transform: ${flip} translateY(${bobY}px)">
+            <!-- tail: fat curl rising at the left rear, sways while walking -->
+            <g transform="rotate(${tailAngle}, ${tailBaseX}, ${tailBaseY})">
+                <path d="M${tailBaseX},${tailBaseY} Q2.25,20.81 2.75,11.81 Q3.25,4.81 10.25,6.81" stroke="${bodyColor}" stroke-width="4.2" fill="none" stroke-linecap="round"/>
+            </g>
+            <!-- chubby body: two overlapping circles -->
+            <circle cx="24.82" cy="20.57" r="10" fill="${bodyColor}"/>
+            <circle cx="16.75" cy="20.59" r="9.4" fill="${bodyColor}"/>
+            <!-- round paws: back pair + front pair (alternating gait) -->
+            <circle cx="${11.89 - pawOffset}" cy="${28.37 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${19.6 + pawOffset}" cy="${30.24 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${24.83 - pawOffset}" cy="${30.17 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
+            <circle cx="${31.69 + pawOffset}" cy="${27.91 - Math.abs(pawOffset) * 0.4}" r="2.8" fill="${bodyColor}"/>
             <!-- head -->
-            <ellipse cx="20" cy="14" rx="7.6" ry="7" fill="${bodyColor}"/>
-            <!-- ears (back ear original, front ear flipped to hug head) -->
-            <polygon points="15,10 13.5,4 18,8" fill="${bodyColor}"/>
-            <polygon points="27,10 28.5,4 24,8" fill="${bodyColor}"/>
-            <!-- ear inner -->
-            <polygon points="15.5,9.5 14.5,5.5 17.5,8" fill="${noseColor}" opacity="0.3"/>
-            <polygon points="26.5,9.5 27.5,5.5 24.5,8" fill="${noseColor}" opacity="0.3"/>
-            <!-- eyes -->
-            <circle cx="18" cy="14" r="1.8" fill="${eyeColor}"/>
-            <circle cx="23" cy="14" r="1.8" fill="${eyeColor}"/>
-            <circle cx="${18.3}" cy="14.2" r="1.1" fill="${pupilColor}"/>
-            <circle cx="${23.3}" cy="14.2" r="1.1" fill="${pupilColor}"/>
-            <!-- nose -->
-            <ellipse cx="20.5" cy="15.5" rx="0.8" ry="0.5" fill="${noseColor}"/>
-            <!-- mouth (meow) -->
+            <circle cx="27.92" cy="14.59" r="10.7" fill="${bodyColor}"/>
+            <!-- chubby cheek (front) -->
+            <circle cx="32.27" cy="17.41" r="6.4" fill="${bodyColor}"/>
+            <!-- ears -->
+            <polygon points="19.8,8.73 17.3,0.73 27.3,5.73" fill="${bodyColor}"/>
+            <polygon points="37.3,10.08 39.8,2.58 31.8,7.08" fill="${bodyColor}"/>
+            <polygon points="20.5,6.16 19.52,3.71 23.2,5.04" fill="${pinkColor}"/>
+            <polygon points="37.32,7.49 38.67,4.69 34.82,6.15" fill="${pinkColor}"/>
+            <!-- round eyes -->
+            <circle cx="24.3" cy="15" r="3.8" fill="${eyeWhite}"/>
+            <circle cx="34.28" cy="14.44" r="3.8" fill="${eyeWhite}"/>
+            <!-- pupils (centered in the eyes, with subtle glance) -->
+            <circle cx="${24.3 + lookX}" cy="${15 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <circle cx="${34.28 + lookX}" cy="${14.44 + lookY}" r="2.7" fill="${pupilColor}"/>
+            <!-- eye sparkle (upper-left of pupil) -->
+            <circle cx="${23.3 + lookX}" cy="${13.9 + lookY}" r="0.9" fill="#fff"/>
+            <circle cx="${33.28 + lookX}" cy="${13.34 + lookY}" r="0.9" fill="#fff"/>
+            <!-- pink diamond mouth -->
             ${meowTimer > 0 ? `
-            <ellipse cx="20.5" cy="17.2" rx="1.8" ry="1.3" fill="${dark ? '#444' : '#c44'}"/>
-            <ellipse cx="20.5" cy="17.8" rx="1" ry="0.5" fill="${noseColor}" opacity="0.6"/>
+            <ellipse cx="29.81" cy="19.8" rx="2" ry="1.6" fill="${dark ? '#5a4146' : '#c46b7e'}"/>
+            <ellipse cx="29.81" cy="20.3" rx="1.1" ry="0.7" fill="${pinkColor}"/>
             ` : `
-            <path d="M19.5,16.3 Q20.5,17 21.5,16.3" stroke="${dark ? '#999' : '#888'}" stroke-width="0.5" fill="none" stroke-linecap="round"/>
+            <polygon points="29.81,18.14 31.21,19.54 29.81,20.94 28.41,19.54" fill="${pinkColor}"/>
             `}
-            <!-- whiskers -->
-            <line x1="15" y1="15" x2="12" y2="14" stroke="${dark ? '#999' : '#888'}" stroke-width="0.4"/>
-            <line x1="15" y1="16" x2="12" y2="16.5" stroke="${dark ? '#999' : '#888'}" stroke-width="0.4"/>
-            <line x1="26" y1="15" x2="28" y2="14" stroke="${dark ? '#999' : '#888'}" stroke-width="0.4"/>
-            <line x1="26" y1="16" x2="28" y2="16.5" stroke="${dark ? '#999' : '#888'}" stroke-width="0.4"/>
         </svg>`;
     }
 
@@ -313,8 +328,8 @@ if (themeToggle) {
 
         if (isMouseInWindow) {
             cat.style.display = 'block';
-            cat.style.left = (catX - 14) + 'px';
-            cat.style.top = (catY - 14) + 'px';
+            cat.style.left = (catX - 20) + 'px';
+            cat.style.top = (catY - 19) + 'px';
 
             // Dangling grass toy at cursor
             toy.style.display = 'block';
