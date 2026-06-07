@@ -996,6 +996,84 @@ nav {
     color: var(--gradient-start);
 }
 
+/* ==================== 3ds Max Scripts — compact list ==================== */
+.script-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.script-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1.1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.script-row:hover {
+    border-color: var(--gradient-start);
+    transform: translateX(3px);
+}
+
+.script-badge {
+    flex-shrink: 0;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--gradient-start);
+    background: var(--bg-primary);
+    padding: 0.28rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.script-title {
+    flex-shrink: 0;
+    width: 190px;
+    margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.script-row .portfolio-btn {
+    flex-shrink: 0;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.82rem;
+}
+
+.script-desc {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .script-row {
+        flex-wrap: wrap;
+        gap: 0.5rem 0.7rem;
+    }
+
+    .script-title {
+        width: auto;
+    }
+
+    .script-desc {
+        flex-basis: 100%;
+        order: 10;
+    }
+}
+
 .skill-tags {
     display: flex;
     flex-wrap: wrap;
