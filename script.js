@@ -137,7 +137,7 @@ if (themeToggle) {
                 <!-- body -->
                 <ellipse cx="16.95" cy="20.63" rx="9.4" ry="8" fill="${bodyColor}"/>
                 <!-- head -->
-                <ellipse cx="24.83" cy="19.72" rx="9" ry="8.4" fill="${bodyColor}"/>
+                <ellipse cx="24.83" cy="19.72" rx="9.8" ry="9.1" fill="${bodyColor}"/>
                 <!-- front paws -->
                 <ellipse cx="21.83" cy="28.09" rx="2.1" ry="1.9" fill="${bodyColor}"/>
                 <ellipse cx="25.32" cy="27.95" rx="2" ry="1.9" fill="${bodyColor}"/>
