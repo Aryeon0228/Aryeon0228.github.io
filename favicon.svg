@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- rounded chip background (visible on light & dark bars) -->
+  <rect width="64" height="64" rx="15" fill="#f5f0e8"/>
+  <!-- ears -->
+  <polygon points="20,23 15,5 35,18" fill="#1f1f1f"/>
+  <polygon points="44,23 49,5 29,18" fill="#1f1f1f"/>
+  <polygon points="22,21 18,9 32,18" fill="#ff9fb6"/>
+  <polygon points="42,21 46,9 32,18" fill="#ff9fb6"/>
+  <!-- head -->
+  <circle cx="32" cy="36" r="18" fill="#1f1f1f"/>
+  <!-- eyes -->
+  <circle cx="25.5" cy="35" r="6" fill="#ffffff"/>
+  <circle cx="38.5" cy="35" r="6" fill="#ffffff"/>
+  <circle cx="25.5" cy="35.5" r="3.9" fill="#202020"/>
+  <circle cx="38.5" cy="35.5" r="3.9" fill="#202020"/>
+  <circle cx="23.9" cy="33.4" r="1.5" fill="#ffffff"/>
+  <circle cx="36.9" cy="33.4" r="1.5" fill="#ffffff"/>
+  <!-- pink diamond mouth -->
+  <polygon points="32,41 35,44 32,47 29,44" fill="#ff9fb6"/>
+</svg>
