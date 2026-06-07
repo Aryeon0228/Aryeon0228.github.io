@@ -1,11 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <!-- rounded chip background -->
-  <rect width="64" height="64" rx="15" fill="#f5f0e8"/>
-  <!-- toe beans -->
-  <ellipse cx="17.5" cy="31" rx="4.4" ry="6" fill="#1f1f1f" transform="rotate(-24 17.5 31)"/>
-  <ellipse cx="26.8" cy="21.5" rx="4.9" ry="6.6" fill="#1f1f1f" transform="rotate(-8 26.8 21.5)"/>
-  <ellipse cx="37.2" cy="21.5" rx="4.9" ry="6.6" fill="#1f1f1f" transform="rotate(8 37.2 21.5)"/>
-  <ellipse cx="46.5" cy="31" rx="4.4" ry="6" fill="#1f1f1f" transform="rotate(24 46.5 31)"/>
-  <!-- palm pad (big bean) -->
-  <path d="M32 50.5c-7.2 0-13-4.3-13-10.2 0-5.2 5.4-8.6 13-8.6s13 3.4 13 8.6c0 5.9-5.8 10.2-13 10.2z" fill="#1f1f1f"/>
+  <!-- soft shadow under the fluffy fur -->
+  <g fill="#e7e2e6" transform="translate(0,2)">
+    <circle cx="15" cy="25" r="9.5"/>
+    <circle cx="27" cy="15.5" r="10.5"/>
+    <circle cx="41" cy="15.5" r="10.5"/>
+    <circle cx="53" cy="26" r="9.5"/>
+    <ellipse cx="34" cy="43" rx="19.5" ry="15.5"/>
+  </g>
+  <!-- white fluffy paw fur -->
+  <g fill="#ffffff">
+    <circle cx="15" cy="25" r="9.5"/>
+    <circle cx="27" cy="15.5" r="10.5"/>
+    <circle cx="41" cy="15.5" r="10.5"/>
+    <circle cx="53" cy="26" r="9.5"/>
+    <ellipse cx="34" cy="43" rx="19.5" ry="15.5"/>
+  </g>
+  <!-- pink jelly beans -->
+  <g fill="#f3a1ab">
+    <ellipse cx="15.5" cy="26" rx="5" ry="6.6" transform="rotate(-20 15.5 26)"/>
+    <ellipse cx="27" cy="17.5" rx="5.6" ry="7.2" transform="rotate(-6 27 17.5)"/>
+    <ellipse cx="40.5" cy="17.5" rx="5.6" ry="7.2" transform="rotate(6 40.5 17.5)"/>
+    <ellipse cx="52" cy="27" rx="5" ry="6.6" transform="rotate(20 52 27)"/>
+    <ellipse cx="34" cy="42.5" rx="12.5" ry="10"/>
+  </g>
 </svg>
