@@ -137,7 +137,7 @@ if (themeToggle) {
                 <!-- body -->
                 <ellipse cx="16.95" cy="20.63" rx="9.4" ry="8" fill="${bodyColor}"/>
                 <!-- head -->
-                <ellipse cx="24.83" cy="19.72" rx="9" ry="8.4" fill="${bodyColor}"/>
+                <ellipse cx="24.83" cy="19.72" rx="9.8" ry="9.1" fill="${bodyColor}"/>
                 <!-- front paws -->
                 <ellipse cx="21.83" cy="28.09" rx="2.1" ry="1.9" fill="${bodyColor}"/>
                 <ellipse cx="25.32" cy="27.95" rx="2" ry="1.9" fill="${bodyColor}"/>
@@ -146,11 +146,9 @@ if (themeToggle) {
                 <polygon points="33.24,19 34.74,12.5 28.24,17" fill="${bodyColor}"/>
                 <polygon points="20.1,16.27 19.47,13.11 22.31,15.32" fill="${pinkColor}" opacity="0.5"/>
                 <polygon points="32.9,16.6 33.26,14.94 31.56,16.1" fill="${pinkColor}" opacity="0.5"/>
-                <!-- sleepy closed eyes -->
-                <path d="M20.57,21.58 Q22.57,23.48 24.57,21.58" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-                <path d="M28.26,21.62 Q30.26,23.52 32.26,21.62" stroke="${dark ? '#3a3a3a' : '#111'}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-                <!-- pink diamond mouth -->
-                <polygon points="26.54,24.09 27.26,24.82 26.54,25.55 25.81,24.82" fill="${pinkColor}"/>
+                <!-- sleepy closed eyes (light mode: white for contrast on the dark body) -->
+                <path d="M20.57,21.58 Q22.57,23.48 24.57,21.58" stroke="${dark ? '#3a3a3a' : '#ffffff'}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                <path d="M28.26,21.62 Q30.26,23.52 32.26,21.62" stroke="${dark ? '#3a3a3a' : '#ffffff'}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
                 <!-- zzz drifting up -->
                 <text x="27.46" y="${9.84 + zzFloat}" font-size="7" font-weight="bold" fill="${dark ? '#bbb' : '#999'}" font-family="sans-serif">z</text>
                 <text x="32.08" y="${8.46 + zzFloat * 0.7}" font-size="10" font-weight="bold" fill="${dark ? '#999' : '#bbb'}" font-family="sans-serif">Z</text>
