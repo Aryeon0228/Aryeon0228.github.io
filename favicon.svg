@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- soft shadow under the fluffy fur -->
+  <g fill="#e7e2e6" transform="translate(0,2)">
+    <circle cx="15" cy="25" r="9.5"/>
+    <circle cx="27" cy="15.5" r="10.5"/>
+    <circle cx="41" cy="15.5" r="10.5"/>
+    <circle cx="53" cy="26" r="9.5"/>
+    <ellipse cx="34" cy="43" rx="19.5" ry="15.5"/>
+  </g>
+  <!-- white fluffy paw fur -->
+  <g fill="#ffffff">
+    <circle cx="15" cy="25" r="9.5"/>
+    <circle cx="27" cy="15.5" r="10.5"/>
+    <circle cx="41" cy="15.5" r="10.5"/>
+    <circle cx="53" cy="26" r="9.5"/>
+    <ellipse cx="34" cy="43" rx="19.5" ry="15.5"/>
+  </g>
+  <!-- pink jelly beans -->
+  <g fill="#f3a1ab">
+    <ellipse cx="15.5" cy="26" rx="5" ry="6.6" transform="rotate(-20 15.5 26)"/>
+    <ellipse cx="27" cy="17.5" rx="5.6" ry="7.2" transform="rotate(-6 27 17.5)"/>
+    <ellipse cx="40.5" cy="17.5" rx="5.6" ry="7.2" transform="rotate(6 40.5 17.5)"/>
+    <ellipse cx="52" cy="27" rx="5" ry="6.6" transform="rotate(20 52 27)"/>
+    <ellipse cx="34" cy="42.5" rx="12.5" ry="10"/>
+  </g>
+</svg>
