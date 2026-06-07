@@ -1,20 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <!-- rounded chip background (visible on light & dark bars) -->
+  <!-- rounded chip background -->
   <rect width="64" height="64" rx="15" fill="#f5f0e8"/>
-  <!-- ears -->
-  <polygon points="20,23 15,5 35,18" fill="#1f1f1f"/>
-  <polygon points="44,23 49,5 29,18" fill="#1f1f1f"/>
-  <polygon points="22,21 18,9 32,18" fill="#ff9fb6"/>
-  <polygon points="42,21 46,9 32,18" fill="#ff9fb6"/>
-  <!-- head -->
-  <circle cx="32" cy="36" r="18" fill="#1f1f1f"/>
-  <!-- eyes -->
-  <circle cx="25.5" cy="35" r="6" fill="#ffffff"/>
-  <circle cx="38.5" cy="35" r="6" fill="#ffffff"/>
-  <circle cx="25.5" cy="35.5" r="3.9" fill="#202020"/>
-  <circle cx="38.5" cy="35.5" r="3.9" fill="#202020"/>
-  <circle cx="23.9" cy="33.4" r="1.5" fill="#ffffff"/>
-  <circle cx="36.9" cy="33.4" r="1.5" fill="#ffffff"/>
-  <!-- pink diamond mouth -->
-  <polygon points="32,41 35,44 32,47 29,44" fill="#ff9fb6"/>
+  <!-- toe beans -->
+  <ellipse cx="17.5" cy="31" rx="4.4" ry="6" fill="#1f1f1f" transform="rotate(-24 17.5 31)"/>
+  <ellipse cx="26.8" cy="21.5" rx="4.9" ry="6.6" fill="#1f1f1f" transform="rotate(-8 26.8 21.5)"/>
+  <ellipse cx="37.2" cy="21.5" rx="4.9" ry="6.6" fill="#1f1f1f" transform="rotate(8 37.2 21.5)"/>
+  <ellipse cx="46.5" cy="31" rx="4.4" ry="6" fill="#1f1f1f" transform="rotate(24 46.5 31)"/>
+  <!-- palm pad (big bean) -->
+  <path d="M32 50.5c-7.2 0-13-4.3-13-10.2 0-5.2 5.4-8.6 13-8.6s13 3.4 13 8.6c0 5.9-5.8 10.2-13 10.2z" fill="#1f1f1f"/>
 </svg>
