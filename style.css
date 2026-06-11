@@ -1691,6 +1691,51 @@ nav {
     color: var(--text-secondary);
 }
 
+/* Contact — compact list */
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.contact-row:hover {
+    border-color: var(--gradient-start);
+    transform: translateX(3px);
+}
+
+.contact-row svg {
+    flex-shrink: 0;
+    color: var(--gradient-start);
+}
+
+.contact-label {
+    flex-shrink: 0;
+    width: 90px;
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.contact-value {
+    flex: 1;
+    min-width: 0;
+    color: var(--text-secondary);
+    word-break: break-all;
+}
+
 /* ==================== Footer ==================== */
 footer {
     background: var(--bg-primary);
