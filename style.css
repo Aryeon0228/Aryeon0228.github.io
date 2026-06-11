@@ -734,6 +734,43 @@ nav {
     border-bottom: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
+    display: grid;
+    grid-template-columns: 116px 1fr;
+    column-gap: 1.1rem;
+    row-gap: 0.3rem;
+    align-items: start;
+}
+
+.resume-item > .resume-period {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+}
+
+.resume-item > h4,
+.resume-item > .resume-desc {
+    grid-column: 2;
+}
+
+.resume-item > h4 {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .resume-item {
+        grid-template-columns: 1fr;
+        row-gap: 0.4rem;
+    }
+
+    .resume-item > .resume-period,
+    .resume-item > h4,
+    .resume-item > .resume-desc {
+        grid-column: 1;
+    }
+
+    .resume-item > .resume-period {
+        grid-row: auto;
+    }
 }
 
 .resume-item:last-child {
