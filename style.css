@@ -4,7 +4,8 @@
     --bg-primary: #f5f5f5;
     --bg-secondary: #ebebeb;
     --text-primary: #0a0a0a;
-    --text-secondary: #555555;
+    --text-secondary: #4a4a4a;
+    --text-muted: #6e6e6e;
     --border-color: rgba(0, 0, 0, 0.08);
     --card-bg: rgba(255, 255, 255, 0.4);
     --card-shadow: rgba(0, 0, 0, 0.08);
@@ -39,7 +40,8 @@
     --bg-primary: #0a0a0a;
     --bg-secondary: #141414;
     --text-primary: #f5f5f5;
-    --text-secondary: #999999;
+    --text-secondary: #b0b0b0;
+    --text-muted: #909090;
     --border-color: rgba(255, 255, 255, 0.08);
     --card-bg: rgba(255, 255, 255, 0.06);
     --card-shadow: rgba(0, 0, 0, 0.4);
@@ -52,6 +54,10 @@
     --gradient-start: #ffffff;
     --gradient-mid: #cccccc;
     --gradient-end: #888888;
+
+    /* Accent - Dark (legible links on dark bg) */
+    --accent: #b0b0b0;
+    --accent-light: #cfcfcf;
 }
 
 /* ==================== Reset & Base ==================== */
@@ -362,6 +368,15 @@ nav {
     line-height: 1.1;
     margin-bottom: var(--spacing-sm);
     letter-spacing: -0.02em;
+}
+
+.hero-role {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
 }
 
 .gradient-text {
@@ -714,11 +729,48 @@ nav {
 }
 
 .resume-item {
-    margin-top: var(--spacing-sm);
-    padding-bottom: var(--spacing-sm);
+    margin-top: 1.4rem;
+    padding-bottom: 1.4rem;
     border-bottom: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
+    display: grid;
+    grid-template-columns: 116px 1fr;
+    column-gap: 1.1rem;
+    row-gap: 0.3rem;
+    align-items: start;
+}
+
+.resume-item > .resume-period {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+}
+
+.resume-item > h4,
+.resume-item > .resume-desc {
+    grid-column: 2;
+}
+
+.resume-item > h4 {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .resume-item {
+        grid-template-columns: 1fr;
+        row-gap: 0.4rem;
+    }
+
+    .resume-item > .resume-period,
+    .resume-item > h4,
+    .resume-item > .resume-desc {
+        grid-column: 1;
+    }
+
+    .resume-item > .resume-period {
+        grid-row: auto;
+    }
 }
 
 .resume-item:last-child {
@@ -733,8 +785,12 @@ nav {
     width: 120px;
     height: 120px;
     object-fit: contain;
-    opacity: 0.1;
+    opacity: 0.06;
     pointer-events: none;
+}
+
+[data-theme="dark"] .school-logo {
+    opacity: 0.08;
 }
 
 .resume-item h4 {
@@ -888,16 +944,16 @@ nav {
 
 .award-project {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-bottom: 0.5rem;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .award-meta {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     margin-bottom: 0.25rem;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 .award-meta a {
@@ -939,6 +995,68 @@ nav {
     margin-top: 0.75rem;
     padding-top: 0;
     border-top: none;
+}
+
+/* ==================== Awards / Research — compact list ==================== */
+.award-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: var(--spacing-md);
+}
+
+.award-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 0.9rem 1.2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.award-row:hover {
+    border-color: var(--gradient-start);
+    transform: translateX(3px);
+}
+
+.award-row .award-date {
+    flex-shrink: 0;
+    width: 60px;
+}
+
+.award-row-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.award-row-content h4 {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+    line-height: 1.45;
+}
+
+.award-row-content .award-project {
+    margin-bottom: 0.3rem;
+}
+
+.award-row-content .award-meta:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .award-row {
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .award-row .award-date {
+        width: auto;
+    }
 }
 
 /* Skills Card Wide Layout */
@@ -1053,8 +1171,8 @@ nav {
     flex: 1;
     min-width: 0;
     margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.55;
+    font-size: 0.92rem;
+    line-height: 1.6;
     color: var(--text-secondary);
 }
 
@@ -1573,6 +1691,51 @@ nav {
     color: var(--text-secondary);
 }
 
+/* Contact — compact list */
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.contact-row:hover {
+    border-color: var(--gradient-start);
+    transform: translateX(3px);
+}
+
+.contact-row svg {
+    flex-shrink: 0;
+    color: var(--gradient-start);
+}
+
+.contact-label {
+    flex-shrink: 0;
+    width: 90px;
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.contact-value {
+    flex: 1;
+    min-width: 0;
+    color: var(--text-secondary);
+    word-break: break-all;
+}
+
 /* ==================== Footer ==================== */
 footer {
     background: var(--bg-primary);
@@ -1645,8 +1808,16 @@ footer p {
         text-align: center;
     }
 
+    body {
+        font-size: 17px;
+    }
+
     .hero-title {
         font-size: 3rem;
+    }
+
+    .hero-role {
+        font-size: 1.25rem;
     }
 
     .hero-buttons {
@@ -1717,8 +1888,16 @@ footer p {
 }
 
 @media (max-width: 480px) {
+    body {
+        font-size: 16px;
+    }
+
     .hero-title {
         font-size: 2.25rem;
+    }
+
+    .hero-role {
+        font-size: 1.1rem;
     }
 
     .hero-description {
