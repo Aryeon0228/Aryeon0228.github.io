@@ -960,6 +960,68 @@ nav {
     border-top: none;
 }
 
+/* ==================== Awards / Research — compact list ==================== */
+.award-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: var(--spacing-md);
+}
+
+.award-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 0.9rem 1.2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.award-row:hover {
+    border-color: var(--gradient-start);
+    transform: translateX(3px);
+}
+
+.award-row .award-date {
+    flex-shrink: 0;
+    width: 60px;
+}
+
+.award-row-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.award-row-content h4 {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+    line-height: 1.45;
+}
+
+.award-row-content .award-project {
+    margin-bottom: 0.3rem;
+}
+
+.award-row-content .award-meta:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .award-row {
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .award-row .award-date {
+        width: auto;
+    }
+}
+
 /* Skills Card Wide Layout */
 .card-wide {
     grid-column: 1 / -1;
