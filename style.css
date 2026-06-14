@@ -1121,12 +1121,15 @@ nav {
 .info-actions {
     flex-shrink: 0;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
     gap: 0.5rem;
     align-self: center;
+    width: 160px;
 }
 
 .info-actions .portfolio-btn {
+    justify-content: center;
     padding: 0.5rem 0.9rem;
     font-size: 0.82rem;
 }
@@ -1135,6 +1138,7 @@ nav {
     .info-actions {
         flex-basis: 100%;
         align-self: stretch;
+        width: 100%;
     }
 }
 
