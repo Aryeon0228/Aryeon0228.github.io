@@ -968,6 +968,22 @@ nav {
     letter-spacing: 0.1em;
 }
 
+.skill-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.skill-section-title {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.03em;
+    padding-bottom: 0.4rem;
+    border-bottom: 1.5px solid var(--border-color);
+}
+
 /* Experience Category Divider & Title */
 .experience-category {
     margin-top: 1.5rem;
