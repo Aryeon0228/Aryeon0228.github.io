@@ -86,8 +86,8 @@
       <input id="grid" type="range" min="2" max="7" value="4">
     </div>
     <div class="ctl">
-      <label>반사 세기 <b id="rV">0.55</b></label>
-      <input id="reflStr" type="range" min="0" max="100" value="55">
+      <label>반사 세기 <b id="rV">0.70</b></label>
+      <input id="reflStr" type="range" min="0" max="100" value="70">
     </div>
     <div class="ctl">
       <label>먼지 세기 <b id="duV">0.22</b></label>
@@ -124,7 +124,7 @@
 <span class="k">vec3</span> room = <span class="fn">texture2D</span>(u_atlas, uvA).rgb;
 
 <span class="c">// 3) 유리 반사 — 프레넬(시야각이 누울수록 강해짐), 유리에 고정</span>
-<span class="k">float</span> fres = 0.04 + reflStr*<span class="fn">pow</span>(1.0-<span class="fn">abs</span>(rd.z), 3.5);
+<span class="k">float</span> fres = 0.10 + reflStr*<span class="fn">pow</span>(1.0-<span class="fn">abs</span>(rd.z), 2.0);
 room = <span class="fn">mix</span>(room, envReflection(v_uv, yaw), fres);
 
 <span class="c">// 4) 먼지/얼룩 — v_uv 기반이라 패럴랙스 X (= 표면에 붙어있음)</span>
@@ -133,7 +133,7 @@ room *= 1.0 - grime*dustStr;
 </code></pre>
   </details>
 
-  <footer>아틀라스는 지금 런타임 생성(절차적)이야. 실제 PNG 아틀라스로 교체하는 지점·포맷은 동봉한 CLAUDE.md에 정리해뒀어 — 클로드코드가 거기서 이어받으면 돼.</footer>
+  <footer>아틀라스는 런타임에 절차적으로 생성돼 — 외부 텍스처 에셋 없이 단일 HTML 파일로 동작해.</footer>
 </div>
 
 <script>
@@ -141,7 +141,7 @@ room *= 1.0 - grime*dustStr;
   var cv=document.getElementById('gl');
   var gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
   var stage=document.querySelector('.stage');
-  if(!gl){stage.innerHTML='<div class="noticeWebGL">WebGL을 쓸 수 없는 환경이야. (homepage 통합 시 정적 폴백 이미지 권장 — CLAUDE.md 참고)</div>';return;}
+  if(!gl){stage.innerHTML='<div class="noticeWebGL">이 브라우저에서는 WebGL을 사용할 수 없어요.</div>';return;}
 
   // ── 절차적 아틀라스 (5열: back/floor/ceil/left/right, 4행: 방 variant) ──
   var COLS=5, ROWS=4;
@@ -217,12 +217,13 @@ room *= 1.0 - grime*dustStr;
   '  float fz=(hit.z+1.0)*0.5; col*=mix(1.0,0.42,fz);',           // 깊이 포그
   '  // ── 유리 반사 (프레넬) ──',
   '  float graze=1.0-abs(rd.z);',
-  '  float fres=clamp(0.04+u_refl*pow(graze,3.5),0.0,0.95);',
+  '  float fres=clamp(0.10+u_refl*pow(graze,2.0),0.0,0.92);',
   '  vec2 ruv=v_uv+vec2(u_yaw*0.08,u_pitch*0.05);',
-  '  vec3 sky=mix(vec3(0.55,0.62,0.72),vec3(0.86,0.89,0.94),clamp(ruv.y*1.2,0.0,1.0));',
-  '  float band=step(0.5,fract(ruv.x*5.0))*step(ruv.y,0.42);',
-  '  vec3 refl=mix(sky,vec3(0.30,0.34,0.40),band*0.45);',
+  '  vec3 sky=mix(vec3(0.60,0.68,0.80),vec3(0.93,0.96,1.00),clamp(ruv.y*1.2,0.0,1.0));',
+  '  float band=step(0.5,fract(ruv.x*5.0))*step(ruv.y,0.45);',
+  '  vec3 refl=mix(sky,vec3(0.32,0.37,0.44),band*0.5);',
   '  col=mix(col,refl,fres);',
+  '  col+=fres*0.12*sky;',
   '  // ── 먼지/얼룩 (유리 표면 고정, 패럴랙스 없음) ──',
   '  float smudge=fbm(v_uv*7.0); float streak=fbm(vec2(v_uv.x*3.0+v_uv.y*2.0,v_uv.y*0.5)*4.0);',
   '  float grime=smoothstep(0.5,0.95,smudge*0.7+streak*0.5);',
@@ -256,7 +257,7 @@ room *= 1.0 - grime*dustStr;
     .forEach(function(n){U[n]=gl.getUniformLocation(prog,'u_'+n);});
   gl.uniform1i(U.atlas,0); gl.uniform1f(U.cols,COLS); gl.uniform1f(U.rows,ROWS);
 
-  var st={yaw:0.32,pitch:0.18,depth:1.0,grid:4,seed:0,refl:0.55,dust:0.22,mode:0,reflOn:1,dustOn:1};
+  var st={yaw:0.32,pitch:0.18,depth:1.0,grid:4,seed:0,refl:0.70,dust:0.22,mode:0,reflOn:1,dustOn:1};
   var $=function(id){return document.getElementById(id);};
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   var lastInteract=performance.now();
