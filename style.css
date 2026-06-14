@@ -1074,6 +1074,70 @@ nav {
     }
 }
 
+/* Info Row (Awards / Research Papers / Web·App) — shares the script-row look */
+.info-row .script-badge {
+    align-self: flex-start;
+    margin-top: 0.15rem;
+}
+
+.info-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.info-main h4 {
+    margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+.info-main p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.info-main .info-meta {
+    font-size: 0.78rem;
+    opacity: 0.85;
+}
+
+.info-main .info-meta a {
+    color: var(--gradient-start);
+    text-decoration: none;
+}
+
+.info-main .info-meta a:hover {
+    text-decoration: underline;
+}
+
+.info-actions {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-self: center;
+}
+
+.info-actions .portfolio-btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.82rem;
+}
+
+@media (max-width: 768px) {
+    .info-actions {
+        flex-basis: 100%;
+        align-self: stretch;
+    }
+}
+
 .skill-tags {
     display: flex;
     flex-wrap: wrap;
