@@ -1065,6 +1065,12 @@ nav {
     font-size: 0.82rem;
 }
 
+/* Push the Max Scripts download button to the right corner (after the desc) */
+.script-row > .portfolio-btn {
+    order: 1;
+    margin-left: auto;
+}
+
 .script-desc {
     flex: 1;
     min-width: 0;
@@ -1098,6 +1104,15 @@ nav {
     display: inline-flex;
     justify-content: center;
     text-align: center;
+}
+
+/* Research Papers: pin the date badge to the bottom-left corner */
+.papers-list .info-row .script-badge {
+    align-self: flex-end;
+    justify-content: flex-start;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 0.1rem;
 }
 
 .info-main {
