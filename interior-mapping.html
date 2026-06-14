@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interior Mapping — Slab/Atlas + Glass</title>
+<style>
+  :root{
+    --bg:#14131c; --panel:#1b1a26; --panel2:#222130;
+    --line:rgba(184,184,214,.14); --ink:#eceaf4; --muted:#9794ab;
+    --amber:#ffb24d; --cyan:#5fd9e6;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.5;
+    background-image:radial-gradient(900px 500px at 80% -10%,rgba(95,217,230,.06),transparent 60%),
+                     radial-gradient(700px 600px at -10% 110%,rgba(255,178,77,.05),transparent 60%);}
+  .wrap{max-width:980px;margin:0 auto;padding:34px 22px 60px}
+  header{display:flex;flex-direction:column;gap:6px;margin-bottom:22px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan)}
+  h1{margin:0;font-size:clamp(24px,3.6vw,36px);font-weight:650;letter-spacing:-.02em}
+  h1 em{font-style:normal;color:var(--amber)}
+  .sub{color:var(--muted);font-size:14px;max-width:64ch}
+
+  .stage{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:#0b0a10;box-shadow:0 24px 60px -30px rgba(0,0,0,.8)}
+  canvas#gl{display:block;width:100%;height:clamp(320px,52vw,520px);cursor:grab;touch-action:none}
+  canvas#gl:active{cursor:grabbing}
+  .hint{position:absolute;left:14px;bottom:12px;font-family:var(--mono);font-size:11px;
+    color:rgba(236,234,244,.66);background:rgba(11,10,16,.5);padding:5px 9px;border-radius:8px;
+    border:1px solid var(--line);backdrop-filter:blur(4px);pointer-events:none}
+  .readout{position:absolute;right:14px;top:12px;font-family:var(--mono);font-size:11px;
+    color:var(--muted);text-align:right;background:rgba(11,10,16,.5);padding:6px 9px;border-radius:8px;
+    border:1px solid var(--line);backdrop-filter:blur(4px)}
+
+  .controls{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;padding:16px 18px;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px}
+  .ctl{flex:1;min-width:140px}
+  .ctl label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);
+    font-family:var(--mono);margin-bottom:8px}
+  .ctl label b{color:var(--ink);font-weight:600}
+  input[type=range]{width:100%;accent-color:var(--amber)}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap;width:100%;margin-top:2px}
+  button{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--panel2);
+    border:1px solid var(--line);padding:9px 13px;border-radius:9px;cursor:pointer;transition:.15s}
+  button:hover{border-color:var(--cyan);color:var(--cyan)}
+  button.on{background:var(--amber);color:#1a1206;border-color:var(--amber);font-weight:600}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+  details{margin-top:18px;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+  summary{cursor:pointer;padding:14px 18px;font-size:13px;font-weight:600;list-style:none;display:flex;align-items:center;gap:9px}
+  summary::-webkit-details-marker{display:none}
+  summary .tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--cyan);border:1px solid var(--line);padding:3px 7px;border-radius:6px}
+  pre{margin:0;padding:0 18px 18px;overflow:auto;font-family:var(--mono);font-size:12px;line-height:1.6;color:#d8d6e6}
+  .c{color:#7f7c96}.k{color:var(--amber)}.fn{color:var(--cyan)}
+  footer{margin-top:24px;color:var(--muted);font-size:12.5px;font-family:var(--mono)}
+  .noticeWebGL{padding:48px;color:#fff;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Slab/Atlas · Glass reflection · Dust</span>
+    <h1>창문 너머 <em>방</em> — 풀 셰이더 버전</h1>
+    <p class="sub">폴리곤은 여전히 평면 하나. 방 표면은 슬랩/아틀라스 텍스처에서 면별로 샘플하고, 그 위에 유리 반사(프레넬)와 먼지·얼룩 레이어를 얹었어. 드래그로 시점을 돌려봐 — 방은 패럴랙스로 미끄러지지만 먼지·반사는 유리 표면에 붙어 있는 게 보일 거야.</p>
+  </header>
+
+  <div class="stage">
+    <canvas id="gl"></canvas>
+    <div class="readout" id="readout"></div>
+    <div class="hint">drag · 시점 회전</div>
+  </div>
+
+  <div class="controls">
+    <div class="ctl">
+      <label>방 깊이 (depth) <b id="dV">1.00</b></label>
+      <input id="depth" type="range" min="40" max="220" value="100">
+    </div>
+    <div class="ctl">
+      <label>창문 수 (grid) <b id="gV">4</b></label>
+      <input id="grid" type="range" min="2" max="7" value="4">
+    </div>
+    <div class="ctl">
+      <label>반사 세기 <b id="rV">0.55</b></label>
+      <input id="reflStr" type="range" min="0" max="100" value="55">
+    </div>
+    <div class="ctl">
+      <label>먼지 세기 <b id="duV">0.22</b></label>
+      <input id="dustStr" type="range" min="0" max="100" value="22">
+    </div>
+    <div class="btnrow">
+      <button id="bRefl" class="on">반사 ON</button>
+      <button id="bDust" class="on">먼지 ON</button>
+      <button id="bShuffle">방 셔플</button>
+      <button id="bMode">면 구분 보기</button>
+      <button id="bReset">시점 초기화</button>
+    </div>
+  </div>
+
+  <div class="legend" id="legend">
+    <span><i style="background:#4f8cff"></i>뒷벽 (col 0)</span>
+    <span><i style="background:#ff8a3d"></i>바닥 (col 1)</span>
+    <span><i style="background:#ffe45e"></i>천장 (col 2)</span>
+    <span><i style="background:#4ddb8b"></i>왼쪽벽 (col 3)</span>
+    <span><i style="background:#e85d9b"></i>오른쪽벽 (col 4)</span>
+  </div>
+
+  <details>
+    <summary><span class="tag">core</span> 핵심 셰이더 — ray-box → atlas 샘플 → 유리 레이어</summary>
+<pre><code><span class="c">// 1) 해석적 ray-box (반복/마칭 없음)</span>
+<span class="k">vec3</span> pos = <span class="k">vec3</span>(uv*2.0-1.0, -1.0);
+<span class="k">vec3</span> k   = <span class="fn">abs</span>(1.0/rd) - pos*(1.0/rd);
+<span class="k">float</span> t  = <span class="fn">min</span>(<span class="fn">min</span>(k.x,k.y),k.z);
+<span class="k">vec3</span> hit = pos + rd*t;
+
+<span class="c">// 2) 닿은 면 -&gt; 아틀라스 col(back/floor/ceil/L/R) + 방 variant row</span>
+<span class="c">//    면 위 2D 좌표를 atlas 셀로 매핑해서 texture2D 한 번 샘플</span>
+<span class="k">vec2</span> uvA = <span class="fn">atlasUV</span>(colIdx, variant, faceLocalUV);
+<span class="k">vec3</span> room = <span class="fn">texture2D</span>(u_atlas, uvA).rgb;
+
+<span class="c">// 3) 유리 반사 — 프레넬(시야각이 누울수록 강해짐), 유리에 고정</span>
+<span class="k">float</span> fres = 0.04 + reflStr*<span class="fn">pow</span>(1.0-<span class="fn">abs</span>(rd.z), 3.5);
+room = <span class="fn">mix</span>(room, envReflection(v_uv, yaw), fres);
+
+<span class="c">// 4) 먼지/얼룩 — v_uv 기반이라 패럴랙스 X (= 표면에 붙어있음)</span>
+<span class="k">float</span> grime = <span class="fn">fbm</span>(v_uv*7.0);
+room *= 1.0 - grime*dustStr;
+</code></pre>
+  </details>
+
+  <footer>아틀라스는 지금 런타임 생성(절차적)이야. 실제 PNG 아틀라스로 교체하는 지점·포맷은 동봉한 CLAUDE.md에 정리해뒀어 — 클로드코드가 거기서 이어받으면 돼.</footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('gl');
+  var gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
+  var stage=document.querySelector('.stage');
+  if(!gl){stage.innerHTML='<div class="noticeWebGL">WebGL을 쓸 수 없는 환경이야. (homepage 통합 시 정적 폴백 이미지 권장 — CLAUDE.md 참고)</div>';return;}
+
+  // ── 절차적 아틀라스 (5열: back/floor/ceil/left/right, 4행: 방 variant) ──
+  var COLS=5, ROWS=4;
+  function makeAtlas(){
+    var s=256, c=document.createElement('canvas'); c.width=COLS*s; c.height=ROWS*s;
+    var x=c.getContext('2d');
+    var pal=[
+      {wall:'#3a4a5e',wall2:'#2c3a4a',floor:'#6b4a2c',floor2:'#5a3d24',ceil:'#cfd2d8',acc:'#d9a05b'},
+      {wall:'#565a62',wall2:'#454950',floor:'#7d7066',floor2:'#6a5e55',ceil:'#e2e4e8',acc:'#9fb4c2'},
+      {wall:'#2f5a52',wall2:'#244641',floor:'#4a4036',floor2:'#3b332b',ceil:'#d7e0dc',acc:'#e0b34d'},
+      {wall:'#5e3b3b',wall2:'#4a2f2f',floor:'#7a5236',floor2:'#65442d',ceil:'#e6dcd2',acc:'#caa15a'}
+    ];
+    for(var r=0;r<ROWS;r++){
+      var p=pal[r%pal.length];
+      for(var col=0;col<COLS;col++){
+        x.save(); x.translate(col*s,r*s);
+        if(col===0){ x.fillStyle=p.wall; x.fillRect(0,0,s,s);
+          x.fillStyle=p.wall2; x.fillRect(0,s*0.62,s,s*0.38);
+          x.fillStyle=p.acc; x.fillRect(s*0.3,s*0.22,s*0.4,s*0.34);
+          x.fillStyle='rgba(255,255,255,0.18)'; x.fillRect(s*0.33,s*0.25,s*0.34,s*0.28);
+        } else if(col===1){ x.fillStyle=p.floor; x.fillRect(0,0,s,s);
+          for(var j=0;j<7;j+=2){x.fillStyle=p.floor2; x.fillRect(0,j*s/7,s,s/7);}
+          x.strokeStyle='rgba(0,0,0,0.2)'; x.lineWidth=2;
+          for(var i=1;i<7;i++){x.beginPath();x.moveTo(0,i*s/7);x.lineTo(s,i*s/7);x.stroke();}
+        } else if(col===2){ x.fillStyle=p.ceil; x.fillRect(0,0,s,s);
+          x.fillStyle='#fff8e6'; x.fillRect(s*0.32,s*0.32,s*0.36,s*0.36);
+        } else { x.fillStyle=p.wall; x.fillRect(0,0,s,s);
+          x.strokeStyle=p.wall2; x.lineWidth=6;
+          for(var k=0;k<6;k++){x.beginPath();x.moveTo(k*s/6,0);x.lineTo(k*s/6,s);x.stroke();}
+          x.fillStyle=p.acc; x.fillRect(s*0.4,s*0.35,s*0.2,s*0.3);
+        }
+        x.restore();
+      }
+    }
+    return c;
+  }
+
+  var VS='attribute vec2 a_pos;varying vec2 v_uv;void main(){v_uv=a_pos*0.5+0.5;gl_Position=vec4(a_pos,0.0,1.0);}';
+  var FS=[
+  'precision highp float;',
+  'varying vec2 v_uv;',
+  'uniform float u_yaw,u_pitch,u_depth,u_grid,u_aspect,u_cols,u_rows,u_seed,u_refl,u_dust;',
+  'uniform int u_mode;',
+  'uniform sampler2D u_atlas;',
+  'float hash(vec2 p){return fract(sin(dot(p,vec2(41.3,289.1)))*43758.5453);}',
+  'float noise(vec2 p){vec2 i=floor(p),f=fract(p);float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));vec2 u=f*f*(3.-2.*f);return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);}',
+  'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*noise(p);p*=2.;a*=.5;}return s;}',
+  'vec2 atlasUV(float col,float row,vec2 luv){luv=clamp(luv,0.02,0.98);return vec2((col+luv.x)/u_cols,(row+luv.y)/u_rows);}',
+  'void main(){',
+  '  vec2 g=v_uv*vec2(u_grid*u_aspect,u_grid);',
+  '  vec2 cell=floor(g); vec2 f=fract(g);',
+  '  float m=0.06; bool frame=(f.x<m||f.x>1.0-m||f.y<m||f.y>1.0-m);',
+  '  vec2 luv0=clamp((f-m)/(1.0-2.0*m),0.0,1.0);',
+  '  vec2 p2=luv0*2.0-1.0;',                          // 광선 기하는 모든 창문 동일 -> 패럴랙스 방향 일치
+  '  float cy=cos(u_yaw),sy=sin(u_yaw),cp=cos(u_pitch),sp=sin(u_pitch);',
+  '  vec3 rd=vec3(sy*cp,sp,cy*cp);',
+  '  rd.x/=u_depth; rd.y/=u_depth; rd=normalize(rd); rd.z=max(rd.z,0.04);',
+  '  vec3 pos=vec3(p2,-1.0);',
+  '  vec3 idr=1.0/rd; vec3 k=abs(idr)-pos*idr;',
+  '  float t=min(min(k.x,k.y),k.z); vec3 hit=pos+rd*t; vec3 a=abs(hit);',
+  '  float variant=floor(hash(cell+u_seed+19.0)*u_rows);',
+  '  float colIdx; vec2 luv; float fc;',
+  '  if(a.z>=a.x&&a.z>=a.y){colIdx=0.0;luv=hit.xy*0.5+0.5; if(hash(cell+u_seed)>0.5) luv.x=1.0-luv.x; fc=0.0;}',
+  '  else if(a.y>a.x){ if(hit.y<0.0){colIdx=1.0;luv=hit.xz*0.5+0.5;fc=1.0;} else {colIdx=2.0;luv=hit.xz*0.5+0.5;fc=2.0;} }',
+  '  else { if(hit.x<0.0){colIdx=3.0;luv=hit.zy*0.5+0.5;fc=3.0;} else {colIdx=4.0;luv=hit.zy*0.5+0.5;fc=4.0;} }',
+  '  vec3 col;',
+  '  if(u_mode==1){',
+  '    if(fc<0.5)col=vec3(0.31,0.55,1.0); else if(fc<1.5)col=vec3(1.0,0.54,0.24);',
+  '    else if(fc<2.5)col=vec3(1.0,0.89,0.37); else if(fc<3.5)col=vec3(0.30,0.86,0.55); else col=vec3(0.91,0.36,0.61);',
+  '    if(frame)col=mix(col,vec3(0.07,0.07,0.09),0.96); gl_FragColor=vec4(col,1.0); return;',
+  '  }',
+  '  col=texture2D(u_atlas,atlasUV(colIdx,variant,luv)).rgb;',
+  '  float fz=(hit.z+1.0)*0.5; col*=mix(1.0,0.42,fz);',           // 깊이 포그
+  '  // ── 유리 반사 (프레넬) ──',
+  '  float graze=1.0-abs(rd.z);',
+  '  float fres=clamp(0.04+u_refl*pow(graze,3.5),0.0,0.95);',
+  '  vec2 ruv=v_uv+vec2(u_yaw*0.08,u_pitch*0.05);',
+  '  vec3 sky=mix(vec3(0.55,0.62,0.72),vec3(0.86,0.89,0.94),clamp(ruv.y*1.2,0.0,1.0));',
+  '  float band=step(0.5,fract(ruv.x*5.0))*step(ruv.y,0.42);',
+  '  vec3 refl=mix(sky,vec3(0.30,0.34,0.40),band*0.45);',
+  '  col=mix(col,refl,fres);',
+  '  // ── 먼지/얼룩 (유리 표면 고정, 패럴랙스 없음) ──',
+  '  float smudge=fbm(v_uv*7.0); float streak=fbm(vec2(v_uv.x*3.0+v_uv.y*2.0,v_uv.y*0.5)*4.0);',
+  '  float grime=smoothstep(0.5,0.95,smudge*0.7+streak*0.5);',
+  '  col*=1.0-grime*u_dust; col+=grime*u_dust*0.2*vec3(0.9,0.9,1.0);',
+  '  if(frame)col=mix(col,vec3(0.07,0.07,0.09),0.96);',
+  '  gl_FragColor=vec4(col,1.0);',
+  '}'].join('\n');
+
+  function sh(ty,src){var s=gl.createShader(ty);gl.shaderSource(s,src);gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(s),src);return s;}
+  var prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS))console.error(gl.getProgramInfoLog(prog));
+
+  var buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  var loc=gl.getAttribLocation(prog,'a_pos'); gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+
+  // atlas texture
+  var tex=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,tex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,makeAtlas());
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+
+  var U={}; ['yaw','pitch','depth','grid','aspect','cols','rows','seed','refl','dust','mode','atlas']
+    .forEach(function(n){U[n]=gl.getUniformLocation(prog,'u_'+n);});
+  gl.uniform1i(U.atlas,0); gl.uniform1f(U.cols,COLS); gl.uniform1f(U.rows,ROWS);
+
+  var st={yaw:0.32,pitch:0.18,depth:1.0,grid:4,seed:0,refl:0.55,dust:0.22,mode:0,reflOn:1,dustOn:1};
+  var $=function(id){return document.getElementById(id);};
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var lastInteract=performance.now();
+
+  function resize(){var dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=Math.round(cv.clientWidth*dpr); cv.height=Math.round(cv.clientHeight*dpr);
+    gl.viewport(0,0,cv.width,cv.height);}
+  window.addEventListener('resize',resize); resize();
+
+  function render(now){
+    var idle=now-lastInteract>1800;
+    var yaw=st.yaw+((idle&&!reduce)?0.16*Math.sin(now*0.0005):0);
+    gl.uniform1f(U.yaw,yaw); gl.uniform1f(U.pitch,st.pitch);
+    gl.uniform1f(U.depth,st.depth); gl.uniform1f(U.grid,st.grid); gl.uniform1f(U.seed,st.seed);
+    gl.uniform1f(U.aspect,cv.width/cv.height);
+    gl.uniform1f(U.refl,st.reflOn?st.refl:0.0); gl.uniform1f(U.dust,st.dustOn?st.dust:0.0);
+    gl.uniform1i(U.mode,st.mode);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    $('readout').innerHTML='yaw '+yaw.toFixed(2)+'<br>pitch '+st.pitch.toFixed(2)+'<br>depth '+st.depth.toFixed(2);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+
+  var drag=false,px=0,py=0;
+  cv.addEventListener('pointerdown',function(e){drag=true;px=e.clientX;py=e.clientY;cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener('pointermove',function(e){if(!drag)return;
+    st.yaw=Math.max(-1.15,Math.min(1.15,st.yaw+(e.clientX-px)*0.005));
+    st.pitch=Math.max(-0.85,Math.min(0.85,st.pitch-(e.clientY-py)*0.005));
+    px=e.clientX;py=e.clientY;lastInteract=performance.now();});
+  cv.addEventListener('pointerup',function(){drag=false;});
+  cv.addEventListener('pointercancel',function(){drag=false;});
+
+  $('depth').addEventListener('input',function(){st.depth=+this.value/100;$('dV').textContent=st.depth.toFixed(2);lastInteract=performance.now();});
+  $('grid').addEventListener('input',function(){st.grid=+this.value;$('gV').textContent=this.value;lastInteract=performance.now();});
+  $('reflStr').addEventListener('input',function(){st.refl=+this.value/100;$('rV').textContent=st.refl.toFixed(2);lastInteract=performance.now();});
+  $('dustStr').addEventListener('input',function(){st.dust=+this.value/100;$('duV').textContent=st.dust.toFixed(2);lastInteract=performance.now();});
+  $('bRefl').addEventListener('click',function(){st.reflOn^=1;this.classList.toggle('on',!!st.reflOn);this.textContent=st.reflOn?'반사 ON':'반사 OFF';});
+  $('bDust').addEventListener('click',function(){st.dustOn^=1;this.classList.toggle('on',!!st.dustOn);this.textContent=st.dustOn?'먼지 ON':'먼지 OFF';});
+  $('bShuffle').addEventListener('click',function(){st.seed+=13.0;lastInteract=performance.now();});
+  $('bMode').addEventListener('click',function(){st.mode^=1;this.classList.toggle('on',!!st.mode);this.textContent=st.mode?'셰이딩 보기':'면 구분 보기';$('legend').style.opacity=st.mode?1:0.4;});
+  $('bReset').addEventListener('click',function(){st.yaw=0.32;st.pitch=0.18;lastInteract=performance.now();});
+  $('legend').style.opacity=0.4;
+})();
+</script>
+</body>
+</html>
