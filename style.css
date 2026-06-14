@@ -1065,6 +1065,12 @@ nav {
     font-size: 0.82rem;
 }
 
+/* Push the Max Scripts download button to the right corner (after the desc) */
+.script-row > .portfolio-btn {
+    order: 1;
+    margin-left: auto;
+}
+
 .script-desc {
     flex: 1;
     min-width: 0;
