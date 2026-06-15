@@ -737,6 +737,12 @@ nav {
     pointer-events: none;
 }
 
+/* Smaller watermark for square emblems that otherwise get clipped (홍익대·청강대) */
+.school-logo-sm {
+    width: 60px;
+    height: 60px;
+}
+
 .resume-item h4 {
     font-family: 'Pretendard', sans-serif;
     font-size: 1rem;
