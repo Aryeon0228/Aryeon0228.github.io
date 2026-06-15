@@ -733,13 +733,13 @@ nav {
     width: 120px;
     height: 120px;
     object-fit: contain;
-    opacity: 0.1;
+    opacity: 0.22;
     pointer-events: none;
 }
 
 .resume-item h4 {
     font-family: 'Pretendard', sans-serif;
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
@@ -748,19 +748,20 @@ nav {
 .resume-period {
     color: var(--gradient-start);
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     margin-bottom: 0.5rem;
 }
 
 .resume-role {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 500;
     color: var(--text-secondary);
 }
 
 .resume-desc {
     color: var(--text-secondary);
-    line-height: 1.6;
+    font-size: 0.85rem;
+    line-height: 1.55;
     word-break: keep-all;
 }
 
