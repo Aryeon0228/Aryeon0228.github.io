@@ -297,47 +297,6 @@ line-height: 1;
 color: #fff;
 }
 
-.preset-grid {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 12px;
-}
-
-.preset-btn {
-padding: 15px;
-background: rgba(100, 100, 150, 0.2);
-border: 1px solid rgba(100, 100, 150, 0.3);
-border-radius: 10px;
-color: #fff;
-cursor: pointer;
-transition: all 0.3s;
-text-align: left;
-}
-
-.preset-btn:hover {
-background: rgba(100, 100, 150, 0.4);
-border-color: #6688ff;
-transform: translateY(-2px);
-}
-
-.preset-name {
-font-weight: 600;
-margin-bottom: 4px;
-}
-
-.preset-desc {
-font-size: 11px;
-color: #888;
-}
-
-.preset-color {
-width: 30px;
-height: 30px;
-border-radius: 50%;
-margin-bottom: 8px;
-border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
 /* Info modal style */
 .info-modal .modal {
 max-width: 700px;
@@ -559,6 +518,87 @@ margin: 0 auto 15px;
 @keyframes spin {
 to { transform: rotate(360deg); }
 }
+
+/* ── Collapsible, higher-contrast control sections ── */
+details.section {
+margin-bottom: 12px;
+border: 1px solid rgba(100, 100, 150, 0.18);
+border-radius: 10px;
+background: rgba(255, 255, 255, 0.02);
+overflow: hidden;
+}
+details.section[open] {
+background: rgba(255, 255, 255, 0.04);
+}
+summary.section-title {
+list-style: none;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+margin: 0;
+padding: 11px 12px;
+font-size: 12px;
+font-weight: 700;
+color: #c6ccf0;
+text-transform: uppercase;
+letter-spacing: 0.6px;
+white-space: normal;
+border-left: 3px solid #6688ff;
+user-select: none;
+}
+summary.section-title:hover { color: #fff; }
+summary.section-title::-webkit-details-marker { display: none; }
+.chev {
+font-size: 10px;
+color: #8890c0;
+transition: transform 0.2s ease;
+flex-shrink: 0;
+}
+details[open] > summary > .chev { transform: rotate(90deg); }
+.section-body { padding: 12px 12px 6px; }
+
+/* Sub-group (Basic / Advanced) inside a section */
+.subgroup-label {
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.5px;
+color: #9aa0c8;
+text-transform: uppercase;
+margin: 2px 0 10px;
+}
+details.subgroup {
+margin-top: 8px;
+border-top: 1px dashed rgba(100, 100, 150, 0.25);
+padding-top: 10px;
+}
+summary.subgroup-summary {
+list-style: none;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.5px;
+color: #9aa0c8;
+text-transform: uppercase;
+user-select: none;
+}
+summary.subgroup-summary:hover { color: #c6ccf0; }
+summary.subgroup-summary::-webkit-details-marker { display: none; }
+details.subgroup[open] > summary.subgroup-summary { margin-bottom: 12px; }
+
+/* Inline helper text */
+.hint {
+font-size: 10px;
+color: #8a90a8;
+line-height: 1.5;
+margin: 0 0 10px;
+word-break: keep-all;
+}
+.hint b { color: #b6bce0; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -621,36 +661,10 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 <div class="control-panel">
 <h2 class="panel-title">Real-time PBR Material Simulator</h2>
 
-<!-- Geometry Selection -->
-<div class="section">
-<div class="section-title">Geometry</div>
-<div class="control-group">
-<select id="geometrySelect" onchange="changeGeometry()">
-<option value="sphere">Sphere</option>
-<option value="torusKnot">Torus Knot</option>
-<option value="cube">Cube</option>
-<option value="cylinder">Cylinder</option>
-<option value="cone">Cone</option>
-<option value="torus">Torus</option>
-<option value="icosahedron">Icosahedron</option>
-<option value="octahedron">Octahedron</option>
-</select>
-</div>
-</div>
-
-<div class="section-divider"></div>
-
-<!-- Base Color -->
-<div class="section">
-<div class="section-title">Base Color</div>
-<div class="control-group">
-<input type="color" id="baseColor" value="#808080" onchange="updateMaterial()">
-</div>
-</div>
-
-<!-- Material Presets -->
-<div class="section">
-<div class="section-title">Material Presets</div>
+<!-- 1. Presets -->
+<details class="section" open>
+<summary class="section-title"><span>🎨 Presets</span><span class="chev">▸</span></summary>
+<div class="section-body">
 <div class="control-group">
 <select id="presetCategory" onchange="updatePresetList()">
 <option value="metals">Metals</option>
@@ -663,25 +677,66 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 <option value="">-- Select Preset --</option>
 </select>
 </div>
+<div class="hint">A preset fills in every Material value below at once. Pick a category, then a material.</div>
+</div>
+</details>
+
+<!-- 2. Object -->
+<details class="section" open>
+<summary class="section-title"><span>🧊 Object</span><span class="chev">▸</span></summary>
+<div class="section-body">
+<div class="control-group">
+<div class="control-label"><span>Geometry</span></div>
+<select id="geometrySelect" onchange="changeGeometry()">
+<option value="sphere">Sphere</option>
+<option value="torusKnot">Torus Knot</option>
+<option value="cube">Cube</option>
+<option value="cylinder">Cylinder</option>
+<option value="cone">Cone</option>
+<option value="torus">Torus</option>
+<option value="icosahedron">Icosahedron</option>
+<option value="octahedron">Octahedron</option>
+</select>
 </div>
 
-<div class="section-divider"></div>
+<div class="control-group">
+<div class="control-label"><span>Custom 3D Model</span></div>
+<div class="file-input-wrapper">
+<div class="file-input-btn">📁 Select Model File</div>
+<input type="file" id="modelFile" accept=".obj,.gltf,.glb" onchange="loadCustomModel(this)">
+</div>
+<div class="file-hint">Supported: .OBJ, .GLTF, .GLB</div>
+</div>
 
-<!-- Material Properties -->
-<div class="section">
-<div class="section-title">Material Properties</div>
+<div class="control-group">
+<div class="control-label"><span>Normal Map</span></div>
+<div class="file-input-wrapper">
+<div class="file-input-btn">📁 Select Normal Map Image</div>
+<input type="file" id="normalMapFile" accept=".png,.jpg,.jpeg,.webp,.tga" onchange="loadNormalMap(this)">
+</div>
+<div class="file-hint">Supported: .PNG, .JPG, .JPEG, .WEBP, .TGA</div>
+</div>
+
+<button class="action-btn" onclick="resetModel()" style="margin-top: 6px; background: rgba(100, 100, 150, 0.3);">
+🔄 Reset to Default Model
+</button>
+</div>
+</details>
+
+<!-- 3. Material -->
+<details class="section" open>
+<summary class="section-title"><span>🪞 Material</span><span class="chev">▸</span></summary>
+<div class="section-body">
+<div class="control-group">
+<div class="control-label"><span>Base Color</span></div>
+<input type="color" id="baseColor" value="#808080" onchange="updateMaterial()">
+</div>
+
+<div class="subgroup-label">Basic</div>
 
 <div class="control-group">
 <div class="control-label">
-<span>Roughness</span>
-<span class="control-value" id="roughnessValue">0.50</span>
-</div>
-<input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
-</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Metallic</span>
+<span title="0 = dielectric (plastic/wood), 1 = metal. Metals take their specular tint from the base color.">Metallic</span>
 <span class="control-value" id="metallicValue">0.00</span>
 </div>
 <input type="range" id="metallic" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -689,15 +744,27 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 
 <div class="control-group">
 <div class="control-label">
-<span>Specular (IOR)</span>
-<span class="control-value" id="specularValue">0.50</span>
+<span title="Surface micro-roughness. 0 = mirror-smooth, 1 = fully diffuse.">Roughness</span>
+<span class="control-value" id="roughnessValue">0.50</span>
 </div>
-<input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
+<input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
 </div>
 
 <div class="control-group">
 <div class="control-label">
-<span>Clearcoat</span>
+<span title="Dielectric reflection strength, driven by index of refraction (IOR). Not the same as the per-material Specular (F0) colors in the Reference.">Specular (IOR)</span>
+<span class="control-value" id="specularValue">0.50</span>
+</div>
+<input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
+</div>
+<div class="hint">Specular (IOR) sets dielectric reflectance via index of refraction — distinct from the per-material <b>Specular (F0)</b> colors shown in the 📖 Reference panel.</div>
+
+<details class="subgroup">
+<summary class="subgroup-summary"><span>Advanced</span><span class="chev">▸</span></summary>
+
+<div class="control-group">
+<div class="control-label">
+<span title="Extra clear layer on top (car paint, lacquer).">Clearcoat</span>
 <span class="control-value" id="clearcoatValue">0.00</span>
 </div>
 <input type="range" id="clearcoat" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -705,7 +772,7 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 
 <div class="control-group">
 <div class="control-label">
-<span>Clearcoat Roughness</span>
+<span title="Roughness of the clearcoat layer only.">Clearcoat Roughness</span>
 <span class="control-value" id="clearcoatRoughnessValue">0.00</span>
 </div>
 <input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -713,7 +780,7 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 
 <div class="control-group">
 <div class="control-label">
-<span>Sheen</span>
+<span title="Soft retroreflective rim, for cloth like velvet/fabric.">Sheen</span>
 <span class="control-value" id="sheenValue">0.00</span>
 </div>
 <input type="range" id="sheen" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -721,7 +788,7 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 
 <div class="control-group">
 <div class="control-label">
-<span>Sheen Roughness</span>
+<span title="Spread of the sheen highlight.">Sheen Roughness</span>
 <span class="control-value" id="sheenRoughnessValue">1.00</span>
 </div>
 <input type="range" id="sheenRoughness" min="0" max="1" step="0.01" value="1" oninput="updateMaterial()">
@@ -729,7 +796,7 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 
 <div class="control-group">
 <div class="control-label">
-<span>Iridescence</span>
+<span title="Thin-film color shift (soap bubble, oil slick).">Iridescence</span>
 <span class="control-value" id="iridescenceValue">0.00</span>
 </div>
 <input type="range" id="iridescence" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -737,31 +804,21 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 
 <div class="control-group">
 <div class="control-label">
-<span>Iridescence IOR</span>
+<span title="Index of refraction of the thin film driving iridescence.">Iridescence IOR</span>
 <span class="control-value" id="iridescenceIORValue">1.30</span>
 </div>
 <input type="range" id="iridescenceIOR" min="1" max="2.333" step="0.01" value="1.3" oninput="updateMaterial()">
 </div>
+</details>
 </div>
+</details>
 
-<div class="section-divider"></div>
-
-<!-- Lighting & Environment -->
-<div class="section">
-<div class="section-title">Lighting & Environment</div>
-
-<div class="toggle-wrapper">
-<span>IOR (Fresnel Effect)</span>
-<label class="toggle-switch">
-<input type="checkbox" id="iorToggle" checked onchange="toggleIOR()">
-<span class="toggle-slider"></span>
-</label>
-</div>
-
+<!-- 4. Scene -->
+<details class="section" open>
+<summary class="section-title"><span>💡 Scene</span><span class="chev">▸</span></summary>
+<div class="section-body">
 <div class="control-group">
-<div class="control-label">
-<span>Environment Map</span>
-</div>
+<div class="control-label"><span>Environment Map</span></div>
 <select id="envMapSelect" onchange="changeEnvironment()">
 <option value="studio">Studio</option>
 <option value="sunset">Sunset</option>
@@ -796,99 +853,25 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 </div>
 
 <div class="toggle-wrapper">
-<span>SSAO (Ambient Occlusion)</span>
+<span title="Fresnel reflectance at grazing angles. Off = flat, no rim reflection.">IOR (Fresnel Effect)</span>
+<label class="toggle-switch">
+<input type="checkbox" id="iorToggle" checked onchange="toggleIOR()">
+<span class="toggle-slider"></span>
+</label>
+</div>
+
+<div class="toggle-wrapper">
+<span title="Simulated ambient occlusion contrast.">SSAO (Ambient Occlusion)</span>
 <label class="toggle-switch">
 <input type="checkbox" id="ssaoToggle" checked onchange="toggleSSAO()">
 <span class="toggle-slider"></span>
 </label>
 </div>
 </div>
-
-<div class="section-divider"></div>
-
-<!-- Custom Model & Normal Map -->
-<div class="section">
-<div class="section-title">Custom Model & Normal Map</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Custom 3D Model</span>
-</div>
-<div class="file-input-wrapper">
-<div class="file-input-btn">📁 Select Model File</div>
-<input type="file" id="modelFile" accept=".obj,.gltf,.glb" onchange="loadCustomModel(this)">
-</div>
-<div class="file-hint">Supported: .OBJ, .GLTF, .GLB</div>
+</details>
 </div>
 
-<div class="control-group">
-<div class="control-label">
-<span>Normal Map</span>
-</div>
-<div class="file-input-wrapper">
-<div class="file-input-btn">📁 Select Normal Map Image</div>
-<input type="file" id="normalMapFile" accept=".png,.jpg,.jpeg,.webp,.tga" onchange="loadNormalMap(this)">
-</div>
-<div class="file-hint">Supported: .PNG, .JPG, .JPEG, .WEBP, .TGA</div>
-</div>
-
-<button class="action-btn" onclick="resetModel()" style="margin-top: 10px; background: rgba(100, 100, 150, 0.3);">
-🔄 Reset to Default Model
-</button>
-</div>
-</div>
-
-<!-- Material Presets Modal -->
-<div class="modal-overlay" id="presetModal">
-<div class="modal">
-<div class="modal-header">
-<h3 class="modal-title">🎨 Material Presets</h3>
-<button class="modal-close" onclick="closePresetModal()">✕</button>
-</div>
-<div class="preset-grid">
-<button class="preset-btn" onclick="applyPreset('gold')">
-<div class="preset-color" style="background: linear-gradient(135deg, #ffd700, #b8860b);"></div>
-<div class="preset-name">Gold</div>
-<div class="preset-desc">Shiny metallic texture</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('chrome')">
-<div class="preset-color" style="background: linear-gradient(135deg, #e0e0e0, #a0a0a0);"></div>
-<div class="preset-name">Chrome</div>
-<div class="preset-desc">Mirror-like reflection</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('copper')">
-<div class="preset-color" style="background: linear-gradient(135deg, #b87333, #8b4513);"></div>
-<div class="preset-name">Copper</div>
-<div class="preset-desc">Warm metallic color</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('plastic')">
-<div class="preset-color" style="background: linear-gradient(135deg, #cc3333, #991111);"></div>
-<div class="preset-name">Plastic</div>
-<div class="preset-desc">Non-metallic glossy</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('rubber')">
-<div class="preset-color" style="background: linear-gradient(135deg, #333333, #1a1a1a);"></div>
-<div class="preset-name">Rubber</div>
-<div class="preset-desc">Matte finish</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('wood')">
-<div class="preset-color" style="background: linear-gradient(135deg, #8b4513, #654321);"></div>
-<div class="preset-name">Wood</div>
-<div class="preset-desc">Natural wood texture</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('carPaint')">
-<div class="preset-color" style="background: linear-gradient(135deg, #cc0000, #990000);"></div>
-<div class="preset-name">Car Paint</div>
-<div class="preset-desc">Clearcoat applied</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('brushedMetal')">
-<div class="preset-color" style="background: linear-gradient(135deg, #b0b0b0, #808080);"></div>
-<div class="preset-name">Brushed Metal</div>
-<div class="preset-desc">Hairline finish</div>
-</button>
-</div>
-</div>
-</div>
+<!-- Material presets are chosen from the 🎨 Presets section in the control panel -->
 
 <!-- PBR/BRDF Guide Modal -->
 <div class="modal-overlay info-modal" id="infoModal">
@@ -1686,12 +1669,6 @@ document.getElementById('iridescence').value = preset.iridescence;
 document.getElementById('iridescenceIOR').value = preset.iridescenceIOR;
 
 updateMaterial();
-
-// Close modal if open
-const modal = document.getElementById('presetModal');
-if (modal.classList.contains('active')) {
-closePresetModal();
-}
 }
 
 // Reference panel toggle
@@ -1747,15 +1724,6 @@ handle.addEventListener('pointercancel', endDrag);
 }
 makeReferenceDraggable();
 
-// Preset modal
-function openPresetModal() {
-document.getElementById('presetModal').classList.add('active');
-}
-
-function closePresetModal() {
-document.getElementById('presetModal').classList.remove('active');
-}
-
 // Info modal
 function openInfoModal() {
 document.getElementById('infoModal').classList.add('active');
@@ -1800,8 +1768,6 @@ window.loadCustomModel = loadCustomModel;
 window.loadNormalMap = loadNormalMap;
 window.resetModel = resetModel;
 window.toggleReference = toggleReference;
-window.openPresetModal = openPresetModal;
-window.closePresetModal = closePresetModal;
 window.openInfoModal = openInfoModal;
 window.closeInfoModal = closeInfoModal;
 
