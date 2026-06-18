@@ -599,6 +599,115 @@ margin: 0 0 10px;
 word-break: keep-all;
 }
 .hint b { color: #b6bce0; font-weight: 600; }
+
+/* ── Whole-panel collapse ── */
+.panel-header {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 8px;
+margin-bottom: 16px;
+padding-bottom: 10px;
+border-bottom: 1px solid rgba(100, 100, 150, 0.3);
+}
+.panel-header .panel-title {
+margin: 0;
+padding: 0;
+border: none;
+flex: 1;
+}
+.panel-toggle {
+flex-shrink: 0;
+width: 26px;
+height: 26px;
+border-radius: 7px;
+border: 1px solid rgba(100, 100, 150, 0.3);
+background: rgba(100, 100, 150, 0.15);
+color: #c6ccf0;
+font-size: 16px;
+line-height: 1;
+cursor: pointer;
+transition: all 0.2s;
+}
+.panel-toggle:hover { background: rgba(100, 150, 255, 0.25); color: #fff; }
+.control-panel.collapsed { width: auto; }
+.control-panel.collapsed .panel-header {
+margin-bottom: 0;
+padding-bottom: 0;
+border-bottom: none;
+}
+.control-panel.collapsed .panel-title { font-size: 14px; white-space: nowrap; }
+.control-panel.collapsed .panel-body { display: none; }
+
+/* ── Preset color-chip dropdown ── */
+.preset-dd { position: relative; }
+.preset-dd-trigger {
+width: 100%;
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 9px 10px;
+background: rgba(100, 100, 150, 0.2);
+border: 1px solid rgba(100, 100, 150, 0.3);
+border-radius: 6px;
+color: #fff;
+font-size: 13px;
+cursor: pointer;
+text-align: left;
+}
+.preset-dd-trigger:hover { border-color: rgba(100, 150, 255, 0.5); }
+.preset-dd-label {
+flex: 1;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.preset-dd-caret { color: #8890c0; transition: transform 0.2s; }
+.preset-dd.open .preset-dd-caret { transform: rotate(90deg); }
+.preset-chip {
+width: 16px;
+height: 16px;
+flex-shrink: 0;
+border-radius: 4px;
+background: rgba(255, 255, 255, 0.12);
+border: 1px solid rgba(255, 255, 255, 0.25);
+box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+}
+.preset-dd-menu {
+display: none;
+position: absolute;
+top: calc(100% + 4px);
+left: 0;
+right: 0;
+max-height: 260px;
+overflow-y: auto;
+background: rgba(38, 38, 60, 0.98);
+border: 1px solid rgba(100, 100, 150, 0.4);
+border-radius: 8px;
+padding: 4px;
+z-index: 60;
+backdrop-filter: blur(10px);
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.preset-dd.open .preset-dd-menu { display: block; }
+.preset-dd-option {
+width: 100%;
+display: flex;
+align-items: center;
+gap: 9px;
+padding: 7px 8px;
+background: none;
+border: none;
+border-radius: 6px;
+color: #ddd;
+font-size: 13px;
+cursor: pointer;
+text-align: left;
+}
+.preset-dd-option:hover { background: rgba(100, 150, 255, 0.2); color: #fff; }
+.preset-dd-option.selected { background: rgba(100, 150, 255, 0.15); }
+.preset-dd-menu::-webkit-scrollbar { width: 6px; }
+.preset-dd-menu::-webkit-scrollbar-thumb { background: rgba(100, 100, 150, 0.5); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -658,8 +767,12 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 </div>
 
 <!-- Control panel -->
-<div class="control-panel">
+<div class="control-panel" id="controlPanel">
+<div class="panel-header">
 <h2 class="panel-title">Real-time PBR Material Simulator</h2>
+<button class="panel-toggle" id="panelToggle" onclick="toggleControlPanel()" title="Collapse panel" aria-label="Collapse panel">–</button>
+</div>
+<div class="panel-body" id="panelBody">
 
 <!-- 1. Presets -->
 <details class="section" open>
@@ -673,11 +786,16 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 </select>
 </div>
 <div class="control-group">
-<select id="presetSelect" onchange="applyPresetFromSelect()">
-<option value="">-- Select Preset --</option>
-</select>
+<div class="preset-dd" id="presetDD">
+<button type="button" class="preset-dd-trigger" id="presetDDTrigger" onclick="togglePresetMenu(event)" aria-haspopup="listbox" aria-expanded="false">
+<span class="preset-chip" id="presetDDChip"></span>
+<span class="preset-dd-label" id="presetDDLabel">-- Select Preset --</span>
+<span class="chev preset-dd-caret">▸</span>
+</button>
+<div class="preset-dd-menu" id="presetDDMenu" role="listbox"></div>
 </div>
-<div class="hint">A preset fills in every Material value below at once. Pick a category, then a material.</div>
+</div>
+<div class="hint">A preset fills in every Material value below at once. Each row previews the base color. Pick a category, then a material.</div>
 </div>
 </details>
 
@@ -869,6 +987,7 @@ For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
 </div>
 </div>
 </details>
+</div>
 </div>
 
 <!-- Material presets are chosen from the 🎨 Presets section in the control panel -->
@@ -1638,25 +1757,71 @@ document.getElementById('normalMapFile').value = '';
 
 // Update preset list based on category
 function updatePresetList() {
-const category = document.getElementById('presetCategory').value;
-const select = document.getElementById('presetSelect');
+const category = dom('presetCategory').value;
+const menu = dom('presetDDMenu');
 const items = presetCategories[category] || [];
 
-select.innerHTML = '<option value="">-- Select Preset --</option>';
+// Reset the current selection display when the category changes
+dom('presetDDLabel').textContent = '-- Select Preset --';
+dom('presetDDChip').style.background = '';
+
+menu.innerHTML = '';
 items.forEach(item => {
-const option = document.createElement('option');
-option.value = item.id;
-option.textContent = item.name;
-select.appendChild(option);
+const color = (presets[item.id] && presets[item.id].color) || '#808080';
+const opt = document.createElement('button');
+opt.type = 'button';
+opt.className = 'preset-dd-option';
+opt.setAttribute('role', 'option');
+opt.dataset.id = item.id;
+opt.innerHTML = `<span class="preset-chip" style="background:${color}"></span><span>${item.name}</span>`;
+opt.addEventListener('click', () => selectPreset(item.id, item.name));
+menu.appendChild(opt);
 });
+closePresetMenu();
 }
 
-// Apply preset from dropdown
-function applyPresetFromSelect() {
-const name = document.getElementById('presetSelect').value;
-if (name) {
-applyPreset(name);
+// Custom preset dropdown (color-chip preview) handlers
+function togglePresetMenu(e) {
+if (e) e.stopPropagation();
+const dd = dom('presetDD');
+const open = dd.classList.toggle('open');
+dom('presetDDTrigger').setAttribute('aria-expanded', open ? 'true' : 'false');
 }
+
+function closePresetMenu() {
+const dd = dom('presetDD');
+if (!dd) return;
+dd.classList.remove('open');
+dom('presetDDTrigger').setAttribute('aria-expanded', 'false');
+}
+
+function selectPreset(id, name) {
+const color = (presets[id] && presets[id].color) || '#808080';
+dom('presetDDLabel').textContent = name;
+dom('presetDDChip').style.background = color;
+dom('presetDDMenu').querySelectorAll('.preset-dd-option').forEach(o => {
+o.classList.toggle('selected', o.dataset.id === id);
+});
+closePresetMenu();
+applyPreset(id);
+}
+
+// Close the preset menu on any outside click
+document.addEventListener('click', (e) => {
+const dd = dom('presetDD');
+if (dd && dd.classList.contains('open') && !dd.contains(e.target)) {
+closePresetMenu();
+}
+});
+
+// Collapse / expand the whole control panel
+function toggleControlPanel() {
+const panel = dom('controlPanel');
+const collapsed = panel.classList.toggle('collapsed');
+const btn = dom('panelToggle');
+btn.textContent = collapsed ? '+' : '–';
+btn.title = collapsed ? 'Expand panel' : 'Collapse panel';
+btn.setAttribute('aria-label', collapsed ? 'Expand panel' : 'Collapse panel');
 }
 
 // Apply preset
@@ -1765,7 +1930,8 @@ modal.classList.remove('active');
 window.changeGeometry = changeGeometry;
 window.updateMaterial = updateMaterial;
 window.updatePresetList = updatePresetList;
-window.applyPresetFromSelect = applyPresetFromSelect;
+window.togglePresetMenu = togglePresetMenu;
+window.toggleControlPanel = toggleControlPanel;
 window.applyPreset = applyPreset;
 window.updateLighting = updateLighting;
 window.changeEnvironment = changeEnvironment;
