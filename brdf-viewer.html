@@ -976,8 +976,13 @@ let scene, camera, renderer, controls;
 let currentMesh;
 let mainLight, fillLight, backLight, ambientLight;
 let currentMaterial;
-let composer;
 let isCustomModel = false;
+
+// Memoized element lookup — avoids repeated getElementById in the hot paths
+// (updateMaterial / updateLighting fire on every slider input while dragging).
+// All control IDs are static and never recreated, so caching is safe.
+const _elCache = {};
+const dom = (id) => _elCache[id] || (_elCache[id] = document.getElementById(id));
 
 // Environment presets with HDR URLs from Poly Haven (CC0 License)
 const envPresets = {
@@ -1250,7 +1255,9 @@ camera.position.set(0, 0, 5);
 // Create renderer
 renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+// Cap at 2x: on 3x/4K displays this avoids rendering up to ~9x the pixels
+// for a negligible visual difference, a large GPU fill-rate saving.
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.physicallyCorrectLights = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
@@ -1431,29 +1438,29 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Update material
 function updateMaterial() {
-const color = document.getElementById('baseColor').value;
-const roughness = parseFloat(document.getElementById('roughness').value);
-const metallic = parseFloat(document.getElementById('metallic').value);
-const specular = parseFloat(document.getElementById('specular').value);
-const clearcoat = parseFloat(document.getElementById('clearcoat').value);
-const clearcoatRoughness = parseFloat(document.getElementById('clearcoatRoughness').value);
-const sheen = parseFloat(document.getElementById('sheen').value);
-const sheenRoughness = parseFloat(document.getElementById('sheenRoughness').value);
-const iridescence = parseFloat(document.getElementById('iridescence').value);
-const iridescenceIOR = parseFloat(document.getElementById('iridescenceIOR').value);
-const envMapIntensity = parseFloat(document.getElementById('envMapIntensity').value);
+const color = dom('baseColor').value;
+const roughness = parseFloat(dom('roughness').value);
+const metallic = parseFloat(dom('metallic').value);
+const specular = parseFloat(dom('specular').value);
+const clearcoat = parseFloat(dom('clearcoat').value);
+const clearcoatRoughness = parseFloat(dom('clearcoatRoughness').value);
+const sheen = parseFloat(dom('sheen').value);
+const sheenRoughness = parseFloat(dom('sheenRoughness').value);
+const iridescence = parseFloat(dom('iridescence').value);
+const iridescenceIOR = parseFloat(dom('iridescenceIOR').value);
+const envMapIntensity = parseFloat(dom('envMapIntensity').value);
 
 // Update value displays
-document.getElementById('roughnessValue').textContent = roughness.toFixed(2);
-document.getElementById('metallicValue').textContent = metallic.toFixed(2);
-document.getElementById('specularValue').textContent = specular.toFixed(2);
-document.getElementById('clearcoatValue').textContent = clearcoat.toFixed(2);
-document.getElementById('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
-document.getElementById('sheenValue').textContent = sheen.toFixed(2);
-document.getElementById('sheenRoughnessValue').textContent = sheenRoughness.toFixed(2);
-document.getElementById('iridescenceValue').textContent = iridescence.toFixed(2);
-document.getElementById('iridescenceIORValue').textContent = iridescenceIOR.toFixed(2);
-document.getElementById('envMapValue').textContent = envMapIntensity.toFixed(2);
+dom('roughnessValue').textContent = roughness.toFixed(2);
+dom('metallicValue').textContent = metallic.toFixed(2);
+dom('specularValue').textContent = specular.toFixed(2);
+dom('clearcoatValue').textContent = clearcoat.toFixed(2);
+dom('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
+dom('sheenValue').textContent = sheen.toFixed(2);
+dom('sheenRoughnessValue').textContent = sheenRoughness.toFixed(2);
+dom('iridescenceValue').textContent = iridescence.toFixed(2);
+dom('iridescenceIORValue').textContent = iridescenceIOR.toFixed(2);
+dom('envMapValue').textContent = envMapIntensity.toFixed(2);
 
 // Update material
 currentMaterial.color.set(color);
@@ -1469,7 +1476,7 @@ currentMaterial.iridescenceIOR = iridescenceIOR;
 currentMaterial.envMapIntensity = envMapIntensity;
 
 // Calculate IOR (specular 0-1 -> IOR 1.0-1.8) - only if IOR is enabled
-const iorEnabled = document.getElementById('iorToggle').checked;
+const iorEnabled = dom('iorToggle').checked;
 if (iorEnabled) {
 currentMaterial.ior = 1.0 + specular * 0.8;
 currentMaterial.reflectivity = specular;
@@ -1481,11 +1488,11 @@ currentMaterial.reflectivity = 0;
 
 // Update lighting
 function updateLighting() {
-const mainIntensity = parseFloat(document.getElementById('mainLight').value);
-const ambientIntensity = parseFloat(document.getElementById('ambientLight').value);
+const mainIntensity = parseFloat(dom('mainLight').value);
+const ambientIntensity = parseFloat(dom('ambientLight').value);
 
-document.getElementById('mainLightValue').textContent = mainIntensity.toFixed(2);
-document.getElementById('ambientLightValue').textContent = ambientIntensity.toFixed(2);
+dom('mainLightValue').textContent = mainIntensity.toFixed(2);
+dom('ambientLightValue').textContent = ambientIntensity.toFixed(2);
 
 mainLight.intensity = mainIntensity;
 fillLight.intensity = mainIntensity * 0.6;
