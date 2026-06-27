@@ -1654,12 +1654,22 @@ nav {
 }
 
 .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     background: var(--text-primary);
     color: var(--bg-primary);
     padding: 0.25rem 0.75rem;
     border-radius: 50px;
     font-size: 0.75rem;
     font-weight: 500;
+}
+
+.tag svg {
+    width: 13px;
+    height: 13px;
+    fill: currentColor;
+    flex-shrink: 0;
 }
 
 /* ==================== Contact Section ==================== */
