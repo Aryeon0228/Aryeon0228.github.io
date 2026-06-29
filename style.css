@@ -194,12 +194,32 @@ nav {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .logo-icon {
     height: 1.4em;
     width: auto;
     flex-shrink: 0;
+}
+
+.about-lead {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.5;
+    max-width: 760px;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.about-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    max-width: 760px;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-secondary);
 }
 
 .nav-right {

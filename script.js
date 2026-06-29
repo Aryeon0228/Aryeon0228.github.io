@@ -361,11 +361,11 @@ if (themeToggle) {
     }
 })();
 
-// ==================== Home Link ====================
-const homeLink = document.getElementById('homeLink');
+// ==================== Logo → Home ====================
+const logoHome = document.getElementById('logoHome');
 
-if (homeLink) {
-    homeLink.addEventListener('click', (e) => {
+if (logoHome) {
+    logoHome.addEventListener('click', (e) => {
         e.preventDefault();
         window.scrollTo({
             top: 0,
@@ -397,8 +397,10 @@ if (mobileToggle && navMenu) {
 // ==================== Smooth Scroll for Navigation ====================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (!href || href === '#') return;
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const target = document.querySelector(href);
         if (target) {
             const headerOffset = 80;
             const elementPosition = target.getBoundingClientRect().top;
