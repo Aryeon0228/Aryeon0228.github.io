@@ -222,6 +222,11 @@ nav {
     color: var(--text-secondary);
 }
 
+.about-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
 .nav-right {
     display: flex;
     align-items: center;
