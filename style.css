@@ -206,20 +206,22 @@ nav {
 
 .about-lead {
     font-family: 'Pretendard', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.5;
     max-width: 760px;
     margin-bottom: var(--spacing-md);
     color: var(--text-primary);
+    word-break: keep-all;
 }
 
 .about-text {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     line-height: 1.8;
     max-width: 760px;
     margin-bottom: var(--spacing-sm);
     color: var(--text-secondary);
+    word-break: keep-all;
 }
 
 .about-text strong {
