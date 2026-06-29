@@ -972,6 +972,27 @@ nav {
     vertical-align: middle;
 }
 
+.gpa-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 1px;
+    background: var(--gradient);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.12rem 0.45rem;
+    border-radius: 20px;
+    vertical-align: middle;
+    margin-left: 0.35rem;
+    cursor: default;
+}
+
+.gpa-badge-max {
+    font-weight: 500;
+    opacity: 0.85;
+}
+
 .award-group .award-subitem {
     margin-top: 1rem;
     padding-top: 1rem;
