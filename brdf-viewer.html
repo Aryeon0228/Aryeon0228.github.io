@@ -297,47 +297,6 @@ line-height: 1;
 color: #fff;
 }
 
-.preset-grid {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 12px;
-}
-
-.preset-btn {
-padding: 15px;
-background: rgba(100, 100, 150, 0.2);
-border: 1px solid rgba(100, 100, 150, 0.3);
-border-radius: 10px;
-color: #fff;
-cursor: pointer;
-transition: all 0.3s;
-text-align: left;
-}
-
-.preset-btn:hover {
-background: rgba(100, 100, 150, 0.4);
-border-color: #6688ff;
-transform: translateY(-2px);
-}
-
-.preset-name {
-font-weight: 600;
-margin-bottom: 4px;
-}
-
-.preset-desc {
-font-size: 11px;
-color: #888;
-}
-
-.preset-color {
-width: 30px;
-height: 30px;
-border-radius: 50%;
-margin-bottom: 8px;
-border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
 /* Info modal style */
 .info-modal .modal {
 max-width: 700px;
@@ -374,7 +333,12 @@ line-height: 1.8;
 position: fixed;
 top: 70px;
 right: 15px;
-width: 280px;
+width: 360px;
+max-width: calc(100vw - 30px);
+max-height: calc(100vh - 90px);
+overflow-y: auto;
+overflow-x: hidden;
+box-sizing: border-box;
 background: rgba(30, 30, 50, 0.95);
 border-radius: 12px;
 padding: 15px;
@@ -396,6 +360,16 @@ display: flex;
 justify-content: space-between;
 align-items: center;
 word-break: keep-all;
+cursor: move;
+user-select: none;
+touch-action: none;
+}
+
+.reference-title::before {
+content: "⠿";
+margin-right: 6px;
+color: #888;
+font-size: 12px;
 }
 
 .reference-close {
@@ -408,14 +382,18 @@ font-size: 16px;
 
 .reference-table {
 width: 100%;
-font-size: 12px;
+font-size: 11px;
+border-collapse: collapse;
+table-layout: fixed;
 }
 
 .reference-table th,
 .reference-table td {
-padding: 6px 8px;
+padding: 5px 5px;
 text-align: left;
 border-bottom: 1px solid rgba(100, 100, 150, 0.2);
+word-break: break-word;
+overflow-wrap: anywhere;
 }
 
 .reference-table th {
@@ -540,6 +518,196 @@ margin: 0 auto 15px;
 @keyframes spin {
 to { transform: rotate(360deg); }
 }
+
+/* ── Collapsible, higher-contrast control sections ── */
+details.section {
+margin-bottom: 12px;
+border: 1px solid rgba(100, 100, 150, 0.18);
+border-radius: 10px;
+background: rgba(255, 255, 255, 0.02);
+overflow: hidden;
+}
+details.section[open] {
+background: rgba(255, 255, 255, 0.04);
+}
+summary.section-title {
+list-style: none;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+margin: 0;
+padding: 11px 12px;
+font-size: 12px;
+font-weight: 700;
+color: #c6ccf0;
+text-transform: uppercase;
+letter-spacing: 0.6px;
+white-space: normal;
+border-left: 3px solid #6688ff;
+user-select: none;
+}
+summary.section-title:hover { color: #fff; }
+summary.section-title::-webkit-details-marker { display: none; }
+.chev {
+font-size: 10px;
+color: #8890c0;
+transition: transform 0.2s ease;
+flex-shrink: 0;
+}
+details[open] > summary > .chev { transform: rotate(90deg); }
+.section-body { padding: 12px 12px 6px; }
+
+/* Sub-group (Basic / Advanced) inside a section */
+.subgroup-label {
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.5px;
+color: #9aa0c8;
+text-transform: uppercase;
+margin: 2px 0 10px;
+}
+details.subgroup {
+margin-top: 8px;
+border-top: 1px dashed rgba(100, 100, 150, 0.25);
+padding-top: 10px;
+}
+summary.subgroup-summary {
+list-style: none;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.5px;
+color: #9aa0c8;
+text-transform: uppercase;
+user-select: none;
+}
+summary.subgroup-summary:hover { color: #c6ccf0; }
+summary.subgroup-summary::-webkit-details-marker { display: none; }
+details.subgroup[open] > summary.subgroup-summary { margin-bottom: 12px; }
+
+/* Inline helper text */
+.hint {
+font-size: 10px;
+color: #8a90a8;
+line-height: 1.5;
+margin: 0 0 10px;
+word-break: keep-all;
+}
+.hint b { color: #b6bce0; font-weight: 600; }
+
+/* ── Whole-panel collapse ── */
+.panel-header {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 8px;
+margin-bottom: 16px;
+padding-bottom: 10px;
+border-bottom: 1px solid rgba(100, 100, 150, 0.3);
+}
+.panel-header .panel-title {
+margin: 0;
+padding: 0;
+border: none;
+flex: 1;
+}
+.panel-toggle {
+flex-shrink: 0;
+width: 26px;
+height: 26px;
+border-radius: 7px;
+border: 1px solid rgba(100, 100, 150, 0.3);
+background: rgba(100, 100, 150, 0.15);
+color: #c6ccf0;
+font-size: 16px;
+line-height: 1;
+cursor: pointer;
+transition: all 0.2s;
+}
+.panel-toggle:hover { background: rgba(100, 150, 255, 0.25); color: #fff; }
+.control-panel.collapsed { width: auto; }
+.control-panel.collapsed .panel-header {
+margin-bottom: 0;
+padding-bottom: 0;
+border-bottom: none;
+}
+.control-panel.collapsed .panel-title { font-size: 14px; white-space: nowrap; }
+.control-panel.collapsed .panel-body { display: none; }
+
+/* ── Preset color-chip dropdown ── */
+.preset-dd { position: relative; }
+.preset-dd-trigger {
+width: 100%;
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 9px 10px;
+background: rgba(100, 100, 150, 0.2);
+border: 1px solid rgba(100, 100, 150, 0.3);
+border-radius: 6px;
+color: #fff;
+font-size: 13px;
+cursor: pointer;
+text-align: left;
+}
+.preset-dd-trigger:hover { border-color: rgba(100, 150, 255, 0.5); }
+.preset-dd-label {
+flex: 1;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.preset-dd-caret { color: #8890c0; transition: transform 0.2s; }
+.preset-dd.open .preset-dd-caret { transform: rotate(90deg); }
+.preset-chip {
+width: 16px;
+height: 16px;
+flex-shrink: 0;
+border-radius: 4px;
+background: rgba(255, 255, 255, 0.12);
+border: 1px solid rgba(255, 255, 255, 0.25);
+box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+}
+.preset-dd-menu {
+display: none;
+position: absolute;
+top: calc(100% + 4px);
+left: 0;
+right: 0;
+max-height: 260px;
+overflow-y: auto;
+background: rgba(38, 38, 60, 0.98);
+border: 1px solid rgba(100, 100, 150, 0.4);
+border-radius: 8px;
+padding: 4px;
+z-index: 60;
+backdrop-filter: blur(10px);
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.preset-dd.open .preset-dd-menu { display: block; }
+.preset-dd-option {
+width: 100%;
+display: flex;
+align-items: center;
+gap: 9px;
+padding: 7px 8px;
+background: none;
+border: none;
+border-radius: 6px;
+color: #ddd;
+font-size: 13px;
+cursor: pointer;
+text-align: left;
+}
+.preset-dd-option:hover { background: rgba(100, 150, 255, 0.2); color: #fff; }
+.preset-dd-option.selected { background: rgba(100, 150, 255, 0.15); }
+.preset-dd-menu::-webkit-scrollbar { width: 6px; }
+.preset-dd-menu::-webkit-scrollbar-thumb { background: rgba(100, 100, 150, 0.5); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -562,38 +730,81 @@ to { transform: rotate(360deg); }
 <button class="reference-close" onclick="toggleReference()">✕</button>
 </div>
 <table class="reference-table">
+<colgroup>
+<col style="width:18%">
+<col style="width:25%">
+<col style="width:25%">
+<col style="width:14%">
+<col style="width:18%">
+</colgroup>
 <thead>
 <tr>
 <th>Material</th>
 <th>Base Color</th>
+<th>Specular (F0)</th>
 <th>Metallic</th>
 <th>Roughness</th>
 </tr>
 </thead>
 <tbody>
-<tr><td class="material-name">Gold</td><td style="color:#ffd700">■ #FFD700</td><td>1.0</td><td>0.1-0.3</td></tr>
-<tr><td class="material-name">Silver</td><td style="color:#c0c0c0">■ #C0C0C0</td><td>1.0</td><td>0.1-0.2</td></tr>
-<tr><td class="material-name">Copper</td><td style="color:#b87333">■ #B87333</td><td>1.0</td><td>0.2-0.4</td></tr>
-<tr><td class="material-name">Aluminum</td><td style="color:#d6d6d6">■ #D6D6D6</td><td>1.0</td><td>0.3-0.5</td></tr>
-<tr><td class="material-name">Chrome</td><td style="color:#e0e0e0">■ #E0E0E0</td><td>1.0</td><td>0.0-0.1</td></tr>
-<tr><td class="material-name">Iron</td><td style="color:#4a4a4a">■ #4A4A4A</td><td>1.0</td><td>0.4-0.6</td></tr>
-<tr><td class="material-name">Titanium</td><td style="color:#878681">■ #878681</td><td>1.0</td><td>0.3-0.5</td></tr>
-<tr><td class="material-name">Plastic</td><td style="color:#cc3333">■ Varies</td><td>0.0</td><td>0.3-0.5</td></tr>
-<tr><td class="material-name">Rubber</td><td style="color:#262626">■ #262626</td><td>0.0</td><td>0.8-1.0</td></tr>
-<tr><td class="material-name">Wood</td><td style="color:#6b3310">■ #6B3310</td><td>0.0</td><td>0.5-0.8</td></tr>
-<tr><td class="material-name">Skin</td><td style="color:#e0ac69">■ #E0AC69</td><td>0.0</td><td>0.4-0.6</td></tr>
+<tr><td class="material-name">Gold</td><td style="color:#ffd700">■ #FFD700</td><td style="color:#ffe29d">■ #FFE29D</td><td>1.0</td><td>0.1-0.3</td></tr>
+<tr><td class="material-name">Silver</td><td style="color:#c0c0c0">■ #C0C0C0</td><td style="color:#fcfaf5">■ #FCFAF5</td><td>1.0</td><td>0.1-0.2</td></tr>
+<tr><td class="material-name">Copper</td><td style="color:#b87333">■ #B87333</td><td style="color:#fad1c2">■ #FAD1C2</td><td>1.0</td><td>0.2-0.4</td></tr>
+<tr><td class="material-name">Aluminum</td><td style="color:#d6d6d6">■ #D6D6D6</td><td style="color:#f5f6f6">■ #F5F6F6</td><td>1.0</td><td>0.3-0.5</td></tr>
+<tr><td class="material-name">Chrome</td><td style="color:#e0e0e0">■ #E0E0E0</td><td style="color:#c4c5c5">■ #C4C5C5</td><td>1.0</td><td>0.0-0.1</td></tr>
+<tr><td class="material-name">Iron</td><td style="color:#4a4a4a">■ #4A4A4A</td><td style="color:#c4c7c7">■ #C4C7C7</td><td>1.0</td><td>0.4-0.6</td></tr>
+<tr><td class="material-name">Titanium</td><td style="color:#878681">■ #878681</td><td style="color:#c3bbb2">■ #C3BBB2</td><td>1.0</td><td>0.3-0.5</td></tr>
+<tr><td class="material-name">Plastic</td><td style="color:#cc3333">■ Varies</td><td style="color:#9a9a9a">■ ~4% (achromatic)</td><td>0.0</td><td>0.3-0.5</td></tr>
+<tr><td class="material-name">Rubber</td><td style="color:#262626">■ #262626</td><td style="color:#9a9a9a">■ ~4% (achromatic)</td><td>0.0</td><td>0.8-1.0</td></tr>
+<tr><td class="material-name">Wood</td><td style="color:#6b3310">■ #6B3310</td><td style="color:#9a9a9a">■ ~4% (achromatic)</td><td>0.0</td><td>0.5-0.8</td></tr>
+<tr><td class="material-name">Skin</td><td style="color:#e0ac69">■ #E0AC69</td><td style="color:#9a9a9a">■ ~4% (achromatic)</td><td>0.0</td><td>0.4-0.6</td></tr>
 </tbody>
 </table>
+<div style="margin-top:10px;font-size:10px;color:#888;line-height:1.5;word-break:keep-all;">
+For metals, specular reflectance (F0) is tinted by the base color.
+For dielectrics (non-metals), F0 is achromatic at ~4% (0.04).
+</div>
 </div>
 
 <!-- Control panel -->
-<div class="control-panel">
+<div class="control-panel" id="controlPanel">
+<div class="panel-header">
 <h2 class="panel-title">Real-time PBR Material Simulator</h2>
+<button class="panel-toggle" id="panelToggle" onclick="toggleControlPanel()" title="Collapse panel" aria-label="Collapse panel">–</button>
+</div>
+<div class="panel-body" id="panelBody">
 
-<!-- Geometry Selection -->
-<div class="section">
-<div class="section-title">Geometry</div>
+<!-- 1. Presets -->
+<details class="section" open>
+<summary class="section-title"><span>🎨 Presets</span><span class="chev">▸</span></summary>
+<div class="section-body">
 <div class="control-group">
+<select id="presetCategory" onchange="updatePresetList()">
+<option value="metals">Metals</option>
+<option value="nonmetals">Non-Metals</option>
+<option value="special">Special Effects</option>
+</select>
+</div>
+<div class="control-group">
+<div class="preset-dd" id="presetDD">
+<button type="button" class="preset-dd-trigger" id="presetDDTrigger" onclick="togglePresetMenu(event)" aria-haspopup="listbox" aria-expanded="false">
+<span class="preset-chip" id="presetDDChip"></span>
+<span class="preset-dd-label" id="presetDDLabel">-- Select Preset --</span>
+<span class="chev preset-dd-caret">▸</span>
+</button>
+<div class="preset-dd-menu" id="presetDDMenu" role="listbox"></div>
+</div>
+</div>
+<div class="hint">A preset fills in every Material value below at once. Each row previews the base color. Pick a category, then a material.</div>
+</div>
+</details>
+
+<!-- 2. Object -->
+<details class="section" open>
+<summary class="section-title"><span>🧊 Object</span><span class="chev">▸</span></summary>
+<div class="section-body">
+<div class="control-group">
+<div class="control-label"><span>Geometry</span></div>
 <select id="geometrySelect" onchange="changeGeometry()">
 <option value="sphere">Sphere</option>
 <option value="torusKnot">Torus Knot</option>
@@ -605,52 +816,45 @@ to { transform: rotate(360deg); }
 <option value="octahedron">Octahedron</option>
 </select>
 </div>
+
+<div class="control-group">
+<div class="control-label"><span>Custom 3D Model</span></div>
+<div class="file-input-wrapper">
+<div class="file-input-btn">📁 Select Model File</div>
+<input type="file" id="modelFile" accept=".obj,.gltf,.glb" onchange="loadCustomModel(this)">
+</div>
+<div class="file-hint">Supported: .OBJ, .GLTF, .GLB</div>
 </div>
 
-<div class="section-divider"></div>
-
-<!-- Base Color -->
-<div class="section">
-<div class="section-title">Base Color</div>
 <div class="control-group">
+<div class="control-label"><span>Normal Map</span></div>
+<div class="file-input-wrapper">
+<div class="file-input-btn">📁 Select Normal Map Image</div>
+<input type="file" id="normalMapFile" accept=".png,.jpg,.jpeg,.webp,.tga" onchange="loadNormalMap(this)">
+</div>
+<div class="file-hint">Supported: .PNG, .JPG, .JPEG, .WEBP, .TGA</div>
+</div>
+
+<button class="action-btn" onclick="resetModel()" style="margin-top: 6px; background: rgba(100, 100, 150, 0.3);">
+🔄 Reset to Default Model
+</button>
+</div>
+</details>
+
+<!-- 3. Material -->
+<details class="section" open>
+<summary class="section-title"><span>🪞 Material</span><span class="chev">▸</span></summary>
+<div class="section-body">
+<div class="control-group">
+<div class="control-label"><span>Base Color</span></div>
 <input type="color" id="baseColor" value="#808080" onchange="updateMaterial()">
 </div>
-</div>
 
-<!-- Material Presets -->
-<div class="section">
-<div class="section-title">Material Presets</div>
-<div class="control-group">
-<select id="presetCategory" onchange="updatePresetList()">
-<option value="metals">Metals</option>
-<option value="nonmetals">Non-Metals</option>
-<option value="special">Special Effects</option>
-</select>
-</div>
-<div class="control-group">
-<select id="presetSelect" onchange="applyPresetFromSelect()">
-<option value="">-- Select Preset --</option>
-</select>
-</div>
-</div>
-
-<div class="section-divider"></div>
-
-<!-- Material Properties -->
-<div class="section">
-<div class="section-title">Material Properties</div>
+<div class="subgroup-label">Basic</div>
 
 <div class="control-group">
 <div class="control-label">
-<span>Roughness</span>
-<span class="control-value" id="roughnessValue">0.50</span>
-</div>
-<input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
-</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Metallic</span>
+<span title="0 = dielectric (plastic/wood), 1 = metal. Metals take their specular tint from the base color.">Metallic</span>
 <span class="control-value" id="metallicValue">0.00</span>
 </div>
 <input type="range" id="metallic" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -658,15 +862,27 @@ to { transform: rotate(360deg); }
 
 <div class="control-group">
 <div class="control-label">
-<span>Specular (IOR)</span>
-<span class="control-value" id="specularValue">0.50</span>
+<span title="Surface micro-roughness. 0 = mirror-smooth, 1 = fully diffuse.">Roughness</span>
+<span class="control-value" id="roughnessValue">0.50</span>
 </div>
-<input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
+<input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
 </div>
 
 <div class="control-group">
 <div class="control-label">
-<span>Clearcoat</span>
+<span title="Dielectric reflection strength, driven by index of refraction (IOR). Not the same as the per-material Specular (F0) colors in the Reference.">Specular (IOR)</span>
+<span class="control-value" id="specularValue">0.50</span>
+</div>
+<input type="range" id="specular" min="0" max="1" step="0.01" value="0.5" oninput="updateMaterial()">
+</div>
+<div class="hint">Specular (IOR) sets dielectric reflectance via index of refraction — distinct from the per-material <b>Specular (F0)</b> colors shown in the 📖 Reference panel.</div>
+
+<details class="subgroup">
+<summary class="subgroup-summary"><span>Advanced</span><span class="chev">▸</span></summary>
+
+<div class="control-group">
+<div class="control-label">
+<span title="Extra clear layer on top (car paint, lacquer).">Clearcoat</span>
 <span class="control-value" id="clearcoatValue">0.00</span>
 </div>
 <input type="range" id="clearcoat" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -674,7 +890,7 @@ to { transform: rotate(360deg); }
 
 <div class="control-group">
 <div class="control-label">
-<span>Clearcoat Roughness</span>
+<span title="Roughness of the clearcoat layer only.">Clearcoat Roughness</span>
 <span class="control-value" id="clearcoatRoughnessValue">0.00</span>
 </div>
 <input type="range" id="clearcoatRoughness" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -682,7 +898,7 @@ to { transform: rotate(360deg); }
 
 <div class="control-group">
 <div class="control-label">
-<span>Sheen</span>
+<span title="Soft retroreflective rim, for cloth like velvet/fabric.">Sheen</span>
 <span class="control-value" id="sheenValue">0.00</span>
 </div>
 <input type="range" id="sheen" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -690,7 +906,7 @@ to { transform: rotate(360deg); }
 
 <div class="control-group">
 <div class="control-label">
-<span>Sheen Roughness</span>
+<span title="Spread of the sheen highlight.">Sheen Roughness</span>
 <span class="control-value" id="sheenRoughnessValue">1.00</span>
 </div>
 <input type="range" id="sheenRoughness" min="0" max="1" step="0.01" value="1" oninput="updateMaterial()">
@@ -698,7 +914,7 @@ to { transform: rotate(360deg); }
 
 <div class="control-group">
 <div class="control-label">
-<span>Iridescence</span>
+<span title="Thin-film color shift (soap bubble, oil slick).">Iridescence</span>
 <span class="control-value" id="iridescenceValue">0.00</span>
 </div>
 <input type="range" id="iridescence" min="0" max="1" step="0.01" value="0" oninput="updateMaterial()">
@@ -706,31 +922,21 @@ to { transform: rotate(360deg); }
 
 <div class="control-group">
 <div class="control-label">
-<span>Iridescence IOR</span>
+<span title="Index of refraction of the thin film driving iridescence.">Iridescence IOR</span>
 <span class="control-value" id="iridescenceIORValue">1.30</span>
 </div>
 <input type="range" id="iridescenceIOR" min="1" max="2.333" step="0.01" value="1.3" oninput="updateMaterial()">
 </div>
+</details>
 </div>
+</details>
 
-<div class="section-divider"></div>
-
-<!-- Lighting & Environment -->
-<div class="section">
-<div class="section-title">Lighting & Environment</div>
-
-<div class="toggle-wrapper">
-<span>IOR (Fresnel Effect)</span>
-<label class="toggle-switch">
-<input type="checkbox" id="iorToggle" checked onchange="toggleIOR()">
-<span class="toggle-slider"></span>
-</label>
-</div>
-
+<!-- 4. Scene -->
+<details class="section" open>
+<summary class="section-title"><span>💡 Scene</span><span class="chev">▸</span></summary>
+<div class="section-body">
 <div class="control-group">
-<div class="control-label">
-<span>Environment Map</span>
-</div>
+<div class="control-label"><span>Environment Map</span></div>
 <select id="envMapSelect" onchange="changeEnvironment()">
 <option value="studio">Studio</option>
 <option value="sunset">Sunset</option>
@@ -765,99 +971,26 @@ to { transform: rotate(360deg); }
 </div>
 
 <div class="toggle-wrapper">
-<span>SSAO (Ambient Occlusion)</span>
+<span title="Fresnel reflectance at grazing angles. Off = flat, no rim reflection.">IOR (Fresnel Effect)</span>
+<label class="toggle-switch">
+<input type="checkbox" id="iorToggle" checked onchange="toggleIOR()">
+<span class="toggle-slider"></span>
+</label>
+</div>
+
+<div class="toggle-wrapper">
+<span title="Simulated ambient occlusion contrast.">SSAO (Ambient Occlusion)</span>
 <label class="toggle-switch">
 <input type="checkbox" id="ssaoToggle" checked onchange="toggleSSAO()">
 <span class="toggle-slider"></span>
 </label>
 </div>
 </div>
-
-<div class="section-divider"></div>
-
-<!-- Custom Model & Normal Map -->
-<div class="section">
-<div class="section-title">Custom Model & Normal Map</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Custom 3D Model</span>
-</div>
-<div class="file-input-wrapper">
-<div class="file-input-btn">📁 Select Model File</div>
-<input type="file" id="modelFile" accept=".obj,.gltf,.glb" onchange="loadCustomModel(this)">
-</div>
-<div class="file-hint">Supported: .OBJ, .GLTF, .GLB</div>
-</div>
-
-<div class="control-group">
-<div class="control-label">
-<span>Normal Map</span>
-</div>
-<div class="file-input-wrapper">
-<div class="file-input-btn">📁 Select Normal Map Image</div>
-<input type="file" id="normalMapFile" accept=".png,.jpg,.jpeg,.webp,.tga" onchange="loadNormalMap(this)">
-</div>
-<div class="file-hint">Supported: .PNG, .JPG, .JPEG, .WEBP, .TGA</div>
-</div>
-
-<button class="action-btn" onclick="resetModel()" style="margin-top: 10px; background: rgba(100, 100, 150, 0.3);">
-🔄 Reset to Default Model
-</button>
+</details>
 </div>
 </div>
 
-<!-- Material Presets Modal -->
-<div class="modal-overlay" id="presetModal">
-<div class="modal">
-<div class="modal-header">
-<h3 class="modal-title">🎨 Material Presets</h3>
-<button class="modal-close" onclick="closePresetModal()">✕</button>
-</div>
-<div class="preset-grid">
-<button class="preset-btn" onclick="applyPreset('gold')">
-<div class="preset-color" style="background: linear-gradient(135deg, #ffd700, #b8860b);"></div>
-<div class="preset-name">Gold</div>
-<div class="preset-desc">Shiny metallic texture</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('chrome')">
-<div class="preset-color" style="background: linear-gradient(135deg, #e0e0e0, #a0a0a0);"></div>
-<div class="preset-name">Chrome</div>
-<div class="preset-desc">Mirror-like reflection</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('copper')">
-<div class="preset-color" style="background: linear-gradient(135deg, #b87333, #8b4513);"></div>
-<div class="preset-name">Copper</div>
-<div class="preset-desc">Warm metallic color</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('plastic')">
-<div class="preset-color" style="background: linear-gradient(135deg, #cc3333, #991111);"></div>
-<div class="preset-name">Plastic</div>
-<div class="preset-desc">Non-metallic glossy</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('rubber')">
-<div class="preset-color" style="background: linear-gradient(135deg, #333333, #1a1a1a);"></div>
-<div class="preset-name">Rubber</div>
-<div class="preset-desc">Matte finish</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('wood')">
-<div class="preset-color" style="background: linear-gradient(135deg, #8b4513, #654321);"></div>
-<div class="preset-name">Wood</div>
-<div class="preset-desc">Natural wood texture</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('carPaint')">
-<div class="preset-color" style="background: linear-gradient(135deg, #cc0000, #990000);"></div>
-<div class="preset-name">Car Paint</div>
-<div class="preset-desc">Clearcoat applied</div>
-</button>
-<button class="preset-btn" onclick="applyPreset('brushedMetal')">
-<div class="preset-color" style="background: linear-gradient(135deg, #b0b0b0, #808080);"></div>
-<div class="preset-name">Brushed Metal</div>
-<div class="preset-desc">Hairline finish</div>
-</button>
-</div>
-</div>
-</div>
+<!-- Material presets are chosen from the 🎨 Presets section in the control panel -->
 
 <!-- PBR/BRDF Guide Modal -->
 <div class="modal-overlay info-modal" id="infoModal">
@@ -962,8 +1095,13 @@ let scene, camera, renderer, controls;
 let currentMesh;
 let mainLight, fillLight, backLight, ambientLight;
 let currentMaterial;
-let composer;
 let isCustomModel = false;
+
+// Memoized element lookup — avoids repeated getElementById in the hot paths
+// (updateMaterial / updateLighting fire on every slider input while dragging).
+// All control IDs are static and never recreated, so caching is safe.
+const _elCache = {};
+const dom = (id) => _elCache[id] || (_elCache[id] = document.getElementById(id));
 
 // Environment presets with HDR URLs from Poly Haven (CC0 License)
 const envPresets = {
@@ -1236,7 +1374,9 @@ camera.position.set(0, 0, 5);
 // Create renderer
 renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+// Cap at 2x: on 3x/4K displays this avoids rendering up to ~9x the pixels
+// for a negligible visual difference, a large GPU fill-rate saving.
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.physicallyCorrectLights = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
@@ -1417,29 +1557,29 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Update material
 function updateMaterial() {
-const color = document.getElementById('baseColor').value;
-const roughness = parseFloat(document.getElementById('roughness').value);
-const metallic = parseFloat(document.getElementById('metallic').value);
-const specular = parseFloat(document.getElementById('specular').value);
-const clearcoat = parseFloat(document.getElementById('clearcoat').value);
-const clearcoatRoughness = parseFloat(document.getElementById('clearcoatRoughness').value);
-const sheen = parseFloat(document.getElementById('sheen').value);
-const sheenRoughness = parseFloat(document.getElementById('sheenRoughness').value);
-const iridescence = parseFloat(document.getElementById('iridescence').value);
-const iridescenceIOR = parseFloat(document.getElementById('iridescenceIOR').value);
-const envMapIntensity = parseFloat(document.getElementById('envMapIntensity').value);
+const color = dom('baseColor').value;
+const roughness = parseFloat(dom('roughness').value);
+const metallic = parseFloat(dom('metallic').value);
+const specular = parseFloat(dom('specular').value);
+const clearcoat = parseFloat(dom('clearcoat').value);
+const clearcoatRoughness = parseFloat(dom('clearcoatRoughness').value);
+const sheen = parseFloat(dom('sheen').value);
+const sheenRoughness = parseFloat(dom('sheenRoughness').value);
+const iridescence = parseFloat(dom('iridescence').value);
+const iridescenceIOR = parseFloat(dom('iridescenceIOR').value);
+const envMapIntensity = parseFloat(dom('envMapIntensity').value);
 
 // Update value displays
-document.getElementById('roughnessValue').textContent = roughness.toFixed(2);
-document.getElementById('metallicValue').textContent = metallic.toFixed(2);
-document.getElementById('specularValue').textContent = specular.toFixed(2);
-document.getElementById('clearcoatValue').textContent = clearcoat.toFixed(2);
-document.getElementById('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
-document.getElementById('sheenValue').textContent = sheen.toFixed(2);
-document.getElementById('sheenRoughnessValue').textContent = sheenRoughness.toFixed(2);
-document.getElementById('iridescenceValue').textContent = iridescence.toFixed(2);
-document.getElementById('iridescenceIORValue').textContent = iridescenceIOR.toFixed(2);
-document.getElementById('envMapValue').textContent = envMapIntensity.toFixed(2);
+dom('roughnessValue').textContent = roughness.toFixed(2);
+dom('metallicValue').textContent = metallic.toFixed(2);
+dom('specularValue').textContent = specular.toFixed(2);
+dom('clearcoatValue').textContent = clearcoat.toFixed(2);
+dom('clearcoatRoughnessValue').textContent = clearcoatRoughness.toFixed(2);
+dom('sheenValue').textContent = sheen.toFixed(2);
+dom('sheenRoughnessValue').textContent = sheenRoughness.toFixed(2);
+dom('iridescenceValue').textContent = iridescence.toFixed(2);
+dom('iridescenceIORValue').textContent = iridescenceIOR.toFixed(2);
+dom('envMapValue').textContent = envMapIntensity.toFixed(2);
 
 // Update material
 currentMaterial.color.set(color);
@@ -1455,7 +1595,7 @@ currentMaterial.iridescenceIOR = iridescenceIOR;
 currentMaterial.envMapIntensity = envMapIntensity;
 
 // Calculate IOR (specular 0-1 -> IOR 1.0-1.8) - only if IOR is enabled
-const iorEnabled = document.getElementById('iorToggle').checked;
+const iorEnabled = dom('iorToggle').checked;
 if (iorEnabled) {
 currentMaterial.ior = 1.0 + specular * 0.8;
 currentMaterial.reflectivity = specular;
@@ -1467,11 +1607,11 @@ currentMaterial.reflectivity = 0;
 
 // Update lighting
 function updateLighting() {
-const mainIntensity = parseFloat(document.getElementById('mainLight').value);
-const ambientIntensity = parseFloat(document.getElementById('ambientLight').value);
+const mainIntensity = parseFloat(dom('mainLight').value);
+const ambientIntensity = parseFloat(dom('ambientLight').value);
 
-document.getElementById('mainLightValue').textContent = mainIntensity.toFixed(2);
-document.getElementById('ambientLightValue').textContent = ambientIntensity.toFixed(2);
+dom('mainLightValue').textContent = mainIntensity.toFixed(2);
+dom('ambientLightValue').textContent = ambientIntensity.toFixed(2);
 
 mainLight.intensity = mainIntensity;
 fillLight.intensity = mainIntensity * 0.6;
@@ -1617,25 +1757,71 @@ document.getElementById('normalMapFile').value = '';
 
 // Update preset list based on category
 function updatePresetList() {
-const category = document.getElementById('presetCategory').value;
-const select = document.getElementById('presetSelect');
+const category = dom('presetCategory').value;
+const menu = dom('presetDDMenu');
 const items = presetCategories[category] || [];
 
-select.innerHTML = '<option value="">-- Select Preset --</option>';
+// Reset the current selection display when the category changes
+dom('presetDDLabel').textContent = '-- Select Preset --';
+dom('presetDDChip').style.background = '';
+
+menu.innerHTML = '';
 items.forEach(item => {
-const option = document.createElement('option');
-option.value = item.id;
-option.textContent = item.name;
-select.appendChild(option);
+const color = (presets[item.id] && presets[item.id].color) || '#808080';
+const opt = document.createElement('button');
+opt.type = 'button';
+opt.className = 'preset-dd-option';
+opt.setAttribute('role', 'option');
+opt.dataset.id = item.id;
+opt.innerHTML = `<span class="preset-chip" style="background:${color}"></span><span>${item.name}</span>`;
+opt.addEventListener('click', () => selectPreset(item.id, item.name));
+menu.appendChild(opt);
 });
+closePresetMenu();
 }
 
-// Apply preset from dropdown
-function applyPresetFromSelect() {
-const name = document.getElementById('presetSelect').value;
-if (name) {
-applyPreset(name);
+// Custom preset dropdown (color-chip preview) handlers
+function togglePresetMenu(e) {
+if (e) e.stopPropagation();
+const dd = dom('presetDD');
+const open = dd.classList.toggle('open');
+dom('presetDDTrigger').setAttribute('aria-expanded', open ? 'true' : 'false');
 }
+
+function closePresetMenu() {
+const dd = dom('presetDD');
+if (!dd) return;
+dd.classList.remove('open');
+dom('presetDDTrigger').setAttribute('aria-expanded', 'false');
+}
+
+function selectPreset(id, name) {
+const color = (presets[id] && presets[id].color) || '#808080';
+dom('presetDDLabel').textContent = name;
+dom('presetDDChip').style.background = color;
+dom('presetDDMenu').querySelectorAll('.preset-dd-option').forEach(o => {
+o.classList.toggle('selected', o.dataset.id === id);
+});
+closePresetMenu();
+applyPreset(id);
+}
+
+// Close the preset menu on any outside click
+document.addEventListener('click', (e) => {
+const dd = dom('presetDD');
+if (dd && dd.classList.contains('open') && !dd.contains(e.target)) {
+closePresetMenu();
+}
+});
+
+// Collapse / expand the whole control panel
+function toggleControlPanel() {
+const panel = dom('controlPanel');
+const collapsed = panel.classList.toggle('collapsed');
+const btn = dom('panelToggle');
+btn.textContent = collapsed ? '+' : '–';
+btn.title = collapsed ? 'Expand panel' : 'Collapse panel';
+btn.setAttribute('aria-label', collapsed ? 'Expand panel' : 'Collapse panel');
 }
 
 // Apply preset
@@ -1655,12 +1841,6 @@ document.getElementById('iridescence').value = preset.iridescence;
 document.getElementById('iridescenceIOR').value = preset.iridescenceIOR;
 
 updateMaterial();
-
-// Close modal if open
-const modal = document.getElementById('presetModal');
-if (modal.classList.contains('active')) {
-closePresetModal();
-}
 }
 
 // Reference panel toggle
@@ -1669,14 +1849,52 @@ const panel = document.getElementById('referencePanel');
 panel.classList.toggle('active');
 }
 
-// Preset modal
-function openPresetModal() {
-document.getElementById('presetModal').classList.add('active');
-}
+// Make the reference panel draggable by its title bar
+function makeReferenceDraggable() {
+const panel = document.getElementById('referencePanel');
+if (!panel) return;
+const handle = panel.querySelector('.reference-title');
+if (!handle) return;
 
-function closePresetModal() {
-document.getElementById('presetModal').classList.remove('active');
+let dragging = false, startX = 0, startY = 0, startLeft = 0, startTop = 0;
+
+handle.addEventListener('pointerdown', (e) => {
+// Ignore drags that start on the close button
+if (e.target.closest('.reference-close')) return;
+const rect = panel.getBoundingClientRect();
+// Switch from right-anchored to left/top so we can move it freely
+panel.style.left = rect.left + 'px';
+panel.style.top = rect.top + 'px';
+panel.style.right = 'auto';
+startX = e.clientX; startY = e.clientY;
+startLeft = rect.left; startTop = rect.top;
+dragging = true;
+handle.setPointerCapture(e.pointerId);
+e.preventDefault();
+});
+
+handle.addEventListener('pointermove', (e) => {
+if (!dragging) return;
+let nx = startLeft + (e.clientX - startX);
+let ny = startTop + (e.clientY - startY);
+// Keep the panel inside the viewport
+const maxX = Math.max(0, window.innerWidth - panel.offsetWidth);
+const maxY = Math.max(0, window.innerHeight - panel.offsetHeight);
+nx = Math.max(0, Math.min(nx, maxX));
+ny = Math.max(0, Math.min(ny, maxY));
+panel.style.left = nx + 'px';
+panel.style.top = ny + 'px';
+});
+
+const endDrag = (e) => {
+if (!dragging) return;
+dragging = false;
+try { handle.releasePointerCapture(e.pointerId); } catch (_) {}
+};
+handle.addEventListener('pointerup', endDrag);
+handle.addEventListener('pointercancel', endDrag);
 }
+makeReferenceDraggable();
 
 // Info modal
 function openInfoModal() {
@@ -1712,7 +1930,8 @@ modal.classList.remove('active');
 window.changeGeometry = changeGeometry;
 window.updateMaterial = updateMaterial;
 window.updatePresetList = updatePresetList;
-window.applyPresetFromSelect = applyPresetFromSelect;
+window.togglePresetMenu = togglePresetMenu;
+window.toggleControlPanel = toggleControlPanel;
 window.applyPreset = applyPreset;
 window.updateLighting = updateLighting;
 window.changeEnvironment = changeEnvironment;
@@ -1722,8 +1941,6 @@ window.loadCustomModel = loadCustomModel;
 window.loadNormalMap = loadNormalMap;
 window.resetModel = resetModel;
 window.toggleReference = toggleReference;
-window.openPresetModal = openPresetModal;
-window.closePresetModal = closePresetModal;
 window.openInfoModal = openInfoModal;
 window.closeInfoModal = closeInfoModal;
 
