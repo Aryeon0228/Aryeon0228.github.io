@@ -1,37 +1,92 @@
 // ==================== Guestbook (Oekaki + 방명록) ====================
 // 방문자가 작은 그림을 그리거나 한마디를 남기는 보드.
 //
-// 저장은 지금 localStorage 데모예요. 나중에 Supabase 같은 백엔드로 바꾸려면
-// 아래 `store` 객체의 getEntries() / addEntry() 두 함수만 교체하면 됩니다.
-// 화면/그리기 코드는 store 인터페이스에만 의존하도록 짜여 있어요.
+// 저장은 두 가지 모드로 동작해요:
+//   1) Supabase 키를 넣으면  → 모두에게 공유되는 진짜 방명록 (실시간 저장)
+//   2) 키를 안 넣으면        → localStorage 데모 (자기 브라우저에만 저장)
+// 아래 SUPABASE_URL / SUPABASE_ANON_KEY 두 줄만 채우면 자동으로 1번으로 업그레이드돼요.
 (function () {
     'use strict';
+
+    // ====================================================================
+    // ▼▼▼ 여기 두 줄만 채우면 실시간 공유 방명록으로 바뀝니다 ▼▼▼
+    //   Supabase 대시보드 → Project Settings → API 에서 복사
+    //   (anon public 키는 클라이언트에 넣어도 안전해요. RLS로 보호됩니다.)
+    var SUPABASE_URL = '';        // 예: 'https://abcdwxyz.supabase.co'
+    var SUPABASE_ANON_KEY = '';   // 예: 'eyJhbGciOiJI...'
+    // ▲▲▲ ------------------------------------------------------ ▲▲▲
+    // ====================================================================
 
     var section = document.getElementById('guestbook');
     if (!section) return;
 
-    // ---------- 저장소 (여기만 갈아끼우면 백엔드 연동 가능) ----------
-    var STORAGE_KEY = 'penumbra_guestbook_v1';
-    var MAX_ENTRIES = 60; // 데모: localStorage 용량 보호용 상한
+    var TABLE = 'guestbook';
 
-    var store = {
+    // ---------- 저장소 (localStorage ↔ Supabase 자동 선택) ----------
+    var STORAGE_KEY = 'penumbra_guestbook_v1';
+    var MAX_ENTRIES = 60; // localStorage 데모 용량 보호용 상한
+
+    var localStore = {
+        kind: 'local',
         getEntries: function () {
-            try {
-                var raw = localStorage.getItem(STORAGE_KEY);
-                var list = raw ? JSON.parse(raw) : [];
-                return Array.isArray(list) ? list : [];
-            } catch (e) {
-                return [];
-            }
+            return Promise.resolve((function () {
+                try {
+                    var raw = localStorage.getItem(STORAGE_KEY);
+                    var list = raw ? JSON.parse(raw) : [];
+                    return Array.isArray(list) ? list : [];
+                } catch (e) { return []; }
+            })());
         },
         addEntry: function (entry) {
-            var list = store.getEntries();
-            list.unshift(entry); // 최신이 앞으로
-            if (list.length > MAX_ENTRIES) list = list.slice(0, MAX_ENTRIES);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-            return list;
+            return localStore.getEntries().then(function (list) {
+                list.unshift(entry);
+                if (list.length > MAX_ENTRIES) list = list.slice(0, MAX_ENTRIES);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+                return list;
+            });
         }
     };
+
+    function makeSupabaseStore() {
+        if (!window.supabase || !SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
+        var client;
+        try {
+            client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            return null;
+        }
+        return {
+            kind: 'supabase',
+            getEntries: function () {
+                return client.from(TABLE)
+                    .select('id,name,message,image,created_at')
+                    .order('created_at', { ascending: false })
+                    .limit(100)
+                    .then(function (res) {
+                        if (res.error) throw res.error;
+                        return (res.data || []).map(function (r) {
+                            return { id: r.id, name: r.name, message: r.message, image: r.image, date: r.created_at };
+                        });
+                    });
+            },
+            addEntry: function (entry) {
+                return client.from(TABLE)
+                    .insert({ name: entry.name, message: entry.message, image: entry.image })
+                    .then(function (res) {
+                        if (res.error) throw res.error;
+                        return store.getEntries();
+                    });
+            }
+        };
+    }
+
+    var store = makeSupabaseStore() || localStore;
+
+    // 백엔드에 맞춰 안내문 갱신
+    var noteEl = document.getElementById('guestbookNote');
+    if (noteEl && store.kind === 'supabase') {
+        noteEl.innerHTML = '여기 남긴 글·그림은 <strong>모두에게 공유</strong>돼요. 🌐';
+    }
 
     // ---------- 오에카키 캔버스 ----------
     var canvas = document.getElementById('oekakiCanvas');
@@ -83,8 +138,7 @@
         pushUndo();
         drawing = true;
         last = pointerPos(e);
-        // 점 찍기 (탭만 해도 점이 남도록)
-        drawLine(last, last);
+        drawLine(last, last); // 탭만 해도 점이 남도록
     }
 
     function moveDraw(e) {
@@ -95,20 +149,14 @@
         last = p;
     }
 
-    function endDraw() {
-        drawing = false;
-    }
+    function endDraw() { drawing = false; }
 
     function drawLine(a, b) {
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.lineWidth = current.size;
-        if (current.erasing) {
-            ctx.strokeStyle = '#ffffff';
-        } else {
-            ctx.strokeStyle = current.color;
-        }
+        ctx.strokeStyle = current.erasing ? '#ffffff' : current.color;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
@@ -117,16 +165,13 @@
         hasDrawn = true;
     }
 
-    // 마우스
     canvas.addEventListener('mousedown', startDraw);
     canvas.addEventListener('mousemove', moveDraw);
     window.addEventListener('mouseup', endDraw);
-    // 터치
     canvas.addEventListener('touchstart', startDraw, { passive: false });
     canvas.addEventListener('touchmove', moveDraw, { passive: false });
     window.addEventListener('touchend', endDraw);
 
-    // 색상 팔레트 생성
     PALETTE.forEach(function (c, i) {
         var b = document.createElement('button');
         b.type = 'button';
@@ -171,16 +216,13 @@
         hasDrawn = false;
     });
 
-    // 캔버스가 비어있는지(흰색만 있는지) 검사
-    function canvasIsBlank() {
-        if (!hasDrawn) return true;
-        return false;
-    }
+    function canvasIsBlank() { return !hasDrawn; }
 
     // ---------- 방명록 폼 & 벽 ----------
     var form = document.getElementById('guestbookForm');
     var nameInput = document.getElementById('gbName');
     var msgInput = document.getElementById('gbMessage');
+    var submitBtn = document.getElementById('gbSubmit');
     var wall = document.getElementById('guestbookWall');
     var emptyMsg = document.getElementById('guestbookEmpty');
 
@@ -200,7 +242,7 @@
 
     function render(list) {
         wall.innerHTML = '';
-        if (!list.length) {
+        if (!list || !list.length) {
             emptyMsg.style.display = 'block';
             return;
         }
@@ -208,7 +250,6 @@
         list.forEach(function (entry) {
             var card = document.createElement('div');
             card.className = 'gb-entry card';
-
             var html = '';
             if (entry.image) {
                 html += '<div class="gb-entry-art"><img src="' + entry.image +
@@ -227,6 +268,12 @@
         });
     }
 
+    function shakeForm() {
+        form.classList.remove('shake');
+        void form.offsetWidth; // reflow로 애니메이션 재시작
+        form.classList.add('shake');
+    }
+
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -235,40 +282,44 @@
         var blank = canvasIsBlank();
 
         if (blank && !message) {
-            // 그림도 글도 없으면 막기
             msgInput.focus();
-            form.classList.remove('shake');
-            // reflow로 애니메이션 재시작
-            void form.offsetWidth;
-            form.classList.add('shake');
+            shakeForm();
             return;
         }
 
         var entry = {
-            id: 'gb_' + Date.now() + '_' + Math.floor(Math.random() * 1e6),
             name: name || '익명',
             message: message,
             image: blank ? null : canvas.toDataURL('image/png'),
             date: Date.now()
         };
 
-        var list = store.addEntry(entry);
-        render(list);
+        submitBtn.disabled = true;
+        submitBtn.textContent = '남기는 중…';
 
-        // 폼 리셋
-        nameInput.value = '';
-        msgInput.value = '';
-        fillWhite();
-        hasDrawn = false;
-        undoStack = [];
-
-        // 방금 남긴 첫 카드로 부드럽게 스크롤
-        var first = wall.querySelector('.gb-entry');
-        if (first && first.scrollIntoView) {
-            first.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        store.addEntry(entry).then(function (list) {
+            render(list);
+            nameInput.value = '';
+            msgInput.value = '';
+            fillWhite();
+            hasDrawn = false;
+            undoStack = [];
+            var first = wall.querySelector('.gb-entry');
+            if (first && first.scrollIntoView) {
+                first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }).catch(function (err) {
+            console.error('[guestbook] 저장 실패:', err);
+            alert('앗, 저장에 실패했어요. 잠시 후 다시 시도해 주세요. 🙏');
+        }).then(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '남기기';
+        });
     });
 
     // 첫 렌더
-    render(store.getEntries());
+    store.getEntries().then(render).catch(function (err) {
+        console.error('[guestbook] 불러오기 실패:', err);
+        render([]);
+    });
 })();

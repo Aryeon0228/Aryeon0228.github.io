@@ -639,7 +639,7 @@
                     <input type="text" id="gbName" class="gb-input" maxlength="20" placeholder="이름 (선택)" autocomplete="off">
                     <textarea id="gbMessage" class="gb-input gb-textarea" maxlength="200" placeholder="한마디 남기기 (선택)"></textarea>
                     <div class="guestbook-form-bottom">
-                        <span class="guestbook-note">데모 버전이에요 — 남긴 글·그림은 <strong>이 브라우저에만</strong> 저장됩니다.</span>
+                        <span class="guestbook-note" id="guestbookNote">데모 버전이에요 — 남긴 글·그림은 <strong>이 브라우저에만</strong> 저장됩니다.</span>
                         <button type="submit" class="btn btn-primary" id="gbSubmit">남기기</button>
                     </div>
                 </form>
@@ -688,6 +688,7 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="guestbook.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="guestbook.js"></script>
 </body>
 </html>
