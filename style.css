@@ -209,16 +209,14 @@ nav {
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.5;
-    max-width: 760px;
     margin-bottom: var(--spacing-md);
     color: var(--text-primary);
     word-break: keep-all;
 }
 
 .about-text {
-    font-size: 0.95rem;
+    font-size: 1.125rem;
     line-height: 1.8;
-    max-width: 760px;
     margin-bottom: var(--spacing-sm);
     color: var(--text-secondary);
     word-break: keep-all;
@@ -710,13 +708,6 @@ nav {
 .card-highlight .btn-primary {
     position: relative;
     z-index: 1;
-}
-
-/* ==================== About Section ==================== */
-.about-text {
-    font-size: 1.125rem;
-    line-height: 1.8;
-    color: var(--text-secondary);
 }
 
 /* ==================== Resume Section ==================== */
