@@ -38,6 +38,7 @@
                     <li><a href="#resume">Resume</a></li>
                     <li><a href="#portfolio">Portfolio</a></li>
                     <li><a href="#vibe">Vibe Coding</a></li>
+                    <li><a href="#guestbook">Guestbook</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -609,6 +610,46 @@
     </section>
 
     <!-- Contact Section -->
+    <!-- Guestbook Section (Oekaki + 방명록) -->
+    <section id="guestbook" class="section">
+        <div class="container">
+            <h2 class="section-title">Guestbook</h2>
+            <p class="guestbook-lead">작은 그림 한 장, 짧은 한마디 — 다녀가신 흔적을 남겨주세요. 🐾</p>
+
+            <div class="guestbook-composer card">
+                <div class="oekaki">
+                    <div class="oekaki-canvas-wrap">
+                        <canvas id="oekakiCanvas" class="oekaki-canvas" width="360" height="270"></canvas>
+                    </div>
+                    <div class="oekaki-tools">
+                        <div class="oekaki-colors" id="oekakiColors" role="radiogroup" aria-label="색상"></div>
+                        <label class="oekaki-size">
+                            <span>굵기</span>
+                            <input type="range" id="oekakiSize" min="1" max="24" value="4" aria-label="브러시 굵기">
+                        </label>
+                        <div class="oekaki-actions">
+                            <button type="button" class="oekaki-btn" id="oekakiEraser" aria-pressed="false">지우개</button>
+                            <button type="button" class="oekaki-btn" id="oekakiUndo">되돌리기</button>
+                            <button type="button" class="oekaki-btn" id="oekakiClear">전체 지우기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="guestbook-form" id="guestbookForm" novalidate>
+                    <input type="text" id="gbName" class="gb-input" maxlength="20" placeholder="이름 (선택)" autocomplete="off">
+                    <textarea id="gbMessage" class="gb-input gb-textarea" maxlength="200" placeholder="한마디 남기기 (선택)"></textarea>
+                    <div class="guestbook-form-bottom">
+                        <span class="guestbook-note">데모 버전이에요 — 남긴 글·그림은 <strong>이 브라우저에만</strong> 저장됩니다.</span>
+                        <button type="submit" class="btn btn-primary" id="gbSubmit">남기기</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="guestbook-wall" id="guestbookWall"></div>
+            <p class="guestbook-empty" id="guestbookEmpty">아직 남겨진 흔적이 없어요. 첫 번째 방문자가 되어보세요! ✨</p>
+        </div>
+    </section>
+
     <section id="contact" class="section">
         <div class="container">
             <h2 class="section-title">Contact</h2>
@@ -647,5 +688,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="guestbook.js"></script>
 </body>
 </html>
