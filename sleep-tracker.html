@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Sleep Tracker · 코골이 & 잠꼬대 추적기 | Studio Penumbra</title>
+<meta name="description" content="마이크로 밤새 소리를 감지해 코골이와 잠꼬대를 자동으로 기록하고, 클립을 다시 들어보고, 통계로 확인하는 웹앱입니다. 모든 처리는 브라우저 안에서만 이루어집니다.">
+<meta property="og:title" content="Sleep Tracker · 코골이 & 잠꼬대 추적기">
+<meta property="og:description" content="마이크로 밤새 소리를 감지해 코골이와 잠꼬대를 자동 기록하는 웹앱. 모든 처리는 브라우저 안에서만.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="Penumbra_Pavicon.png">
+<link rel="apple-touch-icon" href="Penumbra_Pavicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-primary:#0a0a0f;
+  --bg-secondary:#12121a;
+  --text-primary:#f2f2f7;
+  --text-secondary:#9a9aac;
+  --text-tertiary:#6a6a7a;
+  --border:rgba(255,255,255,0.09);
+  --glass-bg:rgba(255,255,255,0.045);
+  --glass-border:rgba(255,255,255,0.10);
+  --glass-blur:18px;
+  --accent:#8a7dff;
+  --accent-2:#5ad1e6;
+  --snore:#ff8a5c;   /* 코골이 */
+  --talk:#7dd3fc;    /* 잠꼬대 */
+  --danger:#ff5c7a;
+  --good:#5ae0a0;
+  --radius:20px;
+  --shadow:0 20px 60px rgba(0,0,0,0.45);
+  --transition:all .35s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"]{
+  --bg-primary:#eef0f6;
+  --bg-secondary:#e2e5ef;
+  --text-primary:#141420;
+  --text-secondary:#565669;
+  --text-tertiary:#83839a;
+  --border:rgba(0,0,0,0.08);
+  --glass-bg:rgba(255,255,255,0.55);
+  --glass-border:rgba(255,255,255,0.7);
+  --shadow:0 20px 60px rgba(20,20,40,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  line-height:1.6;
+  min-height:100vh;
+  overflow-x:hidden;
+  word-break:keep-all;
+  overflow-wrap:break-word;
+  transition:background-color .3s ease,color .3s ease;
+  -webkit-font-smoothing:antialiased;
+}
+/* background aurora */
+.bg-aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.bg-aurora .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 22s ease-in-out infinite}
+.blob-1{width:46vw;height:46vw;background:radial-gradient(circle,#4a3d9e,transparent 70%);top:-10%;left:-8%}
+.blob-2{width:40vw;height:40vw;background:radial-gradient(circle,#1f6d7a,transparent 70%);bottom:-12%;right:-6%;animation-delay:-7s}
+.blob-3{width:34vw;height:34vw;background:radial-gradient(circle,#6e3a6b,transparent 70%);top:35%;left:45%;animation-delay:-14s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(4vw,-3vh) scale(1.08)}66%{transform:translate(-3vw,4vh) scale(.94)}}
+[data-theme="light"] .bg-aurora .blob{opacity:.35}
+
+/* stars */
+.stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
+[data-theme="light"] .stars{opacity:0}
+
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+header{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+  background:linear-gradient(to bottom,rgba(10,10,15,.7),rgba(10,10,15,.2));
+  border-bottom:1px solid var(--border);
+}
+[data-theme="light"] header{background:linear-gradient(to bottom,rgba(238,240,246,.8),rgba(238,240,246,.3))}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-primary);font-weight:700;letter-spacing:-.01em}
+.brand img{width:26px;height:26px;border-radius:7px}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{
+  width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--border);
+  background:var(--glass-bg);color:var(--text-primary);border-radius:12px;cursor:pointer;transition:var(--transition);
+}
+.icon-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.back-link{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--text-secondary);font-size:.9rem;font-weight:500;padding:8px 12px;border-radius:12px;transition:var(--transition)}
+.back-link:hover{color:var(--text-primary);background:var(--glass-bg)}
+
+.hero{text-align:center;padding:56px 0 20px}
+.hero .moon{font-size:2.6rem;line-height:1;filter:drop-shadow(0 0 22px rgba(138,125,255,.5))}
+.hero h1{font-size:clamp(1.9rem,5vw,3rem);font-weight:800;letter-spacing:-.02em;margin:14px 0 8px}
+.hero h1 .g{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--text-secondary);max-width:560px;margin:0 auto;font-size:1.02rem}
+.privacy{display:inline-flex;align-items:center;gap:7px;margin-top:16px;font-size:.82rem;color:var(--text-tertiary);border:1px solid var(--border);background:var(--glass-bg);padding:7px 14px;border-radius:999px}
+.privacy svg{width:15px;height:15px;color:var(--good)}
+
+.card{
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+  border-radius:var(--radius);
+  padding:26px;
+  box-shadow:var(--shadow);
+}
+section.card{margin:22px 0}
+
+/* control / monitor */
+.monitor{display:flex;flex-direction:column;align-items:center;gap:22px;padding-top:32px;padding-bottom:32px}
+.status-pill{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text-secondary);padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,.15)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-tertiary);transition:var(--transition)}
+.status-pill.live .status-dot{background:var(--danger);box-shadow:0 0 0 0 rgba(255,92,122,.6);animation:pulse 1.6s infinite}
+.status-pill.live{color:var(--text-primary)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,92,122,.55)}70%{box-shadow:0 0 0 12px rgba(255,92,122,0)}100%{box-shadow:0 0 0 0 rgba(255,92,122,0)}}
+
+.vu-shell{width:100%;max-width:640px}
+canvas#viz{width:100%;height:150px;display:block;border-radius:16px;background:rgba(0,0,0,.22);border:1px solid var(--border)}
+[data-theme="light"] canvas#viz{background:rgba(255,255,255,.35)}
+
+.level-row{display:flex;align-items:center;gap:14px;width:100%;max-width:640px}
+.level-bar{flex:1;height:12px;border-radius:999px;background:rgba(0,0,0,.28);overflow:hidden;position:relative}
+[data-theme="light"] .level-bar{background:rgba(0,0,0,.10)}
+.level-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--good),var(--snore) 78%,var(--danger));transition:width .08s linear}
+.thresh-marker{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.level-db{font-variant-numeric:tabular-nums;font-weight:600;min-width:74px;text-align:right;color:var(--text-secondary);font-size:.9rem}
+
+.big-btn{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:1.05rem;
+  padding:16px 40px;border-radius:999px;color:#fff;letter-spacing:.01em;
+  background:linear-gradient(120deg,var(--accent),#6d5fe0);
+  box-shadow:0 12px 34px rgba(138,125,255,.4);transition:var(--transition);
+  display:inline-flex;align-items:center;gap:10px;
+}
+.big-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(138,125,255,.5)}
+.big-btn.stop{background:linear-gradient(120deg,var(--danger),#e0455f);box-shadow:0 12px 34px rgba(255,92,122,.4)}
+.big-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.big-btn svg{width:20px;height:20px}
+
+.elapsed{font-variant-numeric:tabular-nums;font-size:2.1rem;font-weight:800;letter-spacing:.02em}
+.elapsed .sub{font-size:.85rem;color:var(--text-tertiary);font-weight:500;display:block;letter-spacing:0}
+
+/* settings */
+.settings{display:grid;grid-template-columns:1fr;gap:20px;max-width:640px;width:100%}
+.setting label{display:flex;justify-content:space-between;font-size:.88rem;color:var(--text-secondary);margin-bottom:8px}
+.setting label b{color:var(--text-primary);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;background:rgba(255,255,255,.12);outline:none}
+[data-theme="light"] input[type=range]{background:rgba(0,0,0,.12)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);border:2px solid #fff}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff}
+.hint{font-size:.78rem;color:var(--text-tertiary);margin-top:6px}
+.chk{display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--text-secondary);cursor:pointer;user-select:none}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+
+/* stats */
+.section-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.section-h h2{font-size:1.25rem;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.section-h h2 .ic{font-size:1.2rem}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px}
+.stat{background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:16px;padding:18px}
+[data-theme="light"] .stat{background:rgba(255,255,255,.4)}
+.stat .n{font-size:1.9rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat .l{font-size:.8rem;color:var(--text-secondary);margin-top:2px}
+.stat.snore .n{color:var(--snore)}
+.stat.talk .n{color:var(--talk)}
+
+/* timeline */
+canvas#timeline{width:100%;height:110px;display:block;border-radius:14px;background:rgba(0,0,0,.2);border:1px solid var(--border);margin-top:4px}
+[data-theme="light"] canvas#timeline{background:rgba(255,255,255,.35)}
+.legend{display:flex;gap:18px;margin-top:12px;font-size:.82rem;color:var(--text-secondary);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* events */
+.events{display:flex;flex-direction:column;gap:10px;max-height:440px;overflow-y:auto;padding-right:4px}
+.events::-webkit-scrollbar{width:8px}
+.events::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}
+.event{
+  display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:14px;
+  background:rgba(0,0,0,.16);border:1px solid var(--border);transition:var(--transition);
+}
+[data-theme="light"] .event{background:rgba(255,255,255,.4)}
+.event:hover{border-color:var(--glass-border)}
+.event .tag{font-size:1.35rem;line-height:1;width:34px;text-align:center}
+.event .meta{flex:1;min-width:0}
+.event .meta .t{font-weight:600;font-size:.94rem}
+.event .meta .t .type-snore{color:var(--snore)}
+.event .meta .t .type-talk{color:var(--talk)}
+.event .meta .d{font-size:.78rem;color:var(--text-tertiary);margin-top:1px}
+.event .db{font-variant-numeric:tabular-nums;font-size:.82rem;color:var(--text-secondary);white-space:nowrap}
+.play-btn{width:38px;height:38px;flex-shrink:0;border-radius:10px;border:1px solid var(--border);background:var(--glass-bg);color:var(--text-primary);cursor:pointer;display:grid;place-items:center;transition:var(--transition)}
+.play-btn:hover{border-color:var(--accent);color:var(--accent)}
+.play-btn:disabled{opacity:.35;cursor:default}
+.play-btn svg{width:16px;height:16px}
+.empty{text-align:center;color:var(--text-tertiary);padding:40px 10px;font-size:.92rem}
+.empty .big{font-size:2.4rem;display:block;margin-bottom:10px;opacity:.6}
+
+.btn-ghost{border:1px solid var(--border);background:var(--glass-bg);color:var(--text-secondary);font-family:inherit;font-size:.83rem;font-weight:600;padding:8px 14px;border-radius:10px;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{color:var(--text-primary);border-color:var(--accent)}
+.btn-ghost svg{width:14px;height:14px}
+
+/* history */
+.hist-row{display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:14px;background:rgba(0,0,0,.16);border:1px solid var(--border);flex-wrap:wrap}
+[data-theme="light"] .hist-row{background:rgba(255,255,255,.4)}
+.hist-row .date{font-weight:600;font-size:.92rem;min-width:130px}
+.hist-row .facts{display:flex;gap:16px;flex:1;flex-wrap:wrap;font-size:.83rem;color:var(--text-secondary)}
+.hist-row .facts b{color:var(--text-primary);font-variant-numeric:tabular-nums}
+
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop.show{display:flex}
+.modal{max-width:460px;width:100%}
+.modal p{color:var(--text-secondary);margin:10px 0 22px;font-size:.94rem}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+footer{text-align:center;padding:40px 20px 56px;color:var(--text-tertiary);font-size:.82rem}
+footer a{color:var(--text-secondary);text-decoration:none}
+footer a:hover{color:var(--accent)}
+
+.unsupported{display:none;margin:22px 0;border-color:var(--danger)}
+.unsupported.show{display:block}
+.unsupported b{color:var(--danger)}
+
+@media (max-width:600px){
+  .card{padding:20px}
+  .hero{padding:40px 0 12px}
+  .big-btn{padding:15px 32px}
+  .elapsed{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+<div class="bg-aurora"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
+<canvas class="stars" id="stars"></canvas>
+
+<header>
+  <div class="wrap nav">
+    <a href="/" class="brand"><img src="Penumbra_Pavicon.png" alt="">Studio Penumbra</a>
+    <div class="nav-actions">
+      <a href="/#vibe" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Portfolio
+      </a>
+      <button class="icon-btn" id="themeToggle" aria-label="테마 전환">
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="moon">🌙</div>
+    <h1><span class="g">코골이 & 잠꼬대</span> 추적기</h1>
+    <p>자는 동안 마이크로 소리를 감지해 코골이와 잠꼬대를 자동으로 기록합니다. 아침에 통계와 클립으로 다시 확인해 보세요.</p>
+    <div class="privacy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      모든 녹음과 분석은 이 기기의 브라우저 안에서만 처리됩니다 · 서버 전송 없음
+    </div>
+  </div>
+
+  <div class="card unsupported" id="unsupported">
+    <b>이 브라우저에서는 마이크를 사용할 수 없어요.</b>
+    <p style="color:var(--text-secondary);margin-top:8px">HTTPS 환경의 최신 브라우저(Chrome, Safari, Edge, Firefox)에서 열어 주세요. 아이폰은 Safari를 권장합니다.</p>
+  </div>
+
+  <!-- Monitor -->
+  <section class="card monitor">
+    <div class="status-pill" id="statusPill"><span class="status-dot"></span><span id="statusText">대기 중</span></div>
+
+    <div class="vu-shell">
+      <canvas id="viz" width="1280" height="300"></canvas>
+    </div>
+
+    <div class="level-row">
+      <div class="level-bar"><div class="level-fill" id="levelFill"></div><div class="thresh-marker" id="threshMarker"></div></div>
+      <div class="level-db" id="levelDb">–</div>
+    </div>
+
+    <div class="elapsed" id="elapsed">00:00:00<span class="sub" id="elapsedSub">기록 시간</span></div>
+
+    <button class="big-btn" id="mainBtn">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg>
+      <span id="mainBtnLabel">추적 시작</span>
+    </button>
+  </section>
+
+  <!-- Settings -->
+  <section class="card">
+    <div class="section-h"><h2><span class="ic">⚙️</span> 감지 설정</h2></div>
+    <div class="settings">
+      <div class="setting">
+        <label>감지 민감도 (임계 음량) <b><span id="threshVal">35</span> dB</b></label>
+        <input type="range" id="threshold" min="10" max="70" value="35" step="1">
+        <div class="hint">값이 낮을수록 작은 소리에도 반응합니다. 조용한 방은 30~40, 시끄러운 환경은 45 이상을 추천해요.</div>
+      </div>
+      <div class="setting">
+        <label>이벤트 최소 지속 시간 <b><span id="minDurVal">0.6</span> 초</b></label>
+        <input type="range" id="minDur" min="0.2" max="3" value="0.6" step="0.1">
+        <div class="hint">이 시간보다 짧은 소리는 무시합니다. 뒤척임·문소리 같은 순간 소음을 걸러 줍니다.</div>
+      </div>
+      <label class="chk"><input type="checkbox" id="recClip" checked> 이벤트마다 오디오 클립 녹음 (다시 듣기용)</label>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="card" id="statsCard">
+    <div class="section-h">
+      <h2><span class="ic">📊</span> 오늘 밤 요약</h2>
+      <button class="btn-ghost" id="saveBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        기록 저장
+      </button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat"><div class="n" id="stTotal">0</div><div class="l">전체 이벤트</div></div>
+      <div class="stat snore"><div class="n" id="stSnore">0</div><div class="l">😴 코골이</div></div>
+      <div class="stat talk"><div class="n" id="stTalk">0</div><div class="l">💬 잠꼬대</div></div>
+      <div class="stat"><div class="n" id="stPeak">–</div><div class="l">최대 음량</div></div>
+      <div class="stat"><div class="n" id="stNoisy">0분</div><div class="l">소음 지속</div></div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="card">
+    <div class="section-h"><h2><span class="ic">🌌</span> 밤새 타임라인</h2></div>
+    <canvas id="timeline" width="1280" height="240"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--snore)"></i> 코골이</span>
+      <span><i style="background:var(--talk)"></i> 잠꼬대</span>
+      <span><i style="background:var(--text-tertiary)"></i> 조용함</span>
+    </div>
+  </section>
+
+  <!-- Events -->
+  <section class="card">
+    <div class="section-h">
+      <h2><span class="ic">📋</span> 이벤트 기록 <span id="eventCount" style="color:var(--text-tertiary);font-weight:500;font-size:.9rem"></span></h2>
+      <button class="btn-ghost" id="clearBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        비우기
+      </button>
+    </div>
+    <div class="events" id="eventList">
+      <div class="empty"><span class="big">🛌</span>아직 감지된 이벤트가 없어요.<br>「추적 시작」을 누르고 잠들면 여기에 기록됩니다.</div>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="card">
+    <div class="section-h"><h2><span class="ic">🗂️</span> 지난 기록</h2></div>
+    <div id="historyList" class="events" style="max-height:none">
+      <div class="empty" style="padding:26px 10px">저장된 기록이 아직 없어요.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Studio Penumbra · Vibe Coding<br>
+  마이크 데이터는 저장·전송되지 않으며 브라우저 안에서만 처리됩니다. · <a href="/">홈으로</a>
+</footer>
+
+<!-- clear confirm modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="card modal">
+    <h2 style="font-size:1.15rem" id="modalTitle">기록을 비울까요?</h2>
+    <p id="modalMsg">이번 세션에서 감지된 이벤트와 녹음 클립이 모두 삭제됩니다. 되돌릴 수 없어요.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modalCancel">취소</button>
+      <button class="big-btn stop" id="modalConfirm" style="padding:10px 22px;font-size:.92rem">삭제</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== theme ===================== */
+const root=document.documentElement;
+const savedTheme=localStorage.getItem('theme');
+if(savedTheme) root.setAttribute('data-theme',savedTheme);
+document.getElementById('themeToggle').addEventListener('click',()=>{
+  const t=root.getAttribute('data-theme')==='light'?'dark':'light';
+  root.setAttribute('data-theme',t);
+  localStorage.setItem('theme',t);
+});
+
+/* ===================== starfield ===================== */
+(function(){
+  const c=document.getElementById('stars'),x=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;stars=[];
+    const n=Math.floor(innerWidth*innerHeight/9000);
+    for(let i=0;i<n;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.3+.2,a:Math.random(),s:Math.random()*.015+.004});}
+  function draw(){x.clearRect(0,0,c.width,c.height);
+    for(const st of stars){st.a+=st.s;const o=(Math.sin(st.a)+1)/2*.7+.15;
+      x.beginPath();x.arc(st.x,st.y,st.r,0,7);x.fillStyle='rgba(255,255,255,'+o+')';x.fill();}
+    requestAnimationFrame(draw);}
+  resize();draw();addEventListener('resize',resize);
+})();
+
+/* ===================== app state ===================== */
+const S={
+  running:false, audioCtx:null, analyser:null, source:null, stream:null,
+  freqData:null, timeData:null, raf:null,
+  startTime:0, timerId:null,
+  events:[],                 // {ts, tOffset, dur, peakDb, type, url}
+  // event detection
+  inEvent:false, eventStart:0, eventPeak:0, belowSince:0,
+  eventFreqSum:0, eventFreqCnt:0,   // for spectral centroid avg
+  recorder:null, chunks:[], recStartTs:0,
+  noisyMs:0,
+};
+const HOLD_MS=800;   // how long below threshold before ending an event
+const clipMax=15000; // max clip length ms
+
+const els={
+  mainBtn:document.getElementById('mainBtn'),
+  mainBtnLabel:document.getElementById('mainBtnLabel'),
+  statusPill:document.getElementById('statusPill'),
+  statusText:document.getElementById('statusText'),
+  levelFill:document.getElementById('levelFill'),
+  levelDb:document.getElementById('levelDb'),
+  threshMarker:document.getElementById('threshMarker'),
+  elapsed:document.getElementById('elapsed'),
+  threshold:document.getElementById('threshold'),
+  threshVal:document.getElementById('threshVal'),
+  minDur:document.getElementById('minDur'),
+  minDurVal:document.getElementById('minDurVal'),
+  recClip:document.getElementById('recClip'),
+  viz:document.getElementById('viz'),
+  timeline:document.getElementById('timeline'),
+  eventList:document.getElementById('eventList'),
+  eventCount:document.getElementById('eventCount'),
+  stTotal:document.getElementById('stTotal'),
+  stSnore:document.getElementById('stSnore'),
+  stTalk:document.getElementById('stTalk'),
+  stPeak:document.getElementById('stPeak'),
+  stNoisy:document.getElementById('stNoisy'),
+};
+const vizCtx=els.viz.getContext('2d');
+const tlCtx=els.timeline.getContext('2d');
+
+/* settings binding */
+els.threshold.addEventListener('input',()=>{els.threshVal.textContent=els.threshold.value;placeThreshMarker();});
+els.minDur.addEventListener('input',()=>{els.minDurVal.textContent=parseFloat(els.minDur.value).toFixed(1);});
+function placeThreshMarker(){
+  // map threshold(10..70) to bar width scale used by levelFill (0..90 dB range)
+  const pct=Math.min(100,(els.threshold.value/90)*100);
+  els.threshMarker.style.left=pct+'%';
+}
+placeThreshMarker();
+
+if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+  document.getElementById('unsupported').classList.add('show');
+  els.mainBtn.disabled=true;
+}
+
+/* ===================== start / stop ===================== */
+els.mainBtn.addEventListener('click',()=>{ S.running?stop():start(); });
+
+async function start(){
+  try{
+    S.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+  }catch(e){
+    setStatus('마이크 권한이 필요해요');
+    return;
+  }
+  S.audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(S.audioCtx.state==='suspended') await S.audioCtx.resume();
+  S.source=S.audioCtx.createMediaStreamSource(S.stream);
+  S.analyser=S.audioCtx.createAnalyser();
+  S.analyser.fftSize=2048;
+  S.analyser.smoothingTimeConstant=0.8;
+  S.source.connect(S.analyser);
+  S.freqData=new Uint8Array(S.analyser.frequencyBinCount);
+  S.timeData=new Uint8Array(S.analyser.fftSize);
+
+  S.running=true;
+  S.startTime=Date.now();
+  S.inEvent=false;S.belowSince=0;
+
+  els.mainBtn.classList.add('stop');
+  els.mainBtnLabel.textContent='추적 중지';
+  els.mainBtn.querySelector('svg').innerHTML='<rect x="6" y="6" width="12" height="12" rx="2"/>';
+  els.statusPill.classList.add('live');
+  setStatus('듣는 중…');
+
+  S.timerId=setInterval(updateTimer,500);
+  loop();
+  // keep screen awake if possible
+  requestWakeLock();
+}
+
+async function stop(){
+  S.running=false;
+  cancelAnimationFrame(S.raf);
+  clearInterval(S.timerId);
+  if(S.inEvent) endEvent(true);
+  if(S.stream) S.stream.getTracks().forEach(t=>t.stop());
+  if(S.audioCtx) try{await S.audioCtx.close();}catch(e){}
+  S.audioCtx=null;
+  releaseWakeLock();
+
+  els.mainBtn.classList.remove('stop');
+  els.mainBtnLabel.textContent='추적 시작';
+  els.mainBtn.querySelector('svg').innerHTML='<path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/>';
+  els.statusPill.classList.remove('live');
+  setStatus(S.events.length?'기록 종료 · '+S.events.length+'건 감지':'대기 중');
+  els.levelFill.style.width='0%';els.levelDb.textContent='–';
+}
+
+function setStatus(t){els.statusText.textContent=t;}
+
+function updateTimer(){
+  const s=Math.floor((Date.now()-S.startTime)/1000);
+  const h=String(Math.floor(s/3600)).padStart(2,'0');
+  const m=String(Math.floor(s%3600/60)).padStart(2,'0');
+  const ss=String(s%60).padStart(2,'0');
+  els.elapsed.childNodes[0].nodeValue=`${h}:${m}:${ss}`;
+}
+
+/* ===================== audio analysis loop ===================== */
+function computeDb(){
+  // RMS of time-domain signal -> pseudo dB (0..~90)
+  S.analyser.getByteTimeDomainData(S.timeData);
+  let sum=0;
+  for(let i=0;i<S.timeData.length;i++){const v=(S.timeData[i]-128)/128;sum+=v*v;}
+  const rms=Math.sqrt(sum/S.timeData.length);
+  // map rms(0..1) to dB scale; add floor
+  const db=rms>0? Math.max(0, 20*Math.log10(rms)+90):0;
+  return {db,rms};
+}
+function spectralCentroid(){
+  // weighted mean frequency bin -> indicates snore(low) vs talk(higher)
+  S.analyser.getByteFrequencyData(S.freqData);
+  const nyq=S.audioCtx.sampleRate/2;
+  const bins=S.freqData.length;
+  let num=0,den=0;
+  for(let i=0;i<bins;i++){
+    const mag=S.freqData[i];
+    const freq=i/bins*nyq;
+    num+=freq*mag;den+=mag;
+  }
+  return den>0? num/den : 0; // Hz
+}
+
+function loop(){
+  S.raf=requestAnimationFrame(loop);
+  const {db}=computeDb();
+  const thresh=parseFloat(els.threshold.value);
+
+  // meter
+  const pct=Math.min(100,(db/90)*100);
+  els.levelFill.style.width=pct+'%';
+  els.levelDb.textContent=Math.round(db)+' dB';
+
+  drawViz(db,thresh);
+
+  const now=Date.now();
+  if(db>=thresh){
+    if(!S.inEvent) beginEvent(now,db);
+    S.eventPeak=Math.max(S.eventPeak,db);
+    const c=spectralCentroid();
+    if(c>0){S.eventFreqSum+=c;S.eventFreqCnt++;}
+    S.belowSince=0;
+    S.noisyMs+=16;
+  }else if(S.inEvent){
+    if(!S.belowSince)S.belowSince=now;
+    if(now-S.belowSince>HOLD_MS) endEvent(false);
+  }
+}
+
+function beginEvent(now,db){
+  S.inEvent=true;
+  S.eventStart=now;
+  S.eventPeak=db;
+  S.eventFreqSum=0;S.eventFreqCnt=0;
+  S.belowSince=0;
+  if(els.recClip.checked && window.MediaRecorder && S.stream){
+    try{
+      S.chunks=[];
+      const mime=MediaRecorder.isTypeSupported('audio/webm')?'audio/webm':(MediaRecorder.isTypeSupported('audio/mp4')?'audio/mp4':'');
+      S.recorder=new MediaRecorder(S.stream, mime?{mimeType:mime}:undefined);
+      S.recorder.ondataavailable=e=>{if(e.data.size>0)S.chunks.push(e.data);};
+      S.recorder.start();
+      S.recStartTs=now;
+      S.recTimeout=setTimeout(()=>{if(S.recorder&&S.recorder.state==='recording')S.recorder.stop();},clipMax);
+    }catch(e){S.recorder=null;}
+  }
+}
+
+function endEvent(force){
+  const now=Date.now();
+  const dur=(now-S.eventStart)/1000;
+  S.inEvent=false;S.belowSince=0;
+  clearTimeout(S.recTimeout);
+  const minDur=parseFloat(els.minDur.value);
+
+  const finalize=(url)=>{
+    if(dur>=minDur){
+      const centroid=S.eventFreqCnt? S.eventFreqSum/S.eventFreqCnt : 0;
+      // heuristic: snoring energy concentrates low (<~500Hz), speech spreads higher
+      const type=centroid>0 && centroid<520 ? 'snore' : 'talk';
+      addEvent({ts:S.eventStart,tOffset:S.eventStart-S.startTime,dur,peakDb:Math.round(S.eventPeak),type,url,centroid:Math.round(centroid)});
+    }else if(url){URL.revokeObjectURL(url);}
+  };
+
+  if(S.recorder && S.recorder.state==='recording'){
+    S.recorder.onstop=()=>{
+      const blob=new Blob(S.chunks,{type:S.recorder.mimeType||'audio/webm'});
+      finalize(URL.createObjectURL(blob));
+      S.recorder=null;
+    };
+    S.recorder.stop();
+  }else{
+    finalize(null);
+  }
+}
+
+/* ===================== events / UI ===================== */
+function addEvent(ev){
+  S.events.push(ev);
+  renderEvents();
+  renderStats();
+  drawTimeline();
+}
+
+function fmtClock(ts){
+  const d=new Date(ts);
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');
+}
+
+function renderEvents(){
+  const list=els.eventList;
+  if(!S.events.length){
+    list.innerHTML='<div class="empty"><span class="big">🛌</span>아직 감지된 이벤트가 없어요.<br>「추적 시작」을 누르고 잠들면 여기에 기록됩니다.</div>';
+    els.eventCount.textContent='';
+    return;
+  }
+  els.eventCount.textContent='('+S.events.length+')';
+  list.innerHTML='';
+  // newest first
+  [...S.events].reverse().forEach((ev,ri)=>{
+    const idx=S.events.length-1-ri;
+    const row=document.createElement('div');row.className='event';
+    const isSnore=ev.type==='snore';
+    row.innerHTML=`
+      <div class="tag">${isSnore?'😴':'💬'}</div>
+      <div class="meta">
+        <div class="t"><span class="${isSnore?'type-snore':'type-talk'}">${isSnore?'코골이':'잠꼬대'}</span> · ${fmtClock(ev.ts)}</div>
+        <div class="d">지속 ${ev.dur.toFixed(1)}초 · 주파수중심 ${ev.centroid}Hz</div>
+      </div>
+      <div class="db">${ev.peakDb} dB</div>
+      <button class="play-btn" ${ev.url?'':'disabled'} title="${ev.url?'재생':'클립 없음'}">
+        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>`;
+    const btn=row.querySelector('.play-btn');
+    if(ev.url){
+      btn.addEventListener('click',()=>playClip(ev,btn));
+    }
+    list.appendChild(row);
+  });
+}
+
+let currentAudio=null,currentBtn=null;
+function playClip(ev,btn){
+  if(currentAudio){currentAudio.pause();resetBtn(currentBtn);currentAudio=null;
+    if(currentBtn===btn){currentBtn=null;return;}}
+  const a=new Audio(ev.url);currentAudio=a;currentBtn=btn;
+  btn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>';
+  a.play();
+  a.onended=()=>{resetBtn(btn);currentAudio=null;currentBtn=null;};
+}
+function resetBtn(btn){if(btn)btn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';}
+
+function renderStats(){
+  const snore=S.events.filter(e=>e.type==='snore').length;
+  const talk=S.events.length-snore;
+  els.stTotal.textContent=S.events.length;
+  els.stSnore.textContent=snore;
+  els.stTalk.textContent=talk;
+  const peak=S.events.reduce((m,e)=>Math.max(m,e.peakDb),0);
+  els.stPeak.textContent=S.events.length? peak+' dB':'–';
+  const noisySec=S.events.reduce((s,e)=>s+e.dur,0);
+  els.stNoisy.textContent=noisySec>=60? (noisySec/60).toFixed(1)+'분' : Math.round(noisySec)+'초';
+}
+
+/* ===================== visualizers ===================== */
+function drawViz(db,thresh){
+  const w=els.viz.width,h=els.viz.height;
+  vizCtx.clearRect(0,0,w,h);
+  if(!S.analyser)return;
+  S.analyser.getByteTimeDomainData(S.timeData);
+  // threshold line
+  const ty=h-(thresh/90)*h;
+  vizCtx.strokeStyle='rgba(138,125,255,.5)';vizCtx.setLineDash([6,6]);vizCtx.lineWidth=1.5;
+  vizCtx.beginPath();vizCtx.moveTo(0,ty);vizCtx.lineTo(w,ty);vizCtx.stroke();vizCtx.setLineDash([]);
+  // waveform
+  const active=db>=thresh;
+  vizCtx.lineWidth=2.5;
+  vizCtx.strokeStyle=active?'#ff8a5c':'#5ad1e6';
+  vizCtx.shadowBlur=active?14:8;vizCtx.shadowColor=active?'#ff8a5c':'#5ad1e6';
+  vizCtx.beginPath();
+  const step=w/S.timeData.length;
+  for(let i=0;i<S.timeData.length;i++){
+    const v=(S.timeData[i]-128)/128;
+    const y=h/2 + v*(h/2)*0.9;
+    i===0?vizCtx.moveTo(0,y):vizCtx.lineTo(i*step,y);
+  }
+  vizCtx.stroke();vizCtx.shadowBlur=0;
+}
+
+function drawTimeline(){
+  const w=els.timeline.width,h=els.timeline.height;
+  tlCtx.clearRect(0,0,w,h);
+  const total=Math.max(Date.now()-S.startTime, 60000);
+  // baseline
+  tlCtx.strokeStyle='rgba(255,255,255,.12)';tlCtx.lineWidth=1;
+  tlCtx.beginPath();tlCtx.moveTo(0,h-24);tlCtx.lineTo(w,h-24);tlCtx.stroke();
+  // hour ticks
+  tlCtx.fillStyle='rgba(255,255,255,.35)';tlCtx.font='20px Pretendard';tlCtx.textAlign='center';
+  const startH=new Date(S.startTime);
+  for(let ms=0;ms<=total;ms+=3600000){
+    const x=(ms/total)*w;
+    tlCtx.fillRect(x,h-30,1,10);
+    const d=new Date(S.startTime+ms);
+    tlCtx.fillText(String(d.getHours()).padStart(2,'0')+'시',x,h-4);
+  }
+  // events as bars
+  S.events.forEach(ev=>{
+    const x=(ev.tOffset/total)*w;
+    const bh=Math.min(h-40, Math.max(10,(ev.peakDb/90)*(h-40)));
+    tlCtx.fillStyle=ev.type==='snore'?'#ff8a5c':'#7dd3fc';
+    tlCtx.shadowBlur=8;tlCtx.shadowColor=tlCtx.fillStyle;
+    const bw=Math.max(2,(ev.dur*1000/total)*w);
+    tlCtx.fillRect(x, h-24-bh, bw, bh);
+    tlCtx.shadowBlur=0;
+  });
+}
+drawTimeline();
+
+/* ===================== save / clear / history ===================== */
+const HKEY='sleepTracker.history.v1';
+document.getElementById('saveBtn').addEventListener('click',()=>{
+  if(!S.events.length){toast('저장할 이벤트가 없어요');return;}
+  const snore=S.events.filter(e=>e.type==='snore').length;
+  const rec={
+    date:S.startTime,
+    durationMs: (S.events.length?Math.max(...S.events.map(e=>e.tOffset+e.dur*1000)):0),
+    total:S.events.length, snore, talk:S.events.length-snore,
+    peak:S.events.reduce((m,e)=>Math.max(m,e.peakDb),0),
+    noisySec:Math.round(S.events.reduce((s,e)=>s+e.dur,0)),
+  };
+  const hist=loadHistory();hist.unshift(rec);
+  localStorage.setItem(HKEY,JSON.stringify(hist.slice(0,60)));
+  renderHistory();
+  toast('기록을 저장했어요 🌙');
+});
+function loadHistory(){try{return JSON.parse(localStorage.getItem(HKEY))||[];}catch(e){return[];}}
+function renderHistory(){
+  const hist=loadHistory();const c=document.getElementById('historyList');
+  if(!hist.length){c.innerHTML='<div class="empty" style="padding:26px 10px">저장된 기록이 아직 없어요.</div>';return;}
+  c.innerHTML='';
+  hist.forEach((r,i)=>{
+    const d=new Date(r.date);
+    const dateStr=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const row=document.createElement('div');row.className='hist-row';
+    row.innerHTML=`
+      <div class="date">${dateStr}</div>
+      <div class="facts">
+        <span>전체 <b>${r.total}</b></span>
+        <span>😴 코골이 <b>${r.snore}</b></span>
+        <span>💬 잠꼬대 <b>${r.talk}</b></span>
+        <span>최대 <b>${r.peak}</b>dB</span>
+        <span>소음 <b>${r.noisySec>=60?(r.noisySec/60).toFixed(1)+'분':r.noisySec+'초'}</b></span>
+      </div>
+      <button class="play-btn" title="삭제" data-i="${i}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      </button>`;
+    row.querySelector('button').addEventListener('click',()=>{
+      const h=loadHistory();h.splice(i,1);localStorage.setItem(HKEY,JSON.stringify(h));renderHistory();
+    });
+    c.appendChild(row);
+  });
+}
+renderHistory();
+
+/* clear modal */
+const modal=document.getElementById('modal');
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  if(!S.events.length){toast('비울 이벤트가 없어요');return;}
+  modal.classList.add('show');
+});
+document.getElementById('modalCancel').addEventListener('click',()=>modal.classList.remove('show'));
+document.getElementById('modalConfirm').addEventListener('click',()=>{
+  S.events.forEach(e=>{if(e.url)URL.revokeObjectURL(e.url);});
+  S.events=[];S.noisyMs=0;
+  renderEvents();renderStats();drawTimeline();
+  modal.classList.remove('show');
+});
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('show');});
+
+/* tiny toast */
+let toastEl;
+function toast(msg){
+  if(!toastEl){toastEl=document.createElement('div');
+    toastEl.style.cssText='position:fixed;left:50%;bottom:32px;transform:translateX(-50%);background:rgba(20,20,30,.92);color:#fff;padding:11px 20px;border-radius:999px;font-size:.88rem;z-index:200;border:1px solid rgba(255,255,255,.14);box-shadow:0 8px 24px rgba(0,0,0,.4);transition:opacity .3s,transform .3s;pointer-events:none';
+    document.body.appendChild(toastEl);}
+  toastEl.textContent=msg;toastEl.style.opacity='1';toastEl.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>{toastEl.style.opacity='0';toastEl.style.transform='translateX(-50%) translateY(10px)';},2200);
+}
+
+/* ===================== wake lock ===================== */
+let wakeLock=null;
+async function requestWakeLock(){
+  try{if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}}catch(e){}
+}
+function releaseWakeLock(){if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}}
+document.addEventListener('visibilitychange',()=>{if(S.running&&document.visibilityState==='visible'&&!wakeLock)requestWakeLock();});
+
+/* resize timeline redraw */
+addEventListener('resize',()=>{if(!S.running)drawTimeline();});
+window.addEventListener('beforeunload',e=>{if(S.running){e.preventDefault();e.returnValue='';}});
+</script>
+</body>
+</html>
