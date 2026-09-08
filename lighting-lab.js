@@ -1,3 +1,4 @@
+import {initRoomLab} from './room-lab.mjs';
 import {fitExposure,linearDisplay,srgb} from './lighting-physics.mjs';
 import {SOURCES,preset,illuminance,comparison,validateSettings,comparisonColors,daylightPreset} from './light-sources.mjs';
 const $=id=>document.getElementById(id);
@@ -123,14 +124,15 @@ function render(id,lux,rho,stops,color){
  ctx.fillStyle=`rgb(${color.join(',')})`;ctx.fillRect(start+i*54,H-42,chipWidth,15);
  });
 }
+const panels=['experiment','room','guide'];
 function showPanel(panel,focus=false){
- const guide=panel==='guide';$('experiment-panel').hidden=guide;$('guide').hidden=!guide;
- for(const key of ['experiment','guide']){const selected=key===panel;$('tab-'+key).setAttribute('aria-selected',selected);$('tab-'+key).tabIndex=selected?0:-1;}
+ for(const key of panels){const selected=key===panel;$(key==='guide'?'guide':key+'-panel').hidden=!selected;$('tab-'+key).setAttribute('aria-selected',selected);$('tab-'+key).tabIndex=selected?0:-1;}
  if(focus)$('tab-'+panel).focus();
 }
-for(const key of ['experiment','guide']){const tab=$('tab-'+key);tab.onclick=()=>showPanel(key);tab.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();showPanel(e.key==='Home'?'experiment':e.key==='End'?'guide':key==='guide'?'experiment':'guide',true);}});}
+for(const key of panels){const tab=$('tab-'+key);tab.onclick=()=>showPanel(key);tab.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const index=panels.indexOf(key);showPanel(e.key==='Home'?panels[0]:e.key==='End'?panels.at(-1):panels[(index+(e.key==='ArrowRight'?1:-1)+panels.length)%panels.length],true);}});}
 $('open-guide').onclick=()=>showPanel('guide',true);$('back-experiment').onclick=()=>showPanel('experiment',true);$('color-help').onclick=()=>{showPanel('guide');$('color-guide').scrollIntoView({block:'start'});};
 
+initRoomLab(()=>showPanel('room'));
 sync();update();
 const context=document.modelContext;
 if(context?.registerTool){
