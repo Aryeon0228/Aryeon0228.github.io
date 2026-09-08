@@ -19,3 +19,5 @@
 /* Align navigation and reset on one toolbar without making reset a tab. */
 .tab-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);margin-bottom:14px}.tab-toolbar .page-tabs{border-bottom:0;margin-bottom:0;flex:1}.tab-toolbar #reset{font-size:12px;padding:6px 11px;white-space:nowrap;background:transparent}.intro{justify-content:flex-start}.tab-toolbar #reset:hover{background:#202a3d}
 @media(max-width:480px){.tab-toolbar{gap:10px}.tab-toolbar .page-tabs{gap:18px}.tab-toolbar #reset{font-size:11px;padding:5px 8px}}
+
+.moon-guide{margin:32px 0;scroll-margin-top:20px}.moon-guide-intro{max-width:780px;margin-bottom:20px}.moon-guide-intro h2{font-size:clamp(20px,2.5vw,26px);line-height:1.45;margin-top:8px}.moon-notes{align-items:start}.moon-notes article h3{margin-top:8px;font-size:17px;line-height:1.6}.moon-notes article p,.moon-guide-intro>p:not(.eyebrow){font-size:14px}.moon-notes .research-link{font-size:12px;overflow-wrap:anywhere}.moon-keypoint{border-left:2px solid var(--accent);padding-left:12px;color:#d5e2ff!important}.moon-model-note{border-color:#536780!important}
