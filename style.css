@@ -1913,3 +1913,8 @@ footer p {
         text-align: center;
     }
 }
+
+/* Simulator capabilities beneath the short introduction. */
+.info-main .sim-features{list-style:none;margin:0.65rem 0 0;padding:0;display:grid;gap:0.25rem;color:var(--text-secondary);font-size:0.75rem;line-height:1.65}
+.info-main .sim-features li{position:relative;padding-left:12px}
+.info-main .sim-features li::before{content:'·';position:absolute;left:0}
