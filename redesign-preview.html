@@ -282,8 +282,8 @@ html{scroll-behavior:smooth;scroll-padding-top:96px}
 .site-nav a,.portfolio-section a,.portfolio-footer a{color:inherit;text-decoration:none}
 .wordmark{display:flex;align-items:center;gap:13px;flex-shrink:0;font:500 15px/1.25 var(--f-lat);letter-spacing:.13em}
 .wordmark small{display:block;font:9px/1.7 var(--f-mono);letter-spacing:.24em;color:#999}
-.brand-orbit{position:relative;width:22px;height:22px;border-radius:50%;border:1px solid #999;box-shadow:inset 5px 0 0 -2px #eee;transform:rotate(-28deg)}
-.brand-orbit::after{content:'';position:absolute;inset:7px -7px;border:1px solid #777;border-radius:50%}
+.brand-orbit{position:relative;display:block;flex-shrink:0;width:22px;height:22px;transform:rotate(-28deg)}
+.brand-orbit svg{position:absolute;left:-7px;top:-3px;display:block;width:36px;height:28px;overflow:visible}
 .site-links{display:flex;align-items:center;gap:clamp(18px,2.3vw,30px)}
 .site-links>a{position:relative;display:flex;align-items:center;min-height:44px;font:400 13px var(--f-lat);white-space:nowrap;color:#aaa;transition:color .2s}
 .site-links>a:hover,.site-links>a[aria-current]{color:#fff}
@@ -389,7 +389,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
 <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
 <div class="site-header"><nav class="site-nav wrap" aria-label="주 메뉴">
-  <a class="wordmark" href="#home" aria-label="Studio Penumbra 처음으로"><span class="brand-orbit" aria-hidden="true"></span><span><small>STUDIO</small>PENUMBRA</span></a>
+  <a class="wordmark" href="#home" aria-label="Studio Penumbra 처음으로"><span class="brand-orbit" aria-hidden="true"><svg viewBox="0 0 36 28" focusable="false"><ellipse cx="18" cy="14" rx="17" ry="4" fill="none" stroke="#777"/><circle cx="18" cy="14" r="10.5" fill="#000" stroke="#999"/><path d="M18 3.5A10.5 10.5 0 0 0 18 24.5" fill="none" stroke="#eee" stroke-width="1.7"/><path d="M1 14A17 4 0 0 0 35 14" fill="none" stroke="#999"/></svg></span><span><small>STUDIO</small>PENUMBRA</span></a>
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-menu"><span class="menu-toggle-label">메뉴</span><span class="menu-toggle-icon" aria-hidden="true"></span></button>
   <div class="site-links" id="site-menu"><a href="#work" data-section="work"><span class="nav-number" aria-hidden="true">01</span><span>Work</span><span class="nav-korean">작품 · 도구</span></a><a href="#research" data-section="research"><span class="nav-number" aria-hidden="true">02</span><span>Research</span><span class="nav-korean">논문 · 연구</span></a><a href="#teaching" data-section="teaching"><span class="nav-number" aria-hidden="true">03</span><span>Teaching</span><span class="nav-korean">강의 · 멘토링</span></a><a href="#education" data-section="education"><span class="nav-number" aria-hidden="true">04</span><span>Education</span><span class="nav-korean">학력 · 학위</span></a><a href="#career" data-section="career"><span class="nav-number" aria-hidden="true">05</span><span>Career</span><span class="nav-korean">실무 경력</span></a><a href="#awards" data-section="awards"><span class="nav-number" aria-hidden="true">06</span><span>Awards</span><span class="nav-korean">수상 내역</span></a><a href="#about" data-section="about"><span class="nav-number" aria-hidden="true">07</span><span>About / Contact</span><span class="nav-korean">소개 · 연락처</span></a><a class="nav-cv" href="CV_2026_0823.pdf" download aria-label="이력서 PDF 다운로드">CV <span aria-hidden="true">↓</span></a></div>
 </nav></div>
