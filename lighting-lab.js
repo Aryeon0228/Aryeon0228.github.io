@@ -14,6 +14,21 @@ function updateSourceIcons(side){
  if(src.kind!=='point')return;
  for(let i=0;i<slot.count;i++){const img=document.createElement('img');img.src=path;img.alt='';img.width=28;img.height=28;img.draggable=false;group.append(img);}
 }
+// A fixed linear ruler: 40 SVG units per metre. The 170 cm person is 68 units tall.
+function updateDistanceGuide(side){
+ const slot=state[side],src=SOURCES[slot.source];if(src.kind!=='point')return;
+ const start=80,end=start+slot.distance*40;
+ $(side+'-distance-light').setAttribute('transform',`translate(${end} 0)`);
+ $(side+'-distance-art').setAttribute('href',`assets/${src.image}.png`);
+ const label=$(side+'-distance-source-label');label.textContent=src.name+(slot.count>1?' × '+slot.count:'');
+ label.setAttribute('text-anchor',end>430?'end':'middle');label.setAttribute('x',end>430?20:0);
+ $(side+'-distance-ray').setAttribute('x2',end);
+ $(side+'-distance-dimension').setAttribute('d',`M${start} 201v10M${start} 206H${end}M${end} 201v10`);
+ $(side+'-distance-value').setAttribute('x',(start+end)/2);
+ $(side+'-distance-value').textContent=slot.distance.toFixed(2)+' m';
+ $(side+'-distance-comparison').textContent=slot.distance.toFixed(2)+' m · 사람 키의 약 '+(slot.distance/1.7).toFixed(2)+'배';
+ $(side+'-distance-diagram').setAttribute('aria-label',`키 170cm인 사람 옆 측정면에서 ${src.name} ${slot.count}개까지 ${slot.distance.toFixed(2)}미터. 사람 키와 거리의 축척은 같습니다.`);
+}
 function refreshControls(side){
  const s=state[side],src=SOURCES[s.source];
  $(side+'-note-title').textContent=(side==='left'?'왼쪽 · ':'오른쪽 · ')+src.name;
@@ -27,7 +42,7 @@ function update(){
  const result=comparison(state.left,state.right,state.mode,state.exposure,state.offsets),diff=result.stopsDifference;
  for(const side of ['left','right']){
   const s=state[side],src=SOURCES[s.source],v=result[side],label=side==='left'?'왼쪽':'오른쪽';
-  updateSourceIcons(side);$(side+'-settings-title').textContent=label+' · '+src.name;$(side+'-offset').value=state.offsets[side];$(side+'-offset-out').value=signed(state.offsets[side])+' stops';$(side+'-name').textContent=src.name;$(side+'-art').src=`assets/${src.image}.png`;$(side+'-lux').textContent=fmt(v.lux);$(side+'-exposure').textContent=signed(v.exposure)+' stops';
+  updateSourceIcons(side);updateDistanceGuide(side);$(side+'-settings-title').textContent=label+' · '+src.name;$(side+'-offset').value=state.offsets[side];$(side+'-offset-out').value=signed(state.offsets[side])+' stops';$(side+'-name').textContent=src.name;$(side+'-art').src=`assets/${src.image}.png`;$(side+'-lux').textContent=fmt(v.lux);$(side+'-exposure').textContent=signed(v.exposure)+' stops';
   $(side+'-count-out').value=s.count+'개';$(side+'-distance-out').value=s.distance.toFixed(2)+' m';$(side+'-illuminance-out').value=fmt(s.lux)+' lx';
   $(side+'-distance').setAttribute('aria-valuetext',s.distance.toFixed(2)+'미터');$(side+'-illuminance').setAttribute('aria-valuetext',fmt(s.lux)+'럭스');
   $(side+'-canvas').setAttribute('aria-label',label+' 조명('+src.name+')으로 비춘 확산 구와 바닥');
