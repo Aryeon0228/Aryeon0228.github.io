@@ -42,7 +42,7 @@ function update(){
  const result=comparison(state.left,state.right,state.mode,state.exposure,state.offsets),diff=result.stopsDifference;
  for(const side of ['left','right']){
   const s=state[side],src=SOURCES[s.source],v=result[side],label=side==='left'?'왼쪽':'오른쪽';
-  updateSourceIcons(side);updateDistanceGuide(side);$(side+'-settings-title').textContent=label+' · '+src.name;$(side+'-offset').value=state.offsets[side];$(side+'-offset-out').value=signed(state.offsets[side])+' stops';$(side+'-name').textContent=src.name;$(side+'-art').src=`assets/${src.image}.png`;$(side+'-lux').textContent=fmt(v.lux);$(side+'-exposure').textContent=signed(v.exposure)+' stops';
+  updateSourceIcons(side);updateDistanceGuide(side);$(side+'-settings-title').textContent=label+' · '+src.name;$(side+'-offset').value=state.offsets[side];$(side+'-offset-out').value=signed(state.offsets[side])+' stops';$(side+'-offset-summary').value=signed(state.offsets[side])+' stops';$(side+'-name').textContent=src.name;$(side+'-art').src=`assets/${src.image}.png`;$(side+'-lux').textContent=fmt(v.lux);$(side+'-exposure').textContent=signed(v.exposure)+' stops';
   $(side+'-count-out').value=s.count+'개';$(side+'-distance-out').value=s.distance.toFixed(2)+' m';$(side+'-illuminance-out').value=fmt(s.lux)+' lx';
   $(side+'-distance').setAttribute('aria-valuetext',s.distance.toFixed(2)+'미터');$(side+'-illuminance').setAttribute('aria-valuetext',fmt(s.lux)+'럭스');
   $(side+'-canvas').setAttribute('aria-label',label+' 조명('+src.name+')으로 비춘 확산 구와 바닥');
@@ -62,6 +62,7 @@ function update(){
  $('takeaway').textContent=state.mode==='individual'?'비슷하게 보여도 조도는 다를 수 있습니다. 각 그림 위의 노출 보정값을 비교해보세요.':'노출을 올려도 두 빛의 물리적인 비율은 바뀌지 않습니다.';
  $('exposure-note').textContent=state.mode==='individual'?'각 장면 자동 노출 + 공통 밝기 + 개별 보정':'공통 밝기 + 개별 보정 · 조도(lx)는 바뀌지 않습니다.';
  document.querySelectorAll('.source-card').forEach(card=>{const id=card.dataset.source,sides=['left','right'].filter(side=>state[side].source===id);card.classList.toggle('active',sides.length>0);$('chosen-'+id).textContent=sides.map(s=>s==='left'?'왼쪽':'오른쪽').join(' · ');});
+ document.querySelectorAll('[data-count]').forEach(b=>b.setAttribute('aria-pressed',state[b.dataset.side].count===+b.dataset.count));
  document.querySelectorAll('[data-lux]').forEach(b=>{const selected=state[b.dataset.side].source==='sun'&&Math.abs(state[b.dataset.side].lux-+b.dataset.lux)<.001;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',selected);});
  if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;const now=comparison(state.left,state.right,state.mode,state.exposure,state.offsets),colors=comparisonColors(state.left,state.right,state.whiteBalance,state.color);for(const side of ['left','right'])render(side+'-canvas',now[side].lux,state.rho,now[side].exposure,colors[side]);});}
  return {...result,commonExposure:state.exposure,exposureOffsets:{...state.offsets},whiteBalance:state.whiteBalance,displayColors:comparisonColors(state.left,state.right,state.whiteBalance,state.color)};
@@ -77,6 +78,7 @@ $('reflectance').oninput=e=>{state.rho=+e.target.value/100;update();};$('exposur
 for(const key of ['neutral','left','right'])$('wb-'+key).onclick=()=>{state.whiteBalance=key;update();};
 $('shared').onclick=()=>{state.mode='shared';state.offsets={left:0,right:0};update();};$('individual').onclick=()=>{state.mode='individual';state.exposure=0;state.offsets={left:0,right:0};sync();update();};
 document.querySelectorAll('[data-assign]').forEach(b=>b.onclick=()=>assign(b.dataset.assign,b.dataset.source));
+document.querySelectorAll('[data-count]').forEach(b=>b.onclick=()=>{if(SOURCES[state[b.dataset.side].source].kind!=='point')return;state[b.dataset.side].count=+b.dataset.count;refreshControls(b.dataset.side);update();});
 document.querySelectorAll('[data-lux]').forEach(b=>b.onclick=()=>{if(state[b.dataset.side].source!=='sun')return;state[b.dataset.side].lux=+b.dataset.lux;refreshControls(b.dataset.side);update();});
 const zones=[...document.querySelectorAll('[data-drop-side]')];
 function endDrag(){dragSource=null;document.querySelectorAll('.source-card').forEach(c=>c.classList.remove('dragging'));zones.forEach(z=>z.classList.remove('drop-ready','drag-over'));}
