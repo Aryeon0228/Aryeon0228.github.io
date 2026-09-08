@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>김소연 | Studio Penumbra</title>
-    <meta name="description" content="김소연 포트폴리오 · Studio Penumbra — 컴퓨터 그래픽스 연구와 인터랙티브 웹 데모.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>김소연 | Studio Penumbra</title>
+<meta name="description" content="김소연 포트폴리오 · Studio Penumbra — 컴퓨터 그래픽스 연구와 인터랙티브 웹 데모.">
     <meta property="og:site_name" content="Studio Penumbra">
     <meta property="og:title" content="김소연 | Studio Penumbra">
     <meta property="og:description" content="김소연 포트폴리오 · Studio Penumbra — 컴퓨터 그래픽스 연구와 인터랙티브 웹 데모.">
@@ -15,638 +15,1370 @@
     <link rel="icon" type="image/png" sizes="32x32" href="Penumbra_Pavicon.png">
     <link rel="icon" type="image/png" sizes="512x512" href="Penumbra_Pavicon.png">
     <link rel="apple-touch-icon" href="Penumbra_Pavicon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<link rel="canonical" href="https://studio-penumbra.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@200;300;400;500;600&family=IBM+Plex+Sans+KR:wght@200;300;400;500;600&display=swap">
+
+<style>
+/* ============================================================
+   STUDIO PENUMBRA — Portfolio
+   흑백 계조 안에서 빛의 경계를 부드럽게 드러낸다.
+   가는 초승달, 희미한 구름결, 투명한 고리.
+   ============================================================ */
+:root{
+  --k0:#000000;            /* 바탕 — 순수 검정 */
+  --k1:#070707;            /* 패널 */
+  --k2:#101010;            /* 융기면 */
+  --w:#ffffff;             /* 최대 밝기 */
+  --g1:#4d4d4d;            /* 최저 계조 텍스트 */
+  --g2:#8f8f8f;            /* 보조 텍스트 */
+  --ln:rgba(255,255,255,.11);
+  --ln2:rgba(255,255,255,.22);
+
+  --pad:clamp(20px,5vw,56px);
+
+  --f-lat:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --f-ko:'IBM Plex Sans KR','IBM Plex Sans',-apple-system,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--k0); color:var(--w);
+  font-family:var(--f-ko); font-weight:300; font-size:16px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; word-break:keep-all; overflow-wrap:break-word;
+}
+h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
+.wrap{ max-width:1200px; margin:0 auto; padding-inline:var(--pad); }
+
+/* 계기 라벨 — 사이트 전체의 공통 어휘 */
+.lbl{
+  font-family:var(--f-mono); font-size:10px; font-weight:500;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--g1);
+}
+.num{ font-family:var(--f-mono); font-variant-numeric:tabular-nums; }
+
+/* ---------- 섹션 ---------- */
+.sec{ padding-block:clamp(64px,9vw,124px); border-top:1px solid var(--ln); }
+.sec-head{ display:grid; gap:16px; margin-bottom:clamp(38px,5vw,60px); }
+@media(min-width:820px){
+  .sec-head{ grid-template-columns:minmax(0,150px) minmax(0,1fr); gap:0 clamp(24px,5vw,72px); align-items:start; }
+}
+.sec-title{
+  font-family:var(--f-lat); font-weight:300;
+  font-size:clamp(30px,4.4vw,54px); line-height:1.1; letter-spacing:-.012em;
+}
+.sec-title b{ font-weight:600; }
+.lede{ color:var(--g2); font-size:clamp(14.5px,1.4vw,16.5px); max-width:60ch; margin:18px 0 0; }
+.lede b{ color:var(--w); font-weight:500; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{ position:relative; min-height:760px; display:flex; align-items:stretch; overflow:hidden; }
+#gl{ position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0; }
+#meteor-trail{ position:absolute; inset:0; width:100%; height:100%; z-index:4; pointer-events:none; }
+.hero.meteor-active,.hero.meteor-active .planet-drag{ cursor:none; }
+@media (prefers-reduced-motion:reduce){ #meteor-trail{ display:none; } }
+/* Hit area follows the projected planet; the rest of the page remains scrollable. */
+.planet-drag{
+  position:absolute; z-index:3; transform:translate(-50%,-50%); border:0;
+  padding:0; border-radius:50%; background:transparent; color:var(--g2);
+  cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
+}
+.planet-drag[hidden]{ display:none; }
+.planet-drag.is-dragging{ cursor:grabbing; }
+.planet-drag:focus-visible{ outline:1px dashed #777; outline-offset:10px; }
+.planet-drag::after{
+  content:'드래그하여 회전'; position:absolute; left:50%; top:65%; transform:translateX(-50%);
+  font:11px var(--f-ko); white-space:nowrap; opacity:0; transition:opacity .2s; pointer-events:none;
+}
+.planet-drag:hover::after,.planet-drag:focus-visible::after{ opacity:.7; }
+.planet-drag.is-dragging::after{ opacity:0; }
+/* three.js 미탑재/미지원 시 그대로 보이는 폴백 */
+.hero-fb{
+  position:absolute; inset:0; z-index:0;
+  background:#000;
+}
+.hero-fb::before{
+  content:''; position:absolute; width:clamp(260px,34vw,490px); aspect-ratio:1;
+  left:67%; top:46%; transform:translate(-50%,-50%) rotate(-24deg); border-radius:50%;
+  background:radial-gradient(circle at 65% 53%, #000 0%, #000 55%, #191919 67%, #858585 78%, #0b0b0b 92%);
+  box-shadow:-10px -6px 28px -18px #bdbdbd;
+}
+.hero-veil{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(94deg, rgba(0,0,0,.80) 0%, rgba(0,0,0,.30) 28%, rgba(0,0,0,0) 51%);
+}
+
+/* 계기 프레임 — 화면 네 귀퉁이의 브래킷 */
+.frame{ position:absolute; inset:18px; z-index:3; opacity:.30; pointer-events:none; }
+.frame span{ position:absolute; width:22px; height:22px; border:1px solid var(--ln2); }
+.frame span:nth-child(1){ top:0; left:0; border-right:0; border-bottom:0; }
+.frame span:nth-child(2){ top:0; right:0; border-left:0; border-bottom:0; }
+.frame span:nth-child(3){ bottom:0; left:0; border-right:0; border-top:0; }
+.frame span:nth-child(4){ bottom:0; right:0; border-left:0; border-top:0; }
+
+.hero-inner{ position:relative; z-index:2; width:100%; display:flex; align-items:center; padding-block:clamp(72px,9vw,96px); }
+
+.hero-inner > .wrap{ width:100%; }
+
+.hero-mark{ display:flex; align-items:center; gap:12px; margin-bottom:26px; }
+.hero-mark .dot{ width:5px; height:5px; background:var(--w); border-radius:50%; animation:blip 2.6s ease-in-out infinite; }
+@keyframes blip{ 0%,100%{opacity:1} 50%{opacity:.25} }
+
+.hero-name{
+  font-family:var(--f-lat); font-weight:200;
+  font-size:clamp(50px,9.6vw,116px); line-height:.9; letter-spacing:-.026em;
+}
+.hero-name b{ font-weight:600; display:block; }
+.hero-name .ko{
+  font-family:var(--f-ko); font-weight:600;
+  display:block; font-size:.30em; letter-spacing:.02em; color:var(--g2); margin-top:20px; line-height:1.4;
+}
+.hero-role{ color:var(--g2); max-width:40ch; margin:26px 0 0; font-size:15px; }
+.hero-role b{ color:var(--w); font-weight:500; }
+
+/* ---------- 파라미터 랙 ---------- */
+.rack{
+  position:absolute; z-index:3; right:var(--pad); bottom:30px;
+  width:246px; background:rgba(0,0,0,.78); border:1px solid var(--ln);
+  backdrop-filter:blur(6px);
+}
+.rack-h{ display:flex; justify-content:space-between; align-items:center; padding:11px 14px; border-bottom:1px solid var(--ln); }
+.rack-h{ cursor:pointer; list-style:none; min-height:44px; user-select:none; }
+.rack-h::-webkit-details-marker{ display:none; }
+.rack-h:focus-visible{ outline:1px solid #bdbdbd; outline-offset:5px; }
+.rack-h .lbl{ color:#aaa; font-size:12px; letter-spacing:.10em; }
+.rack-h::after{ content:'+'; color:#aaa; font-size:18px; line-height:1; }
+.rack[open] .rack-h::after{ content:'−'; }
+.rack:not([open]) .rack-h{ border-bottom:0; }
+.rack:not([open]){ width:178px; }
+.rack[open]{ max-height:calc(100% - 60px); overflow-y:auto; }
+.rack-b{ padding:16px 14px 18px; display:grid; gap:17px; }
+.rack-note{ margin:0; color:#aaa; font-size:12px; line-height:1.6; }
+.knob-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+.knob-head em{ font-style:normal; color:var(--w); font-size:11.5px; font-family:var(--f-mono); font-weight:500; }
+.knob-head b{ color:var(--w); font-size:11.5px; font-weight:500; }
+input[type=range]{
+  -webkit-appearance:none; appearance:none; display:block;
+  width:100%; height:22px; background:linear-gradient(var(--ln2),var(--ln2)) center/100% 1px no-repeat; outline:none; cursor:ew-resize;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:9px; height:9px; background:var(--w); border:none; border-radius:0; cursor:ew-resize;
+}
+input[type=range]::-moz-range-thumb{ width:9px; height:9px; background:var(--w); border:none; border-radius:0; cursor:ew-resize; }
+input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px; }
+.knob-scale{ display:flex; justify-content:space-between; margin-top:6px; font-family:var(--f-mono); font-size:9px; color:var(--g1); letter-spacing:.06em; }
+
+/* ---------- 텔레메트리 ---------- */
+.tele{
+  position:absolute; z-index:3; left:var(--pad); bottom:clamp(26px,4vw,40px);
+  display:flex; flex-wrap:wrap; gap:0 32px;
+}
+.tele div{ display:grid; gap:3px; }
+.tele b{ font-family:var(--f-mono); font-size:12.5px; font-weight:500; color:var(--w); font-variant-numeric:tabular-nums; }
+
+@media(max-width:1040px){
+  .rack{ right:var(--pad); bottom:26px; max-width:300px; }
+  .hero-role{ max-width:35ch; }
+  .hero-name{ font-size:clamp(52px,9.6vw,96px); }
+  .hero-inner{ align-items:flex-start; }
+  .tele{ position:static; margin-top:30px; }
+  .hero{ min-height:680px; }
+  .hero-veil{ background:linear-gradient(90deg,rgba(0,0,0,.70),transparent 64%); }
+}
+@media(max-width:600px){
+  .hero{ min-height:800px; }
+  .hero-inner{ padding-top:58px; }
+  .hero-name{ font-size:66px; }
+  .hero-role{ margin-top:20px; font-size:14px; max-width:30ch; }
+  .hero-veil{ background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.42) 27%,transparent 43%); }
+  .hero-fb::before{ left:56%; top:64%; width:310px; }
+  .tele{ position:absolute; left:var(--pad); bottom:85px; gap:18px; }
+  .tele div:last-child{ display:none; }
+  .rack[open]{ max-height:560px; }
+  .frame{ opacity:.18; }
+}
+
+/* ============================================================
+   계조 웨지 (팔레트)
+   ============================================================ */
+.wedge{ display:grid; grid-template-columns:repeat(11,1fr); border:1px solid var(--ln); margin-top:8px; }
+.wedge div{ aspect-ratio:1/2.1; display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px; }
+.wedge span{ font-family:var(--f-mono); font-size:8.5px; letter-spacing:.02em; }
+.wedge-cap{ display:flex; justify-content:space-between; margin-top:9px; }
+
+.usage{ display:grid; gap:1px; margin-top:34px; background:var(--ln); border:1px solid var(--ln); }
+@media(min-width:680px){ .usage{ grid-template-columns:repeat(2,1fr); } }
+.usage div{ background:var(--k0); padding:17px 18px; display:grid; grid-template-columns:34px 1fr; gap:14px; align-items:center; }
+.usage i{ width:34px; height:34px; display:block; border:1px solid var(--ln); }
+.usage p{ margin:0; font-size:13px; color:var(--g2); }
+.usage p b{ display:block; color:var(--w); font-family:var(--f-mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:500; margin-bottom:2px; }
+
+/* ============================================================
+   타입
+   ============================================================ */
+.type-spec{ display:grid; gap:1px; background:var(--ln); border:1px solid var(--ln); }
+.spec-row{ background:var(--k0); padding:clamp(22px,3vw,32px); display:grid; gap:16px; }
+@media(min-width:760px){ .spec-row{ grid-template-columns:minmax(0,148px) 1fr; gap:0 clamp(20px,3vw,44px); align-items:center; } }
+.spec-meta span{ display:block; color:var(--g2); font-family:var(--f-mono); font-size:10px; letter-spacing:.1em; margin-top:5px; text-transform:none; }
+.spec-a{ font-family:var(--f-lat); font-size:clamp(30px,4.4vw,46px); font-weight:200; line-height:1.08; letter-spacing:-.016em; }
+.spec-a b{ font-weight:600; }
+.spec-b{ font-size:15px; color:var(--g2); max-width:44ch; }
+.spec-c{ font-family:var(--f-mono); font-size:13px; color:var(--g2); font-variant-numeric:tabular-nums; letter-spacing:.02em; }
+
+/* ============================================================
+   IA
+   ============================================================ */
+.ia{ display:grid; gap:clamp(30px,4vw,52px); }
+@media(min-width:960px){ .ia{ grid-template-columns:minmax(0,268px) minmax(0,1fr); } }
+.ia-list{ list-style:none; margin:14px 0 0; padding:0; font-family:var(--f-mono); font-size:12px; }
+.ia-list li{ padding:9px 0; border-bottom:1px solid var(--ln); color:var(--g1); display:flex; justify-content:space-between; gap:14px; }
+.ia-list li b{ color:var(--g2); font-weight:400; }
+.ia-list .thin b, .ia-list .thin span{ color:var(--w); }
+
+.steps{ display:grid; gap:1px; background:var(--ln); border:1px solid var(--ln); }
+.step{ background:var(--k0); display:grid; grid-template-columns:46px 1fr; gap:0 16px; padding:21px 21px 21px 0; }
+.step:hover{ background:var(--k2); }
+.step-n{ font-family:var(--f-mono); font-size:10.5px; color:var(--g1); padding-left:20px; padding-top:4px; letter-spacing:.1em; }
+.step-b h4{ font-family:var(--f-lat); font-size:19px; font-weight:500; margin-bottom:6px; letter-spacing:-.01em; }
+.step-b h4 small{ font-family:var(--f-mono); font-size:9.5px; font-weight:400; color:var(--g1); letter-spacing:.16em; text-transform:uppercase; margin-left:11px; }
+.step-b p{ margin:0; color:var(--g2); font-size:13.5px; }
+.step-b p + p{ margin-top:6px; color:var(--g1); font-size:12.5px; }
+.step .step-n em{ font-style:normal; color:var(--w); }
+
+/* ============================================================
+   라이트 모드 — 네거티브
+   ============================================================ */
+.pair{ display:grid; gap:1px; background:var(--ln); border:1px solid var(--ln); }
+@media(min-width:720px){ .pair{ grid-template-columns:1fr 1fr; } }
+.mini{ padding:clamp(26px,4vw,40px); min-height:250px; display:flex; flex-direction:column; justify-content:space-between; }
+.mini-d{ background:#000; }
+.mini-l{ background:#fff; }
+.mini-name{ font-family:var(--f-lat); font-size:clamp(26px,3.6vw,38px); font-weight:600; line-height:1; letter-spacing:-.018em; margin-top:20px; }
+.mini-sub{ font-size:12.5px; margin-top:13px; line-height:1.65; }
+.mini-d .lbl{ color:#666; } .mini-d .mini-name{ color:#fff; } .mini-d .mini-sub{ color:#8f8f8f; }
+.mini-l .lbl{ color:#8a8a8a; } .mini-l .mini-name{ color:#000; } .mini-l .mini-sub{ color:#555; }
+.mini-orb{ width:64px; height:64px; border-radius:50%; margin-top:24px; }
+.mini-d .mini-orb{ background:linear-gradient(102deg,#fff 0%,#ededed 30%,#151515 52%,#000 62%); box-shadow:0 0 0 1px rgba(255,255,255,.16); }
+.mini-l .mini-orb{ background:linear-gradient(102deg,#000 0%,#151515 30%,#e6e6e6 52%,#fff 62%); box-shadow:0 0 0 1px rgba(0,0,0,.16); }
+
+/* ============================================================
+   결정 / 플래그
+   ============================================================ */
+.asks{ list-style:none; margin:0; padding:0; display:grid; gap:1px; background:var(--ln); border:1px solid var(--ln); }
+.asks li{ background:var(--k0); padding:23px clamp(20px,3vw,28px); display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:start; }
+.asks li:hover{ background:var(--k2); }
+.asks .q{ font-family:var(--f-mono); font-size:10.5px; color:var(--g1); padding-top:4px; letter-spacing:.1em; }
+.asks h4{ font-size:15.5px; font-weight:500; margin-bottom:5px; }
+.asks p{ margin:0; color:var(--g2); font-size:13.5px; }
+
+.flag{ margin-top:38px; padding:22px clamp(20px,3vw,26px); border:1px solid var(--ln2); }
+.flag h4{ font-size:14px; font-weight:500; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+.flag h4::before{ content:''; width:7px; height:7px; background:var(--w); flex:0 0 auto; }
+.flag p{ margin:0; color:var(--g2); font-size:13.5px; }
+.flag code{ font-family:var(--f-mono); font-size:12px; color:var(--w); border-bottom:1px solid var(--ln2); }
+
+footer{ padding-block:50px 68px; border-top:1px solid var(--ln); }
+footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+
+@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+/* Portfolio navigation and content */
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+.site-header{position:sticky;top:0;z-index:30;background:rgba(0,0,0,.92);border-bottom:1px solid var(--ln);backdrop-filter:blur(16px)}
+.site-nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.site-nav a,.portfolio-section a,.portfolio-footer a{color:inherit;text-decoration:none}
+.wordmark{display:flex;align-items:center;gap:13px;flex-shrink:0;font:500 15px/1.25 var(--f-lat);letter-spacing:.13em}
+.wordmark small{display:block;font:9px/1.7 var(--f-mono);letter-spacing:.24em;color:#999}
+.brand-orbit{position:relative;width:22px;height:22px;border-radius:50%;border:1px solid #999;box-shadow:inset 5px 0 0 -2px #eee;transform:rotate(-28deg)}
+.brand-orbit::after{content:'';position:absolute;inset:7px -7px;border:1px solid #777;border-radius:50%}
+.site-links{display:flex;align-items:center;gap:clamp(18px,2.3vw,30px)}
+.site-links>a{position:relative;display:flex;align-items:center;min-height:44px;font:400 13px var(--f-lat);white-space:nowrap;color:#aaa;transition:color .2s}
+.site-links>a:hover,.site-links>a[aria-current]{color:#fff}
+.site-links>a[data-section]::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:#fff;transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.site-links>a[aria-current]::after{transform:scaleX(1)}
+.site-links>.nav-cv{border-left:1px solid var(--ln2);padding-left:22px;gap:12px;color:#eee;font-family:var(--f-mono);font-size:12px}
+.nav-number,.nav-korean,.menu-toggle{display:none}
+.skip-link{position:fixed;top:12px;left:16px;z-index:50;background:white;color:black;padding:10px 16px;transform:translateY(-160%)}
+.skip-link:focus{transform:none}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #eee;outline-offset:5px}
+.portfolio-section{padding-block:clamp(70px,9vw,112px);border-top:1px solid var(--ln);scroll-margin-top:0}
+.portfolio-section:focus,#main-content:focus{outline:none}
+.content-heading{display:grid;grid-template-columns:170px 1fr;gap:30px;margin-bottom:48px;align-items:start}
+.content-kicker{font:400 10px/1.8 var(--f-mono);letter-spacing:.1em;color:#999}
+.content-heading>.content-kicker{padding-top:13px}
+.content-heading h2{font:300 clamp(38px,5vw,60px)/1.1 var(--f-lat);letter-spacing:-.035em}
+.content-heading p{margin:18px 0 0;color:#aaa;font-size:15px}
+.work-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.work-card{display:flex;flex-direction:column;min-width:0;padding:30px;border:1px solid var(--ln);background:linear-gradient(145deg,#0b0b0b,#030303);transition:border-color .25s}
+.work-card:hover{border-color:#555}
+.work-card-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:36px}
+.work-index{font:300 24px/1 var(--f-mono);color:#555}
+.work-card h3{font:400 26px/1.3 var(--f-lat)}
+.work-description{margin:16px 0 26px;color:#aaa;font-size:14px;line-height:1.85}
+.work-description p{margin:0 0 10px}.work-description p:last-child{margin:0}
+.content-actions{display:flex;flex-wrap:wrap;gap:12px 22px}
+.work-card>.content-actions{margin-top:auto}
+.content-actions a{display:inline-flex;gap:10px;align-items:center;min-height:40px;font-size:12px;color:#ddd;border-bottom:1px solid #333}
+.content-actions a:hover{border-color:#ddd;color:#fff}
+.content-actions a span{color:#999}
+.detail-row{display:grid;grid-template-columns:170px minmax(0,1fr);gap:14px 30px;padding:30px 0;border-top:1px solid var(--ln)}
+.detail-row>.content-kicker{padding-top:5px;letter-spacing:.02em}
+.detail-row h3{font-size:19px;line-height:1.55}
+.detail-row p{margin:10px 0 0;color:#aaa;font-size:14px}
+.detail-row>.content-actions{grid-column:2}
+.content-fold{margin-top:28px;border-top:1px solid var(--ln);border-bottom:1px solid var(--ln)}
+.content-fold+ .content-fold{margin-top:0;border-top:0}
+.content-fold summary{position:relative;display:flex;align-items:center;gap:18px;cursor:pointer;padding:24px 34px 24px 0;font:400 17px var(--f-lat);list-style:none}
+.content-fold summary::-webkit-details-marker{display:none}
+.content-fold summary::after{content:'+';position:absolute;right:3px;color:#aaa;font:20px var(--f-mono)}
+.content-fold[open] summary::after{content:'−'}
+.content-fold summary>span{font:11px var(--f-ko);color:#999}
+.compact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 40px;padding:8px 0 32px}
+.compact-row h3{font-size:16px}.compact-row p{font-size:13px;color:#aaa;margin:8px 0}
+.about-copy{max-width:740px;font-size:17px;line-height:1.95;color:#bbb}.about-copy p{margin:0 0 20px}
+.contact-links{display:flex;align-items:flex-start;flex-direction:column;gap:16px;margin:38px 0 52px}
+.contact-links>a:first-child{font:300 clamp(18px,3vw,30px)/1.5 var(--f-lat);overflow-wrap:anywhere}
+.contact-links>a:hover{text-decoration:underline;text-underline-offset:6px}
+.contact-links p{font:11px var(--f-mono);color:#999;margin:0}.contact-links p span{color:#ccc;margin-left:14px}
+.contact-links .cv-link{font-size:13px;border:1px solid #444;padding:12px 18px;margin-top:8px}
+.tool-tags{display:flex;flex-wrap:wrap;gap:10px;padding:4px 0 30px}.tool-tags span{font-size:12px;color:#bbb;border:1px solid #333;padding:6px 12px}
+.portfolio-footer{padding:28px 0;border-top:1px solid var(--ln);color:#999;font:11px/1.6 var(--f-mono)}
+.portfolio-footer>.wrap{display:flex;justify-content:space-between;gap:20px}
+@media(max-width:999px){
+ .site-nav{height:66px}
+ .menu-toggle{display:flex;align-items:center;gap:13px;min-height:44px;padding:8px 0 8px 12px;background:none;border:0;color:#ddd;font:12px var(--f-ko);cursor:pointer}
+ .menu-toggle-icon{position:relative;display:block;width:20px;height:12px;border-top:1px solid;border-bottom:1px solid;transition:transform .2s}
+ .menu-open .menu-toggle-icon{height:1px;border-bottom:0;transform:rotate(45deg)}
+ .menu-open .menu-toggle-icon::after{content:'';position:absolute;inset:-1px 0 0;border-top:1px solid;transform:rotate(90deg)}
+ .site-links{position:absolute;top:100%;left:0;right:0;background:#070707;border-bottom:1px solid #333;display:none;padding:20px var(--pad) 30px;max-height:calc(100dvh - 66px);overflow-y:auto}
+ .menu-open .site-links{display:block}
+ .site-links>a{display:grid;grid-template-columns:28px 1fr auto;gap:12px;padding:16px 0;font-size:23px;border-bottom:1px solid var(--ln);white-space:normal}
+ .site-links>a[data-section]::after{display:none}
+ .site-links>a[aria-current] .nav-number{color:#fff}
+ .nav-number{display:block;font:10px var(--f-mono);color:#666}.nav-korean{display:block;font:11px var(--f-ko);color:#999}
+ .site-links>.nav-cv{display:flex;justify-content:space-between;border:0;padding:20px 0 0;margin-left:40px;font-size:13px}
+}
+.site-links[hidden]{display:none}
+@media(max-width:640px){
+ html{scroll-padding-top:86px}
+ .content-heading{grid-template-columns:1fr;gap:16px;margin-bottom:32px}.content-heading>.content-kicker{padding:0}
+ .work-grid,.compact-grid{grid-template-columns:1fr}
+ .work-card{padding:24px}.work-card-top{margin-bottom:24px}
+ .detail-row{grid-template-columns:1fr;gap:10px;padding:26px 0}.detail-row>.content-actions{grid-column:1}
+ .detail-row h3{font-size:17px}.about-copy{font-size:15px}
+ .portfolio-footer>.wrap{flex-direction:column;gap:12px}
+ .site-links>a{font-size:21px}.nav-korean{font-size:10px}
+ .content-fold summary{font-size:16px;gap:12px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.site-links>a,.site-links>a::after,.menu-toggle-icon,.work-card{transition:none}}
+
+.publication-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.publication-tags span{font-size:10px;color:#bbb;border:1px solid #444;padding:3px 8px}.detail-row p.position-role{color:#ccc;font-size:12px;margin-top:7px}
+/* Compact capability list below each simulator introduction. */
+.work-description>.sim-features{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:6px;color:#929292;font-size:12px;line-height:1.65}
+.sim-features li{position:relative;padding-left:12px}
+.sim-features li::before{content:'·';position:absolute;left:0;color:#666}
+.work-description:has(.sim-features)>p{color:#bbb}
+/* Store screenshots: quiet at rest, full color on hover or keyboard focus. */
+.game-preview{position:relative;margin:0 0 24px;overflow:hidden;background:#080808;aspect-ratio:960 / 444;border:1px solid var(--ln)}
+.game-preview img{display:block;width:100%;height:100%;object-fit:contain;opacity:.24;filter:grayscale(1);transition:opacity .35s ease,filter .45s ease}
+.game-preview-hint{position:absolute;inset:auto 12px 10px;display:flex;align-items:center;justify-content:space-between;color:#ccc;font:10px var(--f-ko);letter-spacing:.02em;pointer-events:none;transition:opacity .25s}
+.work-card--game:is(:hover,:focus-within) .game-preview img{opacity:1;filter:grayscale(0)}
+.work-card--game:is(:hover,:focus-within) .game-preview-hint{opacity:0}
+@media(max-width:640px),(hover:none),(pointer:coarse){.game-preview img{opacity:1;filter:none}.game-preview-hint{display:none}}
+@media(prefers-reduced-motion:reduce){.game-preview img,.game-preview-hint{transition:none}}
+
+.game-preview img.game-preview-rainbowtrees{object-fit:cover;object-position:50% 50%}
+.award-row h3{font-weight:500;color:#eee}.award-list .award-row:last-child{border-bottom:1px solid var(--ln)}
+.degree-label{display:inline-block;margin-bottom:12px;padding:3px 10px;border:1px solid #555;color:#ddd;font-size:12px;line-height:1.6}.education-row h3{font-weight:500;color:#eee}
+.legacy-anchor{display:block;scroll-margin-top:96px}
+</style>
 </head>
 <body>
-    <!-- Background Blobs for Glassmorphism -->
-    <div class="bg-blobs">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+
+<a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+<div class="site-header"><nav class="site-nav wrap" aria-label="주 메뉴">
+  <a class="wordmark" href="#home" aria-label="Studio Penumbra 처음으로"><span class="brand-orbit" aria-hidden="true"></span><span><small>STUDIO</small>PENUMBRA</span></a>
+  <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-menu"><span class="menu-toggle-label">메뉴</span><span class="menu-toggle-icon" aria-hidden="true"></span></button>
+  <div class="site-links" id="site-menu"><a href="#work" data-section="work"><span class="nav-number" aria-hidden="true">01</span><span>Work</span><span class="nav-korean">작품 · 도구</span></a><a href="#research" data-section="research"><span class="nav-number" aria-hidden="true">02</span><span>Research</span><span class="nav-korean">논문 · 연구</span></a><a href="#teaching" data-section="teaching"><span class="nav-number" aria-hidden="true">03</span><span>Teaching</span><span class="nav-korean">강의 · 멘토링</span></a><a href="#education" data-section="education"><span class="nav-number" aria-hidden="true">04</span><span>Education</span><span class="nav-korean">학력 · 학위</span></a><a href="#career" data-section="career"><span class="nav-number" aria-hidden="true">05</span><span>Career</span><span class="nav-korean">실무 경력</span></a><a href="#awards" data-section="awards"><span class="nav-number" aria-hidden="true">06</span><span>Awards</span><span class="nav-korean">수상 내역</span></a><a href="#about" data-section="about"><span class="nav-number" aria-hidden="true">07</span><span>About / Contact</span><span class="nav-korean">소개 · 연락처</span></a><a class="nav-cv" href="CV_2026_0823.pdf" download aria-label="이력서 PDF 다운로드">CV <span aria-hidden="true">↓</span></a></div>
+</nav></div>
+
+<!-- ======================= HERO ======================= -->
+<header class="hero" id="home">
+  <div class="hero-fb"></div>
+  <canvas id="gl" aria-label="어둠 속 행성의 가장자리에 은빛 초승달이 떠 있습니다. 희미한 구름결과 불규칙한 간격의 실 같은 고리 위로 빛이 부드럽게 번집니다."></canvas>
+  <div class="hero-veil"></div>
+  <canvas id="meteor-trail" aria-hidden="true"></canvas>
+  <button type="button" id="planet-drag" class="planet-drag" hidden
+    aria-label="행성과 고리 회전" title="드래그해서 회전 · 방향키로 미세 조절"></button>
+  <div class="frame"><span></span><span></span><span></span><span></span></div>
+
+  <div class="hero-inner">
+    <div class="wrap">
+      <div class="hero-mark">
+        <i class="dot"></i>
+        <span class="lbl">Studio Penumbra / Portfolio / 2026</span>
+      </div>
+
+      <h1 class="hero-name">
+        SOYOUN<b>KIM</b>
+        <span class="ko">김소연</span>
+      </h1>
+
+      <p class="hero-role">
+        게임 아트 <b>실무</b> · 빛과 표면의 <b>연구</b> · 다음 세대를 위한 <b>강의</b>.
+        빛과 그림자 사이, 아직 드러나지 않은 가능성을 만듭니다.
+      </p>
+
+      <div class="tele">
+        <div><span class="lbl">Rotation</span><b id="t-rot">0.0°</b></div>
+        <div><span class="lbl">Incidence</span><b id="t-inc">0.0°</b></div>
+        <div><span class="lbl">Render</span><b id="t-fps">60 fps</b></div>
+        <div><span class="lbl">Renderer</span><b id="t-eng">THREE r128</b></div>
+      </div>
     </div>
+  </div>
 
-    <!-- Header -->
-    <header>
-        <nav class="container">
-            <a href="#" class="logo" id="logoHome"><img src="Penumbra_Pavicon.png" alt="" class="logo-icon">Studio Penumbra</a>
-            <div class="nav-right">
-                <ul class="nav-menu">
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#resume">Resume</a></li>
-                    <li><a href="#portfolio">Portfolio</a></li>
-                    <li><a href="#vibe">Vibe Coding</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                </button>
-                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
+  <!-- 파라미터 랙 -->
+  <details class="rack">
+    <summary class="rack-h"><span class="lbl">빛과 대기 조절</span></summary>
+    <div class="rack-b">
+      <p class="rack-note" id="rack-note">0은 지금 맞춘 기본 모습입니다.<br>오른쪽으로 밀어 변화를 더해보세요.</p>
+      <div>
+        <div class="knob-head"><em>PENUMBRA</em><b id="v-pen" class="num">0</b></div>
+        <input type="range" id="s-pen" min="0" max="100" value="0" aria-describedby="rack-note scale-pen" aria-label="반그림자 폭">
+        <div class="knob-scale" id="scale-pen"><span>기본</span><span>넓게</span></div>
+      </div>
+      <div>
+        <div class="knob-head"><em>SUN AZIMUTH</em><b id="v-sun" class="num">0</b></div>
+        <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun" aria-label="태양 방위각">
+        <div class="knob-scale" id="scale-sun"><span>기본</span><span>한 바퀴 회전</span></div>
+      </div>
+      <div>
+        <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0</b></div>
+        <input type="range" id="s-atm" min="0" max="100" value="0" aria-describedby="rack-note scale-atm" aria-label="대기 밀도">
+        <div class="knob-scale" id="scale-atm"><span>기본</span><span>대기 줄이기</span></div>
+      </div>
+      <div>
+        <div class="knob-head"><em>TURBULENCE</em><b id="v-trb" class="num">0</b></div>
+        <input type="range" id="s-trb" min="0" max="100" value="0" aria-describedby="rack-note scale-trb" aria-label="대기 난류">
+        <div class="knob-scale" id="scale-trb"><span>기본</span><span>난류 더하기</span></div>
+      </div>
+      <div>
+        <div class="knob-head"><em>RING SYSTEM</em><b id="v-rng" class="num">0</b></div>
+        <input type="range" id="s-rng" min="0" max="100" value="0" aria-describedby="rack-note scale-rng" aria-label="고리 밀도">
+        <div class="knob-scale" id="scale-rng"><span>기본</span><span>고리 선명하게</span></div>
+      </div>
+      <div>
+        <div class="knob-head"><em>BANDING</em><b id="v-bnd" class="num">0</b></div>
+        <input type="range" id="s-bnd" min="0" max="100" value="0" aria-describedby="rack-note scale-bnd" aria-label="대기 띠 대비">
+        <div class="knob-scale" id="scale-bnd"><span>기본</span><span>대비 줄이기</span></div>
+      </div>
+      <div>
+        <div class="knob-head"><em>RETICLE</em><b id="v-ret" class="num">0</b></div>
+        <input type="range" id="s-ret" min="0" max="100" value="0" aria-describedby="rack-note scale-ret" aria-label="눈금테 밝기">
+        <div class="knob-scale" id="scale-ret"><span>기본</span><span>눈금 흐리게</span></div>
+      </div>
+    </div>
+  </details>
+</header>
 
-    <!-- Cursor Trail Effect (Canvas) -->
-    <canvas class="cursor-trail-canvas" id="cursorTrailCanvas"></canvas>
+<main id="main-content" tabindex="-1"><span class="legacy-anchor" id="portfolio" aria-hidden="true"></span><span class="legacy-anchor" id="vibe" aria-hidden="true"></span><section class="portfolio-section" id="work" tabindex="-1" aria-labelledby="work-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">01 / WORK</span><div><h2 id="work-title">Work</h2><p>게임, 실시간 그래픽스, 그리고 만드는 일을 돕는 작은 도구들.</p></div></div><div class="work-grid"><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">01</span></div><figure class="game-preview"><img src="assets/work/colorzzle-preview.webp" width="960" height="444" loading="lazy" decoding="async" alt="무지개색 블록 위에 꽃과 나무가 피어난 Colorzzle의 스테이지 완료 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>Colorzzle</h3><div class="work-description"><p>색채 기반 모바일 퍼즐게임입니다. iOS, Android, Steam에서 플레이할 수 있습니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/colorzzle-%EC%BB%AC%EB%9F%AC%EC%A6%90/id1320446970" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&amp;hl=ko&amp;pli=1" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a><a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" rel="noopener noreferrer">Steam <span aria-hidden="true">↗</span></a></div></article><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">02</span></div><figure class="game-preview"><img class="game-preview-rainbowtrees" src="assets/work/rainbowtrees-google.webp" width="1052" height="526" loading="lazy" decoding="async" alt="꽃밭과 동물, 무지개나무 성장 및 스킬 메뉴가 보이는 RainbowTrees 게임 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>RainbowTrees</h3><div class="work-description"><p>탭으로 나무를 키우고 꽃과 동물을 모으는 힐링 방치형 게임입니다. 다양한 기후와 낮밤, 비와 눈으로 달라지는 풍경 속에서 나만의 작은 생태계를 가꿉니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/rainbowtrees/id6785186252?l" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.RainbowTree&amp;hl" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">03</span></div><h3>PBR Simulator</h3><div class="work-description"><p>재질 값을 조절하며 빛의 반사와 표면 변화를 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>금속성 · 거칠기 · 코팅 조절</li><li>금속 재질 프리셋 · 풍화 효과</li><li>PBR / BRDF 원리 가이드</li></ul></div><div class="content-actions"><a href="https://studio-penumbra.com/brdf-viewer.html" target="_blank" rel="noopener noreferrer">Launch Viewer <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">04</span></div><h3>Interior Mapping Simulator</h3><div class="work-description"><p>평면 위에 입체적인 실내 공간을 표현하는 셰이더 실험입니다.</p><ul class="sim-features" aria-label="주요 기능"><li>방 깊이 · 창문 수 조절</li><li>유리 반사 · 먼지 강도 조절</li><li>방 배치 셔플 · 면 구분 보기</li></ul></div><div class="content-actions"><a href="/interior-mapping.html" target="_blank" rel="noopener noreferrer">Launch Demo <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">Web · iOS</span><span class="work-index">05</span></div><h3>Color Analysis Simulator</h3><div class="work-description"><p>이미지의 색을 추출하고, 색 조합과 명도 대비를 분석합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>이미지 색 추출 · 팔레트 편집</li><li>색 조합 · 명도 대비 · 색각 검사</li><li>PNG · CSS · Unity / Unreal 내보내기</li></ul></div><div class="content-actions"><a href="https://pixel-pow.com/" target="_blank" rel="noopener noreferrer">Web App <span aria-hidden="true">↗</span></a><a href="https://apps.apple.com/kr/app/pixel-pow/id6758751368" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">Web</span><span class="work-index">06</span></div><h3>Lighting Simulator</h3><div class="work-description"><p>광원의 밝기와 거리, 노출을 바꾸며 조명 차이를 비교합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>촛불 · 달빛 · 전구 · 햇빛 비교</li><li>광원 개수 · 거리 · 조도 조절</li><li>노출 · 화이트밸런스 비교</li></ul></div><div class="content-actions"><a href="https://studio-penumbra.com/lighting-lab.html" target="_blank" rel="noopener noreferrer">Launch Simulator <span aria-hidden="true">↗</span></a></div></article></div><details class="content-fold"><summary>3ds Max Scripts <span>6 tools</span></summary><div class="compact-grid"><article class="compact-row"><h3>UV Exporter</h3><p>선택한 오브젝트들의 UV를 원클릭으로 PNG 익스포트하는 스크립트입니다. 1024 / 2048 / 4096 해상도를 지원하며, 여러 오브젝트 일괄 처리, Unwrap UVW 모디파이어 자동 적용, Render Map 창 자동 닫기 및 익스포트 후 폴더 자동 오픈 기능을 제공합니다.</p><div class="content-actions"><a href="UVWscript.ms" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Snap UV Vertices</h3><p>Unwrap UVW에서 일정 거리 안의 UV 버텍스들을 평균 위치로 스냅하는 스크립트입니다. 살짝 다른 모델링의 UV 아일랜드를 겹친 뒤 버텍스를 한점으로 정렬할 때 유용합니다.</p><div class="content-actions"><a href="SnapUVVerts.ms" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Outline Normal Baker</h3><p>MK Toon 쉐이더의 아웃라인을 위해 스무딩된 노말을 UV7 채널에 베이크하는 스크립트입니다. BAKE 버튼 하나로 간편하게 적용할 수 있으며, Unity에서 아웃라인 렌더링 품질을 개선합니다.</p><div class="content-actions"><a href="NormalSmoothing.ms" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Remove Collinear Verts</h3><p>직선 위의 불필요한 중간 버텍스를 자동으로 제거하는 스크립트입니다. 선택한 오브젝트의 지오메트리를 정리하여 폴리곤 수를 최적화합니다.</p><div class="content-actions"><a href="RemoveCollinearVerts.ms" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Quick Export FBX</h3><p>선택한 오브젝트를 원클릭으로 FBX 익스포트하는 스크립트입니다. Reset XForm, 피벗 센터링, 월드 원점 이동, Y-Up 좌표계 변환을 자동 처리하며, 개별/통합 익스포트를 지원합니다.</p><div class="content-actions"><a href="QuickExportFBX.ms" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Batch FBX Importer</h3><p>여러 FBX 파일을 한 번에 임포트하는 배치 스크립트입니다. 파일별 새 씬 생성 또는 현재 씬에 병합하는 두 가지 모드를 지원하며, 다중 파일 선택과 성공/실패 카운트 리포트 기능을 제공합니다.</p><div class="content-actions"><a href="BatchFBXImporter.ms" download>Download .ms <span aria-hidden="true">↓</span></a></div></article></div></details></div></section><section class="portfolio-section" id="research" tabindex="-1" aria-labelledby="research-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">02 / RESEARCH</span><div><h2 id="research-title">Research</h2><p>빛과 재질, 게임의 표현 방식을 탐구합니다.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2026.07</span><div><h3>PBR 텍스처에서 사실적 표현과 양식화 표현의 인지 전환점 연구: 재질별 양식화 단계 비교를 중심으로</h3><div class="publication-tags"><span>석사학위논문</span></div><p>홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공</p><p>A Study on Perceptual Transition Points between Realistic and Stylized Representations in PBR Textures · 지도교수 김현석</p></div><div class="content-actions"><a href="https://www.riss.kr/link?id=T17551909" target="_blank" rel="noopener noreferrer">RISS <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2025.12</span><div><h3>색채 기반 모바일 퍼즐게임 개발과정 연구: Practice-Based Research를 통한 게임 메커니즘 구축 사례</h3><div class="publication-tags"><span>학술지</span></div><p>DiGRA-K · 국제디지털게임연구학회 한국지회</p><p>《디지털게임연구》 2025년 겨울호 (제1권 2호), pp.13–36</p></div><div class="content-actions"><a href="https://doi.org/10.64145/kjdgs.2025.1.2.13" target="_blank" rel="noopener noreferrer">DOI <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2025.11</span><div><h3>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구</h3><div class="publication-tags"><span>우수논문</span><span>학술대회</span></div><p>한국게임학회 · 2025 추계 학술대회</p></div><div class="content-actions"><a href="Best_Paper_Award_2025_KGS.pdf" target="_blank" rel="noopener noreferrer">PDF <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2024.11</span><div><h3>Photogrammetry와 NeRF의 비교분석을 통한 실사 오브젝트 제작 방식의 미래 방향성 제안</h3><div class="publication-tags"><span>학술대회</span></div><p>한국게임학회 · 2024 추계 학술대회</p></div><div class="content-actions"><a href="Kim_SoYeon_NeRF_Research_2024.pdf" target="_blank" rel="noopener noreferrer">PDF <span aria-hidden="true">↗</span></a></div></article></div></div></section><section class="portfolio-section" id="teaching" tabindex="-1" aria-labelledby="teaching-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">03 / TEACHING</span><div><h2 id="teaching-title">Teaching</h2><p>제작 경험을 나누고, 각자의 표현을 찾아가는 과정을 함께합니다.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2026.09 - 현재</span><div><h3>신구대학교</h3><p class="position-role">정보미디어학부 게임콘텐츠과 · 겸임교수</p><p>AI콘텐츠시스템설계, 바이브코딩</p></div></article><article class="detail-row"><span class="content-kicker">2026.09 - 현재</span><div><h3>백석예술대학교</h3><p class="position-role">영상학부 게임그래픽디자인전공 · 강사</p><p>UI/UX디자인</p></div></article><article class="detail-row"><span class="content-kicker">2026.05 - 2026.10</span><div><h3>경기콘텐츠진흥원</h3><p class="position-role">경기게임아카데미</p><p>그래픽파트 멘토: 인디게임팀 대상 아트 전반 멘토링</p></div></article><article class="detail-row"><span class="content-kicker">2025.08 - 현재</span><div><h3>경기게임마이스터고등학교</h3><p>산학교사: 미술 기초 ~ 포트폴리오 지도</p></div></article><article class="detail-row"><span class="content-kicker">2025.07 - 현재</span><div><h3>청강문화산업대학</h3><p>졸업생 특화 프로그램 포트폴리오 멘토링</p></div></article><article class="detail-row"><span class="content-kicker">2022.03 - 2023.08</span><div><h3>청강문화산업대학</h3><p class="position-role">게임스쿨</p><p>강사, 겸임교수: 3D그래픽연출, 3D모델링기초, 2D게임그래픽포트폴리오</p></div></article></div></div></section><span class="legacy-anchor" id="resume" aria-hidden="true"></span><section class="portfolio-section" id="education" tabindex="-1" aria-labelledby="education-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">04 / EDUCATION</span><div><h2 id="education-title">Education</h2></div></div><div class="detail-list"><article class="detail-row education-row"><span class="content-kicker">2024.03 - 2026.08</span><div><span class="degree-label">석사</span><h3>홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공</h3><p>미술학석사 (게임 콘텐츠) · 2026.08.21 학위수여 GPA 4.28 /4.5</p></div></article><article class="detail-row education-row"><span class="content-kicker">2003.03 - 2007.02</span><div><span class="degree-label">학사</span><h3>홍익대학교 조형학부 애니메이션과</h3><p>미술학사</p></div></article></div></div></section><section class="portfolio-section" id="career" tabindex="-1" aria-labelledby="career-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">05 / CAREER</span><div><h2 id="career-title">Career</h2><p>게임 아트와 테크니컬 아트 현장에서 이어온 경험.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2025.12 - 현재</span><div><h3>와일드플랜</h3><p class="position-role">아트팀</p><p>다크판타지액션 로그라이크 &#x27;레메게톤&#x27; (Unity)</p><p>배경모델링, 레벨디자인, 셰이더이펙트애니메이션</p></div></article><article class="detail-row"><span class="content-kicker">2023.08 - 2025.07</span><div><h3>애니모카게임즈</h3><p class="position-role">아트팀</p><p>글로벌 블록체인게임 &#x27;Cosmic Bomber&#x27; (Unity)</p><p>모델링, 레벨디자인, 이펙트</p></div></article><article class="detail-row"><span class="content-kicker">2021.12 - 2023.09</span><div><h3>에이블에이앤이</h3><p class="position-role">AD</p><p>&#x27;듀윙&#x27;, &#x27;롯데월드 메타버스&#x27; 등 메타버스 프로젝트 (Unity)</p><p>아트디렉팅, 모델링, 이펙트</p></div></article><article class="detail-row"><span class="content-kicker">2018.11 - 2021.09</span><div><h3>다롱스튜디오</h3><p class="position-role">AD</p><p>퍼즐게임 &#x27;Colorzzle&#x27;(59만 DL), 클리커게임 &#x27;Rainbow Tree&#x27; (Unity)</p><p>아트디렉팅, 모델링, 이펙트, UI</p></div></article><article class="detail-row"><span class="content-kicker">2017.01 - 2017.02</span><div><h3>라인플레이</h3><p class="position-role">개발3실 · 선임</p><p>MMORPG 프로젝트 (Unreal)</p><p>배경모델링, 레벨디자인</p></div></article><article class="detail-row"><span class="content-kicker">2013.10 - 2017.01</span><div><h3>네오위즈게임즈</h3><p class="position-role">로키스튜디오 · AD</p><p>&#x27;TapSonic Top&#x27;, &#x27;Animal Symphony&#x27; 등 (Unity)</p><p>아트디렉팅, 배경모델링, 레벨디자인, 이펙트, 애니메이션</p></div></article><article class="detail-row"><span class="content-kicker">2011.10 - 2013.06</span><div><h3>웹젠</h3><p class="position-role">레인보우스튜디오 · 대리</p><p>MMORPG &#x27;R2&#x27;</p><p>배경모델링, 레벨디자인</p></div></article><article class="detail-row"><span class="content-kicker">2009.01 - 2011.09</span><div><h3>이야소프트</h3><p class="position-role">개발5팀</p><p>쿼터뷰 MMORPG &#x27;에다전설&#x27;</p><p>배경모델링, 레벨디자인, 이펙트</p></div></article></div></div></section><section class="portfolio-section" id="awards" tabindex="-1" aria-labelledby="awards-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">06 / AWARDS</span><div><h2 id="awards-title">Awards</h2><p>게임 제작과 연구로 받은 수상·표창·장학 내역.</p></div></div><div class="detail-list award-list"><article class="detail-row award-row"><span class="content-kicker">2026.02</span><div><h3>홍익대학교 총장 표창장</h3><p>학술대회 우수논문 수상을 통한 본교 명예 선양 (총장 박상주)</p></div></article><article class="detail-row award-row"><span class="content-kicker">2025.11</span><div><h3>2025 한국게임학회 추계학술대회 우수논문상</h3><p>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구</p></div></article><article class="detail-row award-row"><span class="content-kicker">2025.09</span><div><h3>2025-2학기 (주)웨스트월드 기부장학금</h3><p>홍익대학교 영상·커뮤니케이션대학원 장학생 선정</p></div></article><article class="detail-row award-row"><span class="content-kicker">2018.09</span><div><h3>BIC 2018 EXCELLENCE IN CASUAL</h3><p>Colorzzle · 부산인디커넥트페스티벌(BIC) 탁월한 캐주얼 부문 수상</p></div></article><article class="detail-row award-row"><span class="content-kicker">2017.09</span><div><h3>STEP UP! PROJECT GRAND PRIZE</h3><p>Color Puzzle (성남산업진흥재단)</p></div></article></div></div></section><span class="legacy-anchor" id="contact" aria-hidden="true"></span><section class="portfolio-section" id="about" tabindex="-1" aria-labelledby="about-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">07 / ABOUT / CONTACT</span><div><h2 id="about-title">About / Contact</h2><p>빛과 그림자가 만나는 경계, Studio Penumbra.</p></div></div><div class="about-copy"><p>Studio Penumbra는 빛과 그림자가 만나는 경계, &#x27;반그림자(penumbra)&#x27;에서 이름을 딴 1인 크리에이티브 스튜디오입니다.</p><p>실시간 그래픽스와 게임 아트, 그리고 웹 위에서 돌아가는 작은 인터랙티브 실험들을 만듭니다. 3D 모델링과 테크니컬 아트부터 셰이더·렌더링 연구까지, 한 픽셀의 음영까지 들여다보는 일을 좋아합니다.</p><p>게임과 그래픽스를 만드는 실무 , 더 나은 표현을 찾는 연구 , 그리고 배운 것을 나누는 강의 — 이 세 가지를 함께 이어가고 있습니다.</p></div><div class="contact-links"><a href="mailto:cloudysnowyday@gmail.com">cloudysnowyday@gmail.com <span aria-hidden="true">↗</span></a><p>Discord / Telegram <span>@cloudysnowyday</span></p><a class="cv-link" href="CV_2026_0823.pdf" download>이력서 PDF 다운로드 <span aria-hidden="true">↓</span></a></div><details class="content-fold"><summary>Skills &amp; Tools <span>기술 · 도구</span></summary><div class="tool-tags"><span>3ds Max</span><span>ZBrush</span><span>Blender</span><span>RizomUV</span><span>Substance 3D Painter</span><span>Substance 3D Designer</span><span>Photoshop</span><span>Unity</span><span>Unreal Engine</span><span>Level Design</span><span>World Building</span><span>Character Modeling</span><span>Texturing</span><span>Lighting</span><span>VFX</span><span>Animation</span><span>UI/UX</span><span>Agentic Coding</span></div></details></div></section></main>
+<footer class="portfolio-footer"><div class="wrap"><span>© 2026 Studio Penumbra · 김소연</span><a href="#home">Back to top ↑</a></div></footer>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">안녕하세요,<br><span class="gradient-text">김소연</span>입니다</h1>
-                </div>
-                <div class="hero-image">
-                    <img src="Photo01.png" alt="김소연">
-                </div>
-            </div>
-        </div>
-    </section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* Accessible disclosure menu and section location indicator. */
+(function(){
+  const header=document.querySelector('.site-header');
+  if(!header)return;
+  const toggle=header.querySelector('.menu-toggle');
+  const panel=header.querySelector('.site-links');
+  const label=toggle.querySelector('.menu-toggle-label');
+  const mobile=window.matchMedia('(max-width:999px)');
+  const links=Array.from(panel.querySelectorAll('[data-section]'));
+  const sections=links.map(link=>document.getElementById(link.dataset.section));
+  function setOpen(open){
+    open=mobile.matches && open;
+    header.classList.toggle('menu-open',open);
+    toggle.setAttribute('aria-expanded',String(open));
+    label.textContent=open?'닫기':'메뉴';
+    panel.hidden=mobile.matches && !open;
+  }
+  toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
+  panel.addEventListener('click',event=>{if(event.target.closest('a'))setOpen(false);});
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape' && toggle.getAttribute('aria-expanded')==='true'){
+      setOpen(false);toggle.focus();
+    }
+  });
+  document.addEventListener('click',event=>{if(!header.contains(event.target))setOpen(false);});
+  header.addEventListener('focusout',()=>{
+    requestAnimationFrame(()=>{if(!header.contains(document.activeElement))setOpen(false);});
+  });
+  mobile.addEventListener('change',()=>setOpen(false));
+  setOpen(false);
+  let pending=false;
+  function updateLocation(){
+    pending=false;
+    const threshold=header.getBoundingClientRect().height+110;
+    let active=-1;
+    sections.forEach((section,i)=>{if(section.getBoundingClientRect().top<=threshold)active=i;});
+    links.forEach((link,i)=>{
+      if(i===active)link.setAttribute('aria-current','location');
+      else link.removeAttribute('aria-current');
+    });
+  }
+  function schedule(){if(!pending){pending=true;requestAnimationFrame(updateLocation);}}
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  window.addEventListener('load',schedule);
+  updateLocation();
+})();
 
-    <!-- About Section -->
-    <section id="about" class="section">
-        <div class="container">
-            <h2 class="section-title">About</h2>
-            <p class="about-lead">Studio Penumbra는 빛과 그림자가 만나는 경계, '반그림자(penumbra)'에서 이름을 딴 1인 크리에이티브 스튜디오입니다.</p>
-            <p class="about-text">실시간 그래픽스와 게임 아트, 그리고 웹 위에서 돌아가는 작은 인터랙티브 실험들을 만듭니다. 3D 모델링과 테크니컬 아트부터 셰이더·렌더링 연구까지, 한 픽셀의 음영까지 들여다보는 일을 좋아합니다.</p>
-            <p class="about-text">게임과 그래픽스를 만드는 <strong>실무</strong>, 더 나은 표현을 찾는 <strong>연구</strong>, 그리고 배운 것을 나누는 <strong>강의</strong> — 이 세 가지를 함께 이어가고 있습니다.</p>
-        </div>
-    </section>
+// A local, short-lived meteor cursor; no animation loop runs when the tail is gone.
+(function(){
+  "use strict";
+  var hero=document.querySelector('.hero');
+  var trailCanvas=document.getElementById('meteor-trail');
+  var ctx=trailCanvas.getContext('2d');
+  if(!ctx) return;
+  var finePointer=window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
+  var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var points=[], dust=[], head=null, frameId=0, width=0, height=0, pixelRatio=1;
+  var lifetime=360, previous=null, dustDistance=0;
 
-    <!-- Resume Section -->
-    <section id="resume" class="section">
-        <div class="container">
-            <h2 class="section-title">Resume</h2>
+  function clearMeteor(){
+    if(frameId) cancelAnimationFrame(frameId);
+    frameId=0; points=[]; dust=[]; head=null; previous=null; dustDistance=0;
+    ctx.clearRect(0,0,width,height);
+    hero.classList.remove('meteor-active');
+  }
+  function sizeMeteor(){
+    var w=hero.clientWidth,h=hero.clientHeight,dpr=Math.min(window.devicePixelRatio||1,2);
+    if(w===width && h===height && dpr===pixelRatio) return;
+    clearMeteor(); width=w; height=h; pixelRatio=dpr;
+    trailCanvas.width=Math.round(w*dpr); trailCanvas.height=Math.round(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function drawMeteor(now){
+    frameId=0;
+    ctx.clearRect(0,0,width,height);
+    points=points.filter(function(point){ return now-point.t<lifetime; });
+    dust=dust.filter(function(particle){ return now-particle.t<particle.life; });
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    // A tapered silver filament follows the actual pointer path.
+    for(var i=1;i<points.length;i++){
+      var a=points[i-1],b=points[i];
+      var fade=Math.pow(Math.max(0,1-(now-b.t)/lifetime),1.8);
+      ctx.strokeStyle='rgba(232,232,232,'+(fade*0.60)+')';
+      ctx.lineWidth=0.25+fade*(0.55+b.speed*0.42);
+      ctx.shadowColor='rgba(245,245,245,.40)'; ctx.shadowBlur=4*fade;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    }
+    ctx.shadowBlur=0;
+    dust.forEach(function(particle){
+      var age=(now-particle.t)/particle.life,fade=Math.pow(1-age,1.6);
+      ctx.fillStyle='rgba(240,240,240,'+(fade*0.62)+')';
+      ctx.fillRect(particle.x+particle.vx*age,particle.y+particle.vy*age,particle.size,particle.size);
+    });
+    if(head){
+      var glow=ctx.createRadialGradient(head.x,head.y,0,head.x,head.y,6);
+      glow.addColorStop(0,'rgba(255,255,255,.90)');
+      glow.addColorStop(0.22,'rgba(248,248,248,.35)');
+      glow.addColorStop(1,'rgba(248,248,248,0)');
+      ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(head.x,head.y,6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.95)';
+      ctx.beginPath(); ctx.arc(head.x,head.y,1.15,0,Math.PI*2); ctx.fill();
+    }
+    if(points.length || dust.length) frameId=requestAnimationFrame(drawMeteor);
+  }
+  function moveMeteor(e){
+    if(e.pointerType!=='mouse' || !finePointer.matches || reducedMotion.matches || document.hidden){
+      clearMeteor(); return;
+    }
+    var rect=hero.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+    if(x<0 || y<0 || x>width || y>height || e.target.closest('.rack')){
+      clearMeteor(); return;
+    }
+    var now=performance.now(),dx=previous ? x-previous.x : 0,dy=previous ? y-previous.y : 0;
+    var distance=Math.hypot(dx,dy);
+    if(previous && (now-previous.t>120 || distance>220)){
+      points=[]; dust=[]; previous=null; distance=0;
+    }
+    var speed=previous ? Math.min(distance/Math.max(8,now-previous.t),2) : 0;
+    head={x:x,y:y};
+    if(distance>0.8 || !previous){
+      points.push({x:x,y:y,t:now,speed:speed});
+      // Keep a modest maximum tail length even with high-frequency pointer events.
+      var length=0,limit=65+speed*65;
+      for(var j=points.length-1;j>0;j--){
+        length+=Math.hypot(points[j].x-points[j-1].x,points[j].y-points[j-1].y);
+        if(length>limit){ points.splice(0,j); break; }
+      }
+      if(points.length>64) points.splice(0,points.length-64);
+      dustDistance+=distance;
+      if(dustDistance>11 && speed>0.20){
+        dustDistance=0;
+        var ux=dx/Math.max(distance,1),uy=dy/Math.max(distance,1);
+        for(var spark=0;spark<2+(speed>1 ? 1 : 0);spark++){
+          var spread=(Math.random()-.5)*30,lag=7+Math.random()*16;
+          var drift=15+Math.random()*26+speed*7;
+          dust.push({x:x-ux*lag,y:y-uy*lag,t:now,life:450+Math.random()*320,
+            vx:-ux*drift-uy*spread,vy:-uy*drift+ux*spread,
+            size:Math.random()<.22 ? 1.3 : .65+Math.random()*.4});
+        }
+        if(dust.length>64) dust.splice(0,dust.length-64);
+      }
+      previous={x:x,y:y,t:now};
+    }
+    hero.classList.add('meteor-active');
+    if(!frameId) frameId=requestAnimationFrame(drawMeteor);
+  }
+  hero.addEventListener('pointermove',moveMeteor,{passive:true});
+  hero.addEventListener('pointerenter',moveMeteor,{passive:true});
+  hero.addEventListener('pointerleave',clearMeteor,{passive:true});
+  hero.addEventListener('pointercancel',clearMeteor,{passive:true});
+  window.addEventListener('blur',clearMeteor);
+  window.addEventListener('scroll',clearMeteor,{passive:true});
+  window.addEventListener('keydown',clearMeteor);
+  document.addEventListener('visibilitychange',clearMeteor);
+  if(finePointer.addEventListener) finePointer.addEventListener('change',clearMeteor);
+  if(reducedMotion.addEventListener) reducedMotion.addEventListener('change',clearMeteor);
+  window.addEventListener('resize',sizeMeteor);
+  if('ResizeObserver' in window) new ResizeObserver(sizeMeteor).observe(hero);
+  sizeMeteor();
+})();
 
-            <div class="resume-grid">
-                <!-- Education Card -->
-                <div class="card">
-                    <h3 class="card-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                        </svg>
-                        Education
-                    </h3>
-                    <div class="resume-item">
-                        <img src="hongik_emblem_black.png" alt="홍익대학교" class="school-logo school-logo-sm">
-                        <h4>홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공</h4>
-                        <p class="resume-period">2024.03 - 2026.08</p>
-                        <p class="resume-desc">미술학석사 (게임 콘텐츠) · 2026.08.21 학위수여 <span class="gpa-badge" title="졸업 평점 4.28/4.5 · 97.78/100">GPA 4.28<span class="gpa-badge-max">/4.5</span></span></p>
-                    </div>
-                    <div class="resume-item">
-                        <img src="hongik_emblem_black.png" alt="홍익대학교" class="school-logo school-logo-sm">
-                        <h4>홍익대학교 조형학부 애니메이션과</h4>
-                        <p class="resume-period">2003.03 - 2007.02</p>
-                        <p class="resume-desc">미술학사</p>
-                    </div>
+(function(){
+  "use strict";
+  var canvas = document.getElementById('gl');
+  if(typeof THREE === 'undefined'){ canvas.style.display='none'; return; }
 
-                </div>
+  var renderer;
+  try{
+    renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:false });
+  }catch(e){ canvas.style.display='none'; return; }
+  renderer.setClearColor(0x000000, 1);
 
-                <!-- Skills & Tools Card -->
-                <div class="card card-skills">
-                    <h3 class="card-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                        Skills & Tools
-                    </h3>
-                    <div class="skills-compact">
-                        <!-- Tools (Software) -->
-                        <div class="skill-section">
-                            <span class="skill-section-title">Tools</span>
-                            <div class="skill-group">
-                                <span class="skill-group-title">3D / DCC</span>
-                                <div class="skill-tags">
-                                    <span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m.129 20.202 14.7-9.136h7.625c.235 0 .445.188.445.445 0 .21-.092.305-.21.375l-7.222 4.323c-.47.283-.633.845-.633 1.265l-.008 2.725H24V4.362a.561.561 0 0 0-.585-.562h-8.752L0 12.893V20.2h.129z"/></svg>3ds Max</span>
-                                    <span class="tag">ZBrush</span>
-                                    <span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.51 13.214c.046-.8.438-1.506 1.03-2.006a3.424 3.424 0 0 1 2.212-.79c.85 0 1.631.3 2.211.79.592.5.983 1.206 1.028 2.005.045.823-.285 1.586-.865 2.153a3.389 3.389 0 0 1-2.374.938 3.393 3.393 0 0 1-2.376-.938c-.58-.567-.91-1.33-.865-2.152M7.35 14.831c.006.314.106.922.256 1.398a7.372 7.372 0 0 0 1.593 2.757 8.227 8.227 0 0 0 2.787 2.001 8.947 8.947 0 0 0 3.66.76 8.964 8.964 0 0 0 3.657-.772 8.285 8.285 0 0 0 2.785-2.01 7.428 7.428 0 0 0 1.592-2.762 6.964 6.964 0 0 0 .25-3.074 7.123 7.123 0 0 0-1.016-2.779 7.764 7.764 0 0 0-1.852-2.043h.002L13.566 2.55l-.02-.015c-.492-.378-1.319-.376-1.86.002-.547.382-.609 1.015-.123 1.415l-.001.001 3.126 2.543-9.53.01h-.013c-.788.001-1.545.518-1.695 1.172-.154.665.38 1.217 1.2 1.22V8.9l4.83-.01-8.62 6.617-.034.025c-.813.622-1.075 1.658-.563 2.313.52.667 1.625.668 2.447.004L7.414 14s-.069.52-.063.831zm12.09 1.741c-.97.988-2.326 1.548-3.795 1.55-1.47.004-2.827-.552-3.797-1.538a4.51 4.51 0 0 1-1.036-1.622 4.282 4.282 0 0 1 .282-3.519 4.702 4.702 0 0 1 1.153-1.371c.942-.768 2.141-1.183 3.396-1.185 1.256-.002 2.455.41 3.398 1.175.48.391.87.854 1.152 1.367a4.28 4.28 0 0 1 .522 1.706 4.236 4.236 0 0 1-.239 1.811 4.54 4.54 0 0 1-1.035 1.626"/></svg>Blender</span>
-                                    <span class="tag">RizomUV</span>
-                                </div>
-                            </div>
-                            <div class="skill-group">
-                                <span class="skill-group-title">Texturing &amp; 2D</span>
-                                <div class="skill-tags">
-                                    <span class="tag">Substance 3D Painter</span>
-                                    <span class="tag">Substance 3D Designer</span>
-                                    <span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.85 8.42c-.37-.15-.77-.21-1.18-.2-.26 0-.49 0-.68.01-.2-.01-.34 0-.41.01v3.36c.14.01.27.02.39.02h.53c.39 0 .78-.06 1.15-.18.32-.09.6-.28.82-.53.21-.25.31-.59.31-1.03.01-.31-.07-.62-.23-.89-.17-.26-.41-.46-.7-.57zM19.75.3H4.25C1.9.3 0 2.2 0 4.55v14.899c0 2.35 1.9 4.25 4.25 4.25h15.5c2.35 0 4.25-1.9 4.25-4.25V4.55C24 2.2 22.1.3 19.75.3zm-7.391 11.65c-.399.56-.959.98-1.609 1.22-.68.25-1.43.34-2.25.34-.24 0-.4 0-.5-.01s-.24-.01-.43-.01v3.209c.01.07-.04.131-.11.141H5.52c-.08 0-.12-.041-.12-.131V6.42c0-.07.03-.11.1-.11.17 0 .33 0 .56-.01.24-.01.49-.01.76-.02s.56-.01.87-.02c.31-.01.61-.01.91-.01.82 0 1.5.1 2.06.31.5.17.96.45 1.34.82.32.32.57.71.73 1.14.149.42.229.85.229 1.3.001.86-.199 1.57-.6 2.13zm7.091 3.89c-.28.4-.671.709-1.12.891-.49.209-1.09.318-1.811.318-.459 0-.91-.039-1.359-.129-.35-.061-.7-.17-1.02-.32-.07-.039-.121-.109-.111-.189v-1.74c0-.029.011-.07.041-.09.029-.02.06-.01.09.01.39.23.8.391 1.24.49.379.1.779.15 1.18.15.38 0 .65-.051.83-.141.16-.07.27-.24.27-.42 0-.141-.08-.27-.24-.4-.16-.129-.489-.279-.979-.471-.51-.18-.979-.42-1.42-.719-.31-.221-.569-.51-.761-.85-.159-.32-.239-.67-.229-1.021 0-.43.12-.84.341-1.21.25-.4.619-.72 1.049-.92.469-.239 1.059-.349 1.769-.349.41 0 .83.03 1.24.09.3.04.59.12.86.23.039.01.08.05.1.09.01.04.02.08.02.12v1.63c0 .04-.02.08-.05.1-.09.02-.14.02-.18 0-.3-.16-.62-.27-.96-.34-.37-.08-.74-.13-1.12-.13-.2-.01-.41.02-.601.07-.129.03-.24.1-.31.2-.05.08-.08.18-.08.27s.04.18.101.26c.09.11.209.2.34.27.229.12.47.23.709.33.541.18 1.061.43 1.541.73.33.209.6.49.789.83.16.318.24.67.23 1.029.011.471-.129.94-.389 1.331z"/></svg>Photoshop</span>
-                                </div>
-                            </div>
-                            <div class="skill-group">
-                                <span class="skill-group-title">Game Engines</span>
-                                <div class="skill-tags">
-                                    <span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12.9288 4.2939 3.7997 2.1929c.1366.077.1415.2905 0 .3675l-4.515 2.6076a.4192.4192 0 0 1-.4246 0L7.274 6.8543c-.139-.0745-.1415-.293 0-.3675l3.7972-2.193V0L1.3758 5.5977V16.793l3.7177-2.1456v-4.3858c-.0025-.1565.1813-.2682.318-.1838l4.5148 2.6076a.4252.4252 0 0 1 .2136.3676v5.2127c.0025.1565-.1813.2682-.3179.1838l-3.7996-2.1929-3.7178 2.1457L12 24l9.6954-5.5977-3.7178-2.1457-3.7996 2.1929c-.1341.082-.3229-.0248-.3179-.1838V13.053c0-.1565.087-.2956.2136-.3676l4.5149-2.6076c.134-.082.3228.0224.3179.1838v4.3858l3.7177 2.1456V5.5977L12.9288 0Z"/></svg>Unity</span>
-                                    <span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0a12 12 0 1012 12A12 12 0 0012 0zm0 23.52A11.52 11.52 0 1123.52 12 11.52 11.52 0 0112 23.52zm7.13-9.791c-.206.997-1.126 3.557-4.06 4.942l-1.179-1.325-1.988 2a7.338 7.338 0 01-5.804-2.978 2.859 2.859 0 00.65.123c.326.006.678-.114.678-.66v-5.394a.89.89 0 00-1.116-.89c-.92.212-1.656 2.509-1.656 2.509a7.304 7.304 0 012.528-5.597 7.408 7.408 0 013.73-1.721c-1.006.573-1.57 1.507-1.57 2.29 0 1.262.76 1.109.984.923v7.28a1.157 1.157 0 00.148.256 1.075 1.075 0 00.88.445c.76 0 1.747-.868 1.747-.868V9.172c0-.6-.452-1.324-.905-1.572 0 0 .838-.149 1.484.346a5.537 5.537 0 01.387-.425c1.508-1.48 2.929-1.902 4.112-2.112 0 0-2.151 1.69-2.151 3.96 0 1.687.043 5.801.043 5.801.799.771 1.986-.342 3.059-1.441Z"/></svg>Unreal Engine</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Skills (Specialties) -->
-                        <div class="skill-section">
-                            <span class="skill-section-title">Skills</span>
-                            <div class="skill-group">
-                                <div class="skill-tags">
-                                    <span class="tag">Level Design</span>
-                                    <span class="tag">World Building</span>
-                                    <span class="tag">Character Modeling</span>
-                                    <span class="tag">Texturing</span>
-                                    <span class="tag">Lighting</span>
-                                    <span class="tag">VFX</span>
-                                    <span class="tag">Animation</span>
-                                    <span class="tag">UI/UX</span>
-                                    <span class="tag">Agentic Coding</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  var scene  = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  camera.position.set(0, 0, 6.6);
 
-                <!-- Download Card -->
-                <div class="card card-highlight card-download">
-                    <h3 class="card-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        Download Resume
-                    </h3>
-                    <p class="card-desc">상세한 이력서를 다운로드하세요</p>
-                    <a href="CV_2026_0823.pdf" class="btn btn-primary" download>PDF 다운로드</a>
-                </div>
+  // 행성 + 눈금테를 한 그룹에 담아 함께 이동시킨다
+  var rig = new THREE.Group();
+  scene.add(rig);
+  // Rotate the celestial system while keeping the observation scale facing the viewer.
+  var celestial = new THREE.Group();
+  rig.add(celestial);
 
-                <!-- Experience Card -->
-                <div class="card card-experience">
-                    <h3 class="card-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                        </svg>
-                        Experience
-                    </h3>
-                    <div class="experience-category">
-                        <span class="experience-category-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                            실무
-                        </span>
-                    </div>
-                    <div class="experience-list">
-                        <div class="resume-item">
-                            <img src="GJ_CoLogo_wildplan.png" alt="와일드플랜" class="school-logo">
-                            <h4>와일드플랜 <span class="resume-role">아트팀</span></h4>
-                            <p class="resume-period">2025.12 - 현재</p>
-                            <p class="resume-desc">다크판타지액션 로그라이크 '레메게톤' (Unity)</p>
-                            <p class="resume-desc">배경모델링, 레벨디자인, 셰이더이펙트애니메이션</p>
-                        </div>
-                        <div class="resume-item">
-                            <img src="Animoca_logo.avif" alt="애니모카게임즈" class="school-logo">
-                            <h4>애니모카게임즈 <span class="resume-role">아트팀</span></h4>
-                            <p class="resume-period">2023.08 - 2025.07</p>
-                            <p class="resume-desc">글로벌 블록체인게임 'Cosmic Bomber' (Unity)</p>
-                            <p class="resume-desc">모델링, 레벨디자인, 이펙트</p>
-                        </div>
-                        <div class="resume-item">
-                            <h4>에이블에이앤이 <span class="resume-role">AD</span></h4>
-                            <p class="resume-period">2021.12 - 2023.09</p>
-                            <p class="resume-desc">'듀윙', '롯데월드 메타버스' 등 메타버스 프로젝트 (Unity)</p>
-                            <p class="resume-desc">아트디렉팅, 모델링, 이펙트</p>
-                        </div>
-                        <div class="resume-item">
-                            <h4>다롱스튜디오 <span class="resume-role">AD</span></h4>
-                            <p class="resume-period">2018.11 - 2021.09</p>
-                            <p class="resume-desc">퍼즐게임 'Colorzzle'(59만 DL), 클리커게임 'Rainbow Tree' (Unity)</p>
-                            <p class="resume-desc">아트디렉팅, 모델링, 이펙트, UI</p>
-                        </div>
-                        <div class="resume-item">
-                            <img src="Logo_Line.png" alt="라인플레이" class="school-logo">
-                            <h4>라인플레이 <span class="resume-role">개발3실 · 선임</span></h4>
-                            <p class="resume-period">2017.01 - 2017.02</p>
-                            <p class="resume-desc">MMORPG 프로젝트 (Unreal)</p>
-                            <p class="resume-desc">배경모델링, 레벨디자인</p>
-                        </div>
-                        <div class="resume-item">
-                            <h4>네오위즈게임즈 <span class="resume-role">로키스튜디오 · AD</span></h4>
-                            <p class="resume-period">2013.10 - 2017.01</p>
-                            <p class="resume-desc">'TapSonic Top', 'Animal Symphony' 등 (Unity)</p>
-                            <p class="resume-desc">아트디렉팅, 배경모델링, 레벨디자인, 이펙트, 애니메이션</p>
-                        </div>
-                        <div class="resume-item">
-                            <h4>웹젠 <span class="resume-role">레인보우스튜디오 · 대리</span></h4>
-                            <p class="resume-period">2011.10 - 2013.06</p>
-                            <p class="resume-desc">MMORPG 'R2'</p>
-                            <p class="resume-desc">배경모델링, 레벨디자인</p>
-                        </div>
-                        <div class="resume-item">
-                            <h4>이야소프트 <span class="resume-role">개발5팀</span></h4>
-                            <p class="resume-period">2009.01 - 2011.09</p>
-                            <p class="resume-desc">쿼터뷰 MMORPG '에다전설'</p>
-                            <p class="resume-desc">배경모델링, 레벨디자인, 이펙트</p>
-                        </div>
-                    </div>
-                    <div class="experience-category">
-                        <span class="experience-category-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                            강의 · 멘토링
-                        </span>
-                    </div>
-                    <div class="experience-list">
-                        <div class="resume-item">
-                            <h4>신구대학교 <span class="resume-role">정보미디어학부 게임콘텐츠과 · 겸임교수</span></h4>
-                            <p class="resume-period">2026.09 - 현재</p>
-                            <p class="resume-desc">AI콘텐츠시스템설계, 바이브코딩</p>
-                        </div>
-                        <div class="resume-item">
-                            <h4>백석예술대학교 <span class="resume-role">영상학부 게임그래픽디자인전공 · 강사</span></h4>
-                            <p class="resume-period">2026.09 - 현재</p>
-                            <p class="resume-desc">UI/UX디자인</p>
-                        </div>
-                        <div class="resume-item">
-                            <h4>경기콘텐츠진흥원 <span class="resume-role">경기게임아카데미</span></h4>
-                            <p class="resume-period">2026.05 - 2026.10</p>
-                            <p class="resume-desc">그래픽파트 멘토: 인디게임팀 대상 아트 전반 멘토링</p>
-                        </div>
-                        <div class="resume-item">
-                            <img src="ggm_logo.png" alt="경기게임마이스터고등학교" class="school-logo">
-                            <h4>경기게임마이스터고등학교</h4>
-                            <p class="resume-period">2025.08 - 현재</p>
-                            <p class="resume-desc">산학교사: 미술 기초 ~ 포트폴리오 지도</p>
-                        </div>
-                        <div class="resume-item">
-                            <img src="ck_logo.jpg" alt="청강문화산업대학" class="school-logo school-logo-sm">
-                            <h4>청강문화산업대학</h4>
-                            <p class="resume-period">2025.07 - 현재</p>
-                            <p class="resume-desc">졸업생 특화 프로그램 포트폴리오 멘토링</p>
-                        </div>
-                        <div class="resume-item">
-                            <img src="ck_logo.jpg" alt="청강문화산업대학" class="school-logo school-logo-sm">
-                            <h4>청강문화산업대학 <span class="resume-role">게임스쿨</span></h4>
-                            <p class="resume-period">2022.03 - 2023.08</p>
-                            <p class="resume-desc">강사, 겸임교수: 3D그래픽연출, 3D모델링기초, 2D게임그래픽포트폴리오</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  /* ---------- 천체 ---------- */
+  var planetBaseline = { pen:0.01, sun:0.74, atmo:1, turb:0, ring:0.42, band:1, reticle:1 };
+  // 대기 밀도는 본체 · 대기 껍질 · 고리가 모두 같은 객체를 공유한다
+  var uDens = { value: planetBaseline.atmo };
 
-            <!-- Awards Section -->
-            <h3 class="section-subtitle">Awards</h3>
-            <div class="script-list">
-                <div class="script-row info-row">
-                    <span class="script-badge">2026.02</span>
-                    <div class="info-main">
-                        <h4>홍익대학교 총장 표창장</h4>
-                        <p>학술대회 우수논문 수상을 통한 본교 명예 선양 (총장 박상주)</p>
-                    </div>
-                </div>
-                <div class="script-row info-row">
-                    <span class="script-badge">2025.11</span>
-                    <div class="info-main">
-                        <h4>2025 한국게임학회 추계학술대회 우수논문상</h4>
-                        <p>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구</p>
-                    </div>
-                </div>
-                <div class="script-row info-row">
-                    <span class="script-badge">2025.09</span>
-                    <div class="info-main">
-                        <h4>2025-2학기 (주)웨스트월드 기부장학금</h4>
-                        <p>홍익대학교 영상·커뮤니케이션대학원 장학생 선정</p>
-                    </div>
-                </div>
-                <div class="script-row info-row">
-                    <span class="script-badge">2018.09</span>
-                    <div class="info-main">
-                        <h4>BIC 2018 EXCELLENCE IN CASUAL</h4>
-                        <p>Colorzzle · 부산인디커넥트페스티벌(BIC) 탁월한 캐주얼 부문 수상</p>
-                    </div>
-                </div>
-                <div class="script-row info-row">
-                    <span class="script-badge">2017.09</span>
-                    <div class="info-main">
-                        <h4>STEP UP! PROJECT GRAND PRIZE</h4>
-                        <p>Color Puzzle (성남산업진흥재단)</p>
-                    </div>
-                </div>
-            </div>
+  var bodyUniforms = {
+    uAtmo:   uDens,
+    uTime:   { value: 0 },
+    uLight:  { value: new THREE.Vector3(1,0,0) },
+    uPen:    { value: planetBaseline.pen },
+    uTurb:   { value: planetBaseline.turb },
+    uBand:   { value: planetBaseline.band }
+  };
 
-            <!-- Publications Section -->
-            <h3 class="section-subtitle">Publications</h3>
-            <div class="script-list">
-                <div class="script-row info-row">
-                    <span class="script-badge">2026.07</span>
-                    <div class="info-main">
-                        <h4>PBR 텍스처에서 사실적 표현과 양식화 표현의 인지 전환점 연구: 재질별 양식화 단계 비교를 중심으로 <span class="award-badge">석사학위논문</span></h4>
-                        <p class="info-venue">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                            홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공
-                        </p>
-                        <p class="info-meta">A Study on Perceptual Transition Points between Realistic and Stylized Representations in PBR Textures · 지도교수 김현석</p>
-                    </div>
-                    <div class="info-actions">
-                        <a href="https://www.riss.kr/link?id=T17551909" class="portfolio-btn portfolio-btn-primary" target="_blank" rel="noopener noreferrer">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            RISS
-                        </a>
-                    </div>
-                </div>
-                <div class="script-row info-row">
-                    <span class="script-badge">2025.12</span>
-                    <div class="info-main">
-                        <h4>색채 기반 모바일 퍼즐게임 개발과정 연구: Practice-Based Research를 통한 게임 메커니즘 구축 사례 <span class="award-badge">학술지</span></h4>
-                        <p class="info-venue">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                            DiGRA-K · 국제디지털게임연구학회 한국지회
-                        </p>
-                        <p class="info-meta">《디지털게임연구》 2025년 겨울호 (제1권 2호), pp.13–36</p>
-                    </div>
-                    <div class="info-actions">
-                        <a href="https://doi.org/10.64145/kjdgs.2025.1.2.13" class="portfolio-btn portfolio-btn-primary" target="_blank" rel="noopener">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            DOI
-                        </a>
-                    </div>
-                </div>
-                <div class="script-row info-row">
-                    <span class="script-badge">2025.11</span>
-                    <div class="info-main">
-                        <h4>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구 <span class="award-badge">⭐ 우수논문</span> <span class="award-badge">학술대회</span></h4>
-                        <p class="info-venue">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                            한국게임학회 · 2025 추계 학술대회
-                        </p>
-                    </div>
-                    <div class="info-actions">
-                        <a href="Best_Paper_Award_2025_KGS.pdf" class="portfolio-btn portfolio-btn-primary" target="_blank">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                            PDF
-                        </a>
-                    </div>
-                </div>
-                <div class="script-row info-row">
-                    <span class="script-badge">2024.11</span>
-                    <div class="info-main">
-                        <h4>Photogrammetry와 NeRF의 비교분석을 통한 실사 오브젝트 제작 방식의 미래 방향성 제안 <span class="award-badge">학술대회</span></h4>
-                        <p class="info-venue">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                            한국게임학회 · 2024 추계 학술대회
-                        </p>
-                    </div>
-                    <div class="info-actions">
-                        <a href="Kim_SoYeon_NeRF_Research_2024.pdf" class="portfolio-btn portfolio-btn-primary" target="_blank">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                            PDF
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  var BODY_VERT = [
+    'varying vec3 vN;',
+    'varying vec3 vP;',
+    'varying vec3 vV;',
+    'void main(){',
+    '  vN = normalize(normalMatrix * normal);',
+    '  vP = position;',
+    '  vec4 mv = modelViewMatrix * vec4(position,1.0);',
+    '  vV = normalize(-mv.xyz);',
+    '  gl_Position = projectionMatrix * mv;',
+    '}'
+  ].join('\n');
 
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="section">
-        <div class="container">
-            <h2 class="section-title">Portfolio</h2>
-            <div class="portfolio-grid">
-                <!-- Colorzzle -->
-                <div class="portfolio-card portfolio-gradient-1 colorzzle-card">
-                    <img src="colorzzle_ss.png" alt="" class="colorzzle-bg" aria-hidden="true">
-                    <div class="portfolio-content">
-                        <h3>Colorzzle</h3>
-                        <p>색채 기반 모바일 퍼즐게임입니다. iOS, Android, Steam에서 플레이할 수 있습니다.</p>
-                        <div class="portfolio-actions">
-                            <a href="https://apps.apple.com/kr/app/colorzzle-%EC%BB%AC%EB%9F%AC%EC%A6%90/id1320446970" class="portfolio-btn portfolio-btn-primary" target="_blank">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                                App Store
-                            </a>
-                            <a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&hl=ko&pli=1" class="portfolio-btn portfolio-btn-secondary" target="_blank">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.4l2.651 1.535a1 1 0 0 1 0 1.716l-2.651 1.535-2.537-2.537 2.537-2.25zM5.864 2.658L16.8 9.291l-2.302 2.302-8.634-8.935z"/></svg>
-                                Google Play
-                            </a>
-                            <a href="https://store.steampowered.com/app/818500/_/?l=koreana" class="portfolio-btn portfolio-btn-secondary" target="_blank">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>
-                                Steam
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  var BODY_FRAG = [
+    "precision highp float;",
+    "uniform float uTime; uniform vec3 uLight; uniform float uPen; uniform float uTurb; uniform float uBand; uniform float uAtmo;",
+    "varying vec3 vN; varying vec3 vP; varying vec3 vV;",
+    "mat2 rot(float a){ float c=cos(a),s=sin(a); return mat2(c,-s,s,c); }",
+    "float hash13(vec3 p){ p=fract(p*0.3183099+0.1); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }",
+    "float noise3(vec3 x){",
+    "  vec3 i=floor(x),f=fract(x); f=f*f*f*(f*(f*6.0-15.0)+10.0);",
+    "  return mix(mix(mix(hash13(i),hash13(i+vec3(1,0,0)),f.x),mix(hash13(i+vec3(0,1,0)),hash13(i+vec3(1,1,0)),f.x),f.y),",
+    "             mix(mix(hash13(i+vec3(0,0,1)),hash13(i+vec3(1,0,1)),f.x),mix(hash13(i+vec3(0,1,1)),hash13(i+vec3(1,1,1)),f.x),f.y),f.z);",
+    "}",
+    "float fbm(vec3 p){ float a=.5,s=0.; for(int i=0;i<4;i++){ s+=a*noise3(p); p=p*2.03+vec3(5.2,1.3,3.8); a*=.5; } return s; }",
+    "void main(){",
+    "  vec3 n=normalize(vN), v=normalize(vV), L=normalize(uLight);",
+    "  vec3 p=normalize(vP); p.xz*=rot(uTime*.009);",
+    "  float drift=uTime*.004;",
+    "  float cloud=fbm(p*2.4+vec3(drift,0.,0.));",
+    "  float warp=fbm(p*5.2+cloud*2.1)-.5;",
+    "  float latitude=p.y+(cloud-.5)*uTurb*.75+warp*uTurb*.26;",
+    "  float silk=fbm(vec3(p.x*3.0,latitude*15.0,p.z*3.0)+cloud*1.8);",
+    "  float ribbons=sin(latitude*20.0+warp*3.0)*.045;",
+    "  float texture=(silk-.47)*.48+(cloud-.48)*.20+ribbons;",
+    "  float albedo=clamp(.70+texture*uBand*2.2,.25,.95);",
+    "",
+    "  float ndl=dot(n,L), mu=clamp(dot(n,v),.035,1.);",
+    "  float pen=max(uPen,.012);",
+    "  float daylight=smoothstep(-pen*.65,pen,ndl);",
+    "  float incident=pow(max(ndl+pen*.32,0.)/(1.+pen*.32),.64);",
+    "  float surface=albedo*daylight*incident;",
+    "  float transmission=exp(-uAtmo*.095*(1./mu-1.));",
+    "  float limb=pow(1.-mu,3.0);",
+    "  float scattered=smoothstep(-.28,.58,ndl)*limb*uAtmo*.42;",
+    "  float earthshine=.0035*(.65+.35*cloud)*pow(mu,.6);",
+    "  float lum=surface*transmission+scattered+earthshine;",
+    "  gl_FragColor=vec4(vec3(max(lum,0.)),1.);",
+    "}"
+  ].join('\n');
 
-    <!-- Vibe Coding Section -->
-    <section id="vibe" class="section">
-        <div class="container">
-            <h2 class="section-title">Vibe Coding</h2>
+  var body = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 96, 96),
+    new THREE.ShaderMaterial({ uniforms:bodyUniforms, vertexShader:BODY_VERT, fragmentShader:BODY_FRAG })
+  );
+  celestial.add(body);
 
-            <!-- Web / App -->
-            <h3 class="section-subtitle">Web / App</h3>
-            <div class="script-list">
-                <!-- RainbowTrees -->
-                <div class="script-row info-row">
-                    <span class="script-badge">Game</span>
-                    <div class="info-main">
-                        <h4>RainbowTrees</h4>
-                        <p>탭으로 나무를 키우고 꽃과 동물을 모으는 힐링 방치형 게임입니다. 다양한 기후와 낮밤, 비와 눈으로 달라지는 풍경 속에서 나만의 작은 생태계를 가꿉니다.</p>
-                    </div>
-                    <div class="info-actions">
-                        <a href="https://apps.apple.com/kr/app/rainbowtrees/id6785186252?l" class="portfolio-btn portfolio-btn-primary" target="_blank" rel="noopener noreferrer">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            App Store
-                        </a>
-                        <a href="https://play.google.com/store/apps/details?id=com.DarongStudio.RainbowTree&amp;hl" class="portfolio-btn portfolio-btn-primary" target="_blank" rel="noopener noreferrer">Google Play</a>
-                    </div>
-                </div>
+  /* ---------- 대기 ----------
+     껍질을 안쪽에서 바라본다(BackSide). 실루엣에 가까울수록 광선이 대기를
+     길게 통과하므로 가장자리가 밝아지고, 행성 본체가 앞을 가려 고리만 남는다.
+     밤 쪽에도 아주 옅게 남겨 반그림자가 표면 너머로 이어지게 한다. */
+  var ATMO_VERT = [
+    'varying vec3 vMV; varying vec3 vCen;',
+    'void main(){',
+    '  vec4 mv = modelViewMatrix * vec4(position,1.0);',
+    '  vMV  = mv.xyz;',
+    '  vCen = (modelViewMatrix * vec4(0.0,0.0,0.0,1.0)).xyz;',
+    '  gl_Position = projectionMatrix * mv;',
+    '}'
+  ].join('\n');
 
-                <!-- PBR Simulator -->
-                <div class="script-row info-row">
-                    <span class="script-badge">WebGL</span>
-                    <div class="info-main">
-                        <h4>PBR Simulator</h4>
-                        <p>재질 값을 조절하며 빛의 반사와 표면 변화를 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>금속성 · 거칠기 · 코팅 조절</li><li>금속 재질 프리셋 · 풍화 효과</li><li>PBR / BRDF 원리 가이드</li></ul>
-                    </div>
-                    <div class="info-actions">
-                        <a href="https://studio-penumbra.com/brdf-viewer.html" class="portfolio-btn portfolio-btn-primary" target="_blank">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            Launch Viewer
-                        </a>
-                    </div>
-                </div>
+  var ATMO_FRAG = [
+    "precision highp float;",
+    "uniform vec3 uLight; uniform float uDens; uniform float uRp; uniform float uRs;",
+    "varying vec3 vMV; varying vec3 vCen;",
+    "float band(float x,float k){ float a=exp(-k); return max(0.,(exp(-x*k)-a)/(1.-a)); }",
+    "void main(){",
+    "  vec3 ray=normalize(vMV);",
+    "  vec3 c=ray*dot(vCen,ray)-vCen;",
+    "  float b=max(length(c),.0001);",
+    "  float x=clamp((b-uRp)/max(uRs-uRp,.0001),0.,1.);",
+    "  float density=band(x,20.)*.86+band(x,3.6)*.14;",
+    "  float light=smoothstep(-.36,.70,dot(c/b,normalize(uLight)));",
+    "  float glow=density*(.006+.994*pow(light,1.3))*uDens*.92;",
+    "  // Alpha stays 1: additive blending must not square the faint halo.",
+    "  gl_FragColor=vec4(vec3(glow),1.);",
+    "}"
+  ].join('\n');
 
-                <!-- Interior Mapping -->
-                <div class="script-row info-row">
-                    <span class="script-badge">WebGL</span>
-                    <div class="info-main">
-                        <h4>Interior Mapping Simulator</h4>
-                        <p>평면 위에 입체적인 실내 공간을 표현하는 셰이더 실험입니다.</p><ul class="sim-features" aria-label="주요 기능"><li>방 깊이 · 창문 수 조절</li><li>유리 반사 · 먼지 강도 조절</li><li>방 배치 셔플 · 면 구분 보기</li></ul>
-                    </div>
-                    <div class="info-actions">
-                        <a href="/interior-mapping.html" class="portfolio-btn portfolio-btn-primary" target="_blank">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            Launch Demo
-                        </a>
-                    </div>
-                </div>
+  var ATMO_R = 1.28;
+  var atmo = new THREE.Mesh(
+    new THREE.SphereGeometry(ATMO_R, 64, 64),
+    new THREE.ShaderMaterial({
+      uniforms: {
+        uLight: bodyUniforms.uLight,        // 본체와 같은 벡터를 공유
+        uDens:  uDens,
+        uRp:    { value: 1.0 },
+        uRs:    { value: ATMO_R }
+      },
+      vertexShader: ATMO_VERT,
+      fragmentShader: ATMO_FRAG,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false
+    })
+  );
+  atmo.renderOrder = 2;   // 고리 위에 덮이도록
+  celestial.add(atmo);
 
-                <!-- Pixel Pow -->
-                <div class="script-row info-row">
-                    <span class="script-badge">Web · iOS</span>
-                    <div class="info-main">
-                        <h4>Color Analysis Simulator</h4>
-                        <p>이미지의 색을 추출하고, 색 조합과 명도 대비를 분석합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>이미지 색 추출 · 팔레트 편집</li><li>색 조합 · 명도 대비 · 색각 검사</li><li>PNG · CSS · Unity / Unreal 내보내기</li></ul>
-                    </div>
-                    <div class="info-actions">
-                        <a href="https://pixel-pow.com/" class="portfolio-btn portfolio-btn-primary" target="_blank">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            Web App
-                        </a>
-                        <a href="https://apps.apple.com/kr/app/pixel-pow/id6758751368" class="portfolio-btn portfolio-btn-secondary" target="_blank">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                            App Store
-                        </a>
-                    </div>
-                </div>
+  /* ---------- 고리 ----------
+     행성이 고리 위에 그림자를 드리운다. 그 그림자의 흐린 가장자리 역시 반그림자이므로
+     PENUMBRA 슬라이더가 표면과 고리를 동시에 지배한다 — 같은 현상이니 같은 값이어야 한다. */
+  var uRing = { value: planetBaseline.ring };
+  var RING_I = 1.25, RING_O = 4.80;
 
-                <!-- Lighting Simulator -->
-                <div class="script-row info-row">
-                    <span class="script-badge">Web</span>
-                    <div class="info-main">
-                        <h4>Lighting Simulator</h4>
-                        <p>광원의 밝기와 거리, 노출을 바꾸며 조명 차이를 비교합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>촛불 · 달빛 · 전구 · 햇빛 비교</li><li>광원 개수 · 거리 · 조도 조절</li><li>노출 · 화이트밸런스 비교</li></ul>
-                    </div>
-                    <div class="info-actions">
-                        <a href="https://studio-penumbra.com/lighting-lab.html" class="portfolio-btn portfolio-btn-primary" target="_blank" rel="noopener noreferrer">Launch Simulator</a>
-                    </div>
-                </div>
-            </div>
+  // Fixed-seed irregular spacing: distinct silk strands, with real empty gaps.
+  // Keep the layout stable as the light, viewport and pointer change.
+  var strandSeed = 72831;
+  function strandRandom(){
+    strandSeed = (Math.imul(strandSeed,1664525) + 1013904223) >>> 0;
+    return strandSeed / 4294967296;
+  }
+  var strandGaps = [], gapTotal = 0;
+  for(var i=0;i<8;i++){
+    var gapWeight = 0.6 + Math.pow(strandRandom(),1.8)*2.4;
+    strandGaps.push(gapWeight);
+    gapTotal += gapWeight;
+  }
+  var strands = [], accumulatedGap = 0;
+  for(var i=0;i<9;i++){
+    if(i) accumulatedGap += strandGaps[i-1];
+    strands.push(new THREE.Vector3(
+      0.045 + accumulatedGap/gapTotal*0.91,
+      0.0015 + strandRandom()*0.0018,
+      0.56 + strandRandom()*0.38
+    ));
+  }
 
-            <!-- 3ds Max Scripts -->
-            <h3 class="section-subtitle">3ds Max Scripts</h3>
-            <div class="script-list">
-                <!-- UV Exporter -->
-                <div class="script-row">
-                    <span class="script-badge">MaxScript</span>
-                    <h4 class="script-title">UV Exporter</h4>
-                    <a href="UVWscript.ms" class="portfolio-btn portfolio-btn-primary" download>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Download .ms
-                    </a>
-                    <p class="script-desc">선택한 오브젝트들의 UV를 원클릭으로 PNG 익스포트하는 스크립트입니다. 1024 / 2048 / 4096 해상도를 지원하며, 여러 오브젝트 일괄 처리, Unwrap UVW 모디파이어 자동 적용, Render Map 창 자동 닫기 및 익스포트 후 폴더 자동 오픈 기능을 제공합니다.</p>
-                </div>
+  // A few slightly fuller strands give the fine threads a gentle rhythm.
+  strands[1].y *= 2.2;
+  strands[4].y *= 2.8;
+  strands[7].y *= 1.9;
+  // Keep the original nine paths and insert nine more at irregular offsets.
+  var extraStrands = [];
+  for(var i=0;i<9;i++){
+    var inner = strands[i].x;
+    var outer = i < 8 ? strands[i+1].x : 1.0;
+    extraStrands.push(new THREE.Vector3(
+      inner + (outer-inner)*(0.30 + strandRandom()*0.40),
+      0.0015 + strandRandom()*0.0018,
+      0.56 + strandRandom()*0.38
+    ));
+  }
+  extraStrands[1].y *= 2.4;
+  extraStrands[4].y *= 3.0;
+  extraStrands[7].y *= 2.2;
+  strands = strands.concat(extraStrands);
 
-                <!-- Snap UV Vertices -->
-                <div class="script-row">
-                    <span class="script-badge">MaxScript</span>
-                    <h4 class="script-title">Snap UV Vertices</h4>
-                    <a href="SnapUVVerts.ms" class="portfolio-btn portfolio-btn-primary" download>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Download .ms
-                    </a>
-                    <p class="script-desc">Unwrap UVW에서 일정 거리 안의 UV 버텍스들을 평균 위치로 스냅하는 스크립트입니다. 살짝 다른 모델링의 UV 아일랜드를 겹친 뒤 버텍스를 한점으로 정렬할 때 유용합니다.</p>
-                </div>
+  // Sparse full orbits stay intact; uneven outer clusters enrich the near side.
+  var continuousStrandCount = strands.length;
+  var foregroundClusters = [
+    { center:0.46, spread:0.024, count:3 },
+    { center:0.64, spread:0.032, count:5 },
+    { center:0.80, spread:0.027, count:4 },
+    { center:0.93, spread:0.028, count:4 }
+  ];
+  foregroundClusters.forEach(function(cluster){
+    for(var j=0;j<cluster.count;j++){
+      var width = (0.0014 + strandRandom()*0.0017)*(j === 1 ? 1.6 : 1);
+      for(var attempt=0;attempt<100;attempt++){
+        var radius=cluster.center+(strandRandom()*2-1)*cluster.spread;
+        var clear=strands.every(function(strand){
+          return Math.abs(strand.x-radius) > (strand.y+width)*0.67/(RING_O-RING_I)+0.001;
+        });
+        if(clear){
+          strands.push(new THREE.Vector3(radius,width,0.54+strandRandom()*0.36));
+          break;
+        }
+      }
+    }
+  });
 
-                <!-- Outline Normal Baker -->
-                <div class="script-row">
-                    <span class="script-badge">MaxScript</span>
-                    <h4 class="script-title">Outline Normal Baker</h4>
-                    <a href="NormalSmoothing.ms" class="portfolio-btn portfolio-btn-primary" download>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Download .ms
-                    </a>
-                    <p class="script-desc">MK Toon 쉐이더의 아웃라인을 위해 스무딩된 노말을 UV7 채널에 베이크하는 스크립트입니다. BAKE 버튼 하나로 간편하게 적용할 수 있으며, Unity에서 아웃라인 렌더링 품질을 개선합니다.</p>
-                </div>
+  // Give the small, planet-adjacent orbits distinct pairs, a trio and open gaps.
+  // Only these seven inner paths change; outer clusters keep their existing layout.
+  var innerStrands = strands.filter(function(strand){ return strand.x < 0.40; })
+    .sort(function(a,b){ return a.x-b.x; });
+  var innerLayout = [
+    [0.036,2.8], [0.049,1.3],
+    [0.111,3.4], [0.120,1.5], [0.177,2.8],
+    [0.294,2.5], [0.343,1.2]
+  ];
+  innerStrands.forEach(function(strand,index){
+    strand.x = innerLayout[index][0];
+    strand.y *= innerLayout[index][1];
+  });
 
-                <!-- Remove Collinear Verts -->
-                <div class="script-row">
-                    <span class="script-badge">MaxScript</span>
-                    <h4 class="script-title">Remove Collinear Verts</h4>
-                    <a href="RemoveCollinearVerts.ms" class="portfolio-btn portfolio-btn-primary" download>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Download .ms
-                    </a>
-                    <p class="script-desc">직선 위의 불필요한 중간 버텍스를 자동으로 제거하는 스크립트입니다. 선택한 오브젝트의 지오메트리를 정리하여 폴리곤 수를 최적화합니다.</p>
-                </div>
+  // Expand the spacing without multiplying the physical strand thickness.
+  strands.forEach(function(strand){ strand.y *= 0.67/(RING_O-RING_I); });
 
-                <!-- Quick Export FBX -->
-                <div class="script-row">
-                    <span class="script-badge">MaxScript</span>
-                    <h4 class="script-title">Quick Export FBX</h4>
-                    <a href="QuickExportFBX.ms" class="portfolio-btn portfolio-btn-primary" download>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Download .ms
-                    </a>
-                    <p class="script-desc">선택한 오브젝트를 원클릭으로 FBX 익스포트하는 스크립트입니다. Reset XForm, 피벗 센터링, 월드 원점 이동, Y-Up 좌표계 변환을 자동 처리하며, 개별/통합 익스포트를 지원합니다.</p>
-                </div>
+  var ringScatter={value:0}, ringGrab={value:new THREE.Vector3()}, ringLocal={value:0};
+  var ring = new THREE.Mesh(
+    new THREE.RingGeometry(RING_I, RING_O, 768, 1),
+    new THREE.ShaderMaterial({
+      uniforms:{
+        uLight: bodyUniforms.uLight,
+        uPen:   bodyUniforms.uPen,
+        uOpa:   uRing,
+        uStrands: { value:strands },
+        uScatter:ringScatter, uGrab:ringGrab, uLocal:ringLocal,
+        uPlanetRadius: { value:1.0 },
+        uRi:    { value: RING_I },
+        uRo:    { value: RING_O }
+      },
+      vertexShader:[
+        'varying vec3 vObj; varying vec3 vMV; varying vec3 vCen;',
+        'void main(){',
+        '  vObj = position;',
+        '  vec4 mv = modelViewMatrix * vec4(position,1.0);',
+        '  vMV  = mv.xyz;',
+        '  vCen = (modelViewMatrix * vec4(0.0,0.0,0.0,1.0)).xyz;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'),
+      fragmentShader:[
+        'precision highp float;',
+        'uniform vec3 uLight; uniform float uPen; uniform float uOpa; uniform float uRi; uniform float uRo; uniform float uPlanetRadius;',
+        'varying vec3 vObj; varying vec3 vMV; varying vec3 vCen;',
+        'uniform vec3 uStrands['+strands.length+'];',
+        'uniform float uScatter; uniform float uLocal; uniform vec3 uGrab;',
+        'void main(){',
+        '  float r = length(vObj.xy);',
+        '  vec2 grabDelta=vObj.xy-uGrab.xy;',
+        '  float influence=mix(1.0,exp(-dot(grabDelta,grabDelta)*0.65),uLocal);',
+        '  float u = clamp((r - uRi)/(uRo - uRi), 0.0, 1.0);',
 
-                <!-- Batch FBX Importer -->
-                <div class="script-row">
-                    <span class="script-badge">MaxScript</span>
-                    <h4 class="script-title">Batch FBX Importer</h4>
-                    <a href="BatchFBXImporter.ms" class="portfolio-btn portfolio-btn-primary" download>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Download .ms
-                    </a>
-                    <p class="script-desc">여러 FBX 파일을 한 번에 임포트하는 배치 스크립트입니다. 파일별 새 씬 생성 또는 현재 씬에 병합하는 두 가지 모드를 지원하며, 다중 파일 선택과 성공/실패 카운트 리포트 기능을 제공합니다.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        // Integrate each narrow strand over the radial pixel footprint.
+        // Coverage preserves subpixel brightness without widening strands into a band.
+        '  float footprint = max(fwidth(u), 0.0001);',
+        '  float pixelLo = u - footprint*0.5;',
+        '  float pixelHi = u + footprint*0.5;',
+        '  float dens = 0.0;',
+        '  vec3 P = vMV-vCen;',
+        '  float foreground = mix(0.18,1.0,smoothstep(-0.15,1.10,P.z/uPlanetRadius));',
+        '  for(int i=0;i<'+strands.length+';i++){',
+        '    vec3 strand = uStrands[i];',
+        '    float overlap = max(0.0,min(pixelHi,strand.x+strand.y)-max(pixelLo,strand.x-strand.y));',
+        '    float coverage = overlap/footprint*strand.z;',
+        '    if(i>='+continuousStrandCount+') coverage *= foreground;',
+        '    dens += coverage;',
+        '  }',
+        '  dens = clamp(dens,0.0,1.0);',
 
-    <!-- Contact Section -->
-    <section id="contact" class="section">
-        <div class="container">
-            <h2 class="section-title">Contact</h2>
-            <div class="contact-grid">
-                <div class="card contact-card">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    <h3>Email</h3>
-                    <p>cloudysnowyday@gmail.com</p>
-                </div>
-                <div class="card contact-card">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z"/>
-                    </svg>
-                    <h3>Discord</h3>
-                    <p>@cloudysnowyday</p>
-                </div>
-                <div class="card contact-card">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.242-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                    </svg>
-                    <h3>Telegram</h3>
-                    <p>@cloudysnowyday</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        // 행성의 그림자: 이 지점에서 태양을 향한 광선이 행성을 스치는가
+        '  vec3  L  = normalize(uLight);',
+        '  float s0 = -dot(P, L);',
+        '  float shadow = 1.0;',
+        '  if(s0 > 0.0){',
+        '    float d = length(P + L*s0);',
+        '    shadow = smoothstep(uPlanetRadius*(1.0-uPen), uPlanetRadius*(1.0+uPen), d);',   // 본그림자 → 반그림자 → 빛
+        '  }',
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Studio Penumbra · 김소연. All rights reserved.</p>
-        </div>
-    </footer>
+        '  float towardLight = 0.45 + 0.55*smoothstep(-0.8,0.8,dot(normalize(P),L));',
+        '  float nearSide = mix(0.58,1.0,smoothstep(-1.3,1.3,P.z/uPlanetRadius));',
+        '  float lum = (0.018 + 0.982*shadow)*towardLight*0.90;',
+        '  float dissolve=smoothstep(0.02,0.70,uScatter)*influence;',
+        '  float a = dens*uOpa*nearSide*(1.0-dissolve*0.94);',
+        '  gl_FragColor = vec4(vec3(lum), a);',
+        '}'
+      ].join('\n'),
+      extensions: { derivatives: true },
+      side: THREE.DoubleSide,
+      transparent: true,
+      depthWrite: false
+    })
+  );
+  ring.rotation.set(1.22, 0.12, -0.38, 'ZYX');
+  ring.renderOrder = 1;
+  celestial.add(ring);
 
-    <script src="script.js"></script>
+  // Dust leaves each orbit during interaction, then returns to its exact resting point.
+  var dustPositions=[],dustKicks=[],dustSeeds=[];
+  strands.forEach(function(strand){
+    var radius=RING_I+strand.x*(RING_O-RING_I);
+    for(var particle=0;particle<28;particle++){
+      var angle=(particle+strandRandom())/28*Math.PI*2;
+      var ca=Math.cos(angle),sa=Math.sin(angle);
+      var radial=(strandRandom()-.5)*0.60,tangent=(strandRandom()-.5)*0.48;
+      dustPositions.push(ca*radius,sa*radius,0);
+      dustKicks.push(ca*radial-sa*tangent,sa*radial+ca*tangent,(strandRandom()-.5)*0.42);
+      dustSeeds.push(strandRandom());
+    }
+  });
+  var ringDustGeometry=new THREE.BufferGeometry();
+  ringDustGeometry.setAttribute('position',new THREE.Float32BufferAttribute(dustPositions,3));
+  ringDustGeometry.setAttribute('aKick',new THREE.Float32BufferAttribute(dustKicks,3));
+  ringDustGeometry.setAttribute('aSeed',new THREE.Float32BufferAttribute(dustSeeds,1));
+  var ringDustMaterial=new THREE.ShaderMaterial({
+    uniforms:{uScatter:ringScatter,uGrab:ringGrab,uLocal:ringLocal,uOpa:uRing,uDpr:{value:1},uTime:bodyUniforms.uTime},
+    vertexShader:[
+      'attribute vec3 aKick; attribute float aSeed;',
+      'uniform float uScatter; uniform float uLocal; uniform float uDpr; uniform float uTime; uniform vec3 uGrab;',
+      'varying float vFade; varying float vSpark; varying float vScale;',
+      'void main(){',
+      '  vec2 delta=position.xy-uGrab.xy;',
+      '  float influence=mix(1.0,exp(-dot(delta,delta)*0.65),uLocal);',
+      '  vec3 p=position+aKick*uScatter*influence;',
+      '  vec4 mv=modelViewMatrix*vec4(p,1.0);',
+      '  gl_Position=projectionMatrix*mv;',
+      // Only a fixed ten percent of the existing particles get occasional glints.
+      '  vSpark=step(0.90,aSeed)*pow(max(0.0,sin(uTime*2.1+aSeed*83.0)),8.0);',
+      '  vScale=1.0+vSpark*2.6;',
+      '  float dotSize=clamp((1.6+aSeed*1.8)*uDpr*5.0/max(1.0,-mv.z),1.2,5.0*uDpr);',
+      '  gl_PointSize=min(dotSize*vScale,12.0*uDpr);',
+      '  vFade=smoothstep(0.01,0.32,uScatter)*influence*(0.60+aSeed*0.40);',
+      '}'
+    ].join('\n'),
+    fragmentShader:[
+      'precision mediump float; uniform float uOpa; varying float vFade; varying float vSpark; varying float vScale;',
+      'void main(){',
+      '  vec2 q=abs(gl_PointCoord-0.5);',
+      // Preserve the original dot size as the plus-shaped rays extend around it.
+      '  float soft=1.0-smoothstep(0.05,0.5,length(q)*vScale);',
+      '  float rays=(1.0-smoothstep(0.025,0.095,min(q.x,q.y)))*(1.0-smoothstep(0.08,0.48,max(q.x,q.y)));',
+      '  float shape=max(soft,rays*vSpark*0.92);',
+      '  gl_FragColor=vec4(vec3(0.95),shape*vFade*min(1.0,uOpa*1.8));',
+      '}'
+    ].join('\n'),
+    transparent:true,depthWrite:false,depthTest:true,blending:THREE.AdditiveBlending
+  });
+  var ringDust=new THREE.Points(ringDustGeometry,ringDustMaterial);
+  ringDust.renderOrder=2; ringDust.frustumCulled=false; ringDust.visible=false;
+  ring.add(ringDust);
+
+  /* ---------- 간결한 관측 표시 ---------- */
+  var reticle = new THREE.Group();
+  reticle.renderOrder = 3;
+  rig.add(reticle);
+
+  function instrumentLines(points, opacity, parent){
+    var geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(points,3));
+    var line = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({
+      color:0xffffff, transparent:true, opacity:opacity, depthTest:false, depthWrite:false
+    }));
+    line.userData.opacity = opacity;
+    (parent || reticle).add(line);
+    return line;
+  }
+  function instrumentLabel(text, x, y, width, opacity){
+    var labelCanvas = document.createElement('canvas');
+    labelCanvas.width=512; labelCanvas.height=96;
+    var context=labelCanvas.getContext('2d');
+    var texture=new THREE.CanvasTexture(labelCanvas);
+    var sprite=new THREE.Sprite(new THREE.SpriteMaterial({
+      map:texture, transparent:true, opacity:opacity, depthTest:false, depthWrite:false
+    }));
+    sprite.position.set(x,y,0.02);
+    sprite.scale.set(width,width*96/512,1);
+    sprite.userData.opacity=opacity;
+    context.font='30px monospace'; context.fillStyle='#ffffff';
+    context.textAlign='center'; context.textBaseline='middle';
+    context.fillText(text,256,48);
+    texture.needsUpdate=true;
+    reticle.add(sprite);
+    return sprite;
+  }
+
+  // Interrupted angular brackets replace the complete circular instrument frame.
+  for(var corner=0;corner<4;corner++){
+    var sx=corner%2 ? 1 : -1, sy=corner<2 ? 1 : -1;
+    instrumentLines([
+      sx*0.90,sy*1.02,0, sx*1.02,sy*1.02,0,
+      sx*1.02,sy*1.02,0, sx*1.02,sy*0.90,0,
+      sx*1.07,sy*0.99,0, sx*1.07,sy*0.92,0
+    ],0.31);
+  }
+  instrumentLines([-0.79,1.01,0, -1.02,1.28,0,
+                   -1.02,1.28,0, -1.57,1.28,0],0.20);
+  instrumentLabel('PENUM / ARRAY',-1.28,1.37,1.10,0.42);
+  var reticleRest=new THREE.Quaternion();
+
+  /* ---------- 별 ---------- */
+  (function(){
+    var N = 520, pos = new Float32Array(N*3), i, r, th, ph;
+    for(i=0;i<N;i++){
+      r = 26 + Math.random()*22;
+      th = Math.random()*Math.PI*2;
+      ph = Math.acos(2*Math.random()-1);
+      pos[i*3]   = r*Math.sin(ph)*Math.cos(th);
+      pos[i*3+1] = r*Math.sin(ph)*Math.sin(th);
+      pos[i*3+2] = r*Math.cos(ph);
+    }
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    scene.add(new THREE.Points(g, new THREE.PointsMaterial({
+      color:0xffffff, size:0.075, sizeAttenuation:true, transparent:true, opacity:0.38
+    })));
+  })();
+
+  /* ---------- 블룸 ----------
+     r128의 UnrealBloomPass는 별도 addon 파일이 필요해 CDN 제약에 걸린다.
+     필요한 만큼만 직접: 밝은 부분 추출 → 1/4 축소 → 가로세로 블러 2왕복 → 합성. */
+  var RT = { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:true };
+  var rtScene = new THREE.WebGLRenderTarget(2, 2, RT);
+  var rtA = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
+  var rtB = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
+
+  var postScene = new THREE.Scene();
+  var postCam   = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  var postQuad  = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial());
+  postScene.add(postQuad);
+
+  var POST_VERT = [
+    'varying vec2 vUv;',
+    'void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }'
+  ].join('\n');
+
+  var cutMat = new THREE.ShaderMaterial({
+    uniforms:{ tD:{value:null}, uCut:{value:0.18} },
+    vertexShader: POST_VERT,
+    fragmentShader:[
+      'precision mediump float;',
+      'uniform sampler2D tD; uniform float uCut; varying vec2 vUv;',
+      'void main(){',
+      '  vec3 c = texture2D(tD, vUv).rgb;',
+      '  float l = max(max(c.r,c.g),c.b);',
+      '  float k = smoothstep(uCut*0.5, uCut+0.32, l);',
+      '  gl_FragColor = vec4(c*k, 1.0);',
+      '}'
+    ].join('\n')
+  });
+
+  var blurMat = new THREE.ShaderMaterial({
+    uniforms:{ tD:{value:null}, uDir:{value:new THREE.Vector2()} },
+    vertexShader: POST_VERT,
+    fragmentShader:[
+      'precision mediump float;',
+      'uniform sampler2D tD; uniform vec2 uDir; varying vec2 vUv;',
+      'void main(){',
+      '  vec3 s = texture2D(tD, vUv).rgb * 0.2270270;',
+      '  s += (texture2D(tD, vUv + uDir*1.3846154).rgb + texture2D(tD, vUv - uDir*1.3846154).rgb) * 0.3162162;',
+      '  s += (texture2D(tD, vUv + uDir*3.2307692).rgb + texture2D(tD, vUv - uDir*3.2307692).rgb) * 0.0702702;',
+      '  gl_FragColor = vec4(s, 1.0);',
+      '}'
+    ].join('\n')
+  });
+
+  var compMat = new THREE.ShaderMaterial({
+    uniforms:{ tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42} },
+    vertexShader: POST_VERT,
+    fragmentShader:[
+      'precision mediump float;',
+      'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
+      'void main(){',
+      '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
+      // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
+      '  c = pow(1.0-exp(-max(c,vec3(0.0))*1.45), vec3(0.88));',
+      '  float d = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898,78.233)))*43758.5453);',
+      '  gl_FragColor = vec4(c + (d-0.5)/255.0, 1.0);',
+      '}'
+    ].join('\n')
+  });
+
+  function drawPost(mat, target){
+    postQuad.material = mat;
+    renderer.setRenderTarget(target);
+    renderer.render(postScene, postCam);
+  }
+
+  /* ---------- 조작 ---------- */
+  // Captured from the user's live controls on 2026-09-08.
+  // Slider zero preserves this appearance; each control moves toward its labeled endpoint.
+  var P = {};
+  function bind(id, out, key, target){
+    var el = document.getElementById(id), lab = document.getElementById(out);
+    function update(){
+      var amount = Number(el.value)/100;
+      P[key] = planetBaseline[key] + (target - planetBaseline[key])*amount;
+      // Sun position wraps naturally through sine/cosine in the render loop.
+      lab.textContent = key === 'sun' && amount > 0 ? '+' + Math.round(amount*360) + '°' : el.value;
+      el.setAttribute('aria-valuetext', amount === 0 ? '0, 기본 모습' : lab.textContent);
+    }
+    el.addEventListener('input', update);
+    // Always start at the saved appearance, including after a browser form restore.
+    el.value = el.defaultValue;
+    update();
+  }
+  bind('s-pen','v-pen','pen',0.60);
+  bind('s-sun','v-sun','sun',planetBaseline.sun + 1);
+  bind('s-atm','v-atm','atmo',0);
+  bind('s-trb','v-trb','turb',1);
+  bind('s-rng','v-rng','ring',1);
+  bind('s-bnd','v-bnd','band',0);
+  bind('s-ret','v-ret','reticle',0);
+
+  var dragControl = document.getElementById('planet-drag');
+  var activePointer = null, lastX = 0, lastY = 0, dragEnergy=0, dragMoved=false;
+  var turnAxis = new THREE.Vector3(), turnStep = new THREE.Quaternion();
+  var dragDiameter = 400;
+  function turnPlanet(dx,dy){
+    var distance = Math.hypot(dx,dy);
+    if(!distance) return;
+    turnAxis.set(dy/distance,dx/distance,0);
+    turnStep.setFromAxisAngle(turnAxis,distance*Math.PI/dragDiameter);
+    celestial.quaternion.premultiply(turnStep).normalize();
+  }
+  function finishDrag(e){
+    if(e && e.pointerId !== activePointer) return;
+    var pointerId = activePointer;
+    activePointer = null;
+    dragControl.classList.remove('is-dragging');
+    if(pointerId !== null && dragControl.hasPointerCapture(pointerId)){
+      dragControl.releasePointerCapture(pointerId);
+    }
+  }
+  function beginPlanetDrag(e,localPoint){
+    if(activePointer !== null || !e.isPrimary || e.button !== 0) return;
+    activePointer=e.pointerId; lastX=e.clientX; lastY=e.clientY; dragMoved=false;
+    ringLocal.value=localPoint ? 1 : 0;
+    if(localPoint) ringGrab.value.copy(localPoint);
+    dragControl.setPointerCapture(e.pointerId);
+    dragControl.classList.add('is-dragging');
+    e.preventDefault();
+  }
+  dragControl.addEventListener('pointerdown',function(e){ beginPlanetDrag(e,null); });
+  var ringRay=new THREE.Raycaster(),ringPointer=new THREE.Vector2();
+  document.querySelector('.hero').addEventListener('pointerdown',function(e){
+    if(activePointer!==null || e.pointerType!=='mouse' || e.button!==0 || !ring.visible) return;
+    if(e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary')) return;
+    var bounds=canvas.getBoundingClientRect();
+    ringPointer.set((e.clientX-bounds.left)/bounds.width*2-1,1-(e.clientY-bounds.top)/bounds.height*2);
+    scene.updateMatrixWorld(true);
+    ringRay.setFromCamera(ringPointer,camera);
+    var hits=ringRay.intersectObject(ring,false);
+    if(!hits.length) return;
+    var local=ring.worldToLocal(hits[0].point.clone());
+    var radius=(Math.hypot(local.x,local.y)-RING_I)/(RING_O-RING_I);
+    if(strands.some(function(strand){ return Math.abs(strand.x-radius)<Math.max(0.025,strand.y*4); })){
+      beginPlanetDrag(e,local);
+    }
+  });
+  dragControl.addEventListener('pointermove',function(e){
+    if(e.pointerId !== activePointer) return;
+    var dx=e.clientX-lastX,dy=e.clientY-lastY,distance=Math.hypot(dx,dy);
+    if(distance>0.5){ dragMoved=true; dragEnergy=Math.min(1,dragEnergy+distance*0.025); }
+    turnPlanet(dx,dy);
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  dragControl.addEventListener('pointerup',finishDrag);
+  dragControl.addEventListener('pointercancel',finishDrag);
+  dragControl.addEventListener('lostpointercapture',finishDrag);
+  window.addEventListener('blur',function(){ finishDrag(); });
+  dragControl.addEventListener('keydown',function(e){
+    var delta={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+    if(!delta) return;
+    e.preventDefault();
+    var step=dragDiameter*(e.shiftKey ? 5 : 1)/180;
+    turnPlanet(delta[0]*step,delta[1]*step);
+  });
+
+  var reduce = false;
+  try{
+    var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    reduce = mq.matches;
+    if(mq.addEventListener) mq.addEventListener('change', function(e){ reduce = e.matches; });
+  }catch(e){}
+
+  var visible = true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },{threshold:0.01}).observe(canvas);
+  }
+
+  var dragCenter = new THREE.Vector3();
+  function resize(){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if(!w || !h) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, w < 700 ? 1.25 : 1.6);
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+    // Keep the crescent clear of the title, including tablet-width previews.
+    var mobile = w <= 600;
+    var viewHeight = 2 * camera.position.z * Math.tan(camera.fov*Math.PI/360);
+    var centerFraction = w <= 1040 ? 0.71 : 0.69;
+    rig.position.x = mobile ? 0.08 : (centerFraction-0.5)*viewHeight*camera.aspect;
+    rig.position.y = mobile ? -0.56 : 0.08;
+    var scale = mobile ? 0.51 : Math.min(1.0,w/1200);
+    rig.scale.setScalar(scale);
+    camera.updateMatrixWorld();
+    dragCenter.copy(rig.position).project(camera);
+    dragDiameter=2.08*scale*h/viewHeight;
+    dragControl.style.left=((dragCenter.x+1)*w/2)+'px';
+    dragControl.style.top=((1-dragCenter.y)*h/2)+'px';
+    dragControl.style.width=dragControl.style.height=dragDiameter+'px';
+    dragControl.hidden=false;
+    atmo.material.uniforms.uRp.value=scale;
+    atmo.material.uniforms.uRs.value=ATMO_R*scale;
+    ring.material.uniforms.uPlanetRadius.value=scale;
+    ringDustMaterial.uniforms.uDpr.value=dpr;
+
+    var pw = Math.max(2, Math.floor(w*dpr)), ph = Math.max(2, Math.floor(h*dpr));
+    if(rtScene.width !== pw || rtScene.height !== ph){
+      rtScene.setSize(pw, ph);
+      var bw = Math.max(2, pw>>2), bh = Math.max(2, ph>>2);
+      rtA.setSize(bw, bh); rtB.setSize(bw, bh);
+      blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
+    }
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var elRot = document.getElementById('t-rot'),
+      elInc = document.getElementById('t-inc'),
+      elFps = document.getElementById('t-fps');
+
+  var t0 = performance.now(), frozen = 12.0;
+  var fpsT = t0, frames = 0, lastTele = 0, lastFrame=t0;
+
+  function frame(now){
+    requestAnimationFrame(frame);
+    if(!visible || document.hidden) return;
+    resize();
+
+    var t = reduce ? frozen : (now - t0)/1000;
+    var dt=Math.min((now-lastFrame)/1000,0.05); lastFrame=now;
+    dragEnergy*=Math.exp(-dt*3);
+    var scatterTarget=activePointer!==null && dragMoved ? 0.72+dragEnergy*0.28 : 0;
+    ringScatter.value=reduce ? 0 : ringScatter.value+(scatterTarget-ringScatter.value)*(1-Math.exp(-dt*(activePointer!==null ? 12 : 3.5)));
+    if(scatterTarget===0 && ringScatter.value<0.002) ringScatter.value=0;
+    ringDust.visible=ringScatter.value>0.002;
+
+    // 태양 방위각
+    var a = P.sun * Math.PI*2;
+    bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
+    bodyUniforms.uTime.value  = t;
+    bodyUniforms.uPen.value   = Math.max(P.pen, 0.012);
+    bodyUniforms.uTurb.value = P.turb;
+    bodyUniforms.uBand.value = P.band;
+    uDens.value = P.atmo;
+    uRing.value = P.ring;
+    ring.visible = P.ring > 0.02;
+
+    // A restrained tilt connects the display to the manipulated planetary system.
+    reticle.quaternion.copy(reticleRest).slerp(celestial.quaternion,0.22);
+    reticle.traverse(function(o){
+      if(o.material) o.material.opacity = P.reticle * o.userData.opacity;
+    });
+    reticle.visible=P.reticle>0.04;
+
+    // 씬 → 오프스크린
+    renderer.setRenderTarget(rtScene);
+    renderer.clear();
+    renderer.render(scene, camera);
+
+    // 밝은 부분만 뽑아 1/4 해상도로
+    cutMat.uniforms.tD.value = rtScene.texture;
+    drawPost(cutMat, rtA);
+
+    // 가로·세로 블러 2왕복
+    var dx = blurMat.uniforms.uDir.value.x, dy = blurMat.uniforms.uDir.value.y;
+    for(var pass=0; pass<2; pass++){
+      blurMat.uniforms.tD.value = rtA.texture;
+      blurMat.uniforms.uDir.value.set(dx, 0);
+      drawPost(blurMat, rtB);
+      blurMat.uniforms.tD.value = rtB.texture;
+      blurMat.uniforms.uDir.value.set(0, dy);
+      drawPost(blurMat, rtA);
+    }
+    blurMat.uniforms.uDir.value.set(dx, dy);
+
+    // 합성 → 화면
+    compMat.uniforms.tScene.value = rtScene.texture;
+    compMat.uniforms.tBloom.value = rtA.texture;
+    drawPost(compMat, null);
+
+    // 텔레메트리
+    frames++;
+    if(now - lastTele > 120){
+      lastTele = now;
+      elRot.textContent = ((t*0.009*180/Math.PI) % 360).toFixed(1) + '°';
+      elInc.textContent = ((P.sun % 1)*360).toFixed(1) + '°';
+    }
+    if(now - fpsT > 1000){
+      elFps.textContent = Math.round(frames*1000/(now-fpsT)) + ' fps';
+      frames = 0; fpsT = now;
+    }
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>
