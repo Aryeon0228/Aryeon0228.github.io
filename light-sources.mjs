@@ -8,17 +8,17 @@ export const SOURCES={
 };
 export function preset(id){if(!Object.hasOwn(SOURCES,id))throw new Error('Unknown source');return {source:id,count:1,distance:1,lux:SOURCES[id].lux};}
 export function illuminance(slot){const source=SOURCES[slot.source];return source.kind==='point'?source.intensity*slot.count/(slot.distance**2):slot.lux;}
-export function comparison(left,right,mode,exposure){const a=illuminance(left),b=illuminance(right);return {left:{...left,lux:a,exposure:mode==='individual'?fitExposure(a):exposure},right:{...right,lux:b,exposure:mode==='individual'?fitExposure(b):exposure},stopsDifference:stopDifference(a,b),mode};}
+export function comparison(left,right,mode,exposure,offsets={left:0,right:0}){const a=illuminance(left),b=illuminance(right);return {left:{...left,lux:a,exposure:(mode==='individual'?fitExposure(a):0)+exposure+offsets.left},right:{...right,lux:b,exposure:(mode==='individual'?fitExposure(b):0)+exposure+offsets.right},stopsDifference:stopDifference(a,b),mode};}
 export function validateSettings(input){
  if(!input||typeof input!=='object'||Array.isArray(input))throw new Error('Expected settings object');
- const allowed=['leftSource','rightSource','leftDistance','rightDistance','leftCount','rightCount','leftLux','rightLux','mode','exposureStops','reflectancePercent','showColor','whiteBalance'];
+ const allowed=['leftSource','rightSource','leftDistance','rightDistance','leftCount','rightCount','leftLux','rightLux','mode','exposureStops','leftExposureOffset','rightExposureOffset','reflectancePercent','showColor','whiteBalance'];
  for(const [key,value] of Object.entries(input)){
   if(!allowed.includes(key))throw new Error('Unknown setting: '+key);
   if(key.endsWith('Source')){if(typeof value!=='string'||!Object.hasOwn(SOURCES,value))throw new Error('Invalid source');}
   else if(key==='mode'){if(!['shared','individual'].includes(value))throw new Error('Invalid mode');}
   else if(key==='whiteBalance'){if(!['neutral','left','right'].includes(value))throw new Error('Invalid white balance');}
   else if(key==='showColor'){if(typeof value!=='boolean')throw new Error('Expected boolean');}
-  else {let min,max;if(key.endsWith('Distance'))[min,max]=[.1,10];else if(key.endsWith('Count'))[min,max]=[1,100];else if(key.endsWith('Lux'))[min,max]=[.01,100000];else if(key==='exposureStops')[min,max]=[-6,24];else [min,max]=[4,80];if(typeof value!=='number'||!Number.isFinite(value)||value<min||value>max||(key.endsWith('Count')&&!Number.isInteger(value)))throw new Error('Invalid '+key);}
+  else {let min,max;if(key.endsWith('ExposureOffset'))[min,max]=[-24,24];else if(key.endsWith('Distance'))[min,max]=[.1,10];else if(key.endsWith('Count'))[min,max]=[1,100];else if(key.endsWith('Lux'))[min,max]=[.01,100000];else if(key==='exposureStops')[min,max]=[-6,24];else [min,max]=[4,80];if(typeof value!=='number'||!Number.isFinite(value)||value<min||value>max||(key.endsWith('Count')&&!Number.isInteger(value)))throw new Error('Invalid '+key);}
  }
  return input;
 }
