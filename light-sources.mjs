@@ -6,6 +6,16 @@ export const SOURCES={
  fluorescent:{name:'형광등',image:'fluorescent',kind:'point',intensity:800/(4*Math.PI),lux:800/(4*Math.PI),color:[1,1,1],condition:'800 lm CFL · 전방향 가정 · 1 m',note:'800 lm 전구형 형광등(CFL) 제품의 계산 예시입니다. 백열등과 같은 광속·거리·배광을 가정해 조도도 같습니다.'},
  sun:{name:'햇빛',image:'sun',kind:'ambient',lux:100000,color:[1,1,1],condition:'한낮 직사광 · 약 100,000 lx',note:'한낮 직사광의 대표값입니다. 실내는 창·방향·차폐·날씨에 따라 조도가 달라집니다.'}
 };
+// Teaching presets: illustrative receiving-surface illuminance, not a weather forecast.
+export const DAYLIGHT_PRESETS=[
+ {id:'direct',name:'직사광',lux:100000,condition:'한낮 직사광'},
+ {id:'outdoors',name:'야외',lux:10000,condition:'직사광이 없는 야외 그늘'},
+ {id:'overcast',name:'흐린 날',lux:5000,condition:'구름이 낀 낮의 야외'},
+ {id:'rain',name:'비 오는 날',lux:1000,condition:'두꺼운 비구름 아래 야외'},
+ {id:'indoors',name:'실내',lux:100,condition:'창에서 들어온 낮빛을 받는 실내'},
+ {id:'dim',name:'어두운 실내',lux:10,condition:'창에서 멀리 떨어진 어두운 실내'}
+];
+export const daylightPreset=lux=>DAYLIGHT_PRESETS.find(p=>Math.abs(p.lux-lux)<.001);
 export function preset(id){if(!Object.hasOwn(SOURCES,id))throw new Error('Unknown source');return {source:id,count:1,distance:1,lux:SOURCES[id].lux};}
 export function illuminance(slot){const source=SOURCES[slot.source];return source.kind==='point'?source.intensity*slot.count/(slot.distance**2):slot.lux;}
 export function comparison(left,right,mode,exposure,offsets={left:0,right:0}){const a=illuminance(left),b=illuminance(right);return {left:{...left,lux:a,exposure:(mode==='individual'?fitExposure(a):0)+exposure+offsets.left},right:{...right,lux:b,exposure:(mode==='individual'?fitExposure(b):0)+exposure+offsets.right},stopsDifference:stopDifference(a,b),mode};}
