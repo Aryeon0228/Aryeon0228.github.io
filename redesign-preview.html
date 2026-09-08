@@ -13,8 +13,8 @@
 <style>
 /* ============================================================
    STUDIO PENUMBRA — 리디자인 시안
-   순수 흑백 확정. 페이지 전체에 유채색 없음.
-   유일한 그라디언트는 행성의 반그림자 띠 하나뿐이다.
+   흑백 계조 안에서 빛의 경계를 부드럽게 드러낸다.
+   가는 초승달, 희미한 구름결, 투명한 고리.
    ============================================================ */
 :root{
   --k0:#000000;            /* 바탕 — 순수 검정 */
@@ -65,20 +65,41 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 /* ============================================================
    HERO
    ============================================================ */
-.hero{ position:relative; min-height:700px; display:flex; align-items:stretch; overflow:hidden; }
+.hero{ position:relative; min-height:760px; display:flex; align-items:stretch; overflow:hidden; }
 #gl{ position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0; }
+/* Hit area follows the projected planet; the rest of the page remains scrollable. */
+.planet-drag{
+  position:absolute; z-index:3; transform:translate(-50%,-50%); border:0;
+  padding:0; border-radius:50%; background:transparent; color:var(--g2);
+  cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
+}
+.planet-drag[hidden]{ display:none; }
+.planet-drag.is-dragging{ cursor:grabbing; }
+.planet-drag:focus-visible{ outline:1px dashed #777; outline-offset:10px; }
+.planet-drag::after{
+  content:'드래그하여 회전'; position:absolute; left:50%; top:65%; transform:translateX(-50%);
+  font:11px var(--f-ko); white-space:nowrap; opacity:0; transition:opacity .2s; pointer-events:none;
+}
+.planet-drag:hover::after,.planet-drag:focus-visible::after{ opacity:.7; }
+.planet-drag.is-dragging::after{ opacity:0; }
 /* three.js 미탑재/미지원 시 그대로 보이는 폴백 */
 .hero-fb{
   position:absolute; inset:0; z-index:0;
-  background:radial-gradient(26% 38% at 72% 46%, #ffffff 0%, #d8d8d8 26%, #202020 52%, #000000 70%);
+  background:#000;
+}
+.hero-fb::before{
+  content:''; position:absolute; width:clamp(260px,34vw,490px); aspect-ratio:1;
+  left:67%; top:46%; transform:translate(-50%,-50%) rotate(-24deg); border-radius:50%;
+  background:radial-gradient(circle at 65% 53%, #000 0%, #000 55%, #191919 67%, #858585 78%, #0b0b0b 92%);
+  box-shadow:-10px -6px 28px -18px #bdbdbd;
 }
 .hero-veil{
   position:absolute; inset:0; z-index:1; pointer-events:none;
-  background:linear-gradient(94deg, rgba(0,0,0,.94) 0%, rgba(0,0,0,.70) 30%, rgba(0,0,0,0) 56%);
+  background:linear-gradient(94deg, rgba(0,0,0,.80) 0%, rgba(0,0,0,.30) 28%, rgba(0,0,0,0) 51%);
 }
 
 /* 계기 프레임 — 화면 네 귀퉁이의 브래킷 */
-.frame{ position:absolute; inset:18px; z-index:3; pointer-events:none; }
+.frame{ position:absolute; inset:18px; z-index:3; opacity:.30; pointer-events:none; }
 .frame span{ position:absolute; width:22px; height:22px; border:1px solid var(--ln2); }
 .frame span:nth-child(1){ top:0; left:0; border-right:0; border-bottom:0; }
 .frame span:nth-child(2){ top:0; right:0; border-left:0; border-bottom:0; }
@@ -86,6 +107,8 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 .frame span:nth-child(4){ bottom:0; right:0; border-left:0; border-top:0; }
 
 .hero-inner{ position:relative; z-index:2; width:100%; display:flex; align-items:center; padding-block:clamp(72px,9vw,96px); }
+
+.hero-inner > .wrap{ width:100%; }
 
 .hero-mark{ display:flex; align-items:center; gap:12px; margin-bottom:26px; }
 .hero-mark .dot{ width:5px; height:5px; background:var(--w); border-radius:50%; animation:blip 2.6s ease-in-out infinite; }
@@ -105,18 +128,28 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 
 /* ---------- 파라미터 랙 ---------- */
 .rack{
-  position:absolute; z-index:3; right:var(--pad); top:50%; transform:translateY(-50%);
-  width:246px; background:rgba(0,0,0,.62); border:1px solid var(--ln);
+  position:absolute; z-index:3; right:var(--pad); bottom:30px;
+  width:246px; background:rgba(0,0,0,.78); border:1px solid var(--ln);
   backdrop-filter:blur(6px);
 }
 .rack-h{ display:flex; justify-content:space-between; align-items:center; padding:11px 14px; border-bottom:1px solid var(--ln); }
+.rack-h{ cursor:pointer; list-style:none; min-height:44px; user-select:none; }
+.rack-h::-webkit-details-marker{ display:none; }
+.rack-h:focus-visible{ outline:1px solid #bdbdbd; outline-offset:5px; }
+.rack-h .lbl{ color:#aaa; font-size:12px; letter-spacing:.10em; }
+.rack-h::after{ content:'+'; color:#aaa; font-size:18px; line-height:1; }
+.rack[open] .rack-h::after{ content:'−'; }
+.rack:not([open]) .rack-h{ border-bottom:0; }
+.rack:not([open]){ width:178px; }
+.rack[open]{ max-height:calc(100% - 60px); overflow-y:auto; }
 .rack-b{ padding:16px 14px 18px; display:grid; gap:17px; }
+.rack-note{ margin:0; color:#aaa; font-size:12px; line-height:1.6; }
 .knob-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
 .knob-head em{ font-style:normal; color:var(--w); font-size:11.5px; font-family:var(--f-mono); font-weight:500; }
 .knob-head b{ color:var(--w); font-size:11.5px; font-weight:500; }
 input[type=range]{
   -webkit-appearance:none; appearance:none; display:block;
-  width:100%; height:1px; background:var(--ln2); outline:none; cursor:ew-resize;
+  width:100%; height:22px; background:linear-gradient(var(--ln2),var(--ln2)) center/100% 1px no-repeat; outline:none; cursor:ew-resize;
 }
 input[type=range]::-webkit-slider-thumb{
   -webkit-appearance:none; appearance:none;
@@ -135,11 +168,25 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
 .tele b{ font-family:var(--f-mono); font-size:12.5px; font-weight:500; color:var(--w); font-variant-numeric:tabular-nums; }
 
 @media(max-width:1040px){
-  .rack{ position:static; transform:none; width:100%; max-width:340px; margin-top:34px; backdrop-filter:none; }
+  .rack{ right:var(--pad); bottom:26px; max-width:300px; }
+  .hero-role{ max-width:35ch; }
+  .hero-name{ font-size:clamp(52px,9.6vw,96px); }
   .hero-inner{ align-items:flex-start; }
   .tele{ position:static; margin-top:30px; }
-  .hero{ min-height:0; }
-  .hero-veil{ background:linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.86) 46%, #000 100%); }
+  .hero{ min-height:680px; }
+  .hero-veil{ background:linear-gradient(90deg,rgba(0,0,0,.70),transparent 64%); }
+}
+@media(max-width:600px){
+  .hero{ min-height:800px; }
+  .hero-inner{ padding-top:58px; }
+  .hero-name{ font-size:66px; }
+  .hero-role{ margin-top:20px; font-size:14px; max-width:30ch; }
+  .hero-veil{ background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.42) 27%,transparent 43%); }
+  .hero-fb::before{ left:56%; top:64%; width:310px; }
+  .tele{ position:absolute; left:var(--pad); bottom:85px; gap:18px; }
+  .tele div:last-child{ display:none; }
+  .rack[open]{ max-height:560px; }
+  .frame{ opacity:.18; }
 }
 
 /* ============================================================
@@ -232,15 +279,17 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
 <!-- ======================= HERO ======================= -->
 <header class="hero">
   <div class="hero-fb"></div>
-  <canvas id="gl" aria-label="고리를 두른 가스 행성이 실시간으로 그려집니다. 대기의 띠무늬가 흐르고, 햇빛을 받는 낮 쪽과 어둠인 밤 쪽 사이에 반그림자 띠가 보이며, 행성의 그림자가 고리 위에 드리웁니다."></canvas>
+  <canvas id="gl" aria-label="어둠 속 행성의 가장자리에 은빛 초승달이 떠 있습니다. 희미한 구름결과 불규칙한 간격의 실 같은 고리 위로 빛이 부드럽게 번집니다."></canvas>
   <div class="hero-veil"></div>
+  <button type="button" id="planet-drag" class="planet-drag" hidden
+    aria-label="행성과 고리 회전" title="드래그해서 회전 · 방향키로 미세 조절"></button>
   <div class="frame"><span></span><span></span><span></span><span></span></div>
 
   <div class="hero-inner">
     <div class="wrap">
       <div class="hero-mark">
         <i class="dot"></i>
-        <span class="lbl">Studio Penumbra / 리디자인 방향 시안 02</span>
+        <span class="lbl">Studio Penumbra / 리디자인 방향 시안 03</span>
       </div>
 
       <h1 class="hero-name">
@@ -250,7 +299,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
 
       <p class="hero-role">
         게임 아트 <b>실무</b> · 빛과 표면의 <b>연구</b> · 다음 세대를 위한 <b>강의</b>.
-        오른쪽 천체는 이미지가 아니라 지금 이 브라우저가 계산하고 있는 장면입니다.
+        빛과 그림자 사이, 아직 드러나지 않은 가능성을 만듭니다.
       </p>
 
       <div class="tele">
@@ -263,49 +312,47 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   </div>
 
   <!-- 파라미터 랙 -->
-  <div class="rack">
-    <div class="rack-h">
-      <span class="lbl">Array Parameters</span>
-      <span class="lbl" style="letter-spacing:.1em">LIVE</span>
-    </div>
+  <details class="rack">
+    <summary class="rack-h"><span class="lbl">빛과 대기 조절</span></summary>
     <div class="rack-b">
+      <p class="rack-note" id="rack-note">0은 지금 맞춘 기본 모습입니다.<br>오른쪽으로 밀어 변화를 더해보세요.</p>
       <div>
-        <div class="knob-head"><em>PENUMBRA</em><b id="v-pen" class="num">0.16</b></div>
-        <input type="range" id="s-pen" min="1" max="60" value="16" aria-label="반그림자 폭">
-        <div class="knob-scale"><span>HARD</span><span>SOFT</span></div>
+        <div class="knob-head"><em>PENUMBRA</em><b id="v-pen" class="num">0</b></div>
+        <input type="range" id="s-pen" min="0" max="100" value="0" aria-describedby="rack-note scale-pen" aria-label="반그림자 폭">
+        <div class="knob-scale" id="scale-pen"><span>기본</span><span>넓게</span></div>
       </div>
       <div>
-        <div class="knob-head"><em>SUN AZIMUTH</em><b id="v-sun" class="num">0.62</b></div>
-        <input type="range" id="s-sun" min="0" max="100" value="62" aria-label="태양 방위각">
-        <div class="knob-scale"><span>0°</span><span>360°</span></div>
+        <div class="knob-head"><em>SUN AZIMUTH</em><b id="v-sun" class="num">0</b></div>
+        <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun" aria-label="태양 방위각">
+        <div class="knob-scale" id="scale-sun"><span>기본</span><span>한 바퀴 회전</span></div>
       </div>
       <div>
-        <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0.72</b></div>
-        <input type="range" id="s-atm" min="0" max="100" value="72" aria-label="대기 밀도">
-        <div class="knob-scale"><span>VACUUM</span><span>DENSE</span></div>
+        <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0</b></div>
+        <input type="range" id="s-atm" min="0" max="100" value="0" aria-describedby="rack-note scale-atm" aria-label="대기 밀도">
+        <div class="knob-scale" id="scale-atm"><span>기본</span><span>대기 줄이기</span></div>
       </div>
       <div>
-        <div class="knob-head"><em>TURBULENCE</em><b id="v-trb" class="num">0.70</b></div>
-        <input type="range" id="s-trb" min="0" max="100" value="70" aria-label="대기 난류">
-        <div class="knob-scale"><span>LAMINAR</span><span>CHAOTIC</span></div>
+        <div class="knob-head"><em>TURBULENCE</em><b id="v-trb" class="num">0</b></div>
+        <input type="range" id="s-trb" min="0" max="100" value="0" aria-describedby="rack-note scale-trb" aria-label="대기 난류">
+        <div class="knob-scale" id="scale-trb"><span>기본</span><span>난류 더하기</span></div>
       </div>
       <div>
-        <div class="knob-head"><em>RING SYSTEM</em><b id="v-rng" class="num">0.85</b></div>
-        <input type="range" id="s-rng" min="0" max="100" value="85" aria-label="고리 밀도">
-        <div class="knob-scale"><span>NONE</span><span>FULL</span></div>
+        <div class="knob-head"><em>RING SYSTEM</em><b id="v-rng" class="num">0</b></div>
+        <input type="range" id="s-rng" min="0" max="100" value="0" aria-describedby="rack-note scale-rng" aria-label="고리 밀도">
+        <div class="knob-scale" id="scale-rng"><span>기본</span><span>고리 선명하게</span></div>
       </div>
       <div>
-        <div class="knob-head"><em>BANDING</em><b id="v-bnd" class="num">0.82</b></div>
-        <input type="range" id="s-bnd" min="0" max="100" value="82" aria-label="대기 띠 대비">
-        <div class="knob-scale"><span>FEATURELESS</span><span>BANDED</span></div>
+        <div class="knob-head"><em>BANDING</em><b id="v-bnd" class="num">0</b></div>
+        <input type="range" id="s-bnd" min="0" max="100" value="0" aria-describedby="rack-note scale-bnd" aria-label="대기 띠 대비">
+        <div class="knob-scale" id="scale-bnd"><span>기본</span><span>대비 줄이기</span></div>
       </div>
       <div>
-        <div class="knob-head"><em>RETICLE</em><b id="v-ret" class="num">ON</b></div>
-        <input type="range" id="s-ret" min="0" max="100" value="70" aria-label="눈금테 밝기">
-        <div class="knob-scale"><span>OFF</span><span>FULL</span></div>
+        <div class="knob-head"><em>RETICLE</em><b id="v-ret" class="num">0</b></div>
+        <input type="range" id="s-ret" min="0" max="100" value="0" aria-describedby="rack-note scale-ret" aria-label="눈금테 밝기">
+        <div class="knob-scale" id="scale-ret"><span>기본</span><span>눈금 흐리게</span></div>
       </div>
     </div>
-  </div>
+  </details>
 </header>
 
 <!-- ======================= 01 논거 ======================= -->
@@ -314,17 +361,15 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     <div class="sec-head">
       <span class="lbl">01 / 논거</span>
       <div>
-        <h2 class="sec-title">사이트 전체에 그라디언트는 <b>단 하나</b>입니다</h2>
+        <h2 class="sec-title">어둠의 가장자리에 <b>빛이 머뭅니다</b></h2>
         <p class="lede">
-          검정과 흰색만 씁니다. 중간값은 없습니다 — <b>단 한 군데를 빼고.</b>
-          천체의 낮과 밤이 만나는 자리, 빛이 부분적으로만 닿는 그 띠가 페이지에 존재하는 유일한 계조입니다.
-          Penumbra는 원래 식(蝕)이 일어날 때 본그림자를 두르는 반그림자를 가리키는 천문학 용어예요.
-          이름을 설명할 필요 없이, 첫 화면이 그 정의입니다.
+          행성의 대부분은 어둠 속에 남겨두었습니다. 가느다란 초승달과 희미한 구름결,
+          띄엄띄엄 겹치는 실 같은 고리만이 천천히 모습을 드러냅니다.
         </p>
         <p class="lede" style="margin-top:14px">
-          대기를 두른 것도 같은 이유입니다. 대기는 빛을 산란시켜 <b>고체 표면 너머로 반그림자를 연장</b>합니다 —
-          밤 쪽 가장자리에 남는 얇은 빛의 선이 그것이고, 지구를 우주에서 볼 때 보이는 바로 그 현상이에요.
-          장식으로 얹은 광채가 아니라 같은 이야기의 연속입니다.
+          반그림자에서 가져온 이미지는 빛과 어둠 사이의 <b>부드러운 경계</b>입니다.
+          은빛 대기는 윤곽에서 번지고, 고리는 밤 쪽으로 사라집니다.
+          여백 속에서 오래 바라볼 수 있는 장면을 만들었습니다.
         </p>
       </div>
     </div>
@@ -340,7 +385,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
       </div>
       <div>
         <i style="background:linear-gradient(96deg,#fff,#000)"></i>
-        <p><b>The only gradient — Penumbra</b>둘이 만나는 띠. 대기가 이 띠를 표면 밖으로 연장합니다.</p>
+        <p><b>Soft transition — Penumbra</b>빛과 어둠 사이의 부드러운 계조. 대기와 고리에도 은은하게 이어집니다.</p>
       </div>
       <div>
         <i style="background:#8f8f8f"></i>
@@ -562,7 +607,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
         <span class="q">Q2</span>
         <div>
           <h4>천체 표정</h4>
-          <p>지금은 고리를 두른 가스 행성입니다. TURBULENCE는 띠가 흐트러지는 정도를, BANDING은 줄무늬 대비를 조절합니다. 둘 다 0으로 내리면 매끈한 구체가 됩니다.</p>
+          <p>지금 맞춘 천체의 모습이 모든 조절기의 0입니다. RING SYSTEM으로 고리를 더 선명하게 하고, TURBULENCE로 구름결을 흐트러뜨리거나 BANDING으로 띠 대비를 낮출 수 있습니다.</p>
         </div>
       </li>
       <li>
@@ -595,7 +640,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
 <footer>
   <div class="wrap">
     <div>
-      <span class="lbl">Studio Penumbra · 리디자인 방향 시안 02</span>
+      <span class="lbl">Studio Penumbra · 리디자인 방향 시안 03</span>
       <span class="lbl">2026.09</span>
     </div>
   </div>
@@ -621,18 +666,22 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   // 행성 + 눈금테를 한 그룹에 담아 함께 이동시킨다
   var rig = new THREE.Group();
   scene.add(rig);
+  // Rotate the celestial system while keeping the observation scale facing the viewer.
+  var celestial = new THREE.Group();
+  rig.add(celestial);
 
   /* ---------- 천체 ---------- */
+  var planetBaseline = { pen:0.01, sun:0.74, atmo:1, turb:0, ring:0.42, band:1, reticle:1 };
   // 대기 밀도는 본체 · 대기 껍질 · 고리가 모두 같은 객체를 공유한다
-  var uDens = { value: 0.72 };
+  var uDens = { value: planetBaseline.atmo };
 
   var bodyUniforms = {
     uAtmo:   uDens,
     uTime:   { value: 0 },
     uLight:  { value: new THREE.Vector3(1,0,0) },
-    uPen:    { value: 0.16 },
-    uTurb:   { value: 0.70 },
-    uBand:   { value: 0.82 }
+    uPen:    { value: planetBaseline.pen },
+    uTurb:   { value: planetBaseline.turb },
+    uBand:   { value: planetBaseline.band }
   };
 
   var BODY_VERT = [
@@ -649,95 +698,48 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   ].join('\n');
 
   var BODY_FRAG = [
-    'precision highp float;',
-    'uniform float uTime; uniform vec3 uLight; uniform float uPen; uniform float uTurb; uniform float uBand; uniform float uAtmo;',
-    'varying vec3 vN; varying vec3 vP; varying vec3 vV;',
-
-    'mat2 rot(float a){ float c=cos(a),s=sin(a); return mat2(c,-s,s,c); }',
-    'float hash13(vec3 p){ p=fract(p*0.3183099+0.1); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }',
-    'float vnoise(vec3 x){',
-    '  vec3 i=floor(x), f=fract(x); f=f*f*(3.0-2.0*f);',
-    '  return mix(mix(mix(hash13(i+vec3(0.,0.,0.)),hash13(i+vec3(1.,0.,0.)),f.x),',
-    '                 mix(hash13(i+vec3(0.,1.,0.)),hash13(i+vec3(1.,1.,0.)),f.x),f.y),',
-    '             mix(mix(hash13(i+vec3(0.,0.,1.)),hash13(i+vec3(1.,0.,1.)),f.x),',
-    '                 mix(hash13(i+vec3(0.,1.,1.)),hash13(i+vec3(1.,1.,1.)),f.x),f.y),f.z);',
-    '}',
-    'float fbm(vec3 p){ float a=0.5,s=0.0; for(int i=0;i<3;i++){ s+=a*vnoise(p); p*=2.06; a*=0.5; } return s; }',
-
-    'void main(){',
-    // 가스 행성에는 지형이 없다. 노멀은 구 그대로이고 무늬는 전부 대기 흐름이다
-    '  vec3 n0 = normalize(vN);',
-    '  vec3 n  = n0;',
-    '  vec3 sp = normalize(vP);',
-    '  vec3 rs = sp; rs.xz *= rot(uTime*0.045);',
-
-    // ---- 공기원근법 ----
-    // 시선이 대기를 통과하는 거리는 표면 법선과 이루는 각도에 따라 1/cos 으로 발산한다(airmass).
-    // 정면에서는 최소라 또렷하고, 가장자리로 갈수록 경로가 길어져 산란광이 쌓이고 무늬가 뭉개진다.
-    '  float mu  = max(dot(n0, normalize(vV)), 0.045);',
-    '  float tau = uAtmo * 0.30 * (1.0/mu - 1.0);',
-    '  float tr  = exp(-tau);',
-
-    // ---- 대기 띠 ----
-    // 위도를 노이즈로 밀어 띠를 흐트러뜨린다(도메인 워핑).
-    // 띠가 끊기고 서로 밀치며 소용돌이가 생긴다 — 목성의 대기 흐름이 그렇게 보인다
-    '  float lat = rs.y;',
-    '  float w1 = fbm(rs*2.0 + vec3(uTime*0.020, 0.0, 0.0)) - 0.5;',
-    '  float w2 = fbm(rs*4.6 + vec3(0.0, 0.0, uTime*0.015) + w1*1.4) - 0.5;',
-    '  float w3 = fbm(rs*9.3 + vec3(uTime*0.011, 0.0, 0.0) + w2*1.1) - 0.5;',
-
-    // 굵은 지대와 가는 줄에 서로 다른 강도의 난류를 먹인다 — 작은 규모일수록 더 흐트러진다
-    '  float y1 = lat + (w1*0.40 + w2*0.18) * uTurb;',
-    '  float y2 = y1  + (w2*0.15 + w3*0.09) * uTurb;',
-
-    // 배율이 다른 띠를 겹쳐 쌓는다. 굵은 지대 위에 점점 가는 줄이 얹히므로
-    // 어느 한 겹도 평평한 판으로 읽히지 않는다
-    '  float b = 0.44*sin(y1*13.0)',
-    '          + 0.26*sin(y2*29.0 + 1.7)',
-    '          + 0.15*sin(y2*57.0 + 3.1)',
-    '          + 0.09*sin(y2*103.0 + 0.6);',
-
-    // 위도 방향으로 압축한 노이즈 = 가로로 길게 늘어난 실낱 무늬
-    '  vec3  fs  = vec3(rs.x, rs.y*7.5, rs.z);',
-    '  float fil = fbm(fs*2.6 + vec3(uTime*0.030, 0.0, 0.0)) - 0.5;',
-    '  b += fil * 0.26 * uTurb;',
-
-    '  float bands = clamp(0.5 + 0.5*b, 0.0, 1.0);',
-    '  bands = mix(bands, bands*bands*(3.0-2.0*bands), 0.30);',     // 중간톤만 살짝 세운다
-    '  float polar = smoothstep(0.72, 0.98, abs(lat));',
-    '  bands = mix(bands, 0.52, polar*0.72);',                      // 극지방은 띠가 풀린다
-
-    '  float albedo = mix(0.66, 0.30 + 0.66*bands, uBand);',
-
-    // ---- 폭풍 ----
-    '  float lon  = atan(rs.z, rs.x);',
-    '  float dlon = atan(sin(lon - 2.05), cos(lon - 2.05));',
-    '  float dlat = rs.y + 0.26;',
-    '  float sd   = length(vec2(dlon/0.52, dlat/0.17));',
-    '  float spot = (1.0 - smoothstep(0.55, 1.0, sd)) * uBand;',
-    '  albedo = mix(albedo, 0.97, spot*0.80);',
-
-    // ---- 페이지에서 유일한 그라디언트: 반그림자 ----
-    '  float ndl = dot(n, normalize(uLight));',
-    '  float day = smoothstep(-uPen, uPen, ndl);',
-    '  float lum = albedo * day;',
-
-    // 표면은 투과율만큼 흐려지고, 그 자리를 대기가 산란시킨 빛(airlight)이 채운다
-    '  float litA = smoothstep(-0.30, 0.55, dot(n0, normalize(uLight)));',
-    '  lum = lum*tr + (1.0 - tr) * litA * uAtmo * 0.72;',
-
-    '  lum = pow(clamp(lum,0.0,1.0), 0.92);',
-    '  float dith = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898,78.233)))*43758.5453);',
-    '  lum += (dith-0.5)/255.0;',
-    '  gl_FragColor = vec4(vec3(lum), 1.0);',
-    '}'
+    "precision highp float;",
+    "uniform float uTime; uniform vec3 uLight; uniform float uPen; uniform float uTurb; uniform float uBand; uniform float uAtmo;",
+    "varying vec3 vN; varying vec3 vP; varying vec3 vV;",
+    "mat2 rot(float a){ float c=cos(a),s=sin(a); return mat2(c,-s,s,c); }",
+    "float hash13(vec3 p){ p=fract(p*0.3183099+0.1); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }",
+    "float noise3(vec3 x){",
+    "  vec3 i=floor(x),f=fract(x); f=f*f*f*(f*(f*6.0-15.0)+10.0);",
+    "  return mix(mix(mix(hash13(i),hash13(i+vec3(1,0,0)),f.x),mix(hash13(i+vec3(0,1,0)),hash13(i+vec3(1,1,0)),f.x),f.y),",
+    "             mix(mix(hash13(i+vec3(0,0,1)),hash13(i+vec3(1,0,1)),f.x),mix(hash13(i+vec3(0,1,1)),hash13(i+vec3(1,1,1)),f.x),f.y),f.z);",
+    "}",
+    "float fbm(vec3 p){ float a=.5,s=0.; for(int i=0;i<4;i++){ s+=a*noise3(p); p=p*2.03+vec3(5.2,1.3,3.8); a*=.5; } return s; }",
+    "void main(){",
+    "  vec3 n=normalize(vN), v=normalize(vV), L=normalize(uLight);",
+    "  vec3 p=normalize(vP); p.xz*=rot(uTime*.009);",
+    "  float drift=uTime*.004;",
+    "  float cloud=fbm(p*2.4+vec3(drift,0.,0.));",
+    "  float warp=fbm(p*5.2+cloud*2.1)-.5;",
+    "  float latitude=p.y+(cloud-.5)*uTurb*.75+warp*uTurb*.26;",
+    "  float silk=fbm(vec3(p.x*3.0,latitude*15.0,p.z*3.0)+cloud*1.8);",
+    "  float ribbons=sin(latitude*20.0+warp*3.0)*.045;",
+    "  float texture=(silk-.47)*.48+(cloud-.48)*.20+ribbons;",
+    "  float albedo=clamp(.70+texture*uBand*2.2,.25,.95);",
+    "",
+    "  float ndl=dot(n,L), mu=clamp(dot(n,v),.035,1.);",
+    "  float pen=max(uPen,.012);",
+    "  float daylight=smoothstep(-pen*.65,pen,ndl);",
+    "  float incident=pow(max(ndl+pen*.32,0.)/(1.+pen*.32),.64);",
+    "  float surface=albedo*daylight*incident;",
+    "  float transmission=exp(-uAtmo*.095*(1./mu-1.));",
+    "  float limb=pow(1.-mu,3.0);",
+    "  float scattered=smoothstep(-.28,.58,ndl)*limb*uAtmo*.42;",
+    "  float earthshine=.0035*(.65+.35*cloud)*pow(mu,.6);",
+    "  float lum=surface*transmission+scattered+earthshine;",
+    "  gl_FragColor=vec4(vec3(max(lum,0.)),1.);",
+    "}"
   ].join('\n');
 
   var body = new THREE.Mesh(
     new THREE.SphereGeometry(1, 96, 96),
     new THREE.ShaderMaterial({ uniforms:bodyUniforms, vertexShader:BODY_VERT, fragmentShader:BODY_FRAG })
   );
-  rig.add(body);
+  celestial.add(body);
 
   /* ---------- 대기 ----------
      껍질을 안쪽에서 바라본다(BackSide). 실루엣에 가까울수록 광선이 대기를
@@ -754,29 +756,24 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   ].join('\n');
 
   var ATMO_FRAG = [
-    'precision highp float;',
-    'uniform vec3 uLight; uniform float uDens; uniform float uRp; uniform float uRs;',
-    'varying vec3 vMV; varying vec3 vCen;',
-    // x=0에서 1, x=1에서 정확히 0이 되는 지수 감쇠
-    'float band(float x, float k){ float a = exp(-k); return (exp(-x*k) - a)/(1.0 - a); }',
-    'void main(){',
-    // 이 픽셀을 향한 광선이 행성 중심을 얼마나 비껴가는가 (충돌 매개변수)
-    '  vec3  d = normalize(vMV);',
-    '  float t = dot(vCen, d);',
-    '  vec3  c = d*t - vCen;',
-    '  float b = max(length(c), 1e-4);',
-    '  float x = clamp((b - uRp)/max(uRs - uRp, 1e-4), 0.0, 1.0);',
-    // 굵기가 다른 두 감쇠를 겹쳐 얇은 림과 넓은 헤이즈를 한 껍질에서 얻는다.
-    // 둘 다 경계에서 0이므로 잘리는 선이 생기지 않는다
-    '  float dens = mix(band(x, 2.4), band(x, 9.5), 0.55);',
-    '  vec3  nl  = c / b;',
-    '  float lit = smoothstep(-0.60, 0.40, dot(nl, normalize(uLight)));',
-    '  float g = dens * (0.08 + 0.92*lit) * uDens * 1.30;',
-    '  gl_FragColor = vec4(vec3(g), g);',
-    '}'
+    "precision highp float;",
+    "uniform vec3 uLight; uniform float uDens; uniform float uRp; uniform float uRs;",
+    "varying vec3 vMV; varying vec3 vCen;",
+    "float band(float x,float k){ float a=exp(-k); return max(0.,(exp(-x*k)-a)/(1.-a)); }",
+    "void main(){",
+    "  vec3 ray=normalize(vMV);",
+    "  vec3 c=ray*dot(vCen,ray)-vCen;",
+    "  float b=max(length(c),.0001);",
+    "  float x=clamp((b-uRp)/max(uRs-uRp,.0001),0.,1.);",
+    "  float density=band(x,20.)*.86+band(x,3.6)*.14;",
+    "  float light=smoothstep(-.36,.70,dot(c/b,normalize(uLight)));",
+    "  float glow=density*(.006+.994*pow(light,1.3))*uDens*.92;",
+    "  // Alpha stays 1: additive blending must not square the faint halo.",
+    "  gl_FragColor=vec4(vec3(glow),1.);",
+    "}"
   ].join('\n');
 
-  var ATMO_R = 1.62;
+  var ATMO_R = 1.28;
   var atmo = new THREE.Mesh(
     new THREE.SphereGeometry(ATMO_R, 64, 64),
     new THREE.ShaderMaterial({
@@ -795,21 +792,53 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     })
   );
   atmo.renderOrder = 2;   // 고리 위에 덮이도록
-  rig.add(atmo);
+  celestial.add(atmo);
 
   /* ---------- 고리 ----------
      행성이 고리 위에 그림자를 드리운다. 그 그림자의 흐린 가장자리 역시 반그림자이므로
      PENUMBRA 슬라이더가 표면과 고리를 동시에 지배한다 — 같은 현상이니 같은 값이어야 한다. */
-  var uRing = { value: 0.85 };
-  var RING_I = 1.46, RING_O = 1.85;
+  var uRing = { value: planetBaseline.ring };
+  var RING_I = 1.25, RING_O = 4.80;
+
+  // Fixed-seed irregular spacing: distinct silk strands, with real empty gaps.
+  // Keep the layout stable as the light, viewport and pointer change.
+  var strandSeed = 72831;
+  function strandRandom(){
+    strandSeed = (Math.imul(strandSeed,1664525) + 1013904223) >>> 0;
+    return strandSeed / 4294967296;
+  }
+  var strandGaps = [], gapTotal = 0;
+  for(var i=0;i<8;i++){
+    var gapWeight = 0.6 + Math.pow(strandRandom(),1.8)*2.4;
+    strandGaps.push(gapWeight);
+    gapTotal += gapWeight;
+  }
+  var strands = [], accumulatedGap = 0;
+  for(var i=0;i<9;i++){
+    if(i) accumulatedGap += strandGaps[i-1];
+    strands.push(new THREE.Vector3(
+      0.045 + accumulatedGap/gapTotal*0.91,
+      0.0015 + strandRandom()*0.0018,
+      0.56 + strandRandom()*0.38
+    ));
+  }
+
+  // A few slightly fuller strands give the fine threads a gentle rhythm.
+  strands[1].y *= 2.2;
+  strands[4].y *= 2.8;
+  strands[7].y *= 1.9;
+  // Expand the spacing without multiplying the physical strand thickness.
+  strands.forEach(function(strand){ strand.y *= 0.67/(RING_O-RING_I); });
 
   var ring = new THREE.Mesh(
-    new THREE.RingGeometry(RING_I, RING_O, 256, 1),
+    new THREE.RingGeometry(RING_I, RING_O, 768, 1),
     new THREE.ShaderMaterial({
       uniforms:{
         uLight: bodyUniforms.uLight,
         uPen:   bodyUniforms.uPen,
         uOpa:   uRing,
+        uStrands: { value:strands },
+        uPlanetRadius: { value:1.0 },
         uRi:    { value: RING_I },
         uRo:    { value: RING_O }
       },
@@ -825,21 +854,25 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
       ].join('\n'),
       fragmentShader:[
         'precision highp float;',
-        'uniform vec3 uLight; uniform float uPen; uniform float uOpa; uniform float uRi; uniform float uRo;',
+        'uniform vec3 uLight; uniform float uPen; uniform float uOpa; uniform float uRi; uniform float uRo; uniform float uPlanetRadius;',
         'varying vec3 vObj; varying vec3 vMV; varying vec3 vCen;',
-        'float h11(float x){ return fract(sin(x*127.1)*43758.5453); }',
-        'float n1(float x){ float i=floor(x), f=fract(x); f=f*f*(3.0-2.0*f); return mix(h11(i),h11(i+1.0),f); }',
-        'float fbm1(float x){ float a=0.5,s=0.0; for(int i=0;i<3;i++){ s+=a*n1(x); x*=2.13; a*=0.5; } return s; }',
-        'float gap(float u, float at, float w){ return 1.0 - 0.92*exp(-pow((u-at)/w, 2.0)); }',
+        'uniform vec3 uStrands[9];',
         'void main(){',
         '  float r = length(vObj.xy);',
         '  float u = clamp((r - uRi)/(uRo - uRi), 0.0, 1.0);',
 
-        // 굵은 띠 몇 줄 + 간극 두 줄
-        '  float dens = 0.30 + 0.70*fbm1(u*2.6);',
-        '  dens *= gap(u, 0.40, 0.032);',
-        '  dens *= gap(u, 0.72, 0.019);',
-        '  dens *= smoothstep(0.0, 0.05, u) * smoothstep(1.0, 0.88, u);',
+        // Integrate each narrow strand over the radial pixel footprint.
+        // Coverage preserves subpixel brightness without widening strands into a band.
+        '  float footprint = max(fwidth(u), 0.0001);',
+        '  float pixelLo = u - footprint*0.5;',
+        '  float pixelHi = u + footprint*0.5;',
+        '  float dens = 0.0;',
+        '  for(int i=0;i<9;i++){',
+        '    vec3 strand = uStrands[i];',
+        '    float overlap = max(0.0,min(pixelHi,strand.x+strand.y)-max(pixelLo,strand.x-strand.y));',
+        '    dens += overlap/footprint*strand.z;',
+        '  }',
+        '  dens = clamp(dens,0.0,1.0);',
 
         // 행성의 그림자: 이 지점에서 태양을 향한 광선이 행성을 스치는가
         '  vec3  P  = vMV - vCen;',
@@ -848,22 +881,25 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
         '  float shadow = 1.0;',
         '  if(s0 > 0.0){',
         '    float d = length(P + L*s0);',
-        '    shadow = smoothstep(1.0 - uPen, 1.0 + uPen, d);',   // 본그림자 → 반그림자 → 빛
+        '    shadow = smoothstep(uPlanetRadius*(1.0-uPen), uPlanetRadius*(1.0+uPen), d);',   // 본그림자 → 반그림자 → 빛
         '  }',
 
-        '  float lum = (0.05 + 0.95*shadow) * (0.55 + 0.45*dens);',
-        '  float a   = dens * uOpa * 0.92;',
+        '  float towardLight = 0.45 + 0.55*smoothstep(-0.8,0.8,dot(normalize(P),L));',
+        '  float nearSide = mix(0.58,1.0,smoothstep(-1.3,1.3,P.z/uPlanetRadius));',
+        '  float lum = (0.018 + 0.982*shadow)*towardLight*0.90;',
+        '  float a = dens*uOpa*nearSide;',
         '  gl_FragColor = vec4(vec3(lum), a);',
         '}'
       ].join('\n'),
+      extensions: { derivatives: true },
       side: THREE.DoubleSide,
       transparent: true,
       depthWrite: false
     })
   );
-  ring.rotation.set(-Math.PI/2 + 0.36, 0, 0.20);
+  ring.rotation.set(1.22, 0.12, -0.38, 'ZYX');
   ring.renderOrder = 1;
-  rig.add(ring);
+  celestial.add(ring);
 
   /* ---------- 눈금테 (3D라 어떤 화면에서도 천체와 정확히 맞물린다) ---------- */
   var reticle = new THREE.Group();
@@ -886,6 +922,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   }
 
   var ticks = tickRing(1.12, 72, 0.035, 6, 0.078);
+  ticks.userData.opacity = 0.28;
   reticle.add(ticks);
 
   // 십자 조준선 — 천체를 비껴가도록 안쪽을 비워둔다
@@ -916,9 +953,71 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     reticle.userData.orbit = orbit;
   })();
 
+  // A fixed azimuth scale and interrupted aperture arcs suggest an observatory,
+  // while only the small acquisition arc moves around the limb.
+  function instrumentLines(points, opacity, parent){
+    var geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(points,3));
+    var line = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({
+      color:0xffffff, transparent:true, opacity:opacity, depthTest:false, depthWrite:false
+    }));
+    line.userData.opacity = opacity;
+    (parent || reticle).add(line);
+    return line;
+  }
+  function instrumentArc(radius, start, end, opacity, parent){
+    var points = [], count = Math.ceil((end-start)*70);
+    for(var j=0;j<count;j++){
+      var a=start+(end-start)*j/count, b=start+(end-start)*(j+1)/count;
+      points.push(Math.cos(a)*radius,Math.sin(a)*radius,0,
+                  Math.cos(b)*radius,Math.sin(b)*radius,0);
+    }
+    return instrumentLines(points,opacity,parent);
+  }
+  function instrumentLabel(text, x, y, width, opacity){
+    var labelCanvas = document.createElement('canvas');
+    labelCanvas.width=512; labelCanvas.height=96;
+    var context=labelCanvas.getContext('2d');
+    context.font='32px monospace'; context.fillStyle='#ffffff';
+    context.textAlign='center'; context.textBaseline='middle';
+    context.fillText(text,256,48);
+    var texture=new THREE.CanvasTexture(labelCanvas);
+    var sprite=new THREE.Sprite(new THREE.SpriteMaterial({
+      map:texture, transparent:true, opacity:opacity, depthTest:false, depthWrite:false
+    }));
+    sprite.position.set(x,y,0.02);
+    sprite.scale.set(width,width*96/512,1);
+    sprite.userData.opacity=opacity;
+    reticle.add(sprite);
+  }
+  for(var sector=0;sector<12;sector++){
+    var angle=Math.PI/2-sector*Math.PI/6;
+    instrumentLabel(String(sector*30).padStart(3,'0'),Math.cos(angle)*1.43,
+                    Math.sin(angle)*1.43,0.70,0.52);
+  }
+  for(var quadrant=0;quadrant<4;quadrant++){
+    var start=quadrant*Math.PI/2+0.20;
+    instrumentArc(1.54,start,start+0.42,0.26);
+    instrumentArc(1.56,start,start+0.10,0.40);
+    // Short radial stops mark the aperture's extent.
+    instrumentLines([Math.cos(start)*1.51,Math.sin(start)*1.51,0,
+                     Math.cos(start)*1.59,Math.sin(start)*1.59,0],0.32);
+  }
+  instrumentLines([0.76,-1.19,0, 1.04,-1.48,0,
+                   1.04,-1.48,0, 1.72,-1.48,0,
+                   -0.83,1.13,0, -1.05,1.51,0,
+                   -1.05,1.51,0, -1.64,1.51,0],0.25);
+  instrumentLabel('LIMB / TRACK',1.39,-1.40,1.03,0.48);
+  instrumentLabel('OBS. 01',-1.35,1.59,0.92,0.48);
+  var acquisition = new THREE.Group();
+  reticle.add(acquisition);
+  instrumentArc(1.235,0.22,0.46,0.48,acquisition);
+  instrumentLines([Math.cos(0.46)*1.21,Math.sin(0.46)*1.21,0,
+                   Math.cos(0.46)*1.26,Math.sin(0.46)*1.26,0],0.56,acquisition);
+
   /* ---------- 별 ---------- */
   (function(){
-    var N = 1400, pos = new Float32Array(N*3), i, r, th, ph;
+    var N = 520, pos = new Float32Array(N*3), i, r, th, ph;
     for(i=0;i<N;i++){
       r = 26 + Math.random()*22;
       th = Math.random()*Math.PI*2;
@@ -930,7 +1029,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     var g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     scene.add(new THREE.Points(g, new THREE.PointsMaterial({
-      color:0xffffff, size:0.10, sizeAttenuation:true, transparent:true, opacity:0.75
+      color:0xffffff, size:0.075, sizeAttenuation:true, transparent:true, opacity:0.38
     })));
   })();
 
@@ -953,7 +1052,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   ].join('\n');
 
   var cutMat = new THREE.ShaderMaterial({
-    uniforms:{ tD:{value:null}, uCut:{value:0.52} },
+    uniforms:{ tD:{value:null}, uCut:{value:0.18} },
     vertexShader: POST_VERT,
     fragmentShader:[
       'precision mediump float;',
@@ -961,8 +1060,8 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
       'void main(){',
       '  vec3 c = texture2D(tD, vUv).rgb;',
       '  float l = max(max(c.r,c.g),c.b);',
-      '  float k = max(l - uCut, 0.0) / max(1.0 - uCut, 1e-4);',
-      '  gl_FragColor = vec4(c * k * k, 1.0);',
+      '  float k = smoothstep(uCut*0.5, uCut+0.32, l);',
+      '  gl_FragColor = vec4(c*k, 1.0);',
       '}'
     ].join('\n')
   });
@@ -983,15 +1082,15 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   });
 
   var compMat = new THREE.ShaderMaterial({
-    uniforms:{ tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.85} },
+    uniforms:{ tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42} },
     vertexShader: POST_VERT,
     fragmentShader:[
       'precision mediump float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'void main(){',
       '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
-      // 톤 매핑을 걸면 순백이 눌려 흑백 대비가 죽는다. 0–1 구간을 그대로 두고 넘치는 값만 자른다
-      '  c = clamp(c, 0.0, 1.0);',
+      // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
+      '  c = pow(1.0-exp(-max(c,vec3(0.0))*1.45), vec3(0.88));',
       '  float d = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898,78.233)))*43758.5453);',
       '  gl_FragColor = vec4(c + (d-0.5)/255.0, 1.0);',
       '}'
@@ -1005,31 +1104,74 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
   }
 
   /* ---------- 조작 ---------- */
-  var P = { pen:0.16, sun:0.62, atmo:0.72, turb:0.70, ring:0.85, band:0.82, reticle:0.70 };
-  function bind(id, out, key, fmt){
+  // Captured from the user's live controls on 2026-09-08.
+  // Slider zero preserves this appearance; each control moves toward its labeled endpoint.
+  var P = {};
+  function bind(id, out, key, target){
     var el = document.getElementById(id), lab = document.getElementById(out);
-    el.addEventListener('input', function(){
-      P[key] = el.value/100;
-      lab.textContent = fmt(P[key]);
-    });
+    function update(){
+      var amount = Number(el.value)/100;
+      P[key] = planetBaseline[key] + (target - planetBaseline[key])*amount;
+      // Sun position wraps naturally through sine/cosine in the render loop.
+      lab.textContent = key === 'sun' && amount > 0 ? '+' + Math.round(amount*360) + '°' : el.value;
+      el.setAttribute('aria-valuetext', amount === 0 ? '0, 기본 모습' : lab.textContent);
+    }
+    el.addEventListener('input', update);
+    // Always start at the saved appearance, including after a browser form restore.
+    el.value = el.defaultValue;
+    update();
   }
-  bind('s-pen','v-pen','pen',    function(v){ return v.toFixed(2); });
-  bind('s-sun','v-sun','sun',    function(v){ return v.toFixed(2); });
-  bind('s-atm','v-atm','atmo',   function(v){ return v.toFixed(2); });
-  bind('s-trb','v-trb','turb',   function(v){ return v.toFixed(2); });
-  bind('s-rng','v-rng','ring',   function(v){ return v.toFixed(2); });
-  bind('s-bnd','v-bnd','band',   function(v){ return v.toFixed(2); });
-  bind('s-ret','v-ret','reticle',function(v){ return v < 0.04 ? 'OFF' : (v > 0.96 ? 'FULL' : v.toFixed(2)); });
+  bind('s-pen','v-pen','pen',0.60);
+  bind('s-sun','v-sun','sun',planetBaseline.sun + 1);
+  bind('s-atm','v-atm','atmo',0);
+  bind('s-trb','v-trb','turb',1);
+  bind('s-rng','v-rng','ring',1);
+  bind('s-bnd','v-bnd','band',0);
+  bind('s-ret','v-ret','reticle',0);
 
-  var mx=0,my=0,tmx=0,tmy=0;
-  function pointer(e){
-    var t = (e.touches && e.touches[0]) ? e.touches[0] : e;
-    var r = canvas.getBoundingClientRect();
-    tmx = ((t.clientX-r.left)/r.width  - 0.5)*2;
-    tmy = ((t.clientY-r.top )/r.height - 0.5)*2;
+  var dragControl = document.getElementById('planet-drag');
+  var activePointer = null, lastX = 0, lastY = 0;
+  var turnAxis = new THREE.Vector3(), turnStep = new THREE.Quaternion();
+  var dragDiameter = 400;
+  function turnPlanet(dx,dy){
+    var distance = Math.hypot(dx,dy);
+    if(!distance) return;
+    turnAxis.set(dy/distance,dx/distance,0);
+    turnStep.setFromAxisAngle(turnAxis,distance*Math.PI/dragDiameter);
+    celestial.quaternion.premultiply(turnStep).normalize();
   }
-  window.addEventListener('mousemove', pointer, {passive:true});
-  canvas.addEventListener('touchmove', pointer, {passive:true});
+  function finishDrag(e){
+    if(e && e.pointerId !== activePointer) return;
+    var pointerId = activePointer;
+    activePointer = null;
+    dragControl.classList.remove('is-dragging');
+    if(pointerId !== null && dragControl.hasPointerCapture(pointerId)){
+      dragControl.releasePointerCapture(pointerId);
+    }
+  }
+  dragControl.addEventListener('pointerdown',function(e){
+    if(activePointer !== null || !e.isPrimary || e.button !== 0) return;
+    activePointer=e.pointerId; lastX=e.clientX; lastY=e.clientY;
+    dragControl.setPointerCapture(e.pointerId);
+    dragControl.classList.add('is-dragging');
+    e.preventDefault();
+  });
+  dragControl.addEventListener('pointermove',function(e){
+    if(e.pointerId !== activePointer) return;
+    turnPlanet(e.clientX-lastX,e.clientY-lastY);
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  dragControl.addEventListener('pointerup',finishDrag);
+  dragControl.addEventListener('pointercancel',finishDrag);
+  dragControl.addEventListener('lostpointercapture',finishDrag);
+  window.addEventListener('blur',function(){ finishDrag(); });
+  dragControl.addEventListener('keydown',function(e){
+    var delta={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+    if(!delta) return;
+    e.preventDefault();
+    var step=dragDiameter*(e.shiftKey ? 5 : 1)/180;
+    turnPlanet(delta[0]*step,delta[1]*step);
+  });
 
   var reduce = false;
   try{
@@ -1043,6 +1185,7 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },{threshold:0.01}).observe(canvas);
   }
 
+  var dragCenter = new THREE.Vector3();
   function resize(){
     var w = canvas.clientWidth, h = canvas.clientHeight;
     if(!w || !h) return;
@@ -1051,10 +1194,24 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     renderer.setSize(w, h, false);
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
-    // 넓은 화면에서는 천체를 오른쪽으로, 좁으면 가운데로
-    var t = Math.max(0, Math.min(1, (w/h - 1.0)/0.85));
-    rig.position.x = 1.15 * t;
-    rig.position.y = -0.24 * (1-t);
+    // Keep the crescent clear of the title, including tablet-width previews.
+    var mobile = w <= 600;
+    var viewHeight = 2 * camera.position.z * Math.tan(camera.fov*Math.PI/360);
+    var centerFraction = w <= 1040 ? 0.71 : 0.69;
+    rig.position.x = mobile ? 0.08 : (centerFraction-0.5)*viewHeight*camera.aspect;
+    rig.position.y = mobile ? -0.56 : 0.08;
+    var scale = mobile ? 0.51 : Math.min(1.0,w/1200);
+    rig.scale.setScalar(scale);
+    camera.updateMatrixWorld();
+    dragCenter.copy(rig.position).project(camera);
+    dragDiameter=2.08*scale*h/viewHeight;
+    dragControl.style.left=((dragCenter.x+1)*w/2)+'px';
+    dragControl.style.top=((1-dragCenter.y)*h/2)+'px';
+    dragControl.style.width=dragControl.style.height=dragDiameter+'px';
+    dragControl.hidden=false;
+    atmo.material.uniforms.uRp.value=scale;
+    atmo.material.uniforms.uRs.value=ATMO_R*scale;
+    ring.material.uniforms.uPlanetRadius.value=scale;
 
     var pw = Math.max(2, Math.floor(w*dpr)), ph = Math.max(2, Math.floor(h*dpr));
     if(rtScene.width !== pw || rtScene.height !== ph){
@@ -1076,19 +1233,14 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
 
   function frame(now){
     requestAnimationFrame(frame);
-    if(!visible) return;
+    if(!visible || document.hidden) return;
     resize();
 
     var t = reduce ? frozen : (now - t0)/1000;
 
-    mx += (tmx-mx)*0.045;
-    my += (tmy-my)*0.045;
-    rig.rotation.y = mx*0.10;
-    rig.rotation.x = my*0.07;
-
     // 태양 방위각
     var a = P.sun * Math.PI*2;
-    bodyUniforms.uLight.value.set(Math.cos(a), 0.26, Math.sin(a)).normalize();
+    bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
     bodyUniforms.uTime.value  = t;
     bodyUniforms.uPen.value   = Math.max(P.pen, 0.012);
     bodyUniforms.uTurb.value = P.turb;
@@ -1097,9 +1249,10 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     uRing.value = P.ring;
     ring.visible = P.ring > 0.02;
 
-    ticks.rotation.z = t*0.05;
-    if(reticle.userData.orbit) reticle.userData.orbit.rotation.z = -t*0.03;
-    reticle.traverse(function(o){ if(o.material) o.material.opacity = P.reticle * (o === ticks ? 0.40 : 0.34); });
+    acquisition.rotation.z = -t*0.045;
+    reticle.traverse(function(o){
+      if(o.material) o.material.opacity = P.reticle * (o.userData.opacity === undefined ? 0.22 : o.userData.opacity);
+    });
     reticle.visible = P.reticle > 0.04;
 
     // 씬 → 오프스크린
@@ -1132,8 +1285,8 @@ footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12p
     frames++;
     if(now - lastTele > 120){
       lastTele = now;
-      elRot.textContent = ((t*0.055*180/Math.PI) % 360).toFixed(1) + '°';
-      elInc.textContent = (P.sun*360).toFixed(1) + '°';
+      elRot.textContent = ((t*0.009*180/Math.PI) % 360).toFixed(1) + '°';
+      elInc.textContent = ((P.sun % 1)*360).toFixed(1) + '°';
     }
     if(now - fpsT > 1000){
       elFps.textContent = Math.round(frames*1000/(now-fpsT)) + ' fps';
