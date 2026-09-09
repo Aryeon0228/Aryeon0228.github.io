@@ -4,13 +4,13 @@ import {SOURCES} from './light-sources.mjs';
 import {renderRoomPair} from './room-renderer.mjs';
 export function initRoomLab(showRoom){
  const $=id=>document.getElementById(id);let state=roomDefaults(),queued=false,drag=null;
- const fmt=x=>x===0?'0':x>=1000?x.toLocaleString('en-US',{maximumFractionDigits:2}):x>=.01?x.toLocaleString('en-US',{maximumFractionDigits:3}):x.toExponential(2);
+ const fmt=x=>x===0?'0':x>=1000?x.toLocaleString('en-US',{maximumFractionDigits:2}):x>=.01?x.toLocaleString('en-US',{maximumFractionDigits:3}):x.toLocaleString('en-US',{maximumSignificantDigits:3});
  function update(){
   const r=roomContributions(state);
   $('room-outside').value=state.outside;$('room-lamp').value=state.lamp;$('room-outside-art').src='assets/'+SOURCES[state.outside].image+'.png';$('room-lamp-art').src='assets/'+SOURCES[state.lamp].image+'.png';
   for(const [id,key,log] of [['outdoor-lux','outdoorLux',true],['reach','reach',true],['count','count',false],['distance','distance',true],['exposure','exposure',false]])$('room-'+id).value=log?Math.log10(state[key]):state[key];
   for(const [id,key] of [['window-on','windowOn'],['lamp-on','lampOn'],['color','color']])$('room-'+id).checked=state[key];
-  $('room-outdoor-out').value=fmt(state.outdoorLux)+' lx';$('room-reach-out').value=fmt(state.reach*100)+'%';$('room-count-out').value=state.count+'개';$('room-distance-out').value=state.distance.toFixed(2)+' m';$('room-exposure-out').value=(state.exposure>=0?'+':'')+state.exposure.toFixed(2)+' stops';
+  $('room-outdoor-out').value=fmt(state.outdoorLux)+' lx';$('room-reach-out').value=fmt(state.reach*100)+'%';$('room-reach').setAttribute('aria-valuetext',fmt(state.reach*100)+'%');$('room-count-out').value=state.count+'개';$('room-distance-out').value=state.distance.toFixed(2)+' m';$('room-exposure-out').value=(state.exposure>=0?'+':'')+state.exposure.toFixed(2)+' stops';
   for(const [id,value] of [['left-lux',r.windowLux],['right-lux',r.totalLux],['window-value',r.windowLux],['lamp-value',r.lampLux],['total-value',r.totalLux]])$('room-'+id).textContent=fmt(value)+' lx';
   $('room-change').textContent=r.windowLux===0?(r.totalLux===0?'두 빛 모두 꺼짐':'창빛 없이 실내 조명만'):'+'+fmt(r.increasePercent)+'% · +'+r.stopsAdded.toFixed(3)+' stops';
   $('room-fit-window').disabled=r.windowLux===0;$('room-fit-total').disabled=r.totalLux===0;$('room-fit-lamp').disabled=r.lampLux===0;
