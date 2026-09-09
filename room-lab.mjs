@@ -13,7 +13,7 @@ export function initRoomLab(showRoom){
   $('room-outdoor-out').value=fmt(state.outdoorLux)+' lx';$('room-reach-out').value=fmt(state.reach*100)+'%';$('room-count-out').value=state.count+'개';$('room-distance-out').value=state.distance.toFixed(2)+' m';$('room-exposure-out').value=(state.exposure>=0?'+':'')+state.exposure.toFixed(2)+' stops';
   for(const [id,value] of [['left-lux',r.windowLux],['right-lux',r.totalLux],['window-value',r.windowLux],['lamp-value',r.lampLux],['total-value',r.totalLux]])$('room-'+id).textContent=fmt(value)+' lx';
   $('room-change').textContent=r.windowLux===0?(r.totalLux===0?'두 빛 모두 꺼짐':'창빛 없이 실내 조명만'):'+'+fmt(r.increasePercent)+'% · +'+r.stopsAdded.toFixed(3)+' stops';
-  $('room-fit-window').disabled=r.windowLux===0;$('room-fit-total').disabled=r.totalLux===0;
+  $('room-fit-window').disabled=r.windowLux===0;$('room-fit-total').disabled=r.totalLux===0;$('room-fit-lamp').disabled=r.lampLux===0;
   $('room-takeaway').textContent=r.totalLux===0?'창빛이나 실내 조명을 켜보세요.':r.lampLux===0?'실내 조명이 꺼져 있어 두 화면이 같습니다.':r.windowLux===0?'창빛이 없어 오른쪽에는 실내 조명만 기여합니다.':r.increasePercent<1?'이 측정면에서는 창빛에 비해 실내 조명의 기여가 작습니다. 노출을 그대로 두고 창빛 도달 비율을 낮춰보세요.':'이 측정면에서 실내 조명의 몫은 전체 빛의 '+(r.lampShare*100).toFixed(1)+'%입니다. 창빛을 다시 높여 비교해보세요.';
   document.querySelectorAll('[data-room-count]').forEach(b=>b.setAttribute('aria-pressed',state.count===+b.dataset.roomCount));document.querySelectorAll('[data-reach]').forEach(b=>b.setAttribute('aria-pressed',Math.abs(state.reach-+b.dataset.reach)<1e-10));
   $('room-left-canvas').setAttribute('aria-label','창빛만: 측정면 '+fmt(r.windowLux)+'럭스');$('room-right-canvas').setAttribute('aria-label','창빛과 실내 조명: 측정면 '+fmt(r.totalLux)+'럭스. 두 화면은 같은 노출입니다.');
@@ -25,7 +25,7 @@ export function initRoomLab(showRoom){
  for(const [id,key] of [['outside','outside'],['lamp','lamp']])$('room-'+id).onchange=e=>apply({[key]:e.target.value});
  for(const [id,key] of [['window-on','windowOn'],['lamp-on','lampOn'],['color','color']])$('room-'+id).onchange=e=>apply({[key]:e.target.checked});
  document.querySelectorAll('[data-room-count]').forEach(b=>b.onclick=()=>apply({count:+b.dataset.roomCount}));document.querySelectorAll('[data-reach]').forEach(b=>b.onclick=()=>apply({reach:+b.dataset.reach}));
- for(const [id,key] of [['fit-window','windowLux'],['fit-total','totalLux']])$('room-'+id).onclick=()=>{const lux=roomContributions(state)[key];if(lux>0)apply({exposure:fitExposure(lux)});};
+ for(const [id,key] of [['fit-window','windowLux'],['fit-lamp','lampLux'],['fit-total','totalLux']])$('room-'+id).onclick=()=>{const lux=roomContributions(state)[key];if(lux>0)apply({exposure:fitExposure(lux)});};
  const canvases=[$('room-left-canvas'),$('room-right-canvas')];
  const rotate=(yaw,pitch)=>apply({viewYaw:((yaw+180)%360+360)%360-180,viewPitch:Math.max(2,Math.min(75,pitch))});
  function finishDrag(){
