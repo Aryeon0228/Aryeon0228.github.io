@@ -9,7 +9,7 @@ export function initRoomLab(showRoom){
   const r=roomContributions(state);
   $('room-outside').value=state.outside;$('room-lamp').value=state.lamp;$('room-outside-art').src='assets/'+SOURCES[state.outside].image+'.png';$('room-lamp-art').src='assets/'+SOURCES[state.lamp].image+'.png';
   for(const [id,key,log] of [['outdoor-lux','outdoorLux',true],['reach','reach',true],['count','count',false],['distance','distance',true],['exposure','exposure',false]])$('room-'+id).value=log?Math.log10(state[key]):state[key];
-  for(const [id,key] of [['window-on','windowOn'],['lamp-on','lampOn'],['color','color']])$('room-'+id).checked=state[key];
+  for(const [id,key] of [['window-on','windowOn'],['lamp-on','lampOn'],['color','color'],['bloom','bloom']])$('room-'+id).checked=state[key];
   $('room-outdoor-out').value=fmt(state.outdoorLux)+' lx';$('room-reach-out').value=fmt(state.reach*100)+'%';$('room-reach').setAttribute('aria-valuetext',fmt(state.reach*100)+'%');$('room-count-out').value=state.count+'개';$('room-distance-out').value=state.distance.toFixed(2)+' m';$('room-exposure-out').value=(state.exposure>=0?'+':'')+state.exposure.toFixed(2)+' stops';
   for(const [id,value] of [['left-lux',r.windowLux],['right-lux',r.totalLux],['window-value',r.windowLux],['lamp-value',r.lampLux],['total-value',r.totalLux]])$('room-'+id).textContent=fmt(value)+' lx';
   $('room-change').textContent=r.windowLux===0?(r.totalLux===0?'두 빛 모두 꺼짐':'창빛 없이 실내 조명만'):'+'+fmt(r.increasePercent)+'% · +'+r.stopsAdded.toFixed(3)+' stops';
@@ -23,7 +23,7 @@ export function initRoomLab(showRoom){
  const apply=input=>{state=configureRoom(state,input);return update();};
  for(const [id,key,log] of [['outdoor-lux','outdoorLux',true],['reach','reach',true],['count','count',false],['distance','distance',true],['exposure','exposure',false]])$('room-'+id).oninput=e=>apply({[key]:log?Number((10**+e.target.value).toPrecision(12)):+e.target.value});
  for(const [id,key] of [['outside','outside'],['lamp','lamp']])$('room-'+id).onchange=e=>apply({[key]:e.target.value});
- for(const [id,key] of [['window-on','windowOn'],['lamp-on','lampOn'],['color','color']])$('room-'+id).onchange=e=>apply({[key]:e.target.checked});
+ for(const [id,key] of [['window-on','windowOn'],['lamp-on','lampOn'],['color','color'],['bloom','bloom']])$('room-'+id).onchange=e=>apply({[key]:e.target.checked});
  document.querySelectorAll('[data-room-count]').forEach(b=>b.onclick=()=>apply({count:+b.dataset.roomCount}));document.querySelectorAll('[data-reach]').forEach(b=>b.onclick=()=>apply({reach:+b.dataset.reach}));
  for(const [id,key] of [['fit-window','windowLux'],['fit-lamp','lampLux'],['fit-total','totalLux']])$('room-'+id).onclick=()=>{const lux=roomContributions(state)[key];if(lux>0)apply({exposure:fitExposure(lux)});};
  const canvases=[$('room-left-canvas'),$('room-right-canvas')];
@@ -53,6 +53,6 @@ export function initRoomLab(showRoom){
  $('room-view-reset').onclick=resetView;
  function reset(){finishDrag();state=roomDefaults();update();}$('room-reset').onclick=reset;$('reset').addEventListener('click',reset);update();
  const context=document.modelContext;
- if(context?.registerTool){const lifecycle=new AbortController();try{Promise.resolve(context.registerTool({name:'configure_window_room',description:'Configure the window-room experiment and show its tab. Both views share one exposure: window light alone versus the same room with a local light. reach is an illustrative receiving-surface fraction, not glass transmission. viewYaw and viewPitch are shared camera angles in degrees; rotating never moves the lights or receiver. Returns lux contributions after updating.',inputSchema:roomSchema,annotations:{readOnlyHint:false,untrustedContentHint:false},async execute(input){const result=apply(input);showRoom();await new Promise(requestAnimationFrame);return result;}},{signal:lifecycle.signal})).catch(()=>{});}catch{}window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});}
+ if(context?.registerTool){const lifecycle=new AbortController();try{Promise.resolve(context.registerTool({name:'configure_window_room',description:'Configure the window-room experiment and show its tab. Both views share one exposure: window light alone versus the same room with a local light. reach is an illustrative receiving-surface fraction, not glass transmission. viewYaw and viewPitch are shared camera angles in degrees; rotating never moves the lights or receiver. bloom adds a bounded highlight glow without changing lux. Returns lux contributions after updating.',inputSchema:roomSchema,annotations:{readOnlyHint:false,untrustedContentHint:false},async execute(input){const result=apply(input);showRoom();await new Promise(requestAnimationFrame);return result;}},{signal:lifecycle.signal})).catch(()=>{});}catch{}window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});}
  return {reset};
 }

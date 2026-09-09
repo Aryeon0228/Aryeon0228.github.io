@@ -1,4 +1,5 @@
-import {linearDisplay,srgb} from './lighting-physics.mjs';
+import {bloomLinear} from './room-bloom.mjs';
+import {srgb} from './lighting-physics.mjs';
 import {SOURCES,balancedColor} from './light-sources.mjs';
 import {roomContributions} from './room-physics.mjs';
 const EPS=1e-4;
@@ -66,6 +67,7 @@ export function renderRoomPair(leftCanvas,rightCanvas,s,interactive=false){
  const windowRGB=s.color?balancedColor(SOURCES[s.outside].color):[1,1,1],lampRGB=s.color?balancedColor(SOURCES[s.lamp].color):[1,1,1];
  const lamp=[0,.9,8-s.distance],power=s.lampOn?SOURCES[s.lamp].intensity*s.count:0;
  const frames=contexts.map(ctx=>ctx.createImageData(W,H));
+ const hdr=[new Float32Array(N*3),new Float32Array(N*3)],exposureScale=2**s.exposure/100000*(.18/.82);
  for(let i=0;i<N;i++){
   const j=i*3,k=i*4;let local=0;
   if(kind[i]&&kind[i]!==4&&power){
@@ -76,9 +78,13 @@ export function renderRoomPair(leftCanvas,rightCanvas,s,interactive=false){
   }
   const win=kind[i]===4?(s.windowOn?s.outdoorLux*.3:0):amount.windowLux*day[i];
   for(let side=0;side<2;side++){
-   for(let c=0;c<3;c++){const light=win*windowRGB[c]+(side===1?local*lampRGB[c]:0);frames[side].data[k+c]=kind[i]?Math.round(255*Math.min(1,srgb(linearDisplay(light,rho[i]||.18,s.exposure)))):7;}
+   for(let c=0;c<3;c++){const light=win*windowRGB[c]+(side===1?local*lampRGB[c]:0);hdr[side][j+c]=kind[i]?light*((rho[i]||.18)/.18)*exposureScale:(7/255/12.92)/(1-7/255/12.92);}
    frames[side].data[k+3]=255;
   }
+ }
+ for(let side=0;side<2;side++){
+  const linear=s.bloom?bloomLinear(hdr[side],W,H):hdr[side];
+  for(let i=0;i<N;i++)for(let c=0;c<3;c++){const x=linear[i*3+c];frames[side].data[i*4+c]=Math.round(255*Math.min(1,srgb(x/(1+x))));}
  }
  const project=p=>{const v=p.map((a,i)=>a-cam[i]),depth=v.reduce((a,b,i)=>a+b*forward[i],0);return [W/2+(v.reduce((a,b,i)=>a+b*right[i],0)/depth)/.9*W/2,H/2-(v.reduce((a,b,i)=>a+b*up[i],0)/depth)/.6*H/2];};
  const corners=[[-.28,.62,8],[.28,.62,8],[.28,1.18,8],[-.28,1.18,8]].map(project);
