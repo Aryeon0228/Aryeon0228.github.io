@@ -50,7 +50,16 @@ function buildGeometry(W,H,camera){
   const start=hit.map((v,k)=>v+n[k]*EPS),t=(-5-start[0])/sun[0],wy=start[1]+t*sun[1],wz=start[2]+t*sun[2];
   const through=t>0&&wy>1.2&&wy<4.2&&wz>3.5&&wz<8.5&&!cubeBlocks(start,sun,t);
   day[i]=(.08+(through?Math.max(0,n.reduce((v,a,k)=>v+a*sun[k],0)):0))/sampleWindow;
-  rho[i]=type===1?((Math.floor(hit[0]*1.3)+Math.floor(hit[2]*1.3))%2===0?.16:.22):.18;
+  // Neutral architectural finishes keep the light comparison legible without colored albedo.
+  if(type===1){
+   const joint=Math.min(Math.abs((hit[0]+30)%1.8-.9),Math.abs((hit[2]+30)%3-1.5));
+   const grain=(Math.sin(hit[0]*83+hit[2]*119)*Math.sin(hit[0]*131-hit[2]*37))*.004;
+   rho[i]=.205+grain-(joint<.012?.035:0);
+  }else if(type===2){
+   const baseboard=hit[1]<.13,ceilingTrim=hit[1]>4.30;
+   rho[i]=baseboard?.075:ceilingTrim?.14:.205;
+   if(hit[0]<-4.999&&hit[1]>1.1&&hit[1]<4.3&&hit[2]>3.4&&hit[2]<8.6)rho[i]=.065;
+  }else rho[i]=.18;
   // The framed reference patch is a uniform sample at its center, the reported receiver.
   if(type===3&&Math.abs(hit[2]-8)<EPS&&Math.abs(hit[0])<.28&&Math.abs(hit[1]-.9)<.28){type=5;day[i]=1;rho[i]=.18;}
   kind[i]=type;positions.set(hit,i*3);normals.set(n,i*3);
@@ -58,7 +67,7 @@ function buildGeometry(W,H,camera){
  return {positions,normals,day,rho,kind};
 }
 export function renderRoomPair(leftCanvas,rightCanvas,s,interactive=false){
- const W=interactive?240:480,H=interactive?160:320,N=W*H,camera=roomCamera(s),{cam,forward,right,up}=camera;
+ const W=interactive?270:600,H=interactive?180:400,N=W*H,camera=roomCamera(s),{cam,forward,right,up}=camera;
  const contexts=[leftCanvas,rightCanvas].map(c=>c.getContext?.('2d'));if(contexts.some(c=>!c))return;
  const key=[W,H,s.viewYaw,s.viewPitch].join(',');
  if(key!==geometryKey){geometry=buildGeometry(W,H,camera);geometryKey=key;}
@@ -92,10 +101,10 @@ export function renderRoomPair(leftCanvas,rightCanvas,s,interactive=false){
  contexts.forEach((ctx,side)=>{
   ctx.putImageData(frames[side],0,0);
   // Draw an actual projected patch outline, with a dashed locator when the block hides it.
-  const scale=W/480,[x,y]=project(receiver);ctx.lineWidth=1.5*scale;ctx.strokeStyle='#b9e8ff';ctx.setLineDash(hidden?[4*scale,3*scale]:[]);
+  const scale=W/480,[x,y]=project(receiver);ctx.lineWidth=1.5*scale;ctx.strokeStyle='#d8d8d8';ctx.setLineDash(hidden?[4*scale,3*scale]:[]);
   ctx.beginPath();corners.forEach(([px,py],i)=>i?ctx.lineTo(px,py):ctx.moveTo(px,py));ctx.closePath();ctx.stroke();ctx.setLineDash([]);
   const label=hidden?'측정면 · 반대편 (점선)':'측정면 · 18%',lx=Math.max(6*scale,Math.min(W-154*scale,x-45*scale)),ly=Math.min(H-42*scale,Math.max(...corners.map(p=>p[1]))+20*scale);
-  ctx.font=12*scale+'px sans-serif';ctx.fillStyle='rgba(10,17,28,.85)';ctx.fillRect(lx-4*scale,ly-13*scale,158*scale,19*scale);ctx.fillStyle='#d5e2ff';ctx.fillText(label,lx,ly);
-  ctx.fillStyle='rgba(10,17,28,.85)';ctx.fillRect(12*scale,H-33*scale,(side?150:110)*scale,23*scale);ctx.fillStyle='#e0e8f6';ctx.fillText(side?(s.lampOn?SOURCES[s.lamp].name+' '+s.count+'개 · '+s.distance.toFixed(1)+' m':'실내 조명 꺼짐'):'창빛만',20*scale,H-17*scale);
+  ctx.font=12*scale+'px sans-serif';ctx.fillStyle='rgba(7,7,7,.86)';ctx.fillRect(lx-4*scale,ly-13*scale,158*scale,19*scale);ctx.fillStyle='#ddd';ctx.fillText(label,lx,ly);
+  ctx.fillStyle='rgba(7,7,7,.86)';ctx.fillRect(12*scale,H-33*scale,(side?150:110)*scale,23*scale);ctx.fillStyle='#ddd';ctx.fillText(side?(s.lampOn?SOURCES[s.lamp].name+' '+s.count+'개 · '+s.distance.toFixed(1)+' m':'실내 조명 꺼짐'):'창빛만',20*scale,H-17*scale);
  });
 }
