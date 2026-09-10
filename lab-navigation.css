@@ -1,4 +1,4 @@
-/* All three labs share one persistent navigation and heading layout. */
+/* All four labs share one persistent navigation and heading layout. */
 body[data-lab] {
   --pad: clamp(20px, 4vw, 56px);
   --lab-site-header-height: 76px;
@@ -22,20 +22,33 @@ body[data-lab] .site-header {
 
 .lab-navigation {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: stretch;
   gap: 24px;
   width: 100%;
   max-width: 1640px;
-  min-height: var(--lab-navigation-height);
+  height: var(--lab-navigation-height);
   margin: 0 auto;
   padding: 0 var(--pad);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
   font: 400 13px/1.4 var(--f-mono);
+}
+
+.lab-navigation::-webkit-scrollbar {
+  display: none;
+}
+
+/* Auto margin aligns the group right when it fits, without hiding the start on overflow. */
+.lab-navigation > a:first-child {
+  margin-left: auto;
 }
 
 .lab-navigation a {
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
   min-height: var(--lab-navigation-height);
   padding: 12px 0;
   border-bottom: 1px solid transparent;
@@ -56,7 +69,7 @@ body[data-lab] .site-header {
 
 .lab-navigation a:focus-visible {
   outline: 2px solid #eee;
-  outline-offset: 4px;
+  outline-offset: -4px;
 }
 
 body[data-lab] .shell,
