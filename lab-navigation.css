@@ -1,0 +1,143 @@
+/* All three labs share one persistent navigation and heading layout. */
+body[data-lab] {
+  --pad: clamp(20px, 4vw, 56px);
+  --lab-site-header-height: 76px;
+  --lab-navigation-height: 52px;
+}
+
+html:has(body[data-lab]) {
+  scroll-padding-top: 148px;
+  scrollbar-gutter: stable;
+}
+
+body[data-lab] .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.lab-navigation-bar {
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.lab-navigation {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  max-width: 1640px;
+  min-height: var(--lab-navigation-height);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  font: 400 13px/1.4 var(--f-mono);
+}
+
+.lab-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: var(--lab-navigation-height);
+  padding: 12px 0;
+  border-bottom: 1px solid transparent;
+  color: #999;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lab-navigation a:hover,
+.lab-navigation a:focus-visible,
+.lab-navigation a[aria-current="page"] {
+  color: #fff;
+}
+
+.lab-navigation a[aria-current="page"] {
+  border-bottom-color: #ccc;
+}
+
+.lab-navigation a:focus-visible {
+  outline: 2px solid #eee;
+  outline-offset: 4px;
+}
+
+body[data-lab] .shell,
+body[data-lab] .study-shell {
+  width: 100%;
+  max-width: 1640px;
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+body[data-lab] .lab-heading {
+  display: block;
+  padding: 26px 0 23px;
+}
+
+.lab-heading .study-kicker {
+  margin: 0 0 12px;
+  color: #999;
+  font: 400 12px/1.7 var(--f-mono);
+  letter-spacing: .12em;
+}
+
+.lab-heading .study-kicker a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lab-heading .study-kicker span {
+  margin: 0 9px;
+  color: #555;
+}
+
+.lab-heading h1 {
+  margin: 0;
+  font: 300 clamp(31px, 3.4vw, 47px)/1.15 var(--f-lat);
+  letter-spacing: -.018em;
+}
+
+.lab-heading h1 b {
+  font-weight: 600;
+}
+
+.lab-heading p {
+  max-width: none;
+  margin: 10px 0 0;
+  color: #aaa;
+  font: 300 14px/1.7 var(--f-ko);
+}
+
+@media (max-width: 999px) {
+  body[data-lab] {
+    --lab-site-header-height: 66px;
+  }
+
+  html:has(body[data-lab]) {
+    scroll-padding-top: 138px;
+  }
+
+  body[data-lab] .site-links {
+    max-height: calc(100dvh - var(--lab-site-header-height) - var(--lab-navigation-height) - 2px);
+  }
+
+  .lab-heading h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .lab-navigation {
+    gap: 20px;
+    font-size: 12px;
+  }
+
+  .lab-heading h1 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 380px) {
+  .lab-navigation {
+    gap: 16px;
+    font-size: 11px;
+  }
+}
