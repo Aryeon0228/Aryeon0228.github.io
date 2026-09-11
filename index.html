@@ -88,12 +88,13 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 }
 .planet-drag[hidden]{ display:none; }
 .planet-drag.is-dragging{ cursor:grabbing; }
-.planet-drag:focus-visible{ outline:1px dashed #777; outline-offset:10px; }
+.planet-drag:focus{ outline:none; }
 .planet-drag::after{
   content:'드래그하여 회전'; position:absolute; left:50%; top:65%; transform:translateX(-50%);
   font:11px var(--f-ko); white-space:nowrap; opacity:0; transition:opacity .2s; pointer-events:none;
 }
-.planet-drag:hover::after,.planet-drag:focus-visible::after{ opacity:.7; }
+.planet-drag:hover::after{ opacity:.7; }
+.planet-drag:focus-visible::after{ opacity:1; color:var(--w); text-decoration:underline; text-underline-offset:4px; }
 .planet-drag.is-dragging::after{ opacity:0; }
 /* three.js 미탑재/미지원 시 그대로 보이는 폴백 */
 .hero-fb{
@@ -1026,10 +1027,51 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   celestial.add(ring);
 
   // Two tiny moons travel along existing strands, showing the orbit's direction.
-  var moonLight=new THREE.DirectionalLight(0xffffff,1.2);
-  moonLight.target=body;
-  scene.add(moonLight);
-  var moonMaterial=new THREE.MeshLambertMaterial({color:0xc4c6cb,emissive:0x25272b});
+  var moonMaterial=new THREE.ShaderMaterial({
+    uniforms:{
+      uLight:bodyUniforms.uLight,
+      uPen:bodyUniforms.uPen,
+      uPlanetRadius:ring.material.uniforms.uPlanetRadius,
+      // The planet is centered on the rig, not on either orbiting moon.
+      uPlanetCenter:{value:rig.position},
+      uColor:{value:new THREE.Color(0xc4c6cb)}
+    },
+    vertexShader:[
+      'uniform vec3 uPlanetCenter;',
+      'varying vec3 vNormal; varying vec3 vFromPlanet; varying vec3 vToEye;',
+      'void main(){',
+      '  vec4 mv=modelViewMatrix*vec4(position,1.0);',
+      '  vNormal=normalMatrix*normal;',
+      '  vToEye=-mv.xyz;',
+      '  vFromPlanet=mv.xyz-(viewMatrix*vec4(uPlanetCenter,1.0)).xyz;',
+      '  gl_Position=projectionMatrix*mv;',
+      '}'
+    ].join('\n'),
+    fragmentShader:[
+      'precision highp float;',
+      'uniform vec3 uLight; uniform vec3 uColor;',
+      'uniform float uPlanetRadius; uniform float uPen;',
+      'varying vec3 vNormal; varying vec3 vFromPlanet; varying vec3 vToEye;',
+      'void main(){',
+      '  vec3 L=normalize(uLight);',
+      // Match the ring shadow in view space, at each point on the moon's surface.
+      '  float towardSun=-dot(vFromPlanet,L);',
+      '  float sunlight=1.0;',
+      '  if(towardSun>0.0){',
+      '    float distanceToAxis=length(vFromPlanet+L*towardSun);',
+      '    sunlight=smoothstep(uPlanetRadius*(1.0-uPen),uPlanetRadius*(1.0+uPen),distanceToAxis);',
+      '  }',
+      // Use the planet's soft day/night transition without an emissive fill.
+      '  vec3 n=normalize(vNormal);',
+      '  float ndl=dot(n,L),mu=clamp(dot(n,normalize(vToEye)),0.035,1.0);',
+      '  float pen=max(uPen,0.012);',
+      '  float daylight=smoothstep(-pen*0.65,pen,ndl);',
+      '  float incident=pow(max(ndl+pen*0.32,0.0)/(1.0+pen*0.32),0.64);',
+      '  float earthshine=0.0035*pow(mu,0.6);',
+      '  gl_FragColor=vec4(uColor*(daylight*incident*sunlight+earthshine),1.0);',
+      '}'
+    ].join('\n')
+  });
   var orbitMoons=[
     {strand:2,phase:1.80,speed:0.060,size:0.023},
     {strand:5,phase:2.70,speed:0.038,size:0.017}
@@ -1142,6 +1184,21 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
                    -1.02,1.28,0, -1.57,1.28,0],0.20);
   instrumentLabel('PENUM / ARRAY',-1.28,1.37,1.10,0.42);
   var reticleRest=new THREE.Quaternion();
+
+  // One quiet, camera-facing marker follows the inner moon.
+  var moonReticle=new THREE.Group(),moonCorners=[];
+  for(var moonCorner=0;moonCorner<4;moonCorner++){
+    var mx=moonCorner%2 ? 1 : -1,my=moonCorner<2 ? 1 : -1;
+    moonCorners.push(mx*0.038,my*0.062,0, mx*0.062,my*0.062,0,
+                     mx*0.062,my*0.062,0, mx*0.062,my*0.038,0);
+  }
+  var moonMarker=instrumentLines(moonCorners,0.20,moonReticle);
+  moonMarker.material.depthTest=true;
+  moonMarker.renderOrder=3;
+  scene.add(moonReticle);
+  var trackedFromPlanet=new THREE.Vector3(),trackedAxis=new THREE.Vector3();
+  var trackedPlanetView=new THREE.Vector3();
+  var markerRay=new THREE.Ray(),markerPlanet=new THREE.Sphere(),markerHit=new THREE.Vector3();
 
   /* ---------- 별 ---------- */
   (function(){
@@ -1448,7 +1505,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var a = P.sun * Math.PI*2;
     bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
     bodyUniforms.uTime.value  = t;
-    moonLight.position.copy(bodyUniforms.uLight.value).multiplyScalar(10).add(rig.position);
     orbitMoons.forEach(function(orbit){
       var angle=orbit.phase+t*orbit.speed;
       orbit.mesh.position.set(Math.cos(angle)*orbit.radius,Math.sin(angle)*orbit.radius,0.008);
@@ -1466,6 +1522,24 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       if(o.material) o.material.opacity = P.reticle * o.userData.opacity;
     });
     reticle.visible=P.reticle>0.04;
+
+    orbitMoons[0].mesh.getWorldPosition(moonReticle.position);
+    moonReticle.quaternion.copy(camera.quaternion);
+    moonReticle.scale.copy(rig.scale);
+    trackedPlanetView.copy(rig.position).applyMatrix4(camera.matrixWorldInverse);
+    trackedFromPlanet.copy(moonReticle.position).applyMatrix4(camera.matrixWorldInverse).sub(trackedPlanetView);
+    var trackTowardSun=-trackedFromPlanet.dot(bodyUniforms.uLight.value),trackSunlight=1;
+    if(trackTowardSun>0){
+      var axisDistance=trackedAxis.copy(bodyUniforms.uLight.value).multiplyScalar(trackTowardSun).add(trackedFromPlanet).length();
+      var planetRadius=ring.material.uniforms.uPlanetRadius.value,penWidth=bodyUniforms.uPen.value;
+      trackSunlight=THREE.MathUtils.smoothstep(axisDistance,planetRadius*(1-penWidth),planetRadius*(1+penWidth));
+    }
+    moonMarker.material.opacity=0.20*P.reticle*trackSunlight;
+    markerRay.set(camera.position,trackedAxis.copy(moonReticle.position).sub(camera.position).normalize());
+    markerPlanet.set(rig.position,rig.scale.x);
+    var markerOccluded=markerRay.intersectSphere(markerPlanet,markerHit)
+      && markerHit.distanceTo(camera.position)<moonReticle.position.distanceTo(camera.position)-orbitMoons[0].size*rig.scale.x;
+    moonReticle.visible=ring.visible && P.reticle>0.04 && trackSunlight>0.01 && !markerOccluded;
 
     // 씬 → 오프스크린
     renderer.setRenderTarget(rtScene);
