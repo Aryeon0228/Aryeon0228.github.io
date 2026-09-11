@@ -113,11 +113,12 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 
 .hero-inner > .wrap{ width:100%; }
 
-.hero-mark{ display:flex; align-items:center; gap:12px; margin-bottom:26px; }
+.hero-mark{ display:flex; align-items:center; gap:12px; margin-bottom:26px; width:fit-content; max-width:100%; }
 .hero-mark .dot{ width:5px; height:5px; background:var(--w); border-radius:50%; animation:blip 2.6s ease-in-out infinite; }
 @keyframes blip{ 0%,100%{opacity:1} 50%{opacity:.25} }
 
 .hero-name{
+  width:fit-content; max-width:100%;
   font-family:var(--f-lat); font-weight:200;
   font-size:clamp(50px,9.6vw,116px); line-height:.9; letter-spacing:-.026em;
 }
@@ -397,7 +398,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <!-- ======================= HERO ======================= -->
 <header class="hero" id="home">
   <div class="hero-fb"></div>
-  <canvas id="gl" aria-label="어둠 속 행성의 가장자리에 은빛 초승달이 떠 있습니다. 희미한 구름결과 불규칙한 간격의 실 같은 고리 위로 빛이 부드럽게 번집니다."></canvas>
+  <canvas id="gl" aria-label="어둠 속 행성의 가장자리에 은빛 초승달이 떠 있습니다. 희미한 구름결과 실 같은 고리 사이로 작은 위성이 공전하고, 먼 별들이 은은하게 반짝입니다."></canvas>
   <div class="hero-veil"></div>
   <canvas id="meteor-trail" aria-hidden="true"></canvas>
   <button type="button" id="planet-drag" class="planet-drag" hidden
@@ -734,6 +735,54 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   );
   celestial.add(body);
 
+  /* Distant stars stay behind the whole planetary system, independent of dragging. */
+  var starSeed=91723,starPositions=[],starSizes=[],starPhases=[],starBrightness=[];
+  function starRandom(){
+    starSeed=(Math.imul(starSeed,1664525)+1013904223)>>>0;
+    return starSeed/4294967296;
+  }
+  for(var starIndex=0;starIndex<190;starIndex++){
+    starPositions.push(starRandom()*2-1,starRandom()*2-1,-(22+starRandom()*48));
+    var prominence=starRandom();
+    starSizes.push(0.8+Math.pow(prominence,3)*1.25);
+    starPhases.push(starRandom()*Math.PI*2);
+    starBrightness.push(0.045+Math.pow(prominence,2)*0.32);
+  }
+  var starGeometry=new THREE.BufferGeometry();
+  starGeometry.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));
+  starGeometry.setAttribute('aSize',new THREE.Float32BufferAttribute(starSizes,1));
+  starGeometry.setAttribute('aPhase',new THREE.Float32BufferAttribute(starPhases,1));
+  starGeometry.setAttribute('aBrightness',new THREE.Float32BufferAttribute(starBrightness,1));
+  var starMaterial=new THREE.ShaderMaterial({
+    uniforms:{uTime:bodyUniforms.uTime,uAspect:{value:1},uDpr:{value:1}},
+    vertexShader:[
+      'attribute float aSize; attribute float aPhase; attribute float aBrightness;',
+      'uniform float uTime; uniform float uAspect; uniform float uDpr;',
+      'varying float vBrightness;',
+      'void main(){',
+      // View-aligned positions at different depths keep the sky stable on resize.
+      '  vec3 p=vec3(position.xy*vec2(uAspect,1.0)*(-position.z)*0.286745,position.z);',
+      '  gl_Position=projectionMatrix*vec4(p,1.0);',
+      '  gl_PointSize=max(1.0,aSize*uDpr);',
+      '  float pulse=pow(0.5+0.5*sin(uTime*(0.48+aPhase*0.065)+aPhase),4.0);',
+      '  float twinkle=mix(0.83+0.17*pulse,0.42+0.58*pulse,step(1.2,aSize));',
+      '  vBrightness=aBrightness*twinkle;',
+      '}'
+    ].join('\n'),
+    fragmentShader:[
+      'precision mediump float; varying float vBrightness;',
+      'void main(){',
+      '  vec2 p=gl_PointCoord-0.5;',
+      '  float core=exp(-dot(p,p)*13.0)*(1.0-smoothstep(0.35,0.5,length(p)));',
+      '  gl_FragColor=vec4(vec3(0.88,0.92,1.0),core*vBrightness);',
+      '}'
+    ].join('\n'),
+    transparent:true,depthTest:true,depthWrite:false,blending:THREE.AdditiveBlending
+  });
+  var distantStars=new THREE.Points(starGeometry,starMaterial);
+  distantStars.frustumCulled=false; distantStars.renderOrder=-10;
+  scene.add(distantStars);
+
   /* ---------- 대기 ----------
      껍질을 안쪽에서 바라본다(BackSide). 실루엣에 가까울수록 광선이 대기를
      길게 통과하므로 가장자리가 밝아지고, 행성 본체가 앞을 가려 고리만 남는다.
@@ -886,6 +935,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         uPen:   bodyUniforms.uPen,
         uOpa:   uRing,
         uStrands: { value:strands },
+        uTime: bodyUniforms.uTime,
         uScatter:ringScatter, uGrab:ringGrab, uLocal:ringLocal,
         uPlanetRadius: { value:1.0 },
         uRi:    { value: RING_I },
@@ -906,7 +956,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         'uniform vec3 uLight; uniform float uPen; uniform float uOpa; uniform float uRi; uniform float uRo; uniform float uPlanetRadius;',
         'varying vec3 vObj; varying vec3 vMV; varying vec3 vCen;',
         'uniform vec3 uStrands['+strands.length+'];',
-        'uniform float uScatter; uniform float uLocal; uniform vec3 uGrab;',
+        'uniform float uScatter; uniform float uLocal; uniform float uTime; uniform vec3 uGrab;',
         'void main(){',
         '  float r = length(vObj.xy);',
         '  vec2 grabDelta=vObj.xy-uGrab.xy;',
@@ -919,12 +969,19 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         '  float pixelLo = u - footprint*0.5;',
         '  float pixelHi = u + footprint*0.5;',
         '  float dens = 0.0;',
+        '  float orbitAngle=atan(vObj.y,vObj.x);',
         '  vec3 P = vMV-vCen;',
         '  float foreground = mix(0.18,1.0,smoothstep(-0.15,1.10,P.z/uPlanetRadius));',
         '  for(int i=0;i<'+strands.length+';i++){',
         '    vec3 strand = uStrands[i];',
         '    float overlap = max(0.0,min(pixelHi,strand.x+strand.y)-max(pixelLo,strand.x-strand.y));',
         '    float coverage = overlap/footprint*strand.z;',
+        // Small staggered breaks move along just a few threads; most stay intact.
+        '    if(i==1 || i==4 || i==7 || i==10 || i==13){',
+        '      float phase=orbitAngle-uTime*(0.050/(0.8+strand.x));',
+        '      float notch=smoothstep(0.984,0.998,cos(phase*3.0+float(i)*1.71));',
+        '      coverage*=1.0-notch*0.94;',
+        '    }',
         '    if(i>='+continuousStrandCount+') coverage *= foreground;',
         '    dens += coverage;',
         '  }',
@@ -956,6 +1013,22 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   ring.rotation.set(1.22, 0.12, -0.38, 'ZYX');
   ring.renderOrder = 1;
   celestial.add(ring);
+
+  // Two tiny moons travel along existing strands, showing the orbit's direction.
+  var moonLight=new THREE.DirectionalLight(0xffffff,1.2);
+  moonLight.target=body;
+  scene.add(moonLight);
+  var moonMaterial=new THREE.MeshLambertMaterial({color:0xc4c6cb,emissive:0x25272b});
+  var orbitMoons=[
+    {strand:2,phase:1.80,speed:0.060,size:0.023},
+    {strand:5,phase:2.70,speed:0.038,size:0.017}
+  ];
+  orbitMoons.forEach(function(orbit){
+    orbit.radius=RING_I+strands[orbit.strand].x*(RING_O-RING_I);
+    orbit.mesh=new THREE.Mesh(new THREE.SphereGeometry(orbit.size,20,12),moonMaterial);
+    orbit.mesh.renderOrder=1;
+    ring.add(orbit.mesh);
+  });
 
   // Dust leaves each orbit during interaction, then returns to its exact resting point.
   var dustPositions=[],dustKicks=[],dustSeeds=[];
@@ -1199,11 +1272,54 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ringLocal.value=localPoint ? 1 : 0;
     if(localPoint) ringGrab.value.copy(localPoint);
     dragControl.setPointerCapture(e.pointerId);
+    dragControl.focus({preventScroll:true});
     dragControl.classList.add('is-dragging');
     e.preventDefault();
   }
   dragControl.addEventListener('pointerdown',function(e){ beginPlanetDrag(e,null); });
   var ringRay=new THREE.Raycaster(),ringPointer=new THREE.Vector2();
+  // Keep the forgiving area in CSS pixels, even when an orbit is nearly edge-on.
+  // This runs only on pointer-down, not on every frame or pointer movement.
+  var ringHitSlop=12,ringHitSegments=128;
+  var hitPrev=new THREE.Vector3(),hitNext=new THREE.Vector3();
+  var hitLocal=new THREE.Vector3(),hitWorld=new THREE.Vector3(),hitDirection=new THREE.Vector3();
+  var hitPlanetCenter=new THREE.Vector3(),hitPlanetScale=new THREE.Vector3(),hitOcclusion=new THREE.Vector3();
+  var hitPlanet=new THREE.Sphere(),hitRay=new THREE.Ray();
+  function nearestVisibleOrbit(clientX,clientY,bounds){
+    var px=clientX-bounds.left,py=clientY-bounds.top;
+    var bestDistance=ringHitSlop*ringHitSlop,bestPoint=null;
+    body.getWorldPosition(hitPlanetCenter); body.getWorldScale(hitPlanetScale);
+    hitPlanet.set(hitPlanetCenter,hitPlanetScale.x);
+    strands.forEach(function(strand){
+      var radius=RING_I+strand.x*(RING_O-RING_I);
+      hitPrev.set(radius,0,0).applyMatrix4(ring.matrixWorld).project(camera);
+      for(var segment=1;segment<=ringHitSegments;segment++){
+        var angle=segment/ringHitSegments*Math.PI*2;
+        hitNext.set(Math.cos(angle)*radius,Math.sin(angle)*radius,0).applyMatrix4(ring.matrixWorld).project(camera);
+        if(Math.abs(hitPrev.z)<=1 && Math.abs(hitNext.z)<=1){
+          var ax=(hitPrev.x+1)*bounds.width/2,ay=(1-hitPrev.y)*bounds.height/2;
+          var bx=(hitNext.x+1)*bounds.width/2,by=(1-hitNext.y)*bounds.height/2;
+          var dx=bx-ax,dy=by-ay,lengthSquared=dx*dx+dy*dy;
+          var along=lengthSquared ? Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/lengthSquared)) : 0;
+          var ex=px-ax-dx*along,ey=py-ay-dy*along,distance=ex*ex+ey*ey;
+          if(distance<bestDistance){
+            var nearAngle=(segment-1+along)/ringHitSegments*Math.PI*2;
+            hitLocal.set(Math.cos(nearAngle)*radius,Math.sin(nearAngle)*radius,0);
+            hitWorld.copy(hitLocal).applyMatrix4(ring.matrixWorld);
+            hitDirection.copy(hitWorld).sub(camera.position);
+            var distanceToOrbit=hitDirection.length();
+            hitRay.set(camera.position,hitDirection.normalize());
+            var blocked=hitRay.intersectSphere(hitPlanet,hitOcclusion)
+              && hitOcclusion.distanceTo(camera.position)<distanceToOrbit-0.01;
+            if(!blocked){bestDistance=distance;bestPoint=hitLocal.clone();}
+          }
+        }
+        hitPrev.copy(hitNext);
+      }
+    });
+    return bestPoint;
+  }
+
   document.querySelector('.hero').addEventListener('pointerdown',function(e){
     if(activePointer!==null || e.pointerType!=='mouse' || e.button!==0 || !ring.visible) return;
     if(e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary')) return;
@@ -1212,12 +1328,17 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     scene.updateMatrixWorld(true);
     ringRay.setFromCamera(ringPointer,camera);
     var hits=ringRay.intersectObject(ring,false);
-    if(!hits.length) return;
-    var local=ring.worldToLocal(hits[0].point.clone());
-    var radius=(Math.hypot(local.x,local.y)-RING_I)/(RING_O-RING_I);
-    if(strands.some(function(strand){ return Math.abs(strand.x-radius)<Math.max(0.025,strand.y*4); })){
-      beginPlanetDrag(e,local);
+    if(hits.length){
+      var local=ring.worldToLocal(hits[0].point.clone());
+      var radius=(Math.hypot(local.x,local.y)-RING_I)/(RING_O-RING_I);
+      var bodyHits=ringRay.intersectObject(body,false);
+      var occluded=bodyHits.length && bodyHits[0].distance<hits[0].distance;
+      if(!occluded && strands.some(function(strand){ return Math.abs(strand.x-radius)<Math.max(0.025,strand.y*4); })){
+        beginPlanetDrag(e,local); return;
+      }
     }
+    var nearby=nearestVisibleOrbit(e.clientX,e.clientY,bounds);
+    if(nearby) beginPlanetDrag(e,nearby);
   });
   dragControl.addEventListener('pointermove',function(e){
     if(e.pointerId !== activePointer) return;
@@ -1278,6 +1399,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     atmo.material.uniforms.uRs.value=ATMO_R*scale;
     ring.material.uniforms.uPlanetRadius.value=scale;
     ringDustMaterial.uniforms.uDpr.value=dpr;
+    starMaterial.uniforms.uDpr.value=dpr;
+    starMaterial.uniforms.uAspect.value=camera.aspect;
 
     var pw = Math.max(2, Math.floor(w*dpr)), ph = Math.max(2, Math.floor(h*dpr));
     if(rtScene.width !== pw || rtScene.height !== ph){
@@ -1314,6 +1437,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var a = P.sun * Math.PI*2;
     bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
     bodyUniforms.uTime.value  = t;
+    moonLight.position.copy(bodyUniforms.uLight.value).multiplyScalar(10).add(rig.position);
+    orbitMoons.forEach(function(orbit){
+      var angle=orbit.phase+t*orbit.speed;
+      orbit.mesh.position.set(Math.cos(angle)*orbit.radius,Math.sin(angle)*orbit.radius,0.008);
+    });
     bodyUniforms.uPen.value   = Math.max(P.pen, 0.012);
     bodyUniforms.uTurb.value = P.turb;
     bodyUniforms.uBand.value = P.band;
