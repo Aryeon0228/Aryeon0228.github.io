@@ -13,7 +13,7 @@ import {presets,presetCategories} from './pbr-presets.mjs';
 import {presetCategoryLabels,presetLabels,specularToIor,iorToSpecular} from './pbr-preset-library.mjs';
 const $=id=>document.getElementById(id),container=$('canvas-container');
 const parameters=['roughness','metallic','specular','clearcoat','clearcoatRoughness','transmission','sheen','sheenRoughness','iridescence','iridescenceIOR','envMapIntensity'];
-const envFiles={studio:'studio_small_03_1k.hdr',sunset:'kloofendal_48d_partly_cloudy_puresky_1k.hdr',night:'moonlit_golf_1k.hdr',forest:'forest_slope_1k.hdr',warehouse:'empty_warehouse_01_1k.hdr'};
+const envFiles={studio:'studio_small_03_1k.hdr',daylight:'kloofendal_48d_partly_cloudy_puresky_1k.hdr',sunset:'the_sky_is_on_fire_1k.hdr',night:'moonlit_golf_1k.hdr',forest:'forest_slope_1k.hdr',warehouse:'empty_warehouse_01_1k.hdr'};
 let scene,camera,renderer,controls,material,mesh,composer,ao,mainLight,fillLight,backLight,ambientLight;
 let dirty=true,disposed=false,frame=0,previousTime=0,activeEnvironment,environmentSerial=0,environmentLoading=false,modelSerial=0,normalSerial=0;
 let currentPreset='brass',activePresetCategory='metals',currentIor=specularToIor(presets.brass.specular);const envCache=new Map(),envTargets=[];
