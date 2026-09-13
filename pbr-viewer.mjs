@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),container=$('canvas-container');
 const parameters=['roughness','metallic','specular','clearcoat','clearcoatRoughness','transmission','sheen','sheenRoughness','iridescence','iridescenceIOR','envMapIntensity'];
 const envFiles={studio:'studio_small_03_1k.hdr',sunset:'kloofendal_48d_partly_cloudy_puresky_1k.hdr',night:'moonlit_golf_1k.hdr',forest:'forest_slope_1k.hdr',warehouse:'empty_warehouse_01_1k.hdr'};
 let scene,camera,renderer,controls,material,mesh,composer,ao,mainLight,fillLight,backLight,ambientLight;
-let dirty=true,disposed=false,frame=0,previousTime=0,activeEnvironment,environmentSerial=0,modelSerial=0,normalSerial=0;
+let dirty=true,disposed=false,frame=0,previousTime=0,activeEnvironment,environmentSerial=0,environmentLoading=false,modelSerial=0,normalSerial=0;
 let currentPreset='brass',activePresetCategory='metals',currentIor=specularToIor(presets.brass.specular);const envCache=new Map(),envTargets=[];
 const status=message=>$('pbrStatus').textContent=message;
 let pendingLoads=0;const loading=delta=>{pendingLoads=Math.max(0,pendingLoads+delta);$('loading').hidden=pendingLoads===0;};
@@ -87,7 +87,9 @@ function updateLighting(){
 }
 function setBackground(){scene.background=$('backgroundToggle').checked&&activeEnvironment?.background?activeEnvironment.background:new THREE.Color(0x0b0b0b);scene.backgroundBlurriness=.12;dirty=true;}
 async function loadEnvironment(name){
- const serial=++environmentSerial;loading(1);
+ const serial=++environmentSerial;
+ // Only the current environment keeps the loading indicator active.
+ if(!environmentLoading){environmentLoading=true;loading(1);}
  try{
   if(!envCache.has(name)){
    envCache.set(name,new RGBELoader().loadAsync('assets/environments/'+envFiles[name]).then(texture=>{
@@ -98,7 +100,7 @@ async function loadEnvironment(name){
   const environment=await envCache.get(name);if(serial!==environmentSerial||disposed)return;
   activeEnvironment=environment;scene.environment=environment.texture;$('environmentName').textContent=name.toUpperCase();setBackground();status('환경 조명: '+name+' · 재질과 시점 설정은 유지됩니다.');
  }catch(error){if(serial===environmentSerial){console.error(error);status('환경 파일을 불러오지 못해 현재 스튜디오 조명을 유지합니다.');}}
- finally{loading(-1);}
+ finally{if(serial===environmentSerial){environmentLoading=false;loading(-1);}}
 }
 function resize(){
  if(!renderer)return;const w=Math.max(1,container.clientWidth),h=Math.max(1,container.clientHeight);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);composer?.setSize(w,h);dirty=true;
