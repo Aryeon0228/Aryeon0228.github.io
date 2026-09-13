@@ -2,6 +2,7 @@
 	Snap UV Vertices
 	Unwrap UVW에서 일정 거리 안의 UV 버텍스들을 평균 위치로 스냅
 	용도: 살짝 다른 모델링의 UV 아일랜드를 겹친 뒤, 버텍스를 한점으로 정렬
+	U/V만 정렬하며 W는 유지. 거리로 연결된 그룹은 연쇄적으로 합쳐짐.
 */
 
 try(destroyDialog SnapUVVerts) catch()
@@ -19,7 +20,11 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 	fn getUnwrapMod =
 	(
 		if selection.count != 1 then return undefined
-		for m in $.modifiers where classof m == Unwrap_UVW do return m
+		local mods = for m in selection[1].modifiers where classof m == Unwrap_UVW collect m
+		local activeMod = modPanel.getCurrentObject()
+		-- 여러 Unwrap이 있을 때 첫 modifier를 임의로 수정하지 않는다.
+		if (findItem mods activeMod) > 0 then return activeMod
+		if mods.count == 1 then return mods[1]
 		undefined
 	)
 
@@ -53,20 +58,21 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 	)
 
 	-- UV 버텍스 그룹 찾기 & 스냅 (doMove=false면 카운트만)
-	fn snapVerts uwMod thresh selOnly doMove:true =
+	fn snapVerts uwMod obj thresh selOnly doMove:true =
 	(
-		local numVerts = uwMod.numberVertices()
+		local sampleTime = currentTime
+		local numVerts = uwMod.numberVerticesByNode obj
 		local vIdx = #()
 		local vPos = #()
 
 		-- 대상 버텍스 수집
 		if selOnly then
 		(
-			local sel = uwMod.getSelectedVertices()
-			for i in sel do
+			local sel = uwMod.getSelectedVerticesByNode obj
+			for i in sel where i <= numVerts do
 			(
 				append vIdx i
-				append vPos (uwMod.getVertexPosition 0f i)
+				append vPos (uwMod.getVertexPositionByNode sampleTime i obj)
 			)
 		)
 		else
@@ -74,7 +80,7 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 			for i = 1 to numVerts do
 			(
 				append vIdx i
-				append vPos (uwMod.getVertexPosition 0f i)
+				append vPos (uwMod.getVertexPositionByNode sampleTime i obj)
 			)
 		)
 
@@ -124,16 +130,16 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 			for m in members do avgPos += vPos[m]
 			avgPos /= members.count as float
 
-			if doMove then
+			for m in members do
 			(
-				for m in members do
+				-- 2D 스냅: 기존 W 값과 이미 정렬된 정점은 유지한다.
+				local targetPos = [avgPos.x, avgPos.y, vPos[m].z]
+				if targetPos != vPos[m] then
 				(
-					uwMod.setVertexPosition 0f vIdx[m] avgPos
+					if doMove do uwMod.setVertexPosition2ByNode sampleTime vIdx[m] targetPos true true obj
 					numMoved += 1
 				)
 			)
-			else
-				numMoved += members.count
 		)
 
 		#(numGroups, numMoved)
@@ -149,15 +155,15 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 			else if selection.count > 1 then
 				lblInfo.text = "Select only one object."
 			else
-				lblInfo.text = "No Unwrap UVW modifier found."
+				lblInfo.text = "Select the target Unwrap UVW in the stack."
 			lblDetail.text = ""
 			btnRun.enabled = false
 			btnPreview.enabled = false
 		)
 		else
 		(
-			local numTV = uwMod.numberVertices()
-			local sel = uwMod.getSelectedVertices()
+			local numTV = uwMod.numberVerticesByNode selection[1]
+			local sel = uwMod.getSelectedVerticesByNode selection[1]
 			lblInfo.text = ("Target: " + $.name)
 			lblDetail.text = ("UV Verts: " + numTV as string + "  |  Selected: " + sel.numberSet as string)
 			btnRun.enabled = true
@@ -166,17 +172,31 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 	)
 
 	on SnapUVVerts open do updateInfo()
-	on tmrUpdate tick do updateInfo()
+	on tmrUpdate tick do
+	(
+		try (updateInfo()) catch
+		(
+			lblInfo.text = "Cannot read this Unwrap UVW."
+			lblDetail.text = "Select the modifier in the stack."
+			btnRun.enabled = false
+			btnPreview.enabled = false
+		)
+	)
 
 	on btnPreview pressed do
 	(
 		local uwMod = getUnwrapMod()
 		if uwMod == undefined then return undefined
 
-		local result = snapVerts uwMod spnThresh.value chkSelOnly.checked doMove:false
+		local result = undefined
+		try (result = snapVerts uwMod selection[1] spnThresh.value chkSelOnly.checked doMove:false) catch
+		(
+			messageBox ("Could not read UV vertices.\n" + getCurrentException()) title:"Snap UV Vertices"
+			return undefined
+		)
 		local msg = result[1] as string + " groups found (" + result[2] as string + " verts will be snapped)"
-		lblInfo.text = msg
-		lblDetail.text = "Threshold: " + spnThresh.value as string
+		-- Keep the result readable; the selection timer refreshes the labels.
+		messageBox (msg + "\nThreshold: " + (spnThresh.value as string)) title:"Snap Preview"
 	)
 
 	on btnRun pressed do
@@ -184,33 +204,38 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 		local uwMod = getUnwrapMod()
 		if uwMod == undefined then
 		(
-			messageBox "No Unwrap UVW modifier found on selected object." title:"Notice"
+			messageBox "Select one object and its target Unwrap UVW modifier in the stack." title:"Notice"
 			return undefined
 		)
 
-		if chkSelOnly.checked and (uwMod.getSelectedVertices()).numberSet < 2 then
-		(
-			messageBox "Select at least 2 UV vertices in the UV Editor." title:"Notice"
-			return undefined
-		)
-
+		local obj = selection[1]
 		local result = undefined
-		undo "Snap UV Verts" on
+		try
 		(
-			result = snapVerts uwMod spnThresh.value chkSelOnly.checked doMove:true
+			if chkSelOnly.checked and (uwMod.getSelectedVerticesByNode obj).numberSet < 2 then
+			(
+				messageBox "Select at least 2 UV vertices in the UV Editor." title:"Notice"
+				return undefined
+			)
+			undo "Snap UV Verts" on
+			(
+				result = snapVerts uwMod obj spnThresh.value chkSelOnly.checked doMove:true
+			)
+		)
+		catch
+		(
+			messageBox ("Snap stopped. If vertices changed, use Undo (Snap UV Verts) to restore them.\n" + getCurrentException()) title:"Snap UV Vertices"
+			return undefined
 		)
 
-		-- 완료 사운드
-		windows.processPostedMessages()
-		dotNetClass "System.Media.SystemSounds"
-		(dotNetClass "System.Media.SystemSounds").Beep.Play()
+		redrawViews()
 
 		-- 결과 메시지
 		local msg = ""
-		if result[1] > 0 then
+		if result[2] > 0 then
 			msg = result[1] as string + " groups snapped.\n" + result[2] as string + " vertices moved to average positions."
 		else
-			msg = "No vertices within threshold distance.\nTry increasing the threshold value."
+			msg = "No UV vertices need moving at this threshold."
 
 		messageBox msg title:"Snap UV Vertices"
 		updateInfo()
