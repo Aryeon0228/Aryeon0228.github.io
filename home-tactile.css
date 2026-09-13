@@ -1,0 +1,95 @@
+/* The stable article owns layout and hit testing; only its face tilts. */
+.work-card[data-tactile-card] {
+  display: block;
+  position: relative;
+  perspective: 1100px;
+  padding: 0;
+  border: 0;
+  background: none;
+  transition: none;
+}
+
+.work-card-face {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  padding: 30px;
+  border: 1px solid var(--ln);
+  background: linear-gradient(145deg, #0b0b0b, #030303);
+  transform: rotateX(var(--card-rx, 0deg)) rotateY(var(--card-ry, 0deg));
+  transition: transform 420ms cubic-bezier(.2,.65,.25,1), border-color 250ms, box-shadow 350ms;
+}
+
+.work-card-face > .content-actions { margin-top: auto; }
+.work-card-face > * { position: relative; z-index: 1; }
+.work-card:is(:hover, :focus-within) .work-card-face { border-color: #555; }
+
+.work-card-face::before,
+.work-card-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+/* Broad white reflection, kept beneath the readable content. */
+.work-card-face::before {
+  z-index: 0;
+  background: radial-gradient(ellipse 380px 320px at var(--card-x, 50%) var(--card-y, 35%),
+    rgb(255 255 255 / .055), rgb(255 255 255 / .018) 42%, transparent 76%);
+}
+
+.work-card-face::after {
+  z-index: 2;
+  inset: -1px;
+  border: 1px solid transparent;
+  background: radial-gradient(260px circle at var(--card-x, 50%) var(--card-y, 35%),
+    rgb(255 255 255 / .30), transparent 75%) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+html[data-tactile-light="on"] .work-card[data-tactile-active] .work-card-face::before,
+html[data-tactile-light="on"] .work-card[data-tactile-active] .work-card-face::after {
+  opacity: 1;
+}
+
+html[data-tactile-tilt="on"] .work-card[data-tactile-active] .work-card-face {
+  will-change: transform;
+  transition-duration: 140ms, 250ms, 350ms;
+  box-shadow: 0 12px 28px rgb(0 0 0 / .20);
+}
+
+html[data-tactile-tilt="off"] .work-card-face { transform: none; }
+html[data-tactile-tilt="on"] .work-card[data-tactile-pressed] .work-card-face {
+  transform: rotateX(var(--card-rx, 0deg)) rotateY(var(--card-ry, 0deg)) scale(.997);
+  transition-duration: 100ms, 250ms, 350ms;
+}
+
+/* Keep the link's click area still; only its existing arrow follows the pointer. */
+[data-tactile-link] > span[aria-hidden="true"] {
+  display: inline-block;
+  transform: translate(var(--arrow-x, 0px), var(--arrow-y, 0px));
+  transition: transform 240ms cubic-bezier(.2,.65,.25,1), color 180ms;
+}
+[data-tactile-link]:is(:hover, :focus-visible) > span[aria-hidden="true"] { color: #fff; }
+[data-tactile-link]:active > span[aria-hidden="true"] {
+  transform: translate(0, 1px) scale(.90);
+  transition-duration: 90ms;
+}
+
+@media (max-width: 640px) {
+  .work-card-face { padding: 24px; }
+}
+
+@media (max-width: 640px), (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .work-card[data-tactile-card] .work-card-face { transform: none; box-shadow: none; will-change: auto; }
+  .work-card-face::before, .work-card-face::after { display: none; }
+  [data-tactile-link] > span[aria-hidden="true"],
+  [data-tactile-link]:active > span[aria-hidden="true"] { transform: none; }
+}
