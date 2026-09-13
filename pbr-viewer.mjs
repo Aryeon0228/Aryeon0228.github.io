@@ -11,7 +11,10 @@ import {SSAOPass} from 'three/addons/postprocessing/SSAOPass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {presets,presetCategories} from './pbr-presets.mjs';
 import {presetCategoryLabels,presetLabels,specularToIor,iorToSpecular} from './pbr-preset-library.mjs';
+import {materialNotes} from './pbr-material-notes.mjs?v=d6ba9b853a8b';
+import {createMaterialHelp} from './pbr-material-help.mjs?v=c7a9d59e7402';
 const $=id=>document.getElementById(id),container=$('canvas-container');
+const materialHelp=createMaterialHelp(materialNotes,presetLabels);
 const parameters=['roughness','metallic','specular','clearcoat','clearcoatRoughness','transmission','sheen','sheenRoughness','iridescence','iridescenceIOR','envMapIntensity'];
 const envFiles={studio:'studio_small_03_1k.hdr',daylight:'kloofendal_48d_partly_cloudy_puresky_1k.hdr',sunset:'the_sky_is_on_fire_1k.hdr',night:'moonlit_golf_1k.hdr',forest:'forest_slope_1k.hdr',warehouse:'empty_warehouse_01_1k.hdr'};
 let scene,camera,renderer,controls,material,mesh,composer,ao,mainLight,fillLight,backLight,ambientLight;
@@ -45,14 +48,19 @@ function updateMaterial(custom=true,preserveIorNumber=false){
 }
 function showPresetCategory(category){
  if(!presetCategories[category])return;
+ materialHelp.close();
  activePresetCategory=category;
  $('presetGrid').setAttribute('aria-label',presetCategoryLabels[category]+' 프리셋');
+ $('presetGrid').classList.toggle('has-notes',presetCategories[category].some(item=>materialNotes[item.id]));
  document.querySelectorAll('[data-preset-category]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.presetCategory===category)));
  const cards=presetCategories[category].map(item=>{
   const button=document.createElement('button');button.type='button';button.className='preset-card';button.dataset.preset=item.id;button.title=item.name;button.setAttribute('aria-label',presetLabels[item.id]);
   const swatch=document.createElement('span');swatch.className='preset-swatch';swatch.style.backgroundColor=presets[item.id].color;swatch.setAttribute('aria-hidden','true');
   const name=document.createElement('span');name.className='preset-name';name.textContent=presetLabels[item.id];button.append(swatch,name);
-  button.addEventListener('click',()=>applyPreset(item.id));return button;
+  button.addEventListener('click',()=>{materialHelp.close();applyPreset(item.id);});
+  const card=document.createElement('div');card.className='preset-item';card.append(button);
+  if(materialNotes[item.id]){card.classList.add('has-note');card.append(materialHelp.createButton(item.id));}
+  return card;
  });
  $('presetGrid').replaceChildren(...cards);syncPresetSelection();
 }
@@ -158,7 +166,7 @@ function init(){
 }
 // Three distinct panels keep the important material controls close to the specimen.
 const panelKeys=['material','lighting','import'];
-function selectPanel(key,focus=false){for(const name of panelKeys){const selected=name===key;$(name+'Tab').setAttribute('aria-selected',String(selected));$(name+'Tab').tabIndex=selected?0:-1;$(name+'Panel').hidden=!selected;}if(focus)$(key+'Tab').focus();}
+function selectPanel(key,focus=false){materialHelp.close();for(const name of panelKeys){const selected=name===key;$(name+'Tab').setAttribute('aria-selected',String(selected));$(name+'Tab').tabIndex=selected?0:-1;$(name+'Panel').hidden=!selected;}if(focus)$(key+'Tab').focus();}
 for(const [index,key] of panelKeys.entries()){$(key+'Tab').addEventListener('click',()=>selectPanel(key));$(key+'Tab').addEventListener('keydown',event=>{const n=event.key==='ArrowRight'?(index+1)%3:event.key==='ArrowLeft'?(index+2)%3:event.key==='Home'?0:event.key==='End'?2:-1;if(n>=0){event.preventDefault();selectPanel(panelKeys[n],true);}});}
 for(const id of parameters)$(id).addEventListener('input',()=>{
  if(!material)return;if(id==='specular')currentIor=specularToIor(+$(id).value);updateMaterial(id!=='envMapIntensity');
