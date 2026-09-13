@@ -3,6 +3,25 @@
 @media(max-width:760px){.material-workspace{grid-template-columns:1fr;--height:440px}.material-inspector{height:auto;border-left:0;border-top:1px solid var(--line)}.settings-panel{overflow:visible;padding:22px;max-height:none}.settings-panel#materialPanel{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}.settings-panel#materialPanel>.section-label,.settings-panel#materialPanel>.preset-browser,.settings-panel#materialPanel>.advanced,.settings-panel#materialPanel>.panel-note{grid-column:1/-1}.settings-panel#materialPanel>.field-label{grid-column:1/-1}.color-field{grid-column:1/-1;margin-bottom:0}.control-group{margin:15px 0}.stage-top{top:17px}.stage-info{left:20px;bottom:64px;gap:22px}.stage-bottom{left:20px;right:20px;bottom:16px;font-size:11px}.stage-info output{font-size:14px}.reading-label{font-size:10px}.under-stage{display:block}.under-stage>span{display:block;text-align:left;margin-top:7px}.guide-grid{grid-template-columns:1fr}dialog{padding:20px}.reference-table{font-size:12px}}
 @media(max-width:400px){.material-workspace{--height:380px}.settings-panel#materialPanel{display:block}.stage-bottom>span{max-width:150px}.control-group label{font-size:13px}}
 
+/* Keep viewport readings legible over both bright and dark HDR backgrounds. */
+.stage-top{color:#dedede;align-items:flex-start;line-height:1.5}
+.stage-top>span,.stage-info,.stage-bottom>span,.stage-bottom button{background:rgba(8,8,8,.76);border:1px solid #ffffff26;text-shadow:0 1px 2px #000b}
+.stage-top>span{padding:7px 10px}
+.stage-top b,.stage-info output{color:#fff}
+.stage-info{padding:10px 12px;gap:26px}
+.stage-info .reading-label{color:#d4d4d4}
+.stage-bottom{align-items:flex-end;color:#dedede;line-height:1.6;pointer-events:none}
+.stage-bottom>span{padding:7px 10px}
+.stage-bottom button{padding:7px 10px;color:#eee;line-height:1.6;white-space:nowrap;pointer-events:auto}
+.stage-bottom button:hover{background:rgba(8,8,8,.92);border-color:#ffffff70;color:#fff}
+.stage-bottom button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media(max-width:760px){
+ .stage-top{left:16px;right:16px}
+ .stage-info{left:16px;bottom:82px;gap:22px;padding:9px 10px}
+ .stage-bottom{left:16px;right:16px;gap:10px}
+ .stage-bottom button{font-size:11px}
+}
+
 /* A visible material library replaces the nested preset menus. */
 .preset-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .preset-heading .section-label{margin:0}
