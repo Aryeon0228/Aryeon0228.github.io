@@ -70,8 +70,7 @@ function replaceModel(object,normalize=true){
  if(normalize){
   const box=new THREE.Box3().setFromObject(object),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
   const max=Math.max(size.x,size.y,size.z);if(!Number.isFinite(max)||max<=0)throw Error('모델의 크기를 읽을 수 없습니다.');
-  const group=new THREE.Group();object.position.sub(center);group.add(object);group.scale.setScalar(2.4/max);group.updateMatrixWorld(true);
-  const bounds=new THREE.Box3().setFromObject(group);group.position.y=-1.2-bounds.min.y;object=group;
+  const group=new THREE.Group();object.position.sub(center);group.add(object);group.scale.setScalar(2.4/max);group.updateMatrixWorld(true);object=group;
  }
  object.traverse(child=>{if(child.isMesh){child.material=material;child.castShadow=true;child.receiveShadow=true;}});
  if(mesh){scene.remove(mesh);disposeGeometry(mesh);}mesh=object;scene.add(mesh);dirty=true;
@@ -105,7 +104,7 @@ async function loadEnvironment(name){
 function resize(){
  if(!renderer)return;const w=Math.max(1,container.clientWidth),h=Math.max(1,container.clientHeight);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);composer?.setSize(w,h);dirty=true;
 }
-function resetView(){controls.target.set(0,-.05,0);camera.position.set(3.4,1.65,5.2);controls.update();dirty=true;}
+function resetView(){controls.target.set(0,0,0);camera.position.set(3.4,1.65,5.2);controls.update();dirty=true;}
 function animate(now){
  if(disposed)return;frame=requestAnimationFrame(animate);if(document.hidden){previousTime=now;return;}
  const delta=Math.min(.05,(now-previousTime)/1000||0);previousTime=now;
@@ -144,13 +143,11 @@ async function loadNormalMap(input){
 function init(){
  scene=new THREE.Scene();scene.background=new THREE.Color(0x0b0b0b);scene.fog=new THREE.Fog(0x0b0b0b,12,27);
  camera=new THREE.PerspectiveCamera(38,1,.1,60);renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
- container.append(renderer.domElement);renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','PBR 재질 미리보기. 드래그하여 회전하고 스크롤로 확대합니다.');
- controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=2.7;controls.maxDistance=14;controls.maxPolarAngle=Math.PI*.49;controls.addEventListener('change',()=>dirty=true);controls.listenToKeyEvents(renderer.domElement);resetView();
+ container.append(renderer.domElement);renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','PBR 재질 미리보기. 위아래로 자유롭게 드래그하여 회전하고, 우클릭 드래그로 이동하며 스크롤로 확대합니다.');
+ controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=2.7;controls.maxDistance=14;controls.minPolarAngle=0;controls.maxPolarAngle=Math.PI;controls.addEventListener('change',()=>dirty=true);controls.listenToKeyEvents(renderer.domElement);resetView();
  material=new THREE.MeshPhysicalMaterial({color:0xb5a642,metalness:1,roughness:.3,reflectivity:.5,envMapIntensity:1,sheenColor:new THREE.Color(0xffffff),iridescenceThicknessRange:[100,400]});
  mainLight=new THREE.DirectionalLight(0xfff5e8,1.5);mainLight.position.set(-3.5,6,4);mainLight.castShadow=true;mainLight.shadow.mapSize.set(1024,1024);mainLight.shadow.camera.left=-4;mainLight.shadow.camera.right=4;mainLight.shadow.camera.top=4;mainLight.shadow.camera.bottom=-4;mainLight.shadow.normalBias=.02;mainLight.shadow.bias=-.0002;scene.add(mainLight);
  fillLight=new THREE.DirectionalLight(0xe7edff,.48);fillLight.position.set(5,1,2);scene.add(fillLight);backLight=new THREE.DirectionalLight(0xffffff,.72);backLight.position.set(1,4,-4);scene.add(backLight);ambientLight=new THREE.AmbientLight(0xffffff,.12);scene.add(ambientLight);
- const pedestal=new THREE.Mesh(new THREE.CylinderGeometry(1.52,1.58,.13,96),new THREE.MeshStandardMaterial({color:0x272727,roughness:.53,metalness:.22}));pedestal.position.y=-1.265;pedestal.castShadow=true;pedestal.receiveShadow=true;scene.add(pedestal);
- const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:0x121212,roughness:.82}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.331;floor.receiveShadow=true;scene.add(floor);
  const generator=new THREE.PMREMGenerator(renderer),studio=new RoomEnvironment(renderer),target=generator.fromScene(studio,.035);envTargets.push(target);studio.dispose();generator.dispose();scene.environment=target.texture;
  createGeometry('sphere');
  // Actual SSAO, followed by a single output transform. The switch never changes exposure.
