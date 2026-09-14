@@ -1,4 +1,4 @@
-/* All four labs share one persistent navigation and heading layout. */
+/* Labs share one persistent navigation and heading layout. */
 body[data-lab] {
   --pad: clamp(20px, 4vw, 56px);
   --lab-site-header-height: 76px;
