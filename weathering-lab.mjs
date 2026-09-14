@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {PRESETS, DEFAULT_STATE, CONTACT_MODES, WEATHER_GLSL} from './weathering-model.mjs?v=7c0717084b59';
+import {PRESETS, DEFAULT_STATE, CONTACT_MODES, WEATHER_GLSL} from './weathering-model.mjs?v=fcd8c5bc1129';
 
 const $ = id => document.getElementById(id);
 const canvas = $('weather-canvas'), stage = $('weather-stage');

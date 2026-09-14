@@ -111,9 +111,8 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
     * (1 - smoothstep(0.45, 1.05, Math.abs(p[1] - 0.35)));
   const footContact = feet * (1 - smoothstep(-0.9, -0.81, p[1]))
     * (0.35 + 0.65 * smoothstep(0.05, 0.9, -n[1]));
-  const lowerBodyContact = body * (1 - smoothstep(-0.72, -0.5, p[1]))
-    * smoothstep(0.36, 0.62, Math.abs(p[2])) * (0.65 * side + 0.1);
-  const baseContact = Math.max(footContact, lowerBodyContact);
+  // The feet hold the body above the ground, so dragging touches the feet only.
+  const baseContact = footContact;
   const contact = clamp(contactMode === 0 ? gripContact
     : contactMode === 1 ? cornerContact : baseContact);
 
@@ -175,9 +174,7 @@ vec4 weatherSignals(
     * (1.0 - smoothstep(0.45, 1.05, abs(p.y - 0.35)));
   float wFootContact = wFeet * (1.0 - smoothstep(-0.9, -0.81, p.y))
     * (0.35 + 0.65 * smoothstep(0.05, 0.9, -wN.y));
-  float wLowerBodyContact = wBody * (1.0 - smoothstep(-0.72, -0.5, p.y))
-    * smoothstep(0.36, 0.62, abs(p.z)) * (0.65 * wSide + 0.1);
-  float wBaseContact = max(wFootContact, wLowerBodyContact);
+  float wBaseContact = wFootContact;
   float wContact = clamp(contactMode < 0.5 ? wGripContact
     : (contactMode < 1.5 ? wCornerContact : wBaseContact), 0.0, 1.0);
 
