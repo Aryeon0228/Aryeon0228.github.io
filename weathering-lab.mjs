@@ -1,18 +1,21 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {PRESETS, DEFAULT_STATE, CONTACT_MODES, WEATHER_GLSL} from './weathering-model.mjs?v=fcd8c5bc1129';
+import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=fcd8c5bc1129';
+import {createWeatherMaterial} from './weathering-surface.mjs?v=0110062b796a';
+import {createWeatheringCamera} from './weathering-camera.mjs?v=b6dc9a5ca0b0';
 
 const $ = id => document.getElementById(id);
 const canvas = $('weather-canvas'), stage = $('weather-stage');
-const state = {...DEFAULT_STATE, layer:'surface', compare:false, material:'paint'};
-let renderer, scene, camera, controls, frame=0, disposed=false, visible=true;
+const DEFAULT_COAT='#26333b';
+const state = {...DEFAULT_STATE, layer:'surface', compare:false, material:'paint',coatColor:DEFAULT_COAT};
+let renderer, scene, camera, controls, cameraMotion, frame=0, disposed=false, visible=true;
 let width=0, height=0, pixelRatio=0, selectedPoint='top', split=50;
 const meshes=[], materials=[], resources=[], dustArrows=[];
 const markerRay=new THREE.Raycaster();
 const shared={
   uDust:{value:0},uWear:{value:0},uWind:{value:0},uContact:{value:0},
-  uHeuristic:{value:0},uLayer:{value:0},uPlastic:{value:0}
+  uHeuristic:{value:0},uLayer:{value:0},uPlastic:{value:0},uCoatColor:{value:new THREE.Color(DEFAULT_COAT)}
 };
 const observationPoints={
   top:{point:[-.77,.982,.22],normal:[0,1,0],part:1,index:'01'},
@@ -20,49 +23,8 @@ const observationPoints={
   edge:{point:[1.23,-.10,.64],normal:[.707,0,.707],part:0,index:'03'},
   base:{point:[1,-.952,.48],normal:[0,-1,0],part:3,index:'04'}
 };
-const noiseGLSL=`
-float wHash(vec3 p){p=fract(p*.3183099+vec3(.17,.31,.53));p*=19.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
-float wNoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
-return mix(mix(mix(wHash(i),wHash(i+vec3(1,0,0)),f.x),mix(wHash(i+vec3(0,1,0)),wHash(i+vec3(1,1,0)),f.x),f.y),
-mix(mix(wHash(i+vec3(0,0,1)),wHash(i+vec3(1,0,1)),f.x),mix(wHash(i+vec3(0,1,1)),wHash(i+vec3(1,1,1)),f.x),f.y),f.z);}
-`;
-
 function weatherMaterial(center,half,kind,hardware=false){
-  const material=new THREE.MeshStandardMaterial({color:'#687269',metalness:hardware?.8:0,roughness:hardware?.35:.56,envMapIntensity:.45});
-  const uniforms={...shared,uCenter:{value:new THREE.Vector3(...center)},uHalf:{value:new THREE.Vector3(...half)},uKind:{value:kind},uHardware:{value:hardware?1:0}};
-  material.onBeforeCompile=shader=>{
-    Object.assign(shader.uniforms,uniforms);
-    shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>\nvarying vec3 vWeatherPosition; varying vec3 vWeatherNormal;`)
-      .replace('#include <begin_vertex>',`#include <begin_vertex>\nvWeatherPosition=(modelMatrix*vec4(position,1.)).xyz; vWeatherNormal=normalize(mat3(modelMatrix)*normal);`);
-    shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>
-varying vec3 vWeatherPosition; varying vec3 vWeatherNormal;
-uniform vec3 uCenter,uHalf;
-uniform float uKind,uDust,uWear,uWind,uContact,uHeuristic,uLayer,uPlastic,uHardware;
-${WEATHER_GLSL}\n${noiseGLSL}`)
-      .replace('#include <color_fragment>',`#include <color_fragment>
-vec3 wp=vWeatherPosition;
-vec4 ws=weatherSignals(wp,normalize(vWeatherNormal),uCenter,uHalf,uKind,uDust,uWear,uWind,uContact,uHeuristic);
-float broad=wNoise(wp*10.7), fine=wNoise(wp*155.);
-float dustMask=clamp(ws.x*(.57+.6*broad+.24*fine),0.,1.);
-float wearMask=smoothstep(.10,.58,ws.y*(.3+1.4*wNoise(wp*63.)));
-float grain=(fine-.5)*.032;
-vec3 coat=mix(vec3(.145,.178,.155),vec3(.19,.22,.20),broad*.3)+grain;
-vec3 exposed=mix(vec3(.31,.32,.30),vec3(.25,.285,.26),uPlastic);
-coat=mix(coat,vec3(.25,.27,.255),uHardware);
-vec3 aged=mix(coat,exposed,wearMask);
-aged=mix(aged,vec3(.47,.425,.33)*( .86+.28*broad),dustMask);
-diffuseColor.rgb=aged;
-vec3 causeColor=vec3(.012,.016,.017);
-float causeStrength=0.;
-if(uLayer>.5 && uLayer<1.5){causeStrength=ws.x;causeColor=mix(causeColor,vec3(.64,.45,.19),causeStrength);}
-if(uLayer>1.5){causeStrength=uHeuristic>.5?weatherSignals(wp,normalize(vWeatherNormal),uCenter,uHalf,uKind,1.,1.,uWind,uContact,1.).y:ws.z;causeColor=mix(causeColor,vec3(.29,.66,.56),causeStrength);}
-if(uLayer>.5)diffuseColor.rgb=causeColor*.48;
-`)
-      .replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>\nroughnessFactor=mix(mix(.57,mix(.29,.76,uPlastic),wearMask),.96,dustMask); if(uHardware>.5)roughnessFactor=mix(.35,.96,dustMask);if(uLayer>.5)roughnessFactor=1.;`)
-      .replace('#include <metalnessmap_fragment>',`#include <metalnessmap_fragment>\nmetalnessFactor=mix(wearMask*(1.-uPlastic)*.9,.85,uHardware)*(1.-dustMask);if(uLayer>.5)metalnessFactor=0.;`)
-      .replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>\nif(uLayer>.5)totalEmissiveRadiance=causeColor*.66;`);
-  };
-  material.customProgramCacheKey=()=> 'weathering-v1';
+  const material=createWeatherMaterial({center,half,kind,hardware,uniforms:shared});
   materials.push(material);return material;
 }
 
@@ -111,9 +73,9 @@ function resize(){
   if(w===width&&h===height&&dpr===pixelRatio)return;
   width=w;height=h;pixelRatio=dpr;renderer.setPixelRatio(dpr);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
 }
-function render(){
+function render(now){
   frame=0;if(disposed||!visible||document.hidden)return;
-  resize();controls.update();
+  resize();const moving=cameraMotion?.update(now);controls.update();cameraMotion?.constrain();
   $('compare-handle').style.marginLeft=Math.max(24-width*split/100,Math.min(0,width*(1-split/100)-24))+'px';
   renderer.setScissorTest(false);renderer.setViewport(0,0,width,height);
   shared.uHeuristic.value=0;
@@ -123,7 +85,7 @@ function render(){
     if(boundary<width){renderer.setScissor(boundary,0,width-boundary,height);shared.uHeuristic.value=0;dustArrows.forEach(a=>a.visible=state.layer==='dust'&&state.dust>0);renderer.render(scene,camera);}
     renderer.setScissorTest(false);
   }else renderer.render(scene,camera);
-  shared.uHeuristic.value=0;updateMarker();
+  shared.uHeuristic.value=0;updateMarker();if(moving)invalidate();
 }
 function updateMarker(){
   const o=observationPoints[selectedPoint],p=new THREE.Vector3(...o.point),v=p.clone().project(camera);
@@ -153,8 +115,12 @@ function sync(){
     $(id+'-value').textContent=id==='wind'?(Math.abs(state.wind)<.05?'위에서':(state.wind<0?'왼쪽 위 ':'오른쪽 위 ')+Math.round(Math.abs(state.wind)*100)):Math.round(state[id]*100);
   }
   $('material').value=state.material;$('contact').value=state.contact;
+  $('coat-color').value=state.coatColor;shared.uCoatColor.value.set(state.coatColor);
+  if(document.activeElement!==$('coat-hex')&&!$('coat-hex').hasAttribute('aria-invalid'))$('coat-hex').value=state.coatColor.toUpperCase();
+  $('coat-label').textContent=state.material==='paint'?'도장색':'표면 색상';
+  document.querySelectorAll('[data-coat]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.coat===state.coatColor)));
   $('material-label').textContent=state.material==='paint'?'PAINTED STEEL':'SOLID PLASTIC';
-  $('material-note').textContent=state.material==='paint'?'도막이 닳으면 아래 금속이 드러납니다.':'표면이 거칠어지고 밝아지는 마모의 한 예입니다. 금속이 드러나지 않아요.';
+  $('material-note').textContent=state.material==='paint'?'도막이 닳으면 아래 금속이 드러납니다.':'마찰에 따른 색과 광택 변화입니다. 금속이 드러나지 않아요.';
   $('history-note').textContent=state.preset?PRESETS[state.preset].description:'조건을 직접 조절하고 있어요. 프리셋을 누르면 해당 환경의 값으로 돌아갑니다.';
   document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.preset===state.preset)));
   document.querySelectorAll('[data-layer]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layer===state.layer)));
@@ -167,10 +133,18 @@ function sync(){
   observe();invalidate();
 }
 function applyPreset(name){Object.assign(state,PRESETS[name],{preset:name});selectedPoint=name==='handled'?'handle':name==='outdoor'?'edge':'top';sync();}
-function resetView(){
-  const damping=controls.enableDamping;controls.enableDamping=false;controls.update();
-  const distanceScale=stage.clientWidth/stage.clientHeight>1.4?.8:1;
-  camera.position.set(4.3,3.1,5.1).multiplyScalar(distanceScale);controls.target.set(0,.10,0);controls.update();controls.enableDamping=damping;invalidate();
+function resetView(){cameraMotion.reset();}
+function focusObservation(name){
+  cameraMotion.focus(name);
+  if(getComputedStyle(stage).position==='sticky')return;
+  const bounds=stage.getBoundingClientRect(),header=document.querySelector('.site-header').getBoundingClientRect();
+  if(bounds.top<header.bottom||bounds.bottom>innerHeight)stage.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+}
+function setCoat(value){
+  const match=value.trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if(!match){$('coat-hex').setAttribute('aria-invalid','true');$('coat-hex').setAttribute('aria-describedby','coat-error');$('coat-error').hidden=false;return;}
+  const hex=match[1].length===3?[...match[1]].map(c=>c+c).join(''):match[1];
+  state.coatColor='#'+hex.toLowerCase();$('coat-hex').removeAttribute('aria-invalid');$('coat-hex').removeAttribute('aria-describedby');$('coat-error').hidden=true;$('coat-hex').value=state.coatColor.toUpperCase();sync();
 }
 function updateSplit(value){
   split=Math.round(THREE.MathUtils.clamp(value,0,100));
@@ -184,9 +158,13 @@ function installUI(){
   });
   document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>applyPreset(b.dataset.preset)));
   document.querySelectorAll('[data-layer]').forEach(b=>b.addEventListener('click',()=>{state.layer=b.dataset.layer;if(state.layer==='wear')selectedPoint={handle:'handle',edges:'edge',base:'base'}[state.contact];if(state.layer==='dust')selectedPoint='top';sync();}));
-  document.querySelectorAll('[data-point]').forEach(b=>b.addEventListener('click',()=>{selectedPoint=b.dataset.point;sync();}));
+  document.querySelectorAll('[data-point]').forEach(b=>b.addEventListener('click',()=>{selectedPoint=b.dataset.point;sync();focusObservation(selectedPoint);}));
+  document.querySelectorAll('[data-coat]').forEach(b=>b.addEventListener('click',()=>setCoat(b.dataset.coat)));
+  $('coat-color').addEventListener('input',()=>setCoat($('coat-color').value));
+  $('coat-hex').addEventListener('change',()=>setCoat($('coat-hex').value));
+  $('coat-hex').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();setCoat($('coat-hex').value);}});
   for(const id of ['dust','wear','wind'])$(id).addEventListener('input',()=>{state[id]=+$(id).value/100;state.preset='';sync();});
-  $('contact').addEventListener('change',()=>{state.contact=$('contact').value;state.preset='';selectedPoint={handle:'handle',edges:'edge',base:'base'}[state.contact];sync();});
+  $('contact').addEventListener('change',()=>{state.contact=$('contact').value;state.preset='';selectedPoint={handle:'handle',edges:'edge',base:'base'}[state.contact];sync();focusObservation(selectedPoint);});
   $('material').addEventListener('change',()=>{state.material=$('material').value;sync();});
   $('compare').addEventListener('click',()=>{state.compare=!state.compare;sync();});
   $('comparison').addEventListener('input',()=>updateSplit(+$('comparison').value));
@@ -196,11 +174,12 @@ function installUI(){
   handle.addEventListener('pointerup',event=>{if(handle.hasPointerCapture(event.pointerId))handle.releasePointerCapture(event.pointerId);});
   handle.addEventListener('keydown',event=>{const changes={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageDown:-10,PageUp:10};if(event.key in changes){event.preventDefault();updateSplit(split+changes[event.key]);}else if(event.key==='Home'||event.key==='End'){event.preventDefault();updateSplit(event.key==='Home'?0:100);}});
   $('reset-view').addEventListener('click',resetView);
-  $('reset-all').addEventListener('click',()=>{Object.assign(state,DEFAULT_STATE,{layer:'surface',compare:false,material:'paint'});selectedPoint='top';updateSplit(50);applyPreset('storage');resetView();});
+  $('reset-all').addEventListener('click',()=>{Object.assign(state,DEFAULT_STATE,{layer:'surface',compare:false,material:'paint',coatColor:DEFAULT_COAT});$('coat-hex').removeAttribute('aria-invalid');$('coat-hex').removeAttribute('aria-describedby');$('coat-error').hidden=true;selectedPoint='top';updateSplit(50);applyPreset('storage');resetView();});
   canvas.addEventListener('keydown',event=>{
     if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','Home'].includes(event.key))return;
     event.preventDefault();
     if(event.key==='Home'){resetView();return;}
+    cameraMotion.cancel();
     const offset=camera.position.clone().sub(controls.target),spherical=new THREE.Spherical().setFromVector3(offset);
     if(event.key==='ArrowLeft')spherical.theta-=.12;if(event.key==='ArrowRight')spherical.theta+=.12;
     if(event.key==='ArrowUp')spherical.phi-=.12;if(event.key==='ArrowDown')spherical.phi+=.12;
@@ -219,23 +198,24 @@ function installUI(){
     const hit=raycaster.intersectObjects(meshes,false)[0];if(!hit)return;
     const kind=hit.object.userData.kind;
     // Only the named study areas select a marker; a plain face stays unchanged.
-    if(kind===2)selectedPoint='handle';else if(kind===1)selectedPoint='top';else if(kind===3)selectedPoint='base';else if(kind===0&&hit.point.x>1&&hit.point.z>.45)selectedPoint='edge';else return;sync();
+    if(kind===2)selectedPoint='handle';else if(kind===1)selectedPoint='top';else if(kind===3)selectedPoint='base';else if(kind===0&&hit.point.x>1&&hit.point.z>.45)selectedPoint='edge';else return;sync();focusObservation(selectedPoint);
   });
 }
 function init(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});renderer.setClearColor(0x000000,0);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
   scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(35,1,.1,60);controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=3.7;controls.maxDistance=10;controls.enablePan=false;controls.addEventListener('change',invalidate);
+  cameraMotion=createWeatheringCamera({camera,controls,stage,invalidate,onViewChange:name=>{stage.dataset.view=name;$('view-help').textContent=name==='overview'?'드래그 회전 · 스크롤 확대':({top:'윗면',handle:'손잡이',edge:'모서리',base:'받침'}[name]+' 확대 · 드래그 회전');}});
   const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment(renderer),env=pmrem.fromScene(room,.04);scene.environment=env.texture;resources.push(env);room.dispose();pmrem.dispose();
-  const key=new THREE.DirectionalLight(0xfff6e4,1.8);key.position.set(-3.5,6,4);key.castShadow=true;key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-2.4,right:2.4,top:2.4,bottom:-2.4,near:.1,far:16});key.shadow.normalBias=.022;key.shadow.bias=-.0003;scene.add(key);
+  const key=new THREE.DirectionalLight(0xfff6e4,1.8);key.position.set(-4.5,4,5.5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-2.4,right:2.4,top:2.4,bottom:-2.4,near:.1,far:16});key.shadow.normalBias=.022;key.shadow.bias=-.0003;scene.add(key);
   const fill=new THREE.DirectionalLight(0xbccada,.65);fill.position.set(4,1,-3);scene.add(fill);scene.add(new THREE.HemisphereLight(0xe5e7df,0x33382f,.4));
   for(const x of [-1.05,0,1.05]){const arrow=new THREE.ArrowHelper(new THREE.Vector3(0,-1,0),new THREE.Vector3(x,1.9,.08),.40,0xcab28a,.10,.05);arrow.visible=false;scene.add(arrow);dustArrows.push(arrow);resources.push(arrow.line.geometry,arrow.line.material,arrow.cone.geometry,arrow.cone.material);}
-  buildCase();renderer.shadowMap.needsUpdate=true;resetView();installUI();applyPreset('storage');
+  buildCase();renderer.shadowMap.needsUpdate=true;cameraMotion.reset({animate:false});installUI();applyPreset('storage');
   const observer=new ResizeObserver(invalidate);observer.observe(stage);
   const intersection=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)invalidate();else if(frame){cancelAnimationFrame(frame);frame=0;}});intersection.observe(stage);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&frame){cancelAnimationFrame(frame);frame=0;}else invalidate();});window.addEventListener('resize',invalidate);
   canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();disposed=true;if(frame)cancelAnimationFrame(frame);$('render-error').hidden=false;});
-  window.addEventListener('pagehide',event=>{if(event.persisted)return;disposed=true;cancelAnimationFrame(frame);observer.disconnect();intersection.disconnect();controls.dispose();for(const mesh of meshes)mesh.geometry.dispose();for(const resource of [...materials,...resources])resource.dispose();renderer.dispose();},{once:true});
+  window.addEventListener('pagehide',event=>{if(event.persisted)return;disposed=true;cancelAnimationFrame(frame);observer.disconnect();intersection.disconnect();cameraMotion.dispose();controls.dispose();for(const mesh of meshes)mesh.geometry.dispose();for(const resource of [...materials,...resources])resource.dispose();renderer.dispose();},{once:true});
   // Keep the newly selected lab discoverable in the shared mobile nav's overflow.
   const active=document.querySelector('.lab-navigation [aria-current="page"]');
   if(active)active.parentElement.scrollLeft=Math.max(0,active.offsetLeft-active.parentElement.offsetLeft-active.parentElement.clientWidth+active.offsetWidth+18);
