@@ -275,9 +275,18 @@ if (uLayer < 0.5) {
   normal = normalize(mix(normal, wxBumpedNormal, clamp(max(ws.x, ws.y), 0.0, 1.0)));
 }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-if (uLayer > 0.5) totalEmissiveRadiance = causeColor * 0.66;`);
+if (uLayer > 0.5) totalEmissiveRadiance = causeColor * 0.66;`)
+      .replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+// High roughness only broadens a highlight. Suppress both the direct-light
+// and environment specular lobes where opaque powder covers the substrate.
+// Bare paint/metal and the diagnostic overlays retain their original response.
+if (uLayer < 0.5) {
+  float wxPowderSpecular = mix(1.0, 0.01, smoothstep(0.0, 0.75, wxDustMask));
+  reflectedLight.directSpecular *= wxPowderSpecular;
+  reflectedLight.indirectSpecular *= wxPowderSpecular;
+}`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v2-powder-contact';
+  material.customProgramCacheKey = () => 'weathering-surface-v3-matte-powder';
   return material;
 }

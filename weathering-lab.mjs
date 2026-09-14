@@ -2,8 +2,9 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=fcd8c5bc1129';
-import {createWeatherMaterial} from './weathering-surface.mjs?v=0110062b796a';
+import {createWeatherMaterial} from './weathering-surface.mjs?v=28f7372f93be';
 import {createWeatheringCamera} from './weathering-camera.mjs?v=b6dc9a5ca0b0';
+import {createWeatheringBox as roundedBox} from './weathering-geometry.mjs?v=e3aca10313dd';
 
 const $ = id => document.getElementById(id);
 const canvas = $('weather-canvas'), stage = $('weather-stage');
@@ -28,14 +29,6 @@ function weatherMaterial(center,half,kind,hardware=false){
   materials.push(material);return material;
 }
 
-// A rounded cuboid keeps a readable flat face and a real bevel for the comparison.
-function roundedBox(half,radius=.065){
-  const shape=new THREE.Shape(),x=half[0]-radius,y=half[1]-radius;
-  shape.moveTo(-x,-y);shape.lineTo(x,-y);shape.lineTo(x,y);shape.lineTo(-x,y);shape.closePath();
-  const geometry=new THREE.ExtrudeGeometry(shape,{depth:2*(half[2]-radius),bevelEnabled:true,bevelThickness:radius,bevelSize:radius,bevelSegments:5,steps:1,curveSegments:1});
-  geometry.translate(0,0,-half[2]+radius);
-  return geometry;
-}
 function addPart(name,center,half,kind,{radius=.055,hardware=false,geometry}={}){
   const mesh=new THREE.Mesh(geometry||roundedBox(half,Math.min(radius,...half.map(x=>x*.75))),weatherMaterial(center,half,kind,hardware));
   mesh.position.set(...center);mesh.castShadow=true;mesh.receiveShadow=true;
