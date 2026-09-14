@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=fcd8c5bc1129';
-import {createWeatherMaterial} from './weathering-surface.mjs?v=28f7372f93be';
+import {createWeatherMaterial} from './weathering-surface.mjs?v=d7863b2575ac';
 import {createWeatheringCamera} from './weathering-camera.mjs?v=b6dc9a5ca0b0';
 import {createWeatheringBox as roundedBox} from './weathering-geometry.mjs?v=e3aca10313dd';
 
@@ -113,7 +113,7 @@ function sync(){
   $('coat-label').textContent=state.material==='paint'?'도장색':'표면 색상';
   document.querySelectorAll('[data-coat]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.coat===state.coatColor)));
   $('material-label').textContent=state.material==='paint'?'PAINTED STEEL':'SOLID PLASTIC';
-  $('material-note').textContent=state.material==='paint'?'도막이 닳으면 아래 금속이 드러납니다.':'마찰에 따른 색과 광택 변화입니다. 금속이 드러나지 않아요.';
+  $('material-note').textContent=state.material==='paint'?'도막이 닳으면 아래 금속이 드러납니다.':'원래 색은 유지하고, 긁힘의 미세한 파임과 명암을 관찰합니다.';
   $('history-note').textContent=state.preset?PRESETS[state.preset].description:'조건을 직접 조절하고 있어요. 프리셋을 누르면 해당 환경의 값으로 돌아갑니다.';
   document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.preset===state.preset)));
   document.querySelectorAll('[data-layer]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layer===state.layer)));

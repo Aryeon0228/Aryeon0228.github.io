@@ -168,17 +168,19 @@ float wxChipCore = ws.y * wxChippable
 float wxExposed = clamp(wxChipCore + wxScratchCore * (1.0 - wxChipCore), 0.0, 1.0);
 
 vec3 wxCoat = clamp(uCoatColor * (0.982 + 0.036 * wxClump), 0.0, 1.0);
-float wxCoatLuma = dot(wxCoat, vec3(0.2126, 0.7152, 0.0722));
-vec3 wxRubbedCoat = clamp(mix(wxCoat, vec3(wxCoatLuma), 0.24) + vec3(0.019), 0.0, 1.0);
-vec3 wxPlasticInner = clamp(wxCoat * 0.75 + vec3(0.085), 0.0, 1.0);
-vec3 wxPrimer = mix(wxPrimerColor, wxPlasticInner * 0.55, wxPlastic);
-vec3 wxSubstrate = mix(wxMetalColor, wxPlasticInner, wxPlastic);
-vec3 wxAged = mix(wxCoat, wxRubbedCoat, clamp(wxRub + wxDragScuff, 0.0, 1.0));
-wxAged = mix(wxAged, wxRubbedCoat + vec3(0.012), wxRubLines);
-wxAged = mix(wxAged, wxPrimer, wxChipUnder);
-wxAged = mix(wxAged, wxSubstrate, wxChipCore);
-wxAged = mix(wxAged, wxPrimer, wxScratchRim * 0.72);
-wxAged = mix(wxAged, wxSubstrate, wxScratchCore);
+vec3 wxAged = wxCoat;
+// Plastic contact changes surface relief only: no whitening, exposed inner
+// colour or primer tint. The painted-steel colour path is unchanged.
+if (wxPlastic < 0.5) {
+  float wxCoatLuma = dot(wxCoat, vec3(0.2126, 0.7152, 0.0722));
+  vec3 wxRubbedCoat = clamp(mix(wxCoat, vec3(wxCoatLuma), 0.24) + vec3(0.019), 0.0, 1.0);
+  wxAged = mix(wxCoat, wxRubbedCoat, clamp(wxRub + wxDragScuff, 0.0, 1.0));
+  wxAged = mix(wxAged, wxRubbedCoat + vec3(0.012), wxRubLines);
+  wxAged = mix(wxAged, wxPrimerColor, wxChipUnder);
+  wxAged = mix(wxAged, wxMetalColor, wxChipCore);
+  wxAged = mix(wxAged, wxPrimerColor, wxScratchRim * 0.72);
+  wxAged = mix(wxAged, wxMetalColor, wxScratchCore);
+}
 // Real metal hardware remains independent of the painted/plastic case option.
 wxAged = mix(wxAged, wxHardwareColor * (0.97 + 0.06 * wxClump), wxHardware);
 wxAged = mix(wxAged, wxDustColor, wxDustMask);
@@ -187,6 +189,13 @@ diffuseColor.rgb = wxAged;
 float wxHeight = wxDustMask * (0.0008 + 0.00085 * wxGrains)
   - wxChipUnder * 0.00035 - wxChipCore * 0.0008
   - wxScratchCore * 0.0011 + wxRubLines * 0.00012;
+// Readable plastic grooves replace albedo/roughness cues. The dust height is
+// identical; metal hardware and painted steel retain their original heights.
+// wxPerturbNormal still caps the slope at 0.28 to avoid torn/glittering surfaces.
+float wxPlasticHeight = wxDustMask * (0.0008 + 0.00085 * wxGrains)
+  - wxChipUnder * 0.0008 - wxChipCore * 0.0018
+  - wxScratchCore * 0.0022 - wxRubLines * 0.0026;
+wxHeight = mix(wxHeight, wxPlasticHeight, wxPlastic * (1.0 - wxHardware));
 
 // Preserve the existing diagnostic overlay colours, values and lighting split.
 vec3 causeColor = vec3(0.012, 0.016, 0.017);
@@ -255,10 +264,12 @@ ${SURFACE_HELPERS}`)
       .replace('#include <color_fragment>', `#include <color_fragment>
 ${SURFACE_COLOR}`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
-roughnessFactor = mix(0.53, 0.60, wxPlastic);
-roughnessFactor = mix(roughnessFactor, mix(0.29, 0.38, wxPlastic), wxRub * 0.8);
+roughnessFactor = 0.53;
+roughnessFactor = mix(roughnessFactor, 0.29, wxRub * 0.8);
 roughnessFactor = mix(roughnessFactor, 0.78, wxChipUnder * (1.0 - wxChipCore));
-roughnessFactor = mix(roughnessFactor, mix(0.36, 0.75, wxPlastic), wxExposed);
+roughnessFactor = mix(roughnessFactor, 0.36, wxExposed);
+// Bare plastic keeps one roughness regardless of contact; dust still overlays it.
+roughnessFactor = mix(roughnessFactor, 0.60, wxPlastic);
 roughnessFactor = mix(roughnessFactor, 0.32, wxHardware);
 roughnessFactor = mix(roughnessFactor, 0.97 + 0.03 * wxGrains, wxDustMask);
 if (uLayer > 0.5) roughnessFactor = 1.0;`)
@@ -287,6 +298,6 @@ if (uLayer < 0.5) {
 }`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v3-matte-powder';
+  material.customProgramCacheKey = () => 'weathering-surface-v4-plastic-normal-only';
   return material;
 }
