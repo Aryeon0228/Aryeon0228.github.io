@@ -1441,10 +1441,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   }
 
   var dragCenter = new THREE.Vector3();
+  var renderWidth=0, renderHeight=0, renderDpr=0;
   function resize(){
     var w = canvas.clientWidth, h = canvas.clientHeight;
     if(!w || !h) return;
     var dpr = Math.min(window.devicePixelRatio || 1, w < 700 ? 1.25 : 1.6);
+    // r128 setPixelRatio also calls setSize. Avoid resetting the same drawing
+    // buffer and updating projection/hit-area styles on every animation frame.
+    // Keep measuring here so CSS layout, zoom and display-DPR changes are caught.
+    if(w===renderWidth && h===renderHeight && dpr===renderDpr) return;
     renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
     camera.aspect = w/h;
@@ -1478,6 +1483,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       rtA.setSize(bw, bh); rtB.setSize(bw, bh);
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
     }
+    renderWidth=w; renderHeight=h; renderDpr=dpr;
   }
   window.addEventListener('resize', resize);
   resize();
@@ -1544,7 +1550,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
     // 씬 → 오프스크린
     renderer.setRenderTarget(rtScene);
-    renderer.clear();
+    // autoClear already clears this target immediately before rendering.
     renderer.render(scene, camera);
 
     // 밝은 부분만 뽑아 1/4 해상도로
