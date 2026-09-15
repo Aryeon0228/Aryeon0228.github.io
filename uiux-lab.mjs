@@ -11,9 +11,9 @@ function announce(message){clearTimeout(toastTimer);$('lab-toast').textContent=m
 function navLink(module,index){const a=document.createElement('a');a.href='#'+module.id;a.dataset.module=module.id;const num=document.createElement('span');num.className='nav-index';num.textContent=String(index+1).padStart(2,'0');a.append(num,document.createTextNode(module.title));return a;}
 function buildNavigation(){
  $('lab-total').textContent=String(modules.length);
- const groups=[['02 / 시지각의 원리',perceptionModules],['04 / 사용성의 법칙',behaviorModules],['04 / 화면 진단',reviewModules]];
- const nav=$('experiment-nav'),container=document.createElement('div');container.className='nav-groups';const navHeader=document.createElement('div');navHeader.className='nav-header';navHeader.innerHTML='<span>수업 목차</span><span>'+String(modules.length).padStart(2,'0')+'</span>';container.append(navHeader);
- const mobile=document.createElement('div');mobile.className='mobile-picker';const label=document.createElement('label');label.htmlFor='mobile-experiment';label.textContent='수업 실험';const select=document.createElement('select');select.id='mobile-experiment';
+ const groups=[['01 / 시지각의 원리',perceptionModules],['02 / 사용성의 법칙',behaviorModules],['03 / 화면 진단',reviewModules]];
+ const nav=$('experiment-nav'),container=document.createElement('div');container.className='nav-groups';const navHeader=document.createElement('div');navHeader.className='nav-header';navHeader.innerHTML='<span>실험 목록</span><span>'+String(modules.length).padStart(2,'0')+'</span>';container.append(navHeader);
+ const mobile=document.createElement('div');mobile.className='mobile-picker';const label=document.createElement('label');label.htmlFor='mobile-experiment';label.textContent='실험 선택';const select=document.createElement('select');select.id='mobile-experiment';
  for(const [title,items] of groups){const group=document.createElement('div');group.className='nav-group';const h=document.createElement('h2');h.textContent=title;group.append(h);const options=document.createElement('optgroup');options.label=title;
   for(const item of items){group.append(navLink(item,modules.indexOf(item)));const option=document.createElement('option');option.value=item.id;option.textContent=item.title;options.append(option);}container.append(group);select.append(options);
  }
@@ -28,7 +28,7 @@ function renderModule(){
  const index=modules.indexOf(module);
  $('experiment-number').textContent=String(index+1).padStart(2,'0');$('frame-position').textContent=String(index+1).padStart(2,'0')+' / '+String(modules.length).padStart(2,'0');$('experiment-page').dataset.experiment=module.id;
  document.title=module.title+' · UI/UX Lab | Studio Penumbra';
- $('experiment-kicker').textContent=String(module.week).padStart(2,'0')+'주차 / '+module.en;
+ $('experiment-kicker').textContent=module.category+' / '+module.en;
  $('experiment-heading').textContent=module.title;
  $('experiment-summary').textContent=module.summary;
  $('experiment-question').textContent=module.prompt;
@@ -49,8 +49,6 @@ buildNavigation();renderModule();
 document.querySelector('.skip-link')?.addEventListener('click',event=>{event.preventDefault();$('experiment-heading').focus();$('experiment-heading').scrollIntoView({block:'start'});});
 window.addEventListener('hashchange',()=>{renderModule();$('experiment-heading').focus({preventScroll:true});});
 $('reset-experiment').addEventListener('click',()=>{const id=active.id;drafts[id]=$('reflection').value;active=null;renderModule();announce('현재 실험을 처음 상태로 되돌렸어요.');});
-$('lesson-mode').addEventListener('click',()=>{const enabled=document.body.classList.toggle('lesson-mode');$('lesson-mode').textContent=enabled?'수업 모드 끝내기':'수업 모드';$('lesson-mode').setAttribute('aria-pressed',String(enabled));});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('lesson-mode'))$('lesson-mode').click();});
 $('copy-link').addEventListener('click',async()=>{const url=new URL(location.href);url.hash=active.id;if(active.id!=='heuristics')url.searchParams.delete('rule');try{await navigator.clipboard.writeText(url.href);announce('현재 실험 링크를 복사했어요.');}catch{announce('주소창의 링크를 복사해주세요. 현재 실험 주소가 표시되어 있어요.');history.replaceState(null,'',url);}});
 document.querySelectorAll('[data-context]').forEach(button=>button.addEventListener('click',()=>{context=button.dataset.context;document.querySelectorAll('[data-context]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));updateApplication();}));
 $('save-note').addEventListener('click',()=>{drafts[active.id]=$('reflection').value;const nextNotes={...notes,[active.id]:drafts[active.id]};try{localStorage.setItem(storageKey,JSON.stringify(nextNotes));notes=nextNotes;$('save-status').textContent='이 브라우저에 저장했어요.';announce('관찰 기록을 저장했어요.');}catch{$('save-status').textContent='저장하지 못했어요. 전체 기록 내려받기를 이용해주세요.';announce('브라우저에 저장할 수 없어요. 전체 기록 내려받기를 이용해주세요.');}});

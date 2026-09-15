@@ -1,4 +1,4 @@
-// Week 4: classroom observations, with records kept only in this mounted session.
+// Behavior observations, with records kept only in this mounted session.
 const $ = (root, selector) => root.querySelector(selector);
 const $$ = (root, selector) => [...root.querySelectorAll(selector)];
 const mean = values => values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;

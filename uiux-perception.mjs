@@ -1,4 +1,5 @@
-const COLORS = { ink: '#e8e9eb', muted: '#a8afb8', lavender: '#adb8ef', sky: '#8fc7df', ground: '#171a1e' };
+// Color remains a stimulus only where the experiment compares color grouping.
+const COLORS = { ink: '#e8e8e8', muted: '#a8a8a8', stimulus: '#dedede', lavender: '#adb8ef', sky: '#8fc7df', ground: '#080808' };
 const source = (title, path) => ({ title, url: `https://www.nngroup.com/${path}` });
 const SOURCES = {
   proximity: source('NN/g · Proximity Principle in Visual Design', 'articles/gestalt-proximity/'),
@@ -39,7 +40,7 @@ function mountProximity({ stage, controls, signal }) {
       const col = i % 6, row = Math.floor(i / 6);
       const x = 380 + (col - 2.5) * 54 + (rows ? 0 : (Math.floor(col / 2) - 1) * extra);
       const y = 200 + (row - 1.5) * 54 + (rows ? (Math.floor(row / 2) - .5) * extra : 0);
-      return `<circle cx="${x}" cy="${y}" r="10" fill="${COLORS.lavender}"/>`;
+      return `<circle cx="${x}" cy="${y}" r="10" fill="${COLORS.stimulus}"/>`;
     }).join('');
     setOutput(controls, 'proximity-gap', `${strength}%`);
     caption(scene, strength === 0 ? '모든 점이 같은 간격으로 놓여 있습니다.' : '간격이 벌어진 곳을 경계로 점들이 묶여 보이나요?', `같은 색의 점 24개. ${rows ? '두 행씩' : '두 열씩'} 가까이 놓이고, 묶음 사이 간격 설정은 ${strength}%입니다.`);
@@ -60,7 +61,7 @@ function mountSimilarity({ stage, controls, signal }) {
       const col = i % 6, row = Math.floor(i / 6);
       const group = pattern === 'columns' ? col % 2 : pattern === 'rows' ? row % 2 : (col + row + Math.floor(col / 3)) % 2;
       const x = 180 + col * 80, y = 95 + row * 70;
-      const fill = cue === 'none' || cue === 'shape' ? COLORS.lavender : group ? COLORS.sky : COLORS.lavender;
+      const fill = cue === 'none' || cue === 'shape' ? COLORS.stimulus : group ? COLORS.sky : COLORS.lavender;
       return group && (cue === 'shape' || cue === 'both') ? `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" rx="2" fill="${fill}"/>` : `<circle cx="${x}" cy="${y}" r="12" fill="${fill}"/>`;
     }).join('');
     caption(scene, cue === 'none' ? '간격과 모양이 모두 같습니다. 어느 방향으로 읽히나요?' : '공간은 그대로인데, 무엇이 같은 묶음으로 보이나요?', `같은 간격의 도형 24개. ${cue === 'none' ? '모두 같은 원입니다.' : `${cue === 'color' ? '라벤더와 하늘색' : cue === 'shape' ? '원과 사각형' : '색과 형태'} 단서가 ${pattern === 'columns' ? '열' : pattern === 'rows' ? '행' : '섞인 위치'}에 반복됩니다.`}`);
@@ -83,7 +84,7 @@ function mountClosure({ stage, controls, signal }) {
     const gap = Number(value(controls, 'closure-gap').value);
     scene.art.innerHTML = paths.map(({ d, pieces }) => {
       const line = (100 - gap) / pieces, space = gap / pieces;
-      return `${guide ? `<path d="${d}" fill="none" stroke="${COLORS.muted}" stroke-opacity=".35" stroke-width="2"/>` : ''}<path d="${d}" fill="none" stroke="${COLORS.lavender}" stroke-width="7" stroke-linecap="butt" pathLength="100" stroke-dasharray="${line} ${space}" stroke-dashoffset="${line / 2}"/>`;
+      return `${guide ? `<path d="${d}" fill="none" stroke="${COLORS.muted}" stroke-opacity=".35" stroke-width="2"/>` : ''}<path d="${d}" fill="none" stroke="${COLORS.stimulus}" stroke-width="7" stroke-linecap="butt" pathLength="100" stroke-dasharray="${line} ${space}" stroke-dashoffset="${line / 2}"/>`;
     }).join('');
     setOutput(controls, 'closure-gap', `${gap}%`);
     value(controls, 'closure-guide').setAttribute('aria-pressed', String(guide));
@@ -105,7 +106,7 @@ function mountContinuity({ stage, controls, signal }) {
     const angle = Number(value(controls, 'continuity-angle').value);
     const dy = Math.tan(angle * Math.PI / 180) * 260;
     const top = 200 - dy, bottom = 200 + dy;
-    scene.art.innerHTML = `<g fill="none" stroke-width="7" stroke-linecap="round"><path d="M120 ${top} L640 ${bottom}" stroke="${COLORS.lavender}"/><path d="M120 ${bottom} L640 ${top}" stroke="${distinguish ? COLORS.sky : COLORS.lavender}"/></g>${cover ? `<circle cx="380" cy="200" r="42" fill="${COLORS.ground}" stroke="#444c55" stroke-width="1"/>` : ''}<g class="pc-endpoints" fill="${COLORS.ink}" text-anchor="middle"><text x="87" y="${top + 6}">A</text><text x="673" y="${top + 6}">B</text><text x="87" y="${bottom + 6}">C</text><text x="673" y="${bottom + 6}">D</text></g>`;
+    scene.art.innerHTML = `<g fill="none" stroke-width="7" stroke-linecap="round"><path d="M120 ${top} L640 ${bottom}" stroke="${distinguish ? COLORS.lavender : COLORS.stimulus}"/><path d="M120 ${bottom} L640 ${top}" stroke="${distinguish ? COLORS.sky : COLORS.stimulus}"/></g>${cover ? `<circle cx="380" cy="200" r="42" fill="${COLORS.ground}" stroke="#383838" stroke-width="1"/>` : ''}<g class="pc-endpoints" fill="${COLORS.ink}" text-anchor="middle"><text x="87" y="${top + 6}">A</text><text x="673" y="${top + 6}">B</text><text x="87" y="${bottom + 6}">C</text><text x="673" y="${bottom + 6}">D</text></g>`;
     setOutput(controls, 'continuity-angle', `${angle}°`);
     for (const [id, enabled, off, active] of [['continuity-color', distinguish, '두 선 색 구분', '같은 색으로 보기'], ['continuity-cover', cover, '교차점 가리기', '교차점 보이기']]) {
       value(controls, id).setAttribute('aria-pressed', String(enabled));
@@ -125,7 +126,7 @@ function mountCommonFate({ stage, controls, signal, announce = () => {} }) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   controls.innerHTML = select('fate-relation', '두 묶음의 움직임', [['opposite', '서로 반대 방향 · 같은 속도'], ['same', '같은 방향 · 같은 속도'], ['cross', '가로와 세로 · 같은 속도'], ['speed', '가로 왕복 · 다른 주기']]) + range('fate-speed', '재생 속도', .25, 1.5, .75, '×', .25) + actions([['fate-play', '재생', true], ['fate-step', '한 걸음'], ['fate-reset', '처음 위치']]) + `<p class="control-note" data-motion-note>${reduced.matches ? '기기의 동작 줄이기 설정이 켜져 있습니다. 한 걸음씩 관찰하거나 직접 재생할 수 있습니다.' : '정지 상태에서 먼저 묶음을 찾아본 뒤 재생해 보세요.'}</p>`;
   const origins = Array.from({ length: 24 }, (_, i) => ({ x: 180 + i % 6 * 80, y: 95 + Math.floor(i / 6) * 70, group: (i % 6 + Math.floor(i / 6)) % 2 }));
-  scene.art.innerHTML = origins.map(({ x, y }) => `<circle cx="${x}" cy="${y}" r="9" fill="${COLORS.lavender}"/>`).join('');
+  scene.art.innerHTML = origins.map(({ x, y }) => `<circle cx="${x}" cy="${y}" r="9" fill="${COLORS.stimulus}"/>`).join('');
   const dots = [...scene.art.children];
   let phase = 0, running = false, raf = 0, previous = null, disposed = false;
   function draw() {
@@ -177,7 +178,7 @@ function mountCommonFate({ stage, controls, signal, announce = () => {} }) {
 }
 
 function mountHierarchy({ stage, controls, signal, announce = () => {} }) {
-  stage.innerHTML = `<div class="pc-experiment pc-hierarchy"><div class="pc-booking" data-booking><div class="pc-booking-kicker">CAMPUS EQUIPMENT</div><div class="pc-booking-heading"><p class="pc-booking-title">Sony FX3</p><p class="pc-booking-description">시네마 카메라 · 대여 가능</p></div><div class="pc-booking-details"><div><span>이용 일시</span><strong>내일 10:00–17:00</strong></div><div><span>구성품</span><strong>본체 · 배터리 2개 · 충전기</strong></div></div><div class="pc-booking-bottom"><p>학생증을 지참해 장비실에서 수령하세요.</p><button type="button" class="pc-booking-action" data-reserve>예약 내용 확인</button></div></div><p class="experiment-caption pc-caption" data-caption>장비명, 대여 시간, 확인 버튼 중 무엇이 먼저 보이나요?</p></div>`;
+  stage.innerHTML = `<div class="pc-experiment pc-hierarchy"><div class="pc-booking" data-booking><div class="pc-booking-kicker">EQUIPMENT RENTAL</div><div class="pc-booking-heading"><p class="pc-booking-title">Sony FX3</p><p class="pc-booking-description">시네마 카메라 · 대여 가능</p></div><div class="pc-booking-details"><div><span>이용 일시</span><strong>내일 10:00–17:00</strong></div><div><span>구성품</span><strong>본체 · 배터리 2개 · 충전기</strong></div></div><div class="pc-booking-bottom"><p>신분증을 지참해 대여 데스크에서 수령하세요.</p><button type="button" class="pc-booking-action" data-reserve>예약 내용 확인</button></div></div><p class="experiment-caption pc-caption" data-caption>장비명, 대여 시간, 확인 버튼 중 무엇이 먼저 보이나요?</p></div>`;
   controls.innerHTML = range('hierarchy-size', '크기 차이', 0, 100, 80, '%') + range('hierarchy-contrast', '대비 차이', 0, 100, 75, '%') + range('hierarchy-spacing', '묶음 사이 여백', 0, 100, 65, '%') + '<label class="pc-check"><input type="checkbox" data-control="hierarchy-align" checked>왼쪽 기준선 정렬</label>' + actions([['hierarchy-flat', '위계 낮추기'], ['hierarchy-clear', '위계 높이기', true]]) + '<p class="control-note">내용은 같습니다. 한 번에 하나씩 바꾸며 읽는 순서를 비교해 보세요.</p>';
   const booking = query(stage, '[data-booking]');
   function update() {
@@ -188,9 +189,9 @@ function mountHierarchy({ stage, controls, signal, announce = () => {} }) {
     booking.style.setProperty('--pc-title-size', `${16 + size * .22}px`);
     booking.style.setProperty('--pc-title-weight', String(Math.round(400 + size * 3)));
     booking.style.setProperty('--pc-section-gap', `${9 + spacing * .22}px`);
-    booking.style.setProperty('--pc-action-bg', mix('#323840', COLORS.lavender, contrast / 100));
-    booking.style.setProperty('--pc-action-color', contrast > 45 ? '#171a1e' : '#e8e9eb');
-    booking.style.setProperty('--pc-support', mix('#e8e9eb', '#a8afb8', contrast / 100));
+    booking.style.setProperty('--pc-action-bg', mix('#303030', COLORS.stimulus, contrast / 100));
+    booking.style.setProperty('--pc-action-color', contrast > 45 ? '#111111' : '#e8e8e8');
+    booking.style.setProperty('--pc-support', mix('#e8e8e8', '#a8a8a8', contrast / 100));
     booking.classList.toggle('pc-unaligned', !value(controls, 'hierarchy-align').checked);
     query(stage, '[data-caption]').textContent = '장비명, 대여 시간, 확인 버튼 중 무엇이 먼저 보이나요?';
   }

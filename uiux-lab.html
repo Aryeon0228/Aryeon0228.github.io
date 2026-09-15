@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#000000"><title>UI/UX Lab | Studio Penumbra</title>
-<meta name="description" content="게슈탈트, 시각적 위계, 사용성의 법칙과 닐슨의 10원칙을 직접 조작하고 비교하는 UI/UX 수업 실험실.">
+<meta name="description" content="게슈탈트, 시각적 위계, 사용성의 법칙과 닐슨의 10원칙을 직접 조작하고 비교하는 UI/UX 실험실.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap">
 <link rel="stylesheet" href="penumbra-ui.css"><link rel="stylesheet" href="lab-navigation.css"><link rel="stylesheet" href="uiux-perception.css"><link rel="stylesheet" href="uiux-behavior.css"><link rel="stylesheet" href="uiux-review.css"><link rel="stylesheet" href="uiux-lab.css">
 <script src="penumbra-ui.js" defer></script><script type="module" src="uiux-lab.mjs"></script>
@@ -15,20 +15,20 @@
  <div class="lab-heading uiux-heading">
   <div class="lab-identity">
    <div class="study-kicker"><a href="index.html#work">WORK</a><span>/</span>INTERACTIVE DESIGN STUDIES</div>
-   <div class="lab-title-line"><svg class="lab-sigil" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5.5" y="5.5" width="25" height="25" rx="7" stroke="currentColor" opacity=".35"/><rect x="12.5" y="12.5" width="25" height="25" rx="7" stroke="currentColor" opacity=".6"/><rect x="19.5" y="19.5" width="23" height="23" rx="7" stroke="currentColor"/><circle cx="31" cy="31" r="3" fill="currentColor"/></svg><h1>UI/UX <b>Lab</b></h1></div>
+   <div class="lab-title-line"><h1>UI/UX <b>Lab</b></h1></div>
    <p>직접 바꾸고, 차이를 발견하고, 설계의 이유를 설명해보세요.</p>
   </div>
-  <div class="lab-heading-aside"><div class="lab-edition"><span>WEEKS 02 / 04</span><span><b id="lab-total">11</b> EXPERIMENTS</span></div><div class="lab-tools"><button class="lab-button" id="lesson-mode" type="button" aria-pressed="false">수업 모드</button><button class="lab-button" id="copy-link" type="button">실험 링크 복사</button></div></div>
+  <div class="lab-heading-aside"><div class="lab-edition"><span><b id="lab-total">11</b> EXPERIMENTS</span></div><div class="lab-tools"><button class="lab-button" id="copy-link" type="button">실험 링크 복사</button></div></div>
  </div>
  <div class="uiux-workspace">
-  <nav class="experiment-nav" aria-label="수업 실험 목록" id="experiment-nav"></nav>
+  <nav class="experiment-nav" aria-label="실험 목록" id="experiment-nav"></nav>
   <article class="experiment-page" id="experiment-page">
    <header class="experiment-heading"><div class="experiment-title-group"><span class="experiment-number" id="experiment-number" aria-hidden="true">01</span><div class="experiment-title-copy"><p class="mini-label" id="experiment-kicker"></p><h2 id="experiment-heading" tabindex="-1"></h2><p id="experiment-summary"></p></div></div><button class="lab-button quiet" id="reset-experiment" type="button">실험 초기화 ↺</button></header>
    <div class="experiment-frame"><div class="experiment-frame-head"><span class="frame-label"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="5" height="5" rx="1" stroke="currentColor"/><rect x="10.5" y="2.5" width="5" height="5" rx="1" stroke="currentColor"/><rect x="2.5" y="10.5" width="5" height="5" rx="1" stroke="currentColor"/><rect x="10.5" y="10.5" width="5" height="5" rx="1" fill="currentColor"/></svg>직접 조작해보기</span><span class="frame-position" id="frame-position">01 / 11</span></div><div class="experiment-layout"><section class="experiment-stage" id="experiment-stage" aria-label="실험 화면"></section><aside class="experiment-controls" id="experiment-controls" aria-label="실험 조절"></aside></div></div>
-   <section class="observation-prompt" aria-labelledby="prompt-title"><span class="mini-label" id="prompt-title">관찰할 질문</span><p id="experiment-question"></p></section>
+   <section class="observation-prompt" aria-labelledby="prompt-title"><span class="mini-label" id="prompt-title">Q.</span><p id="experiment-question"></p></section>
    <section class="application-block" aria-labelledby="application-title"><div class="application-heading"><h3 id="application-title">내 화면에 적용하기</h3><div class="context-switch" role="group" aria-label="적용 사례"><button type="button" data-context="service" aria-pressed="true">서비스 UI</button><button type="button" data-context="game" aria-pressed="false">게임 UI</button></div></div><p id="application-copy"></p></section>
-   <details class="observation-notes" id="observation-notes"><summary>관찰 기록 <span>내가 바꾼 조건과 발견한 차이</span></summary><label for="reflection">내 화면에서는 무엇을 바꾸고, 왜 바꾸겠나요?</label><textarea id="reflection" rows="3" maxlength="6000" placeholder="예: 제목과 설명 사이를 좁히니 하나의 항목으로 읽혔다. 내 모작 화면의 목록에도 같은 간격을 적용해보고 싶다."></textarea><div class="notes-footer"><span id="save-status">기록은 저장 버튼을 눌러 이 브라우저에 보관할 수 있어요.</span><div><button type="button" class="lab-button" id="save-note">기록 저장</button><button type="button" class="lab-button" id="export-notes">전체 기록 내려받기</button></div></div></details>
-   <details class="source-details"><summary>원리와 참고 자료</summary><p>실험 결과를 한 문장으로 단정하기보다 조건과 사용 맥락을 함께 설명해보세요. 화면에 등장하는 서비스·게임은 수업을 위한 가상 예시입니다.</p><ul id="source-links"></ul><p class="source-syllabus">UI/UX디자인 · 2주차 시지각의 원리 / 4주차 사용성의 법칙</p></details>
+   <details class="observation-notes" id="observation-notes"><summary>관찰 기록 <span>내가 바꾼 조건과 발견한 차이</span></summary><label for="reflection">내 화면에서는 무엇을 바꾸고, 왜 바꾸겠나요?</label><textarea id="reflection" rows="3" maxlength="6000" placeholder="예: 제목과 설명 사이를 좁히니 하나의 항목으로 읽혔다. 내 화면의 목록에도 같은 간격을 적용해보고 싶다."></textarea><div class="notes-footer"><span id="save-status">기록은 저장 버튼을 눌러 이 브라우저에 보관할 수 있어요.</span><div><button type="button" class="lab-button" id="save-note">기록 저장</button><button type="button" class="lab-button" id="export-notes">전체 기록 내려받기</button></div></div></details>
+   <details class="source-details"><summary>원리와 참고 자료</summary><p>실험 결과를 한 문장으로 단정하기보다 조건과 사용 맥락을 함께 설명해보세요. 화면에 등장하는 서비스·게임은 원리를 살펴보기 위한 가상 예시입니다.</p><ul id="source-links"></ul></details>
    <nav class="experiment-pager" aria-label="이전 다음 실험"><a id="previous-experiment"></a><span id="experiment-counter"></span><a id="next-experiment"></a></nav>
   </article>
  </div>
