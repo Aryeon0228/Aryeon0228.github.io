@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 export function islandColor(id) { return `hsl(${(id*137.508+164)%360}, 38%, 65%)`; }
+export function shearColor(degrees) {
+  if(!Number.isFinite(degrees))return '#46484a';
+  return new THREE.Color('#80ab98').lerp(new THREE.Color('#e68a55'),Math.min(1,degrees/30)).getStyle();
+}
 export function metricColor(mode,island) {
   if(mode==='stretch') {
     const t=Math.min(1,Math.log2(Math.max(1,island.stretch||1))/2);
@@ -17,7 +21,7 @@ export function makeAtlas(model,resolution,target=document.createElement('canvas
   const c=source.getContext('2d');c.scale(source.width/2048,source.height/2048);c.fillStyle='#22262a';c.fillRect(0,0,2048,2048);
   if(model.demo&&!checker) {
     for(const [i,chart] of model.demo.charts.entries()) {
-      const [u,v,w,h]=chart.rect;c.save();c.translate(u*2048,(1-v-h)*2048);c.scale(w*2048,h*2048);
+      const [u,v,w,h]=chart.rect;c.save();c.translate((u+w/2)*2048,(1-v-h/2)*2048);c.rotate(-(chart.rotation||0));c.translate(-w*1024,-h*1024);c.scale(w*2048,h*2048);
       c.fillStyle='#a8aaa5';c.fillRect(0,0,1,1);
       c.strokeStyle='#3e4446';c.lineWidth=.014;c.strokeRect(.035,.035,.93,.93);
       c.fillStyle='#303739';c.fillRect(.08,.1,.84,.12);
@@ -48,14 +52,30 @@ export function createPreview(canvas,{onSelect}) {
   scene.add(new THREE.HemisphereLight(0xffffff,0x4e5765,2.5));
   const key=new THREE.DirectionalLight(0xffffff,3);key.position.set(-3,5,4);scene.add(key);
   const rim=new THREE.DirectionalLight(0xc7d6ee,1.1);rim.position.set(4,1,-3);scene.add(rim);
-  const atlas=document.createElement('canvas');let texture=null,mesh=null,highlight=null,model=null,analysis=null,faceOrder=[];
-  let options={resolution:128,mode:'texture',selected:-1,materialId:-1},frame=0,disposed=false;
+  const atlas=document.createElement('canvas');let colorAtlas=null,texture=null,mesh=null,highlight=null,model=null,analysis=null,faceOrder=[];
+  const colorTile={value:false};
+  let options={resolution:128,mode:'texture',selected:-1,materialId:-1,filter:'nearest'},frame=0,disposed=false;
   function render(){frame=0;if(!disposed)renderer.render(scene,camera);}
   const invalidate=()=>{if(!frame&&!disposed)frame=requestAnimationFrame(render);};
   const resize=()=>{const box=canvas.parentElement.getBoundingClientRect();renderer.setSize(box.width,box.height,false);camera.aspect=box.width/Math.max(1,box.height);camera.updateProjectionMatrix();invalidate();};
   const observer=new ResizeObserver(resize);observer.observe(canvas.parentElement);controls.addEventListener('change',invalidate);
   function reset(){camera.position.set(3.2,2.2,3.8);controls.target.set(0,0,0);controls.update();invalidate();}
   function clearObject(object){if(!object)return;root.remove(object);object.geometry.dispose();object.material.dispose();}
+  function guardUV(material){
+    material.onBeforeCompile=shader=>{
+      shader.uniforms.uUvLabColorTile=colorTile;
+      shader.vertexShader='attribute float uvLabValid; varying float vUvLabValid; varying vec2 vUvLabRaw;\n'+shader.vertexShader;
+      shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvUvLabValid=uvLabValid; vUvLabRaw=uv;');
+      shader.fragmentShader='varying float vUvLabValid; varying vec2 vUvLabRaw; uniform bool uUvLabColorTile;\n'+shader.fragmentShader;
+      shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`if(vUvLabValid < 0.5 || (uUvLabColorTile && (any(lessThan(vUvLabRaw,vec2(0.0))) || any(greaterThan(vUvLabRaw,vec2(1.0)))))) {
+        diffuseColor.rgb=vec3(0.06);
+      } else {
+        #include <map_fragment>
+      }`);
+    };
+    material.customProgramCacheKey=()=> 'uv-lab-validity-v1';
+    return material;
+  }
   function build(){
     clearObject(mesh);clearObject(highlight);highlight=null;faceOrder=[];
     const p=[],uv=[],normals=[];
@@ -65,6 +85,7 @@ export function createPreview(canvas,{onSelect}) {
       for(let k=0;k<6;k++)uv.push(model.uvs[f*6+k]);
     }
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(p,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+    geometry.setAttribute('uvLabValid',new THREE.Float32BufferAttribute(faceOrder.flatMap(f=>{const valid=analysis.faceIsland[f]>=0?1:0;return [valid,valid,valid];}),1));
     if(normals.length)geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));else geometry.computeVertexNormals();
     if(model.demo) {
       const normal=geometry.attributes.normal,position=geometry.attributes.position,sums=new Map();
@@ -73,24 +94,30 @@ export function createPreview(canvas,{onSelect}) {
     }
     geometry.computeBoundingBox();const center=new THREE.Vector3(),size=new THREE.Vector3();geometry.boundingBox.getCenter(center);geometry.boundingBox.getSize(size);
     geometry.translate(-center.x,-center.y,-center.z);const scale=2.6/Math.max(.00001,size.x,size.y,size.z);geometry.scale(scale,scale,scale);
-    mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({roughness:.75,metalness:.05,side:THREE.DoubleSide,vertexColors:true}));root.add(mesh);
+    mesh=new THREE.Mesh(geometry,guardUV(new THREE.MeshStandardMaterial({roughness:.75,metalness:.05,side:THREE.DoubleSide,vertexColors:true})));root.add(mesh);
   }
   function appearance(next={}) {
     const prev=options;options={...options,...next};if(!model)return;
     if(!mesh||prev.materialId!==options.materialId)build();
-    if(!texture||prev.resolution!==options.resolution||next.forceTexture||(prev.mode==='checker')!==(options.mode==='checker')) {
-      makeAtlas(model,options.resolution,atlas,options.mode==='checker');texture?.dispose();texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;
-      texture.minFilter=texture.magFilter=THREE.NearestFilter;texture.generateMipmaps=false;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
+    if(!texture||prev.resolution!==options.resolution||next.forceTexture||(prev.mode==='checker')!==(options.mode==='checker')||(prev.mode==='bleed')!==(options.mode==='bleed')) {
+      texture?.dispose();texture=null;
+      const source=options.mode==='bleed'?colorAtlas:makeAtlas(model,options.resolution,atlas,options.mode==='checker');
+      if(source){texture=new THREE.CanvasTexture(source);texture.colorSpace=THREE.SRGBColorSpace;texture.generateMipmaps=false;texture.wrapS=texture.wrapT=options.mode==='bleed'?THREE.ClampToEdgeWrapping:THREE.RepeatWrapping;}
     }
+    if(texture){texture.minFilter=texture.magFilter=options.mode==='bleed'&&options.filter==='linear'?THREE.LinearFilter:THREE.NearestFilter;texture.needsUpdate=true;}
+    const unlit=options.mode==='bleed'||options.mode==='grid';
+    colorTile.value=options.mode==='bleed';
+    if(unlit!==!!mesh.material.isMeshBasicMaterial){mesh.material.dispose();mesh.material=guardUV(unlit?new THREE.MeshBasicMaterial({side:THREE.DoubleSide,vertexColors:true,toneMapped:false}):new THREE.MeshStandardMaterial({roughness:.75,metalness:.05,side:THREE.DoubleSide,vertexColors:true}));}
     const colors=[],color=new THREE.Color();
-    for(const f of faceOrder){const id=analysis.faceIsland[f],island=analysis.islands[id];color.set(!island?'#46484a':['texture','checker'].includes(options.mode)?'#ffffff':options.mode==='islands'?islandColor(id):metricColor(options.mode,island));for(let j=0;j<3;j++)colors.push(color.r,color.g,color.b);}
-    mesh.geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));mesh.material.map=['texture','checker'].includes(options.mode)?texture:null;mesh.material.needsUpdate=true;
+    for(const f of faceOrder){const id=analysis.faceIsland[f],island=analysis.islands[id];color.set(!island?'#ffffff':['texture','checker','bleed'].includes(options.mode)?'#ffffff':options.mode==='grid'?shearColor(analysis.grid?.faceShear[f]):options.mode==='islands'?islandColor(id):metricColor(options.mode,island));for(let j=0;j<3;j++)colors.push(color.r,color.g,color.b);}
+    mesh.geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));mesh.material.map=['texture','checker','bleed'].includes(options.mode)?texture:null;mesh.material.needsUpdate=true;
     clearObject(highlight);highlight=null;
     if(options.selected>=0) {
       const p=[],position=mesh.geometry.attributes.position;
       faceOrder.forEach((f,index)=>{if(analysis.faceIsland[f]===options.selected)for(let j=0;j<3;j++)p.push(position.getX(index*3+j),position.getY(index*3+j),position.getZ(index*3+j));});
       const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
-      highlight=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:'#d6f9db',transparent:true,opacity:.27,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));root.add(highlight);
+      if(unlit){const edges=new THREE.EdgesGeometry(geometry,180);geometry.dispose();highlight=new THREE.LineSegments(edges,new THREE.LineBasicMaterial({color:'#ffffff',depthTest:false,transparent:true,opacity:.9}));highlight.renderOrder=2;}
+      else highlight=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:'#d6f9db',transparent:true,opacity:.27,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));root.add(highlight);
     }
     invalidate();
   }
@@ -99,5 +126,5 @@ export function createPreview(canvas,{onSelect}) {
   function up(event){if(!mesh||!start||Math.hypot(event.clientX-start[0],event.clientY-start[1])>5)return;const box=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((event.clientX-box.left)/box.width*2-1,1-(event.clientY-box.top)/box.height*2),camera);const hit=raycaster.intersectObject(mesh)[0];if(hit)onSelect(analysis.faceIsland[faceOrder[hit.faceIndex]]);start=null;}
   function keyboard(event){if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;event.preventDefault();const v=camera.position.clone().sub(controls.target),s=new THREE.Spherical().setFromVector3(v);if(event.key==='ArrowLeft')s.theta-=.12;if(event.key==='ArrowRight')s.theta+=.12;if(event.key==='ArrowUp')s.phi-=.12;if(event.key==='ArrowDown')s.phi+=.12;s.makeSafe();camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(s));controls.update();invalidate();}
   canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointerup',up);canvas.addEventListener('keydown',keyboard);reset();resize();
-  return {textureCanvas:atlas,setModel(m,a){model=m;analysis=a;options.materialId=-1;clearObject(mesh);mesh=null;appearance({forceTexture:true});reset();},setAppearance:appearance,reset,dispose(){disposed=true;cancelAnimationFrame(frame);observer.disconnect();controls.dispose();clearObject(mesh);clearObject(highlight);texture?.dispose();renderer.dispose();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('keydown',keyboard);}};
+  return {get textureCanvas(){return options.mode==='bleed'?colorAtlas:atlas;},setColorAtlas(value){colorAtlas=value;if(options.mode==='bleed')appearance({forceTexture:true});},setModel(m,a){model=m;analysis=a;colorAtlas=null;options.materialId=-1;clearObject(mesh);mesh=null;appearance({forceTexture:true});reset();},setAppearance:appearance,reset,dispose(){disposed=true;cancelAnimationFrame(frame);observer.disconnect();controls.dispose();clearObject(mesh);clearObject(highlight);texture?.dispose();renderer.dispose();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('keydown',keyboard);}};
 }

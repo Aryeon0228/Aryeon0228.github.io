@@ -1,4 +1,4 @@
-// One rounded case, three UV layouts. Geometry and source vertex IDs stay identical.
+// One rounded case, four UV layouts. Geometry and source vertex IDs stay identical.
 export function createDemo(layout = 'loose') {
   const positions = [], uvs = [], vertexIds = [], materialIds = [], uvValid = [];
   const charts = [
@@ -12,18 +12,26 @@ export function createDemo(layout = 'loose') {
   const sourceIds = new Map();
   const divisions = 12;
   for (const [chartId, chart] of charts.entries()) {
-    const scale = layout === 'loose' ? .158 : .239;
-    const start = layout === 'loose' ? chart.loose : layout === 'stretched' && chartId === 5 ? [.72,.635] : chart.packed;
+    const loosePlacement = layout === 'loose' || layout === 'tilted';
+    const scale = loosePlacement ? .158 : .239;
+    const start = loosePlacement ? chart.loose : layout === 'stretched' && chartId === 5 ? [.72,.635] : chart.packed;
     let w = chart.size[0] * scale, h = chart.size[1] * scale;
     if (layout === 'stretched' && chartId === 4) { w *= 2.65; h *= .38; }
     chart.rect = [start[0],start[1],w,h];
+    chart.rotation = layout === 'tilted' ? [16,-18,12,-14,-18,20][chartId] * Math.PI / 180 : 0;
+    const cosine = Math.cos(chart.rotation), sine = Math.sin(chart.rotation);
     const point = (x,y) => {
       const p = chart.origin.map((n,k) => n + chart.a[k] * (x/divisions-.5)*chart.size[0] + chart.b[k]*(y/divisions-.5)*chart.size[1]);
       const key = p.map(n => n.toFixed(6)).join(',');
       if (!sourceIds.has(key)) sourceIds.set(key,sourceIds.size);
       const inner = p.map((n,k) => Math.max(-[.93,.63,.43][k],Math.min([.93,.63,.43][k],n)));
       const d = p.map((n,k) => n-inner[k]), len = Math.hypot(...d);
-      return {p:inner.map((n,k) => n+d[k]/len*.07), uv:[start[0]+x/divisions*w,start[1]+y/divisions*h], id:sourceIds.get(key)};
+      let uv = [start[0]+x/divisions*w,start[1]+y/divisions*h];
+      if (chart.rotation) {
+        const u = (x/divisions-.5)*w, v = (y/divisions-.5)*h;
+        uv = [start[0]+w/2+u*cosine-v*sine, start[1]+h/2+u*sine+v*cosine];
+      }
+      return {p:inner.map((n,k) => n+d[k]/len*.07), uv, id:sourceIds.get(key)};
     };
     for(let y=0;y<divisions;y++) for(let x=0;x<divisions;x++) {
       const corners=[point(x,y),point(x+1,y),point(x+1,y+1),point(x,y+1)];
