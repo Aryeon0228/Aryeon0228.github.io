@@ -423,7 +423,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=5f99804c5004">
-<link rel="stylesheet" href="home-theme.css?v=8152e34b4e79">
+<link rel="stylesheet" href="home-theme.css?v=d49568701a28">
 <script src="home-theme.js?v=745a3d1937a4" defer></script>
 </head>
 <body>
@@ -790,12 +790,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     "  float earthshine=.0035*(.65+.35*cloud)*pow(mu,.6);",
     "  float lum=surface*transmission+scattered+earthshine;",
     "  if(uDay>0.5){",
-    "    // A pearl-white base reads as a light planet even against the bright paper sky.",
-    "    // A soft highlight shoulder preserves cloud detail as the sun moves toward the viewer.",
-    "    float indirect=.56+pow(mu,.55)*(.20+albedo*.18);",
-    "    float direct=surface*transmission*.64+scattered*.18;",
-    "    float pearl=indirect+(.97-indirect)*(1.-exp(-direct*2.2));",
-    "    gl_FragColor=vec4(vec3(.99,1.,1.)*pearl,1.);",
+    "    // High-key daylight: keep only a pale contour around the white planet.",
+    "    // Direct light intentionally washes out the bands, independently of their albedo.",
+    "    float indirect=.86+pow(mu,.55)*(.08+(albedo-.70)*.06);",
+    "    float wash=smoothstep(.015,.36,daylight*incident*transmission+scattered*.3);",
+    "    float pearl=mix(indirect,1.,wash);",
+    "    gl_FragColor=vec4(vec3(pearl),1.);",
     "  }else{ gl_FragColor=vec4(vec3(max(lum,0.)),1.); }",
     "}"
   ].join('\n');
