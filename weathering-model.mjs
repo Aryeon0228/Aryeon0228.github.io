@@ -39,9 +39,15 @@ export const PRESETS = Object.freeze({
   }),
   damp: Object.freeze({
     label: '비 맞은 보관',
-    description: '벗겨진 강철이 반복해서 젖은 조건입니다. 녹은 드러난 철에서 시작합니다.',
+    description: '반복해서 젖는 보관 조건입니다. 도장한 강철에서는 벗겨진 철이 녹슬기 시작합니다.',
     dust: 0.18, wear: 0.92, wind: 0.6, contact: 'edges',
     wetness: 0.9, exposure: 0.8, drying: 0.5,
+  }),
+  moss: Object.freeze({
+    label: '오래된 습한 보관',
+    description: '오래 젖고 천천히 마르는 표면에 이끼가 자리 잡은 조건입니다.',
+    dust: 0.65, wear: 0.08, wind: 0.18, contact: 'handle',
+    wetness: 1, exposure: 1, drying: 0.08,
   }),
 });
 

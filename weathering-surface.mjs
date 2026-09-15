@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three/build/three.module.js';
-import { WEATHER_GLSL } from './weathering-model.mjs?v=b7e7cc8d2e75';
+import { WEATHER_GLSL } from './weathering-model.mjs?v=9dd18adc1e3c';
 import { ENVIRONMENT_GLSL } from './weathering-environment.mjs?v=98d844ff44b3';
 
 // CSS palette entries are converted once into Three.js's linear working space.
@@ -17,6 +17,8 @@ const vec3 wxMetalColor = ${linearColor('#a4adb0')};
 const vec3 wxHardwareColor = ${linearColor('#899397')};
 const vec3 wxRustDarkColor = ${linearColor('#623b29')};
 const vec3 wxRustLightColor = ${linearColor('#ad6d42')};
+const vec3 wxMossDarkColor = ${linearColor('#223d20')};
+const vec3 wxMossTipColor = ${linearColor('#658342')};
 
 // This is visible oxide coverage, bounded by the iron the surface shader
 // actually exposes. Contact or primer alone cannot qualify as bare iron.
@@ -25,6 +27,25 @@ float wxRustCoverage(float wxExposedIron, float wxWetDose, float wxGrain) {
   float wxGrowth = 1.0 - exp(-5.8 * clamp(wxWetDose, 0.0, 1.0));
   return clamp(wxExposedIron, 0.0, 1.0) * wxGrowth
     * mix(0.66, 1.0, smoothstep(0.18, 0.72, wxGrain));
+}
+
+// Relative establishment of persistent colonies, not a biological timescale.
+// Both moisture gates must open: a brief wet event cannot create moss. Dust
+// helps attachment but is not compulsory, and contact removes establishment.
+float wxMossCoverage(float wxPersistence, float wxDose, float wxEstablishment,
+  float wxContact, float wxPattern, float wxMicroDensity, float wxAA) {
+  float wxMaturity = smoothstep(0.18, 0.70, wxDose)
+    * smoothstep(0.20, 0.74, wxPersistence);
+  float wxPotential = wxMaturity * clamp(wxEstablishment, 0.0, 1.0)
+    * (1.0 - 0.97 * clamp(wxContact, 0.0, 1.0));
+  float wxThreshold = mix(0.69, 0.42, wxPotential);
+  float wxColonies = smoothstep(wxThreshold - wxAA,
+    wxThreshold + 0.035 + wxAA * 1.4, wxPattern);
+  // Dense tufts can fully hide pale residue; this curve leaves zero coverage
+  // and the ragged boundary support intact instead of expanding the islands.
+  wxColonies *= 1.45 - 0.45 * wxColonies;
+  return wxColonies * smoothstep(0.06, 0.62, wxPotential)
+    * mix(0.58, 1.0, smoothstep(0.20, 0.52, wxMicroDensity));
 }
 
 float wxHash(vec3 wxP) {
@@ -140,8 +161,9 @@ float wxPlastic = clamp(uPlastic, 0.0, 1.0);
 float wxChippable = (1.0 - wxHandle) * (1.0 - wxDragged) * (1.0 - wxHardware);
 
 float wxClump = wxFilteredNoise(wxP * 7.3);
+float wxChipFineNoise = wxFilteredNoise(wxP * 103.0);
 float wxChipNoise = 0.76 * wxFilteredNoise(wxP * 39.0)
-  + 0.24 * wxFilteredNoise(wxP * 103.0);
+  + 0.24 * wxChipFineNoise;
 float wxGrains = wxPowderGrains(wxSurfaceUV(wxP, wxN));
 
 // A matte powder film supplies readable coverage; isolated grains interrupt
@@ -190,6 +212,37 @@ vec3 wxRustColor = mix(wxRustDarkColor, wxRustLightColor,
 vec3 wxSubstrateColor = mix(wxMetalColor, wxRustColor,
   wxRustMask / max(wxExposedIron, 0.00001));
 
+// One physical roughness value serves both shading and moss establishment.
+// Plastic contact retains its fixed roughness, as in the dry surface path.
+float wxSubstrateRoughness = 0.53;
+wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.29, wxRub * 0.8);
+wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.78, wxChipUnder * (1.0 - wxChipCore));
+wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.36, wxExposed);
+wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.60, wxPlastic);
+wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.32, wxHardware);
+wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.90 + 0.07 * wxRustGrain, wxRustMask);
+float wxMossEstablishment = clamp(0.22 + 0.38 * wxSubstrateRoughness
+  + 0.46 * wxDustMask, 0.0, 1.0);
+float wxRepeatedContact = ws.z * clamp(uWear, 0.0, 1.0);
+float wxMossDetail = clamp(0.42 * wxChipFineNoise + 0.32 * wxChipNoise
+  + 0.46 * wxGrains, 0.0, 1.0);
+float wxMossPattern = 0.5;
+// The condition is uniform across the draw: derivative filtering remains valid
+// while the dry/default view skips this extra colony-noise octave entirely.
+if (uWetness > 0.0 && uExposure > 0.0) {
+  // Small colonies and existing chip-scale noise break up the broad clumps.
+  // Reusing the finer octave makes ragged edges without another noise sample.
+  wxMossPattern = 0.16 * wxClump + 0.28 * wxChipNoise
+    + 0.14 * wxChipFineNoise
+    + 0.42 * wxFilteredNoise(wxP * 18.9 + vec3(4.7, 2.3, 8.1));
+}
+float wxMossAA = max(fwidth(wxMossPattern) * 0.8, 0.022);
+float wxMossMask = wxMossCoverage(wxEnvironment.y, wxEnvironment.z,
+  wxMossEstablishment, wxRepeatedContact, wxMossPattern, wxMossDetail, wxMossAA);
+vec3 wxMossColor = mix(wxMossDarkColor, wxMossTipColor,
+  clamp(0.10 + 0.82 * wxMossDetail, 0.0, 1.0)
+    * smoothstep(0.03, 0.68, wxMossMask));
+
 vec3 wxCoat = clamp(uCoatColor * (0.982 + 0.036 * wxClump), 0.0, 1.0);
 vec3 wxAged = wxCoat;
 // Plastic contact changes surface relief only: no whitening, exposed inner
@@ -208,6 +261,9 @@ if (wxPlastic < 0.5) {
 wxAged = mix(wxAged, wxHardwareColor * (0.97 + 0.06 * wxClump), wxHardware);
 // Rust belongs to exposed iron, beneath the independently deposited powder.
 wxAged = mix(wxAged, wxDustColor, wxDustMask);
+// Established colonies grow over retained residue, on either paint or plastic.
+// Layer order: substrate/rust, retained powder, then emerged moss colonies.
+wxAged = mix(wxAged, wxMossColor, wxMossMask);
 diffuseColor.rgb = wxAged;
 
 float wxHeight = wxDustMask * (0.0008 + 0.00085 * wxGrains)
@@ -221,6 +277,7 @@ float wxPlasticHeight = wxDustMask * (0.0008 + 0.00085 * wxGrains)
   - wxScratchCore * 0.0022 - wxRubLines * 0.0026;
 wxHeight = mix(wxHeight, wxPlasticHeight, wxPlastic * (1.0 - wxHardware));
 wxHeight += wxRustMask * (0.00032 + 0.00078 * wxRustGrain) * (1.0 - wxDustMask);
+wxHeight = mix(wxHeight, 0.0014 + 0.0028 * wxMossDetail, wxMossMask);
 
 // Preserve the existing diagnostic overlay colours, values and lighting split.
 vec3 causeColor = vec3(0.012, 0.016, 0.017);
@@ -240,6 +297,10 @@ if (uLayer > 2.5 && uLayer < 3.5) {
 if (uLayer > 3.5 && uLayer < 4.5) {
   causeStrength = wxRustMask;
   causeColor = mix(causeColor, vec3(0.74, 0.31, 0.09), causeStrength);
+}
+if (uLayer > 4.5 && uLayer < 5.5) {
+  causeStrength = wxMossMask;
+  causeColor = mix(causeColor, vec3(0.26, 0.61, 0.19), causeStrength);
 }
 if (uLayer > 0.5) diffuseColor.rgb = causeColor * 0.48;
 `;
@@ -302,27 +363,22 @@ ${SURFACE_HELPERS}`)
       .replace('#include <color_fragment>', `#include <color_fragment>
 ${SURFACE_COLOR}`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
-roughnessFactor = 0.53;
-roughnessFactor = mix(roughnessFactor, 0.29, wxRub * 0.8);
-roughnessFactor = mix(roughnessFactor, 0.78, wxChipUnder * (1.0 - wxChipCore));
-roughnessFactor = mix(roughnessFactor, 0.36, wxExposed);
-// Bare plastic keeps one roughness regardless of contact; dust still overlays it.
-roughnessFactor = mix(roughnessFactor, 0.60, wxPlastic);
-roughnessFactor = mix(roughnessFactor, 0.32, wxHardware);
-roughnessFactor = mix(roughnessFactor, 0.90 + 0.07 * wxRustGrain, wxRustMask);
+roughnessFactor = wxSubstrateRoughness;
 roughnessFactor = mix(roughnessFactor, 0.97 + 0.03 * wxGrains, wxDustMask);
+roughnessFactor = mix(roughnessFactor, 0.93 + 0.065 * wxMossDetail, wxMossMask);
 if (uLayer > 0.5) roughnessFactor = 1.0;`)
       .replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>
 metalnessFactor = mix(max(wxExposed - wxRustMask, 0.0) * 0.86 * (1.0 - wxPlastic), 0.85, wxHardware)
-  * (1.0 - wxDustMask);
+  * (1.0 - wxDustMask) * (1.0 - wxMossMask);
 if (uLayer > 0.5) metalnessFactor = 0.0;`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
 // r160 defines normal and vViewPosition before this chunk. Standard/physical
 // materials already enable derivatives on WebGL 1; WebGL 2 has them natively.
 if (uLayer < 0.5) {
   vec3 wxBumpedNormal = wxPerturbNormal(-vViewPosition, normal, wxHeight);
-  // No derivative spill may change a point outside both causal supports.
-  normal = normalize(mix(normal, wxBumpedNormal, clamp(max(ws.x, ws.y), 0.0, 1.0)));
+  // Moss may occupy intact surfaces; it supplies its own bump support.
+  normal = normalize(mix(normal, wxBumpedNormal,
+    clamp(max(max(ws.x, ws.y), wxMossMask), 0.0, 1.0)));
 }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
 if (uLayer > 0.5) totalEmissiveRadiance = causeColor * 0.66;`)
@@ -334,9 +390,12 @@ if (uLayer < 0.5) {
   float wxPowderSpecular = mix(1.0, 0.01, smoothstep(0.0, 0.75, wxDustMask));
   reflectedLight.directSpecular *= wxPowderSpecular;
   reflectedLight.indirectSpecular *= wxPowderSpecular;
+  float wxMossSpecular = mix(1.0, 0.03, smoothstep(0.0, 0.85, wxMossMask));
+  reflectedLight.directSpecular *= wxMossSpecular;
+  reflectedLight.indirectSpecular *= wxMossSpecular;
 }`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v5-exposed-iron-rust';
+  material.customProgramCacheKey = () => 'weathering-surface-v6-moisture-moss';
   return material;
 }
