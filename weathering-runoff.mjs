@@ -20,6 +20,11 @@ const smooth = (low, high, value) => {
 // Match GLSL's float32 hard boundaries, including exact threshold samples.
 const bounds = { top: Math.fround(.77), height: Math.fround(1.54), x: 1.25,
   zMin: Math.fround(.56), zMax: Math.fround(.651) };
+// Receiver bounds include a one-millionth allowance for transformed vertices.
+const receiverBounds = { lidTop: Math.fround(.970001), lidBottom: Math.fround(.769999),
+  lidX: Math.fround(1.320001), lidZMin: Math.fround(.664999), lidZMax: Math.fround(.720001),
+  ribTop: Math.fround(.220001), ribBottom: Math.fround(-.500001),
+  ribZMin: Math.fround(.640999), ribZMax: Math.fround(.691001), ribHalfX: Math.fround(.034001) };
 // Root X, root half-width, nominal travel, and a fixed variation parameter.
 const frontLanes = [[-.89,.082,1.36,.16],[.89,.104,.86,.64],[-.45,.045,.64,.32],
   [.18,.073,1.07,.82],[.55,.028,.43,.48],[-1.14,.031,.36,.75]];
@@ -31,14 +36,14 @@ function rimNoise(value) {
   return cell(index) * (1 - blend) + cell(index + 1) * blend;
 }
 
-function paths(p, strength) {
+function paths(p, strength, startBridge = 0, halfWidth = bounds.x) {
   const drop = bounds.top - p[1];
-  if (strength <= 0 || drop < 0 || drop > bounds.height || Math.abs(p[0]) > bounds.x
+  if (strength <= 0 || drop < 0 || drop > bounds.height || Math.abs(p[0]) > halfWidth
     || Math.abs(p[2]) < bounds.zMin || Math.abs(p[2]) > bounds.zMax) return [0, 0, 0];
   const rear = p[2] < 0, volume = Math.sqrt(strength);
   const rimPatch = smooth(.18, .72, rimNoise(p[0] * 3.7 + (rear ? 4.1 : .3)));
   const depth = (.09 + .19 * rimNoise(p[0] * 5.3 + (rear ? .8 : 6.2))) * (.3 + .7 * volume);
-  const start = smooth(0, .025, drop);
+  const start = Math.max(smooth(0, .025, drop), startBridge);
   const header = rimPatch * start * (1 - smooth(depth * .4, depth, drop));
   const result = [header * .72, header * .08, header * .64];
   for (const [root, rootWidth, travel, variation] of rear ? backLanes : frontLanes) {
@@ -67,7 +72,8 @@ function paths(p, strength) {
 
 /**
  * source={dust,wetDose}: actual pre-transport lid-top weather/environment at
- * [point.x,.97,point.z<0?-.58:.58], normal +Y, kind 1 and lid bounds.
+ * [clamp(point.x,-1.265,1.265),.97,point.z<0?-.58:.58], normal +Y,
+ * kind 1 and lid bounds. The X clamp keeps rim sources on the flat lid top.
  * Do not reuse the receiving body's shelter for the source sample.
  * Returns {flow,wash,sediment,sourceLoad}, all in [0,1]. Source load describes
  * upstream available dirty water; sediment is its local deposit footprint.
@@ -86,10 +92,22 @@ export function sampleRunoff(point, normal, part = {}, state = {}, weather = {},
   const directWash = amount * env.wetDose * smooth(0.20, 0.85, n[1]);
   const strength = amount * clamp(finite(source.wetDose, 0));
   const sourceLoad = strength * clamp(finite(source.dust, 0));
-  const body = Math.abs(finite(part.kind, 0)) < 0.5 ? 1 : 0;
-  const face = body * smooth(0.55, 0.90, Math.abs(n[2]))
-    * (1 - smooth(0.12, 0.60, Math.abs(n[1])));
-  const path = paths(p, strength);
+  const kind = finite(part.kind, 0), b = receiverBounds;
+  const body = Math.abs(kind) < .5;
+  const lid = Math.abs(kind - 1) < .5 && p[1] >= b.lidBottom && p[1] <= b.lidTop
+    && Math.abs(p[0]) <= b.lidX && Math.abs(p[2]) >= b.lidZMin && Math.abs(p[2]) <= b.lidZMax;
+  // Match GPU subtraction precision at the narrow rib receiver boundaries.
+  const ribCoordinate = Math.fround(p[0]), ribCenter = Math.fround(.78);
+  const ribX = Math.min(Math.abs(ribCoordinate), Math.abs(Math.fround(ribCoordinate - ribCenter)),
+    Math.abs(Math.fround(ribCoordinate + ribCenter)));
+  const rib = Math.abs(kind - 4) < .5 && p[1] >= b.ribBottom && p[1] <= b.ribTop
+    && Math.abs(p[2]) >= b.ribZMin && Math.abs(p[2]) <= b.ribZMax && ribX <= b.ribHalfX;
+  // Side/top planes remain excluded. Front/back bevels fade only at their tangent.
+  const face = (body || lid || rib ? 1 : 0) * smooth(.02, .35, Math.abs(n[2]));
+  const projected = lid ? [p[0], bounds.top, p[2] < 0 ? -.65 : .65]
+    : rib ? [p[0], p[1], p[2] < 0 ? -.65 : .65] : p;
+  const bridge = lid ? smooth(0, .025, .97 - p[1]) : body ? smooth(0, .20, n[1]) : 0;
+  const path = paths(projected, strength, bridge, lid ? b.lidX : bounds.x);
   return {
     flow: clamp(Math.max(directWash, strength * face * path[0])),
     wash: clamp(Math.max(directWash, strength * face * path[1])),
@@ -111,15 +129,15 @@ float wxRunoffRimNoise(float value) {
 vec4 wxRunoffLane(int index, bool rear) {
 ${frontLanes.map((lane, i) => `  ${i < 5 ? `if (index == ${i}) ` : ''}return rear ? vec4(${backLanes[i].map(v => v.toFixed(5)).join(', ')}) : vec4(${lane.map(v => v.toFixed(5)).join(', ')});`).join('\n')}
 }
-vec3 wxRunoffPaths(vec3 p, float strength) {
+vec3 wxRunoffPaths(vec3 p, float strength, float startBridge, float halfWidth) {
   float drop = 0.77 - p.y;
-  if (strength <= 0.0 || drop < 0.0 || drop > 1.54 || abs(p.x) > 1.25
+  if (strength <= 0.0 || drop < 0.0 || drop > 1.54 || abs(p.x) > halfWidth
     || abs(p.z) < 0.56 || abs(p.z) > 0.651) return vec3(0.0);
   bool rear = p.z < 0.0;
   float volume = sqrt(strength);
   float rimPatch = smoothstep(.18, .72, wxRunoffRimNoise(p.x * 3.7 + (rear ? 4.1 : .3)));
   float depth = (.09 + .19 * wxRunoffRimNoise(p.x * 5.3 + (rear ? .8 : 6.2))) * (.3 + .7 * volume);
-  float start = smoothstep(0.0, .025, drop);
+  float start = max(smoothstep(0.0, .025, drop), startBridge);
   float header = rimPatch * start * (1.0 - smoothstep(depth * .4, depth, drop));
   vec3 result = vec3(header * .72, header * .08, header * .64);
   for (int i = 0; i < 6; i++) {
@@ -159,10 +177,18 @@ vec4 wxRunoffSignals(
   float directWash = amount * env.z * smoothstep(0.20, 0.85, normal.y);
   float strength = amount * clamp(source.y, 0.0, 1.0);
   float sourceLoad = strength * clamp(source.x, 0.0, 1.0);
-  float body = 1.0 - step(0.5, abs(kind));
-  float face = body * smoothstep(0.55, 0.90, abs(normal.z))
-    * (1.0 - smoothstep(0.12, 0.60, abs(normal.y)));
-  vec3 path = wxRunoffPaths(p, strength);
+  bool body = abs(kind) < .5;
+  bool lid = abs(kind - 1.0) < .5 && p.y >= .769999 && p.y <= .970001
+    && abs(p.x) <= 1.320001 && abs(p.z) >= .664999 && abs(p.z) <= .720001;
+  float ribX = min(abs(p.x), min(abs(p.x - .78), abs(p.x + .78)));
+  bool rib = abs(kind - 4.0) < .5 && p.y >= -.500001 && p.y <= .220001
+    && abs(p.z) >= .640999 && abs(p.z) <= .691001 && ribX <= .034001;
+  float face = (body || lid || rib ? 1.0 : 0.0) * smoothstep(.02, .35, abs(normal.z));
+  vec3 projected = lid ? vec3(p.x, .77, p.z < 0.0 ? -.65 : .65)
+    : (rib ? vec3(p.xy, p.z < 0.0 ? -.65 : .65) : p);
+  float bridge = lid ? smoothstep(0.0, .025, .97 - p.y)
+    : (body ? smoothstep(0.0, .20, normal.y) : 0.0);
+  vec3 path = wxRunoffPaths(projected, strength, bridge, lid ? 1.320001 : 1.25);
   return clamp(vec4(max(directWash, strength * face * path.x),
     max(directWash, strength * face * path.y), sourceLoad * face * path.z, sourceLoad), 0.0, 1.0);
 }

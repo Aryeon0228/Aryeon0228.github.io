@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=43fef8970ee4';
-import {createWeatherMaterial} from './weathering-surface.mjs?v=58f2454d8e1b';
+import {createWeatherMaterial} from './weathering-surface.mjs?v=daa24a4556dd';
 import {createWeatheringCamera} from './weathering-camera.mjs?v=79c6fb037bae';
 import {createWeatheringBox as roundedBox} from './weathering-geometry.mjs?v=e3aca10313dd';
 

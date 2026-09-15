@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three/build/three.module.js';
 import { WEATHER_GLSL } from './weathering-model.mjs?v=43fef8970ee4';
 import { ENVIRONMENT_GLSL } from './weathering-environment.mjs?v=98d844ff44b3';
-import { RUNOFF_GLSL } from './weathering-runoff.mjs?v=9090fe25da15';
+import { RUNOFF_GLSL } from './weathering-runoff.mjs?v=a30916acb167';
 
 // CSS palette entries are converted once into Three.js's linear working space.
 // Only uCoatColor is user-editable; powder, primer and hardware stay independent.
@@ -182,7 +182,10 @@ float wxSedimentFibres = 0.5;
 // Source weather is sampled before transport, on the real lid above this face.
 // A uniform branch skips both extra samples in every default/dry render.
 if (uRunoff > 0.0 && uWetness > 0.0 && uExposure > 0.0) {
-  vec3 wxSourceP = vec3(wxP.x, 0.97, wxP.z < 0.0 ? -0.58 : 0.58);
+  // Rim receivers can extend beyond the lid's flat top. Keep their upstream
+  // sample on that real top surface, before its 0.055-radius bevel begins.
+  vec3 wxSourceP = vec3(clamp(wxP.x, -1.265, 1.265), 0.97,
+    wxP.z < 0.0 ? -0.58 : 0.58);
   vec3 wxSourceN = vec3(0.0, 1.0, 0.0);
   vec4 wxSourceWeather = weatherSignals(wxSourceP, wxSourceN,
     vec3(0.0, 0.87, 0.0), vec3(1.32, 0.10, 0.72), 1.0,
@@ -467,6 +470,6 @@ if (uLayer < 0.5) {
 }`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v9-thin-stain-optics';
+  material.customProgramCacheKey = () => 'weathering-surface-v10-curved-runoff';
   return material;
 }
