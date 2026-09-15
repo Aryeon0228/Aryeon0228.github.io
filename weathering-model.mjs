@@ -17,6 +17,7 @@ export const PRESETS = Object.freeze({
     wear: 0.16,
     wind: 0,
     contact: 'base',
+    wetness: 0, exposure: 0, drying: 0.5,
   }),
   outdoor: Object.freeze({
     label: '먼지 부는 야외',
@@ -25,6 +26,7 @@ export const PRESETS = Object.freeze({
     wear: 0.58,
     wind: 0.88,
     contact: 'edges',
+    wetness: 0, exposure: 0, drying: 0.5,
   }),
   handled: Object.freeze({
     label: '자주 운반',
@@ -33,6 +35,13 @@ export const PRESETS = Object.freeze({
     wear: 0.9,
     wind: -0.22,
     contact: 'handle',
+    wetness: 0, exposure: 0, drying: 0.5,
+  }),
+  damp: Object.freeze({
+    label: '비 맞은 보관',
+    description: '벗겨진 강철이 반복해서 젖은 조건입니다. 녹은 드러난 철에서 시작합니다.',
+    dust: 0.18, wear: 0.92, wind: 0.6, contact: 'edges',
+    wetness: 0.9, exposure: 0.8, drying: 0.5,
   }),
 });
 
@@ -45,6 +54,7 @@ export const DEFAULT_STATE = Object.freeze({
   wear: PRESETS.storage.wear,
   wind: PRESETS.storage.wind,
   contact: PRESETS.storage.contact,
+  wetness: 0, exposure: 0, drying: 0.5,
   heuristic: false,
 });
 

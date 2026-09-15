@@ -1,5 +1,6 @@
 import * as THREE from './vendor/three/build/three.module.js';
-import { WEATHER_GLSL } from './weathering-model.mjs?v=fcd8c5bc1129';
+import { WEATHER_GLSL } from './weathering-model.mjs?v=b7e7cc8d2e75';
+import { ENVIRONMENT_GLSL } from './weathering-environment.mjs?v=98d844ff44b3';
 
 // CSS palette entries are converted once into Three.js's linear working space.
 // Only uCoatColor is user-editable; powder, primer and hardware stay independent.
@@ -14,6 +15,17 @@ const vec3 wxPowderGrainColor = ${linearColor('#ded2bc')};
 const vec3 wxPrimerColor = ${linearColor('#20262a')};
 const vec3 wxMetalColor = ${linearColor('#a4adb0')};
 const vec3 wxHardwareColor = ${linearColor('#899397')};
+const vec3 wxRustDarkColor = ${linearColor('#623b29')};
+const vec3 wxRustLightColor = ${linearColor('#ad6d42')};
+
+// This is visible oxide coverage, bounded by the iron the surface shader
+// actually exposes. Contact or primer alone cannot qualify as bare iron.
+// wetDose is a relative moisture history, not physical corrosion kinetics.
+float wxRustCoverage(float wxExposedIron, float wxWetDose, float wxGrain) {
+  float wxGrowth = 1.0 - exp(-5.8 * clamp(wxWetDose, 0.0, 1.0));
+  return clamp(wxExposedIron, 0.0, 1.0) * wxGrowth
+    * mix(0.66, 1.0, smoothstep(0.18, 0.72, wxGrain));
+}
 
 float wxHash(vec3 wxP) {
   wxP = fract(wxP * 0.3183099 + vec3(0.17, 0.31, 0.53));
@@ -166,6 +178,17 @@ float wxChipCore = ws.y * wxChippable
   * smoothstep(wxChipThreshold + 0.05 - wxChipAA,
     wxChipThreshold + 0.05 + wxChipAA, wxChipNoise);
 float wxExposed = clamp(wxChipCore + wxScratchCore * (1.0 - wxChipCore), 0.0, 1.0);
+vec4 wxEnvironment = envSignals(wxP, wxN, uKind,
+  uWetness, uExposure, uDrying, uWind, ws.w);
+float wxExposedIron = wxExposed * (1.0 - wxPlastic) * (1.0 - wxHardware);
+float wxRustGrain = clamp(0.64 * wxChipNoise + 0.36 * wxGrains, 0.0, 1.0);
+float wxRustMask = wxRustCoverage(wxExposedIron, wxEnvironment.z, wxRustGrain);
+vec3 wxRustColor = mix(wxRustDarkColor, wxRustLightColor,
+  clamp(0.16 + 0.72 * wxRustGrain, 0.0, 1.0));
+// Replace the oxidized fraction inside the exposed-metal contribution. Mixing
+// rust over the already blended coat would apply exposure twice at chip edges.
+vec3 wxSubstrateColor = mix(wxMetalColor, wxRustColor,
+  wxRustMask / max(wxExposedIron, 0.00001));
 
 vec3 wxCoat = clamp(uCoatColor * (0.982 + 0.036 * wxClump), 0.0, 1.0);
 vec3 wxAged = wxCoat;
@@ -177,12 +200,13 @@ if (wxPlastic < 0.5) {
   wxAged = mix(wxCoat, wxRubbedCoat, clamp(wxRub + wxDragScuff, 0.0, 1.0));
   wxAged = mix(wxAged, wxRubbedCoat + vec3(0.012), wxRubLines);
   wxAged = mix(wxAged, wxPrimerColor, wxChipUnder);
-  wxAged = mix(wxAged, wxMetalColor, wxChipCore);
+  wxAged = mix(wxAged, wxSubstrateColor, wxChipCore);
   wxAged = mix(wxAged, wxPrimerColor, wxScratchRim * 0.72);
-  wxAged = mix(wxAged, wxMetalColor, wxScratchCore);
+  wxAged = mix(wxAged, wxSubstrateColor, wxScratchCore);
 }
 // Real metal hardware remains independent of the painted/plastic case option.
 wxAged = mix(wxAged, wxHardwareColor * (0.97 + 0.06 * wxClump), wxHardware);
+// Rust belongs to exposed iron, beneath the independently deposited powder.
 wxAged = mix(wxAged, wxDustColor, wxDustMask);
 diffuseColor.rgb = wxAged;
 
@@ -196,6 +220,7 @@ float wxPlasticHeight = wxDustMask * (0.0008 + 0.00085 * wxGrains)
   - wxChipUnder * 0.0008 - wxChipCore * 0.0018
   - wxScratchCore * 0.0022 - wxRubLines * 0.0026;
 wxHeight = mix(wxHeight, wxPlasticHeight, wxPlastic * (1.0 - wxHardware));
+wxHeight += wxRustMask * (0.00032 + 0.00078 * wxRustGrain) * (1.0 - wxDustMask);
 
 // Preserve the existing diagnostic overlay colours, values and lighting split.
 vec3 causeColor = vec3(0.012, 0.016, 0.017);
@@ -204,9 +229,17 @@ if (uLayer > 0.5 && uLayer < 1.5) {
   causeStrength = ws.x;
   causeColor = mix(causeColor, vec3(0.64, 0.45, 0.19), causeStrength);
 }
-if (uLayer > 1.5) {
+if (uLayer > 1.5 && uLayer < 2.5) {
   causeStrength = uHeuristic > 0.5 ? wxEdge : ws.z;
   causeColor = mix(causeColor, vec3(0.29, 0.66, 0.56), causeStrength);
+}
+if (uLayer > 2.5 && uLayer < 3.5) {
+  causeStrength = wxEnvironment.z;
+  causeColor = mix(causeColor, vec3(0.16, 0.43, 0.67), causeStrength);
+}
+if (uLayer > 3.5 && uLayer < 4.5) {
+  causeStrength = wxRustMask;
+  causeColor = mix(causeColor, vec3(0.74, 0.31, 0.09), causeStrength);
 }
 if (uLayer > 0.5) diffuseColor.rgb = causeColor * 0.48;
 `;
@@ -235,6 +268,9 @@ export function createWeatherMaterial({ center, half, kind, hardware = false, un
     uHeuristic: { value: 0 },
     uLayer: { value: 0 },
     uPlastic: { value: 0 },
+    uWetness: { value: 0 },
+    uExposure: { value: 0 },
+    uDrying: { value: 0.5 },
     ...uniforms,
     uCoatColor: coatUniform,
     uCenter: { value: new THREE.Vector3(...center) },
@@ -259,7 +295,9 @@ varying vec3 vWxPosition;
 varying vec3 vWxNormal;
 uniform vec3 uCenter, uHalf, uCoatColor;
 uniform float uKind, uHardware, uDust, uWear, uWind, uContact, uHeuristic, uLayer, uPlastic;
+uniform float uWetness, uExposure, uDrying;
 ${WEATHER_GLSL}
+${ENVIRONMENT_GLSL}
 ${SURFACE_HELPERS}`)
       .replace('#include <color_fragment>', `#include <color_fragment>
 ${SURFACE_COLOR}`)
@@ -271,10 +309,11 @@ roughnessFactor = mix(roughnessFactor, 0.36, wxExposed);
 // Bare plastic keeps one roughness regardless of contact; dust still overlays it.
 roughnessFactor = mix(roughnessFactor, 0.60, wxPlastic);
 roughnessFactor = mix(roughnessFactor, 0.32, wxHardware);
+roughnessFactor = mix(roughnessFactor, 0.90 + 0.07 * wxRustGrain, wxRustMask);
 roughnessFactor = mix(roughnessFactor, 0.97 + 0.03 * wxGrains, wxDustMask);
 if (uLayer > 0.5) roughnessFactor = 1.0;`)
       .replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>
-metalnessFactor = mix(wxExposed * 0.86 * (1.0 - wxPlastic), 0.85, wxHardware)
+metalnessFactor = mix(max(wxExposed - wxRustMask, 0.0) * 0.86 * (1.0 - wxPlastic), 0.85, wxHardware)
   * (1.0 - wxDustMask);
 if (uLayer > 0.5) metalnessFactor = 0.0;`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
@@ -298,6 +337,6 @@ if (uLayer < 0.5) {
 }`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v4-plastic-normal-only';
+  material.customProgramCacheKey = () => 'weathering-surface-v5-exposed-iron-rust';
   return material;
 }

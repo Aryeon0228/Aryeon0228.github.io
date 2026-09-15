@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=fcd8c5bc1129';
-import {createWeatherMaterial} from './weathering-surface.mjs?v=d7863b2575ac';
+import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=b7e7cc8d2e75';
+import {createWeatherMaterial} from './weathering-surface.mjs?v=5e162d77b8f4';
 import {createWeatheringCamera} from './weathering-camera.mjs?v=b6dc9a5ca0b0';
 import {createWeatheringBox as roundedBox} from './weathering-geometry.mjs?v=e3aca10313dd';
 
@@ -15,6 +15,7 @@ let width=0, height=0, pixelRatio=0, selectedPoint='top', split=50;
 const meshes=[], materials=[], resources=[], dustArrows=[];
 const markerRay=new THREE.Raycaster();
 const shared={
+  uWetness:{value:0},uExposure:{value:0},uDrying:{value:.5},
   uDust:{value:0},uWear:{value:0},uWind:{value:0},uContact:{value:0},
   uHeuristic:{value:0},uLayer:{value:0},uPlastic:{value:0},uCoatColor:{value:new THREE.Color(DEFAULT_COAT)}
 };
@@ -100,10 +101,12 @@ function observe(){
   };
   $('observation-title').textContent=titles[point];
   $('observation-text').textContent=texts[point]+(mode==='dust'?' 황갈색은 현재 조건의 먼지 침착 강도예요.':mode==='wear'?(state.compare?' 왼쪽은 형태로 고른 모서리, 오른쪽은 지정한 접촉 부위를 청록색으로 보여줘요.':' 청록색은 지정한 접촉 부위예요. 실제 마모량은 마모 슬라이더로 조절해요.'):'');
-  $('lab-status').textContent=(state.preset?PRESETS[state.preset].label:'직접 조절')+' · '+({surface:'표면 보기',dust:'먼지 원인 보기',wear:'접촉 원인 보기'}[mode])+(state.compare?' · 형태만 적용과 비교':'');
+  if(mode==='wet'){$('observation-title').textContent='얼마나 오래 젖을 수 있었을까?';$('observation-text').textContent='푸른색은 공급·가림·건조를 함께 고려한 누적 습윤의 상대값이에요. 젖는 정도 또는 노출 누적이 0이면 사라져요. 실제 습도나 날짜를 뜻하지는 않아요.';}
+  if(mode==='rust'){$('observation-title').textContent='철이 드러나고, 반복해서 젖었을까?';$('observation-text').textContent=state.material==='plastic'?'플라스틱 본체는 녹슬지 않아요. 긁힘은 원래 색을 유지하고 요철로만 남아요.':'주황색은 실제로 벗겨진 강철에서 생긴 녹이에요. 마모·젖는 정도·노출 누적을 차례로 줄여보세요. 온전한 도장이나 다른 합금 부품에는 녹을 칠하지 않아요.';}
+  $('lab-status').textContent=(state.preset?PRESETS[state.preset].label:'직접 조절')+' · '+({surface:'표면 보기',dust:'먼지 원인 보기',wear:'접촉 원인 보기',wet:'습윤 이력 보기',rust:'녹 발생 보기'}[mode])+(state.compare?' · 형태만 적용과 비교':'');
 }
 function sync(){
-  for(const id of ['dust','wear','wind']){
+  for(const id of ['dust','wear','wind','wetness','exposure']){
     const input=$(id);input.value=Math.round(state[id]*100);input.style.setProperty('--fill',((+input.value-+input.min)/(+input.max-+input.min)*100)+'%');
     $(id+'-value').textContent=id==='wind'?(Math.abs(state.wind)<.05?'위에서':(state.wind<0?'왼쪽 위 ':'오른쪽 위 ')+Math.round(Math.abs(state.wind)*100)):Math.round(state[id]*100);
   }
@@ -113,7 +116,7 @@ function sync(){
   $('coat-label').textContent=state.material==='paint'?'도장색':'표면 색상';
   document.querySelectorAll('[data-coat]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.coat===state.coatColor)));
   $('material-label').textContent=state.material==='paint'?'PAINTED STEEL':'SOLID PLASTIC';
-  $('material-note').textContent=state.material==='paint'?'도막이 닳으면 아래 금속이 드러납니다.':'원래 색은 유지하고, 긁힘의 미세한 파임과 명암을 관찰합니다.';
+  $('material-note').textContent=state.material==='paint'?'도막이 닳으면 아래 금속이 드러납니다.':'원래 색은 유지하고, 긁힘의 파임을 관찰합니다. 플라스틱 본체에는 녹이 생기지 않아요.';
   $('history-note').textContent=state.preset?PRESETS[state.preset].description:'조건을 직접 조절하고 있어요. 프리셋을 누르면 해당 환경의 값으로 돌아갑니다.';
   document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.preset===state.preset)));
   document.querySelectorAll('[data-layer]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layer===state.layer)));
@@ -121,11 +124,12 @@ function sync(){
   $('compare').setAttribute('aria-pressed',String(state.compare));
   for(const id of ['compare-labels','compare-line','compare-scrub'])$(id).hidden=!state.compare;
   shared.uDust.value=state.dust;shared.uWear.value=state.wear;shared.uWind.value=state.wind;
-  shared.uContact.value=CONTACT_MODES[state.contact];shared.uPlastic.value=state.material==='plastic'?1:0;shared.uLayer.value={surface:0,dust:1,wear:2}[state.layer];
+  shared.uWetness.value=state.wetness;shared.uExposure.value=state.exposure;shared.uDrying.value=state.drying;
+  shared.uContact.value=CONTACT_MODES[state.contact];shared.uPlastic.value=state.material==='plastic'?1:0;shared.uLayer.value={surface:0,dust:1,wear:2,wet:3,rust:4}[state.layer];
   for(const arrow of dustArrows){arrow.visible=state.layer==='dust'&&state.dust>0;arrow.setDirection(new THREE.Vector3(-state.wind,-1,0).normalize());}
   observe();invalidate();
 }
-function applyPreset(name){Object.assign(state,PRESETS[name],{preset:name});selectedPoint=name==='handled'?'handle':name==='outdoor'?'edge':'top';sync();}
+function applyPreset(name){Object.assign(state,PRESETS[name],{preset:name});selectedPoint=name==='handled'?'handle':['outdoor','damp'].includes(name)?'edge':'top';sync();}
 function resetView(){cameraMotion.reset();}
 function focusObservation(name){
   cameraMotion.focus(name);
@@ -156,7 +160,7 @@ function installUI(){
   $('coat-color').addEventListener('input',()=>setCoat($('coat-color').value));
   $('coat-hex').addEventListener('change',()=>setCoat($('coat-hex').value));
   $('coat-hex').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();setCoat($('coat-hex').value);}});
-  for(const id of ['dust','wear','wind'])$(id).addEventListener('input',()=>{state[id]=+$(id).value/100;state.preset='';sync();});
+  for(const id of ['dust','wear','wind','wetness','exposure'])$(id).addEventListener('input',()=>{state[id]=+$(id).value/100;state.preset='';sync();});
   $('contact').addEventListener('change',()=>{state.contact=$('contact').value;state.preset='';selectedPoint={handle:'handle',edges:'edge',base:'base'}[state.contact];sync();focusObservation(selectedPoint);});
   $('material').addEventListener('change',()=>{state.material=$('material').value;sync();});
   $('compare').addEventListener('click',()=>{state.compare=!state.compare;sync();});
