@@ -10,8 +10,9 @@ const drafts={...notes};
 function announce(message){clearTimeout(toastTimer);$('lab-toast').textContent=message;toastTimer=setTimeout(()=>$('lab-toast').textContent='',4000);}
 function navLink(module,index){const a=document.createElement('a');a.href='#'+module.id;a.dataset.module=module.id;const num=document.createElement('span');num.className='nav-index';num.textContent=String(index+1).padStart(2,'0');a.append(num,document.createTextNode(module.title));return a;}
 function buildNavigation(){
+ $('lab-total').textContent=String(modules.length);
  const groups=[['02 / 시지각의 원리',perceptionModules],['04 / 사용성의 법칙',behaviorModules],['04 / 화면 진단',reviewModules]];
- const nav=$('experiment-nav'),container=document.createElement('div');container.className='nav-groups';
+ const nav=$('experiment-nav'),container=document.createElement('div');container.className='nav-groups';const navHeader=document.createElement('div');navHeader.className='nav-header';navHeader.innerHTML='<span>수업 목차</span><span>'+String(modules.length).padStart(2,'0')+'</span>';container.append(navHeader);
  const mobile=document.createElement('div');mobile.className='mobile-picker';const label=document.createElement('label');label.htmlFor='mobile-experiment';label.textContent='수업 실험';const select=document.createElement('select');select.id='mobile-experiment';
  for(const [title,items] of groups){const group=document.createElement('div');group.className='nav-group';const h=document.createElement('h2');h.textContent=title;group.append(h);const options=document.createElement('optgroup');options.label=title;
   for(const item of items){group.append(navLink(item,modules.indexOf(item)));const option=document.createElement('option');option.value=item.id;option.textContent=item.title;options.append(option);}container.append(group);select.append(options);
@@ -25,6 +26,7 @@ function renderModule(){
  if(active)drafts[active.id]=$('reflection').value;
  controller?.abort();cleanup?.();controller=new AbortController();cleanup=null;active=module;
  const index=modules.indexOf(module);
+ $('experiment-number').textContent=String(index+1).padStart(2,'0');$('frame-position').textContent=String(index+1).padStart(2,'0')+' / '+String(modules.length).padStart(2,'0');$('experiment-page').dataset.experiment=module.id;
  document.title=module.title+' · UI/UX Lab | Studio Penumbra';
  $('experiment-kicker').textContent=String(module.week).padStart(2,'0')+'주차 / '+module.en;
  $('experiment-heading').textContent=module.title;
