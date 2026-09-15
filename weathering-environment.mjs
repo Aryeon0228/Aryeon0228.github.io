@@ -2,7 +2,7 @@
  * Shared moisture conditions for the axis-aligned Weathering Lab case.
  * Educational relative fields, not measured RH, elapsed days or a fluid solver.
  * Wetness describes repeated water/moisture exposure: a small ambient supply
- * can reach sheltered surfaces, while directed rain is attenuated by shielding.
+ * can reach sheltered surfaces, while rain from above is attenuated by shielding.
  * Shelter/retention never create water. Material eligibility belongs elsewhere.
  * References: CCI "Caring for metal objects" and "Caring for outdoor objects".
  */
@@ -20,7 +20,7 @@ function integralFraction(x) {
 
 /**
  * `weather.shelter` comes from sampleWeather; GLSL receives weatherSignals.w.
- * World normal uses +Y up, wind > 0 brings rain from +X, as with the dust field.
+ * World normal uses +Y up; rain arrives vertically from above.
  * point/part are reserved for later canonical runoff; this stage uses normal
  * and the supplied position-dependent shelter, without a blanket edge rule.
  *
@@ -33,7 +33,6 @@ export function sampleEnvironment(point, normal, part = {}, state = {}, weather 
   const waterInput = clamp(finite(state.wetness, 0));
   const exposure = clamp(finite(state.exposure, 0));
   const drying = clamp(finite(state.drying, 0.5));
-  const wind = clamp(finite(state.wind, 0), -1, 1);
   const shelter = clamp(finite(weather.shelter, 0));
   let n = [0, 1, 0].map((fallback, i) => finite(normal?.[i], fallback));
   const normalLength = Math.hypot(...n);
@@ -43,8 +42,7 @@ export function sampleEnvironment(point, normal, part = {}, state = {}, weather 
   // Broad upward surfaces and protected locations retain supplied moisture.
   // These illustrative coefficients are not material-specific measurements.
   const retention = clamp(0.58 * up + 0.22 * shelter);
-  const rainFacing = clamp((n[0] * wind + n[1]) / Math.hypot(wind, 1));
-  const arrival = waterInput * (0.08 + 0.92 * rainFacing * (1 - 0.82 * shelter));
+  const arrival = waterInput * (0.08 + 0.92 * up * (1 - 0.82 * shelter));
   const dryingRate = (0.22 + 1.4 * drying)
     * (1 - 0.55 * retention) * (1 - 0.35 * shelter);
 
@@ -72,21 +70,18 @@ float envIntegralFraction(float envX) {
 
 vec4 envSignals(
   vec3 p, vec3 n, float kind,
-  float wetness, float exposure, float drying, float wind, float shelter
+  float wetness, float exposure, float drying, float shelter
 ) {
   float envWaterInput = clamp(wetness, 0.0, 1.0);
   float envExposure = clamp(exposure, 0.0, 1.0);
   float envDrying = clamp(drying, 0.0, 1.0);
-  float envWind = clamp(wind, -1.0, 1.0);
   float envShelter = clamp(shelter, 0.0, 1.0);
   float envNormalLength = length(n);
   vec3 envN = envNormalLength > 0.000001 ? n / envNormalLength : vec3(0.0, 1.0, 0.0);
   float envUp = max(envN.y, 0.0);
   float envRetention = clamp(0.58 * envUp + 0.22 * envShelter, 0.0, 1.0);
-  float envRainFacing = clamp((envN.x * envWind + envN.y)
-    / length(vec2(envWind, 1.0)), 0.0, 1.0);
   float envArrival = envWaterInput
-    * (0.08 + 0.92 * envRainFacing * (1.0 - 0.82 * envShelter));
+    * (0.08 + 0.92 * envUp * (1.0 - 0.82 * envShelter));
   float envDryingRate = (0.22 + 1.4 * envDrying)
     * (1.0 - 0.55 * envRetention) * (1.0 - 0.35 * envShelter);
   float envRate = envArrival + envDryingRate;

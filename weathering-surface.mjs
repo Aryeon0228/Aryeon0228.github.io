@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three/build/three.module.js';
-import { WEATHER_GLSL } from './weathering-model.mjs?v=967e008e69a9';
-import { ENVIRONMENT_GLSL } from './weathering-environment.mjs?v=98d844ff44b3';
-import { RUNOFF_GLSL } from './weathering-runoff.mjs?v=a30916acb167';
+import { WEATHER_GLSL } from './weathering-model.mjs?v=f81b724df54d';
+import { ENVIRONMENT_GLSL } from './weathering-environment.mjs?v=c55ba2b7eaa8';
+import { RUNOFF_GLSL } from './weathering-runoff.mjs?v=102ac147d918';
 
 // CSS palette entries are converted once into Three.js's linear working space.
 // uCoatColor supplies the fixed case colour; powder, primer and hardware stay independent.
@@ -98,6 +98,15 @@ float wxPowderGrains(vec2 wxUV) {
   return wxDisk * wxVisible;
 }
 
+// Blend the three projections through rounded edges. Switching a dominant
+// axis halfway around a bevel would put a seam in the powder's colour/relief.
+float wxSurfacePowder(vec3 wxP, vec3 wxN) {
+  vec3 wxWeights = pow(abs(wxN), vec3(4.0));
+  wxWeights /= max(dot(wxWeights, vec3(1.0)), 0.00001);
+  return dot(wxWeights, vec3(wxPowderGrains(wxP.zy),
+    wxPowderGrains(wxP.xz), wxPowderGrains(wxP.xy)));
+}
+
 // Short, staggered line segments. Each cell has a different position, length,
 // slight slope and probability; no line continues across the whole surface.
 // Returns a narrow groove and its wider, shallow shoulder.
@@ -131,12 +140,37 @@ float wxHairlineCoverage(float wxDistance, float wxRadius, float wxAA) {
     - max(wxDistance - wxAA * 0.5, -wxRadius)) / wxAA;
 }
 
+// Contact-only counterpart of weatherSignals.y for an individual stroke centre.
+// Keeping arrival, dust and moisture out of this helper limits neighbour cost.
+float wxScratchContact(vec3 wxPoint, vec3 wxNormal) {
+  vec3 wxRelative = abs(wxPoint - uCenter) / max(uHalf, vec3(0.00001));
+  vec3 wxEdges = smoothstep(vec3(0.76), vec3(0.99), wxRelative);
+  float wxBoundary = max(max(min(wxEdges.x, wxEdges.y),
+    min(wxEdges.y, wxEdges.z)), min(wxEdges.z, wxEdges.x));
+  float wxTouch = 0.0;
+  if (uContact < 0.5) {
+    wxTouch = wKindMask(uKind, 2.0) * smoothstep(1.1, 1.15, uCenter.y)
+      * (1.0 - smoothstep(0.56, 0.94, wxRelative.x));
+  } else if (uContact < 1.5) {
+    wxTouch = wCornerContact(wxPoint, uCenter, uHalf, uKind);
+  } else {
+    float wxBaseBand = 1.0 - smoothstep(0.018, 0.14, wxPoint.y - (uCenter.y - uHalf.y));
+    float wxPerimeter = smoothstep(0.56, 0.95, max(wxRelative.x, wxRelative.z));
+    wxTouch = wKindMask(uKind, 0.0) * wxBaseBand * (0.22 + 0.78 * wxPerimeter)
+      * (0.35 + 0.65 * smoothstep(0.12, 0.85, -wxNormal.y));
+  }
+  return clamp(uWear, 0.0, 1.0) * mix(clamp(wxTouch, 0.0, 1.0)
+    * (0.78 + 0.22 * wxBoundary), wxBoundary, clamp(uHeuristic, 0.0, 1.0));
+}
+
 // Long independently oriented segments, evaluated from neighbouring cells so
 // strokes cross cell boundaries without forming a repeated dash/grid pattern.
 // Occasional close parallel companions make a scuffed cluster. Returns groove,
 // lifted edge and clustered fine abrasion, all anti-aliased in screen space.
-vec3 wxPlasticScratches(vec2 wxUV) {
-  vec2 wxGrid = wxUV * 7.5;
+vec3 wxContactScratches(vec3 wxPoint, vec3 wxNormal, vec2 wxUV, vec3 wxAxisU, vec3 wxAxisV) {
+  float wxCornerStrokes = wKindMask(uContact, 1.0);
+  float wxSpacing = mix(7.5, 10.5, wxCornerStrokes);
+  vec2 wxGrid = wxUV * wxSpacing;
   vec2 wxCell = floor(wxGrid);
   vec2 wxDx = dFdx(wxGrid), wxDy = dFdy(wxGrid);
   vec3 wxResult = vec3(0.0);
@@ -146,14 +180,29 @@ vec3 wxPlasticScratches(vec2 wxUV) {
       float wxSeed = wxHash(vec3(wxNeighbour, 13.19));
       float wxSeed2 = wxHash(vec3(wxNeighbour, 37.71));
       float wxSeed3 = wxHash(vec3(wxNeighbour, 71.43));
-      vec2 wxCentre = wxNeighbour + vec2(0.12) + 0.76 * vec2(wxSeed, wxSeed2);
+      float wxLengthSeed = wxHash(vec3(wxNeighbour, 23.57));
+      float wxWidthSeed = wxHash(vec3(wxNeighbour, 53.11));
+      float wxAcceptSeed = wxHash(vec3(wxNeighbour, 89.31));
+      vec2 wxCentre = wxNeighbour + vec2(0.04) + 0.92 * vec2(wxSeed, wxSeed2);
+      vec3 wxCentreWorld = clamp(wxPoint + wxAxisU * ((wxCentre.x - wxGrid.x) / wxSpacing)
+        + wxAxisV * ((wxCentre.y - wxGrid.y) / wxSpacing), uCenter - uHalf, uCenter + uHalf);
+      float wxDose = wxScratchContact(wxCentreWorld, wxNormal);
+      // Correlated acceptance creates dense small groups and genuinely empty
+      // gaps, not a cloud-shaped brightness multiplier over a uniform grid.
+      float wxPatch = smoothstep(0.27, 0.73,
+        wxNoise(wxCentreWorld * 5.3 + vec3(12.4, 5.7, 9.2)));
+      float wxDenseCore = smoothstep(0.48, 0.84, wxDose) * wxCornerStrokes;
+      float wxDensity = pow(wxDose, mix(1.35, 1.10, wxCornerStrokes))
+        * mix(0.10 + 0.36 * wxDenseCore, 1.0, wxPatch);
       vec2 wxDirection = normalize(vec2(wxSeed2 - 0.47, wxSeed3 - 0.51) + vec2(0.001));
       vec2 wxPerpendicular = vec2(-wxDirection.y, wxDirection.x);
       vec2 wxDelta = wxGrid - wxCentre;
       float wxAlong = dot(wxDelta, wxDirection);
       float wxAcross = dot(wxDelta, wxPerpendicular);
-      float wxLength = mix(0.24, 0.87, wxSeed3);
-      float wxRadius = mix(0.0068, 0.0179, wxSeed * wxSeed);
+      vec2 wxLengths = mix(vec2(0.075, 0.88), vec2(0.10, 0.93), wxCornerStrokes);
+      vec2 wxWidths = mix(vec2(0.0032, 0.023), vec2(0.0045, 0.034), wxCornerStrokes);
+      float wxLength = mix(wxLengths.x, wxLengths.y, pow(wxLengthSeed, 0.70));
+      float wxRadius = mix(wxWidths.x, wxWidths.y, pow(wxWidthSeed, 2.1));
       float wxAA = max(abs(dot(wxDx, wxPerpendicular)) + abs(dot(wxDy, wxPerpendicular)), 0.0001);
       float wxEndAA = max(abs(dot(wxDx, wxDirection)) + abs(dot(wxDy, wxDirection)), 0.0001);
       float wxEnd = 1.0 - smoothstep(wxLength - 0.035 - wxEndAA,
@@ -162,14 +211,21 @@ vec3 wxPlasticScratches(vec2 wxUV) {
       wxRadius *= mix(1.0, 0.16, smoothstep(wxLength * 0.62, wxLength, abs(wxAlong)));
       float wxCore = wxHairlineCoverage(wxAcross, wxRadius, wxAA);
       float wxLip = max(wxHairlineCoverage(wxAcross, wxRadius * 2.1, wxAA) - wxCore, 0.0);
-      float wxCluster = smoothstep(mix(0.92, 0.36, uWear), mix(0.99, 0.74, uWear), wxSeed2);
-      float wxFineEnd = 1.0 - smoothstep(wxLength * 0.35, wxLength * 0.76 + wxEndAA, abs(wxAlong + 0.08));
-      float wxFine = max(wxHairlineCoverage(wxAcross + 0.049 + wxAlong * 0.018, wxRadius * 0.50, wxAA),
-        wxHairlineCoverage(wxAcross - 0.081 + wxAlong * 0.035, wxRadius * 0.42, wxAA));
-      float wxFineExtra = max(wxHairlineCoverage(wxAcross + 0.137 - wxAlong * 0.031, wxRadius * 0.34, wxAA),
-        wxHairlineCoverage(wxAcross - 0.182 - wxAlong * 0.048, wxRadius * 0.30, wxAA)) * uWear;
+      float wxCluster = smoothstep(0.20, 0.85, wxDose) * smoothstep(0.25, 0.78, wxPatch);
+      float wxFineEnd = 1.0 - smoothstep(wxLength * mix(0.18, 0.42, wxSeed),
+        wxLength * mix(0.47, 0.87, wxSeed2) + wxEndAA, abs(wxAlong + (wxSeed3 - 0.5) * 0.24));
+      float wxFine = max(wxHairlineCoverage(wxAcross + mix(0.025, 0.092, wxSeed)
+        + wxAlong * (wxLengthSeed - 0.5) * 0.31, wxRadius * mix(0.30, 0.68, wxSeed3), wxAA),
+        wxHairlineCoverage(wxAcross - mix(0.040, 0.135, wxSeed2)
+        + wxAlong * (wxWidthSeed - 0.5) * 0.28, wxRadius * mix(0.22, 0.57, wxSeed), wxAA));
+      float wxFineExtra = max(wxHairlineCoverage(wxAcross + mix(0.095, 0.175, wxWidthSeed)
+        - wxAlong * (wxSeed - 0.5) * 0.36, wxRadius * 0.34, wxAA),
+        wxHairlineCoverage(wxAcross - mix(0.110, 0.195, wxLengthSeed)
+        - wxAlong * (wxSeed2 - 0.5) * 0.43, wxRadius * 0.30, wxAA))
+        * smoothstep(0.50, 0.94, wxDose) * step(0.36, wxSeed3);
       wxFine = max(wxFine, wxFineExtra) * wxFineEnd * wxCluster;
-      float wxPresent = step(mix(0.82, 0.08, uWear), wxSeed3) * mix(0.60, 1.0, wxSeed2);
+      float wxPresent = step(wxAcceptSeed + 0.001, wxDensity)
+        * mix(0.28, 1.0, pow(wxHash(vec3(wxNeighbour, 61.97)), 0.72));
       wxResult = max(wxResult, vec3(max(wxCore * wxEnd, wxFine),
         wxLip * wxEnd, wxFine) * wxPresent);
     }
@@ -199,7 +255,7 @@ vec3 wxP = vWxPosition;
 vec3 wxN = normalize(vWxNormal);
 vec3 wxLocal = wxP - uCenter;
 vec4 ws = weatherSignals(wxP, wxN, uCenter, uHalf, uKind,
-  uDust, uWear, uWind, uContact, uHeuristic);
+  uDust, uWear, uContact, uHeuristic);
 
 // The same geometric edge field is reused for pooling and the existing
 // shape-only wear overlay; the causal weatherSignals output is never altered.
@@ -221,7 +277,7 @@ float wxClump = wxFilteredNoise(wxP * 7.3);
 float wxChipFineNoise = wxFilteredNoise(wxP * 91.0);
 float wxChipNoise = 0.76 * wxFilteredNoise(wxP * 25.0)
   + 0.24 * wxChipFineNoise;
-float wxGrains = wxPowderGrains(wxSurfaceUV(wxP, wxN));
+float wxGrains = wxSurfacePowder(wxP, wxN);
 
 // A continuous thin film leaves the coat readable. Geometry supplies the large
 // accumulation pattern; restrained fine variation and isolated grains supply
@@ -237,7 +293,7 @@ float wxSedimentThreads = 0.5;
 float wxSedimentFibres = 0.5;
 // Source weather is sampled before transport, on the real lid above this face.
 // A uniform branch skips both extra samples in every default/dry render.
-if (uRunoff > 0.0 && uWetness > 0.0 && uExposure > 0.0) {
+if (uRunoff > 0.0 && uDust > 0.0) {
   // Rim receivers can extend beyond the lid's flat top. Keep their upstream
   // sample on that real top surface, before its 0.055-radius bevel begins.
   vec3 wxSourceP = vec3(clamp(wxP.x, -1.265, 1.265), 0.97,
@@ -245,11 +301,11 @@ if (uRunoff > 0.0 && uWetness > 0.0 && uExposure > 0.0) {
   vec3 wxSourceN = vec3(0.0, 1.0, 0.0);
   vec4 wxSourceWeather = weatherSignals(wxSourceP, wxSourceN,
     vec3(0.0, 0.87, 0.0), vec3(1.32, 0.10, 0.72), 1.0,
-    uDust, uWear, uWind, uContact, uHeuristic);
+    uDust, uWear, uContact, uHeuristic);
   vec4 wxSourceEnvironment = envSignals(wxSourceP, wxSourceN, 1.0,
-    uWetness, uExposure, uDrying, uWind, wxSourceWeather.w);
+    1.0, 0.7, 0.9, wxSourceWeather.w);
   wxRunoff = wxRunoffSignals(wxP, wxN, uKind, uRunoff,
-    uWetness, uExposure, uDrying, uWind, ws.w,
+    1.0, 0.7, 0.9, ws.w,
     vec2(wxSourceWeather.x, wxSourceEnvironment.z));
   // Many horizontal changes but slowly varying vertical coordinates make
   // parallel fibres inside each bulk run, not another imposed drip path.
@@ -307,41 +363,64 @@ float wxScratchCore = wxDragWear * wxScratches.x;
 float wxScratchRim = wxDragWear * wxScratches.y;
 float wxDragScuff = wxDragWear * (0.20 + 0.25 * wxClump);
 
-// Blended planar projections keep fine strokes continuous around rounded
-// faces. The uniform material branch skips their cost for painted steel.
-vec3 wxPlasticMarks = vec3(0.0);
-if (wxPlastic > 0.5 && wxHardware < 0.5 && uWear > 0.0) {
+// Fine cuts spread over the three adjacent faces, with every stroke accepted
+// from the same corner-centred contact field. Plastic keeps its hairlines;
+// painted corner impacts combine fine cuts and sparse, broken paint chips.
+float wxCornerMode = wKindMask(uContact, 1.0);
+vec3 wxContactMarks = vec3(0.0);
+if ((wxPlastic > 0.5 || wxCornerMode > 0.5) && wxHardware < 0.5 && uWear > 0.0) {
   vec3 wxProjection = pow(abs(wxN), vec3(6.0));
   wxProjection /= max(wxProjection.x + wxProjection.y + wxProjection.z, 0.0001);
-  wxPlasticMarks = wxPlasticScratches(wxP.zy + vec2(5.73, 1.91)) * wxProjection.x
-    + wxPlasticScratches(wxP.xz + vec2(2.37, 8.61)) * wxProjection.y
-    + wxPlasticScratches(wxP.xy + vec2(9.17, 3.29)) * wxProjection.z;
+  wxContactMarks = wxContactScratches(wxP, wxN, wxP.zy + vec2(5.73, 1.91),
+      vec3(0.0, 0.0, 1.0), vec3(0.0, 1.0, 0.0)) * wxProjection.x
+    + wxContactScratches(wxP, wxN, wxP.xz + vec2(2.37, 8.61),
+      vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0)) * wxProjection.y
+    + wxContactScratches(wxP, wxN, wxP.xy + vec2(9.17, 3.29),
+      vec3(1.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0)) * wxProjection.z;
 }
-wxPlasticMarks *= ws.y * (1.0 - wxHardware);
-float wxPlasticGroove = wxPlasticMarks.x;
-float wxPlasticLip = wxPlasticMarks.y;
-float wxPlasticScuff = wxPlasticMarks.z;
+wxContactMarks *= ws.y * (1.0 - wxHardware);
+float wxPlasticGroove = wxContactMarks.x;
+float wxPlasticLip = wxContactMarks.y;
+float wxPlasticScuff = wxContactMarks.z;
+float wxPaintCuts = (1.0 - wxPlastic) * wxCornerMode;
+wxScratchCore = max(wxScratchCore, wxContactMarks.x * wxPaintCuts * 0.72);
+wxScratchRim = max(wxScratchRim, wxContactMarks.y * wxPaintCuts * 0.46);
 float wxPlasticWhitening = clamp(wxPlasticGroove * 0.42 + wxPlasticLip * 0.88
   + wxPlasticScuff * 0.22, 0.0, 1.0);
 
 // Two offset thresholds leave a visible neutral primer rim around the deeper
 // substrate. Wear intensity opens more islands; edges bias their density.
-float wxChipStrength = ws.y * (0.48 + 0.52 * wxEdge);
+// A rust layer includes its damaged-coat footprint, so it can be added on its
+// own. Its damage does not generate the separate scratch layer or clean dust.
+float wxCorrosionSite = (wxBody + wKindMask(uKind, 1.0))
+  * smoothstep(0.78, 1.12, wxP.x) * smoothstep(0.26, 0.6, wxP.z)
+  * (1.0 - smoothstep(0.45, 1.05, abs(wxP.y - 0.35)));
+float wxRustContact = uRust * wxCorrosionSite * (0.78 + 0.22 * wxEdge)
+  * (1.0 - wxPlastic) * (1.0 - wxHardware);
+// Unequal impact patches interrupt the taper on each face. Separate sparse
+// paint loss from the continuous contact field; do not fill it like a stain.
+float wxImpactPatch = smoothstep(0.24, 0.74,
+  wxFilteredNoise(wxP * vec3(14.0, 9.0, 17.0) + vec3(7.1, 2.8, 11.6)));
+float wxWearDamage = ws.y * wxChippable * mix(0.22, 1.0, wxImpactPatch);
+float wxDamage = max(wxWearDamage, wxRustContact);
+float wxChipStrength = wxDamage * (0.48 + 0.52 * wxEdge);
 float wxChipThreshold = mix(0.78, 0.29, wxChipStrength);
 float wxChipAA = max(fwidth(wxChipNoise) * 0.7, 0.018);
-float wxChipUnder = ws.y * wxChippable
+float wxChipUnder = wxDamage
   * smoothstep(wxChipThreshold - 0.085 - wxChipAA,
     wxChipThreshold - 0.085 + wxChipAA, wxChipNoise);
-float wxChipCore = ws.y * wxChippable
+float wxChipCore = wxDamage
   * smoothstep(wxChipThreshold + 0.05 - wxChipAA,
     wxChipThreshold + 0.05 + wxChipAA, wxChipNoise);
 float wxExposed = clamp(wxChipCore + wxScratchCore * (1.0 - wxChipCore), 0.0, 1.0);
-vec4 wxEnvironment = envSignals(wxP, wxN, uKind,
-  uWetness, uExposure, uDrying, uWind, ws.w);
+// Each independently enabled layer carries a fixed, illustrative exposure
+// history. Adding moss never silently turns on rust or changes a water mark.
+vec4 wxEnvironment = envSignals(wxP, wxN, uKind, 1.0, 1.0, 0.08, ws.w);
+vec4 wxRustEnvironment = envSignals(wxP, wxN, uKind, 0.9, 0.9, 0.35, ws.w);
 float wxExposedIron = wxExposed * (1.0 - wxPlastic) * (1.0 - wxHardware);
 float wxRustGrain = clamp(0.38 * wxChipNoise + 0.42 * wxChipFineNoise
   + 0.20 * wxGrains, 0.0, 1.0);
-float wxRustMask = wxRustCoverage(wxExposedIron, wxEnvironment.z, wxRustGrain);
+float wxRustMask = uRust * wxRustCoverage(wxExposedIron, wxRustEnvironment.z, wxRustGrain);
 vec3 wxRustColor = mix(wxRustDarkColor, wxRustLightColor,
   clamp(0.16 + 0.72 * wxRustGrain, 0.0, 1.0));
 // Replace the oxidized fraction inside the exposed-metal contribution. Mixing
@@ -370,7 +449,7 @@ float wxMossDetail = clamp(0.42 * wxChipFineNoise + 0.32 * wxChipNoise
 float wxMossPattern = 0.5;
 // The condition is uniform across the draw: derivative filtering remains valid
 // while the dry/default view skips this extra colony-noise octave entirely.
-if (uWetness > 0.0 && uExposure > 0.0) {
+if (uMoss > 0.0) {
   // Small colonies and existing chip-scale noise break up the broad clumps.
   // Reusing the finer octave makes ragged edges without another noise sample.
   wxMossPattern = 0.16 * wxClump + 0.28 * wxChipNoise
@@ -378,7 +457,7 @@ if (uWetness > 0.0 && uExposure > 0.0) {
     + 0.42 * wxFilteredNoise(wxP * 18.9 + vec3(4.7, 2.3, 8.1));
 }
 float wxMossAA = max(fwidth(wxMossPattern) * 0.8, 0.022);
-float wxMossMask = wxMossCoverage(wxEnvironment.y, wxEnvironment.z,
+float wxMossMask = uMoss * wxMossCoverage(wxEnvironment.y, wxEnvironment.z,
   wxMossEstablishment, wxRepeatedContact, wxMossPattern, wxMossDetail, wxMossAA);
 vec3 wxMossColor = mix(wxMossDarkColor, wxMossTipColor,
   clamp(0.10 + 0.82 * wxMossDetail, 0.0, 1.0)
@@ -431,8 +510,12 @@ wxHeight = mix(wxHeight, 0.0014 + 0.0028 * wxMossDetail, wxMossMask);
 // wet is cumulative wet dose; runoff includes both removed and deposited dust.
 // Contact diagnostics may still show where contact COULD occur, independently
 // of wear amount; the grayscale wear mask is zero when no wear is applied.
-float wxWearMask = clamp(max(max(wxRub, wxChipUnder),
-  max(wxScratchRim, wxDragScuff)), 0.0, 1.0);
+float wxWearChipThreshold = mix(0.78, 0.29, wxWearDamage * (0.48 + 0.52 * wxEdge));
+float wxWearChip = wxWearDamage * smoothstep(
+  wxWearChipThreshold - 0.085 - wxChipAA,
+  wxWearChipThreshold - 0.085 + wxChipAA, wxChipNoise);
+float wxWearMask = clamp(max(max(wxRub, wxWearChip),
+  max(max(wxScratchCore, wxScratchRim), wxDragScuff)), 0.0, 1.0);
 wxWearMask = mix(wxWearMask, max(max(wxPlasticGroove, wxPlasticLip),
   wxPlasticScuff), wxPlastic * (1.0 - wxHardware));
 float wxEffectMask = 0.0;
@@ -442,6 +525,29 @@ if (uLayer > 2.5 && uLayer < 3.5) wxEffectMask = wxEnvironment.z;
 if (uLayer > 3.5 && uLayer < 4.5) wxEffectMask = wxRustMask;
 if (uLayer > 4.5 && uLayer < 5.5) wxEffectMask = wxMossMask;
 if (uLayer > 5.5 && uLayer < 6.5) wxEffectMask = max(wxWashMask, wxSedimentMask);
+
+float wxRunoffMask = max(wxWashMask, wxSedimentMask);
+float wxAllMask = max(max(wxDustMask, wxWearMask),
+  max(max(wxRustMask, wxMossMask), wxRunoffMask));
+if (uLayer > 6.5) wxEffectMask = wxAllMask;
+
+// Display-space legend colours, written after tone mapping below. The combined
+// view averages overlapping contributions; inspecting one layer isolates it
+// without changing the effects applied to the object.
+vec3 wxDustID = vec3(0.901961, 0.741176, 0.411765);
+vec3 wxWearID = vec3(0.403922, 0.862745, 0.898039);
+vec3 wxRustID = vec3(0.941176, 0.517647, 0.388235);
+vec3 wxMossID = vec3(0.568627, 0.788235, 0.419608);
+vec3 wxRunoffID = vec3(0.705882, 0.603922, 0.937255);
+float wxLayerSum = wxDustMask + wxWearMask + wxRustMask + wxMossMask + wxRunoffMask;
+vec3 wxLayerColor = (wxDustID * wxDustMask + wxWearID * wxWearMask
+  + wxRustID * wxRustMask + wxMossID * wxMossMask + wxRunoffID * wxRunoffMask)
+  / max(wxLayerSum, 0.00001);
+if (uLayer > 0.5 && uLayer < 1.5) wxLayerColor = wxDustID;
+if (uLayer > 1.5 && uLayer < 2.5) wxLayerColor = wxWearID;
+if (uLayer > 3.5 && uLayer < 4.5) wxLayerColor = wxRustID;
+if (uLayer > 4.5 && uLayer < 5.5) wxLayerColor = wxMossID;
+if (uLayer > 5.5 && uLayer < 6.5) wxLayerColor = wxRunoffID;
 
 // Preserve the existing diagnostic overlay colours, values and lighting split.
 vec3 causeColor = vec3(0.012, 0.016, 0.017);
@@ -494,15 +600,13 @@ export function createWeatherMaterial({ center, half, kind, hardware = false, un
   const shaderUniforms = {
     uDust: { value: 0 },
     uWear: { value: 0 },
-    uWind: { value: 0 },
     uContact: { value: 0 },
     uHeuristic: { value: 0 },
     uLayer: { value: 0 },
     uMaskView: { value: 0 },
     uPlastic: { value: 0 },
-    uWetness: { value: 0 },
-    uExposure: { value: 0 },
-    uDrying: { value: 0.5 },
+    uRust: { value: 0 },
+    uMoss: { value: 0 },
     uRunoff: { value: 0 },
     ...uniforms,
     uCoatColor: coatUniform,
@@ -527,8 +631,8 @@ vWxNormal = normalize(mat3(modelMatrix) * normal);`);
 varying vec3 vWxPosition;
 varying vec3 vWxNormal;
 uniform vec3 uCenter, uHalf, uCoatColor;
-uniform float uKind, uHardware, uDust, uWear, uWind, uContact, uHeuristic, uLayer, uMaskView, uPlastic;
-uniform float uWetness, uExposure, uDrying, uRunoff;
+uniform float uKind, uHardware, uDust, uWear, uContact, uHeuristic, uLayer, uMaskView, uPlastic;
+uniform float uRust, uMoss, uRunoff;
 ${WEATHER_GLSL}
 ${ENVIRONMENT_GLSL}
 ${RUNOFF_GLSL}
@@ -552,7 +656,7 @@ if (uLayer < 0.5) {
   vec3 wxBumpedNormal = wxPerturbNormal(-vViewPosition, normal, wxHeight);
   // Moss and transported residue may occupy otherwise untouched surfaces.
   normal = normalize(mix(normal, wxBumpedNormal,
-    clamp(max(max(ws.x, ws.y), max(wxMossMask, wxSedimentMask)), 0.0, 1.0)));
+    clamp(max(max(ws.x, max(ws.y, wxRustMask)), max(wxMossMask, wxSedimentMask)), 0.0, 1.0)));
 }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
 if (uLayer > 0.5) totalEmissiveRadiance = causeColor * 0.66;`)
@@ -573,9 +677,11 @@ if (uLayer < 0.5) {
 // A 0.5 effect is rendered as display gray 0.5, irrespective of the light rig.
 if (uMaskView > 0.1 && uLayer > 0.5) {
   gl_FragColor = vec4(vec3(clamp(wxEffectMask, 0.0, 1.0)), 1.0);
+  if (uMaskView > 1.5) gl_FragColor.rgb = mix(vec3(0.025), wxLayerColor,
+    sqrt(clamp(wxEffectMask, 0.0, 1.0)));
 }`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v12-plastic-hairlines';
+  material.customProgramCacheKey = () => 'weathering-surface-v16-corner-impact';
   return material;
 }
