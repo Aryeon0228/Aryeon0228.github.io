@@ -1,0 +1,67 @@
+export const heuristics=[
+ {id:1,title:'시스템 상태의 가시성',description:'지금 처리 중인지, 끝났는지 사용자가 알 수 있어야 합니다.',task:'카메라 예약을 요청하고, 접수 여부를 확인해보세요.',question:'내 요청이 접수되었는지 무엇으로 알았나요?',a:'처리 상태 없음',b:'처리 상태 표시'},
+ {id:2,title:'시스템과 현실 세계의 일치',description:'사용자에게 익숙한 말과 순서로 정보를 전달합니다.',task:'대여 기간과 수령 장소를 확인해보세요.',question:'각 항목의 뜻을 추가 설명 없이 이해할 수 있나요?',a:'내부 용어',b:'사용자 용어'},
+ {id:3,title:'사용자 통제와 자유',description:'실수한 행동에서 벗어나거나 원래 상태로 돌아갈 수 있어야 합니다.',task:'대여 목록에서 카메라를 뺀 뒤, 실수였다고 생각해보세요.',question:'카메라를 다시 넣을 방법을 찾을 수 있나요?',a:'복구 경로 없음',b:'되돌리기 제공'},
+ {id:4,title:'일관성과 표준',description:'같은 기능의 말과 동작을 일관되게 유지합니다.',task:'목록, 상세, 확인 화면을 차례로 열어보세요.',question:'화면이 바뀌어도 같은 기능이라는 확신이 드나요?',a:'화면마다 다른 이름',b:'같은 이름'},
+ {id:5,title:'오류 예방',description:'실수하기 쉬운 조건을 미리 안내하거나 제한합니다.',task:'화요일에 빌리고 월요일에 반납하는 기간을 선택해보세요.',question:'진행하기 전에 잘못된 기간을 알아챌 수 있었나요?',a:'요청 후 거절',b:'선택 단계에서 예방'},
+ {id:6,title:'기억보다 인식',description:'다음 행동에 필요한 정보를 그 자리에서 볼 수 있게 합니다.',task:'고른 카메라와 기간을 확인하고 다음 화면으로 이동하세요.',question:'앞 화면의 무엇을 기억해야 했나요?',a:'이전 선택 숨김',b:'이전 선택 표시'},
+ {id:7,title:'유연성과 사용 효율성',description:'처음 쓰는 사람과 반복해서 쓰는 사람의 경로를 함께 지원합니다.',task:'지난번과 같은 카메라, 렌즈, 삼각대를 다시 예약해보세요.',question:'반복 사용자에게 어떤 단계를 줄여줄 수 있나요?',a:'처음부터 선택',b:'지난 구성 불러오기'},
+ {id:8,title:'심미적이고 간결한 디자인',description:'과업에 필요한 정보가 무관한 정보와 경쟁하지 않게 합니다.',task:'구성품과 비용을 확인한 뒤 예약 버튼을 찾아보세요.',question:'어떤 정보가 필요하고, 어떤 정보가 주의를 나누나요?',a:'무관한 홍보 포함',b:'과업 정보에 집중'},
+ {id:9,title:'오류 인지·진단·복구 지원',description:'무엇이 잘못되었고 어떻게 고칠지 설명합니다.',task:'잘못된 반납일로 요청한 뒤, 안내를 보고 고쳐보세요.',question:'오류의 이유와 다음 행동을 알 수 있나요?',a:'오류 코드만',b:'이유와 수정 방법'},
+ {id:10,title:'도움말과 문서',description:'막힌 순간에 필요한 절차를 쉽게 찾아볼 수 있게 합니다.',task:'예약한 카메라를 어디서, 무엇을 준비해 수령할지 찾아보세요.',question:'지금 필요한 답을 가까운 곳에서 찾을 수 있나요?',a:'수령 안내 없음',b:'수령 안내 제공'},
+];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const button=(text,action,extra='')=>`<button class="review-button" type="button" data-action="${action}" ${extra}>${text}</button>`;
+function mountReview({stage,controls,signal,announce}){
+ stage.classList.add('uiux-review-stage');controls.classList.add('uiux-review-controls');
+ let rule=Math.min(10,Math.max(1,Math.floor(Number(new URLSearchParams(location.search).get('rule'))||1))),improved=false,state={},timer;
+ function resetState(){clearTimeout(timer);state={step:0,removed:false,status:'',busy:false,start:'2',end:'1',camera:'',lens:'',tripod:'',code:'',help:false};if(improved&&rule===5)state.end=state.start;}
+ function setQuery(){const url=new URL(location.href);url.searchParams.set('rule',String(rule));history.replaceState(null,'',url);}
+ function renderControls(){const focused=controls.contains(document.activeElement)?document.activeElement:null;const focusedAction=focused?.dataset.action;const h=heuristics[rule-1];controls.innerHTML=`<div class="control-group"><label class="control-label" for="heuristic-select">평가할 원칙</label><select id="heuristic-select">${heuristics.map(x=>`<option value="${x.id}" ${x.id===rule?'selected':''}>${String(x.id).padStart(2,'0')} ${x.title}</option>`).join('')}</select><div class="control-actions">${button('이전 원칙','prev',rule===1?'disabled':'')}${button('다음 원칙','next',rule===10?'disabled':'')}</div></div><div class="review-principle"><span class="mini-label">NIELSEN ${String(rule).padStart(2,'0')}</span><h3>${h.title}</h3><p>${h.description}</p></div><div class="control-group"><span class="control-label">같은 과업, 두 설계</span><div class="review-switch" role="group" aria-label="설계 비교"><button type="button" data-action="mode-a" aria-pressed="${!improved}">A · ${h.a}</button><button type="button" data-action="mode-b" aria-pressed="${improved}">B · ${h.b}</button></div><p class="control-note">설계를 바꾸면 이 사례만 처음부터 시작합니다.</p></div><div class="review-question"><span class="mini-label">비교 후 이야기하기</span><p>${h.question}</p></div><p class="control-note">각 화면은 특정 상황을 보여주는 예시입니다. 실제 평가에서는 사용자·과업·문제의 영향을 함께 적어주세요.</p>`;if(focused){const next=focusedAction?controls.querySelector(`[data-action="${focusedAction}"]`):null;(next&&!next.disabled?next:controls.querySelector("#heuristic-select"))?.focus({preventScroll:true});}}
+ function field(label,name,options){return `<label class="review-field">${label}<select name="${name}">${options.map(([v,t,disabled])=>`<option value="${v}" ${state[name]===v?'selected':''} ${disabled?'disabled':''}>${t}</option>`).join('')}</select></label>`;}
+ function dates(prevent=false){return `<div class="review-fields">${field('대여일','start',[['1','월요일'],['2','화요일'],['3','수요일']])}${field('반납일','end',[['1','월요일',prevent&&+state.start>1],['2','화요일',prevent&&+state.start>2],['3','수요일']])}</div>`;}
+ function render(){const h=heuristics[rule-1],focused=stage.contains(document.activeElement)?document.activeElement:null,savedName=focused?.getAttribute('name'),savedAction=focused?.dataset.action,savedFeedback=focused?.classList.contains('review-feedback'),savedHeading=focused?.tagName==='H3';let content='';
+  if(rule===1)content=`<h3>카메라 대여</h3><p>미러리스 카메라 + 표준 렌즈</p><div class="review-product"><span class="review-camera" aria-hidden="true">◎</span><div><strong>CAMERA 01</strong><span>1일 대여 · 교내 수령</span></div></div>${button(state.busy&&improved?'요청 처리 중…':'예약 요청','submit',state.busy&&improved?'disabled':'')}<div class="review-feedback" role="status">${improved?esc(state.status):''}${state.busy&&improved?'<span class="review-progress" aria-hidden="true"></span>':''}</div>`;
+  if(rule===2)content=`<h3>${improved?'예약 정보':'RQST_META'}</h3><dl class="review-definition"><div><dt>${improved?'대여일':'start_at'}</dt><dd>화요일 10:00</dd></div><div><dt>${improved?'반납일':'end_at'}</dt><dd>수요일 10:00</dd></div><div><dt>${improved?'수령 장소':'pickup_node'}</dt><dd>${improved?'영상학부 장비실':'BAU_VD_EQ_01'}</dd></div></dl>${button(improved?'예약 신청':'RQST_INIT','confirm')}<div role="status" class="review-feedback">${esc(state.status)}</div>`;
+  if(rule===3)content=`<h3>대여 목록</h3>${!state.removed?`<div class="review-item"><div><strong>미러리스 카메라</strong><span>표준 렌즈 포함</span></div>${button('목록에서 빼기','remove')}</div>`:'<div class="review-empty">대여 목록이 비어 있습니다.</div>'}${state.removed&&improved?button('방금 뺀 카메라 되돌리기','undo'):''}<div class="review-feedback" role="status">${esc(state.status)}</div>`;
+  if(rule===4){const steps=['목록','장비 상세','예약 확인'],names=improved?['대여 목록','대여 목록','대여 목록']:['보관함','카트','예약함'];content=`<div class="review-breadcrumb">${steps.map((s,i)=>`<span ${i===state.step?'aria-current="step"':''}>${i+1}. ${s}</span>`).join('')}</div><h3>${steps[state.step]}</h3><p>미러리스 카메라 · 표준 렌즈</p><div class="review-item"><span>선택한 장비 1개</span><strong>${names[state.step]}</strong></div>${button(state.step<2?'다음 화면':'처음 화면','step')}<p class="review-fine">세 화면의 오른쪽 표시 이름을 비교해보세요.</p>`;}
+  if(rule===5)content=`<h3>대여 기간</h3>${dates(improved)}${improved?'<p class="review-inline-help">반납일은 대여일과 같거나 이후여야 합니다.</p>':''}${button('예약 요청','validate')}<div role="status" class="review-feedback ${state.status.includes('빠릅')?'error':''}">${esc(state.status)}</div>`;
+  if(rule===6)content=state.step===0?`<h3>선택한 장비</h3><div class="review-selection"><strong>미러리스 B · 장비 코드 B7-42</strong><p>화요일 10:00 ~ 수요일 10:00</p></div>${button('옵션 선택으로','remember-next')}`:`<h3>옵션 선택</h3>${improved?'<div class="review-inline-help">미러리스 B · B7-42<br>화요일 10:00 ~ 수요일 10:00</div>':''}<label class="review-field">앞서 선택한 장비 코드<input name="code" autocomplete="off" placeholder="장비 코드 입력" value="${esc(state.code)}"></label>${button('선택 확인','remember-check')}${button('이전 화면 다시 보기','remember-back')}<div class="review-feedback" role="status">${esc(state.status)}</div>`;
+  if(rule===7)content=`<h3>다시 예약하기</h3><p class="review-inline-help">지난 구성: 미러리스 A + 표준 렌즈 + 삼각대</p>${improved?button('지난 구성 불러오기','repeat'):''}<div class="review-repeat">${field('카메라','camera',[['','선택'],['a','미러리스 A'],['b','미러리스 B']])}${field('렌즈','lens',[['','선택'],['standard','표준 렌즈'],['wide','광각 렌즈']])}${field('추가 장비','tripod',[['','선택'],['yes','삼각대'],['no','추가 없음']])}</div>${button('구성 확인','repeat-check')}<div class="review-feedback" role="status">${esc(state.status)}</div>`;
+  if(rule===8)content=`${!improved?'<div class="review-promo"><span>이번 달 영상 행사</span><strong>특강 · 공모전 · 신제품 소식</strong><p>여러 소식을 한 번에 만나보세요.</p></div>':''}<h3>카메라 예약 확인</h3><dl class="review-definition"><div><dt>구성품</dt><dd>카메라 · 렌즈 · 배터리</dd></div><div><dt>대여 비용</dt><dd>수업용 무료 대여</dd></div><div><dt>수령 조건</dt><dd>학생증 지참</dd></div></dl>${!improved?'<div class="review-promo small">장비실 소식 · 인기 콘텐츠 · SNS 채널</div>':''}${button('예약 확정','confirm')}<div class="review-feedback" role="status">${esc(state.status)}</div>`;
+  if(rule===9)content=`<h3>대여 기간</h3>${dates(false)}${button('예약 요청','error-submit')}<div class="review-feedback ${state.status&&+state.end<+state.start?'error':''}" role="status">${esc(state.status)}</div>${state.status&&improved&&+state.end<+state.start?button('반납일 수정하기','focus-end'):''}`;
+  if(rule===10)content=`<h3>예약 완료</h3><div class="review-selection"><strong>미러리스 카메라 1대</strong><p>화요일 10:00 · 교내 수령</p></div>${improved?`<details class="review-help"><summary>수령 방법 보기</summary><ol><li>학생증과 예약 번호를 준비합니다.</li><li>영상학부 장비실에서 예약 내역을 보여줍니다.</li><li>카메라·렌즈·배터리를 함께 확인합니다.</li></ol></details>`:'<p class="review-fine">예약이 완료되었습니다.</p>'}`;
+  stage.innerHTML=`<div class="review-task"><span class="mini-label">직접 해보기</span><p>${h.task}</p></div><div class="review-device"><div class="review-device-bar"><span>BAU EQUIPMENT</span><span>설계 ${improved?'B':'A'}</span></div><div class="review-device-body">${content}</div></div><p class="experiment-caption">장비 예약을 가정한 수업용 예시입니다. 실제 예약은 발생하지 않습니다.</p>`;
+  if(focused){
+   const nextAction={remove:'undo',undo:'remove','remember-back':'remember-next'}[savedAction]||savedAction;
+   let next=savedName?stage.querySelector(`[name="${savedName}"]`):savedAction==='remember-next'?stage.querySelector('[name="code"]'):nextAction?stage.querySelector(`[data-action="${nextAction}"]`):savedFeedback?stage.querySelector('.review-feedback'):savedHeading?stage.querySelector('h3'):null;
+   if(!next||next.disabled){const feedback=stage.querySelector('.review-feedback');next=feedback?.textContent.trim()?feedback:stage.querySelector('h3');}
+   if(next){if(!next.matches('button,input,select'))next.tabIndex=-1;next.focus({preventScroll:true});}
+  }
+ }
+ function switchRule(n){rule=n;resetState();setQuery();renderControls();render();}
+ function action(event){const element=event.target.closest('[data-action]');if(!element)return;const a=element.dataset.action;
+  if(a==='prev'||a==='next'){switchRule(Math.min(10,Math.max(1,rule+(a==='next'?1:-1))));return;}
+  if(a==='mode-a'||a==='mode-b'){improved=a==='mode-b';resetState();if(improved&&rule===5)state.end=state.start;renderControls();render();return;}
+  if(a==='submit'){if(state.busy)return;state.busy=true;state.status='예약 요청을 처리하고 있어요.';render();timer=setTimeout(()=>{state.busy=false;state.status='예약을 접수했어요. 장비실에서 수령해주세요.';render();},2000);return;}
+  if(a==='confirm')state.status='신청을 완료했어요.';
+  if(a==='remove'){state.removed=true;state.status='카메라를 목록에서 뺐어요.';}
+  if(a==='undo'){state.removed=false;state.status='카메라를 다시 넣었어요.';}
+  if(a==='step')state.step=(state.step+1)%3;
+  if(a==='validate')state.status=+state.end<+state.start?'반납일이 대여일보다 빠릅니다. 기간을 다시 선택해주세요.':'예약을 접수했어요.';
+  if(a==='remember-next'){state.step=1;state.status='';}
+  if(a==='remember-back'){state.step=0;state.status='';}
+  if(a==='remember-check')state.status=state.code.trim().toUpperCase()==='B7-42'?'장비 코드가 일치해요.':'앞 화면의 장비 코드를 다시 확인해주세요.';
+  if(a==='repeat'){state.camera='a';state.lens='standard';state.tripod='yes';state.status='지난 구성을 불러왔어요. 변경할 항목이 있는지 확인해주세요.';}
+  if(a==='repeat-check')state.status=state.camera==='a'&&state.lens==='standard'&&state.tripod==='yes'?'지난번과 같은 구성입니다.':'지난 구성과 다른 항목이 있어요. 선택을 확인해주세요.';
+  if(a==='error-submit')state.status=+state.end<+state.start?(improved?`반납일이 대여일보다 빠릅니다. 반납일을 ${['','월요일','화요일','수요일'][+state.start]} 또는 그 이후로 변경해주세요.`:'ERROR 400'):'예약을 접수했어요.';
+  if(a==='focus-end'){stage.querySelector('[name="end"]').focus();return;}
+  render();
+ }
+ stage.addEventListener('click',action,{signal});controls.addEventListener('click',action,{signal});
+ controls.addEventListener('change',e=>{if(e.target.id==='heuristic-select')switchRule(Number(e.target.value));},{signal});
+ stage.addEventListener('input',e=>{if(e.target.name)state[e.target.name]=e.target.value;},{signal});
+ stage.addEventListener('change',e=>{if(e.target.name)state[e.target.name]=e.target.value;if(rule===5&&improved&&e.target.name==='start'){if(+state.end<+state.start)state.end=state.start;render();}},{signal});
+ resetState();renderControls();render();return()=>clearTimeout(timer);
+}
+export const reviewModules=[{id:'heuristics',title:'닐슨 10원칙',en:'Nielsen’s Usability Heuristics',week:4,category:'화면 진단',summary:'장비 예약 화면의 두 설계를 비교하고, 문제의 근거와 개선 방향을 설명해보세요.',prompt:'어떤 사용자가 어느 단계에서 어려움을 겪고, 어떤 원칙으로 설명할 수 있나요?',applications:{service:'직접 사용하는 앱에서 문제 지점 하나를 고르고, 사용자의 목표·화면의 근거·관련 원칙·개선안을 적어보세요. 한 문제에 여러 원칙이 연결될 수도 있습니다.',game:'인벤토리, 장비 강화, 게임 종료 등 한 과업을 고르세요. 현재 상태를 알 수 있는지, 실수에서 돌아올 수 있는지, 익숙한 표현이 유지되는지 확인해보세요.'},sources:[{title:'Nielsen Norman Group · 10 Usability Heuristics',url:'https://www.nngroup.com/articles/ten-usability-heuristics/'}],mount:mountReview}];
