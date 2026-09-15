@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){var theme;try{theme=localStorage.getItem('penumbra-theme');}catch(e){}if(theme!=='day'&&theme!=='night')theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'night':'day';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme==='day'?'light':'dark';})();
+</script>
+
 <title>김소연 | Studio Penumbra</title>
 <meta name="description" content="김소연 포트폴리오 · Studio Penumbra — 컴퓨터 그래픽스 연구와 인터랙티브 웹 데모.">
     <meta property="og:site_name" content="Studio Penumbra">
@@ -370,7 +374,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .tool-tags{display:flex;flex-wrap:wrap;gap:10px;padding:4px 0 30px}.tool-tags span{font-size:12px;color:#bbb;border:1px solid #333;padding:6px 12px}
 .portfolio-footer{padding:28px 0;border-top:1px solid var(--ln);color:#999;font:11px/1.6 var(--f-mono)}
 .portfolio-footer>.wrap{display:flex;justify-content:space-between;gap:20px}
-@media(max-width:999px){
+@media(max-width:1199px){
  .site-nav{height:66px}
  .menu-toggle{display:flex;align-items:center;gap:13px;min-height:44px;padding:8px 0 8px 12px;background:none;border:0;color:#ddd;font:12px var(--f-ko);cursor:pointer}
  .menu-toggle-icon{position:relative;display:block;width:20px;height:12px;border-top:1px solid;border-bottom:1px solid;transition:transform .2s}
@@ -418,13 +422,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .degree-label{display:inline-block;margin-bottom:12px;padding:3px 10px;border:1px solid #555;color:#ddd;font-size:12px;line-height:1.6}.education-row h3{font-weight:500;color:#eee}
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
-<link rel="stylesheet" href="home-tactile.css?v=c6ee75bb2de3">
+<link rel="stylesheet" href="home-tactile.css?v=5f99804c5004">
+<link rel="stylesheet" href="home-theme.css?v=44ede29ea79e">
+<script src="home-theme.js?v=54ca69dd4f44" defer></script>
 </head>
 <body>
 
 <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
 <div class="site-header"><nav class="site-nav wrap" aria-label="주 메뉴">
   <a class="wordmark" href="#home" aria-label="Studio Penumbra 처음으로"><span class="brand-orbit" aria-hidden="true"><svg viewBox="0 0 36 28" focusable="false"><defs><linearGradient id="brand-limb" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0" stop-color="#ddd"/><stop offset=".52" stop-color="#999" stop-opacity=".3"/><stop offset="1" stop-color="#777" stop-opacity=".12"/></linearGradient><linearGradient id="brand-crescent" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0" stop-color="#eee" stop-opacity=".3"/><stop offset=".3" stop-color="#fff"/><stop offset=".65" stop-color="#ddd" stop-opacity=".8"/><stop offset="1" stop-color="#999" stop-opacity=".08"/></linearGradient><linearGradient id="brand-ring-shadow" gradientUnits="userSpaceOnUse" x1="1" y1="14" x2="35" y2="14"><stop offset="0" stop-color="#999"/><stop offset=".38" stop-color="#bbb"/><stop offset=".53" stop-color="#999" stop-opacity=".65"/><stop offset=".63" stop-color="#777" stop-opacity="0"/><stop offset=".74" stop-color="#777" stop-opacity="0"/><stop offset=".88" stop-color="#999" stop-opacity=".8"/><stop offset="1" stop-color="#aaa"/></linearGradient></defs><ellipse cx="18" cy="14" rx="17" ry="4" fill="none" stroke="#777"/><circle cx="18" cy="14" r="10.5" fill="#000" stroke="url(#brand-limb)"/><path d="M18 3.5A10.5 10.5 0 0 0 18 24.5" fill="none" stroke="url(#brand-crescent)" stroke-width="1.6"/><path d="M1 14A17 4 0 0 0 35 14" fill="none" stroke="url(#brand-ring-shadow)"/></svg></span><span><small>STUDIO</small>PENUMBRA</span></a>
+  <div class="theme-switch" role="group" aria-label="색상 모드"><button type="button" data-theme-choice="day" aria-label="데이 모드" aria-pressed="false">Day</button><button type="button" data-theme-choice="night" aria-label="나이트 모드" aria-pressed="false">Night</button></div>
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-menu"><span class="menu-toggle-label">메뉴</span><span class="menu-toggle-icon" aria-hidden="true"></span></button>
   <div class="site-links" id="site-menu"><a href="#work" data-section="work"><span class="nav-number" aria-hidden="true">01</span><span>Work</span><span class="nav-korean">작품 · 도구</span></a><a href="#research" data-section="research"><span class="nav-number" aria-hidden="true">02</span><span>Research</span><span class="nav-korean">논문 · 연구</span></a><a href="#teaching" data-section="teaching"><span class="nav-number" aria-hidden="true">03</span><span>Teaching</span><span class="nav-korean">강의 · 멘토링</span></a><a href="#education" data-section="education"><span class="nav-number" aria-hidden="true">04</span><span>Education</span><span class="nav-korean">학력 · 학위</span></a><a href="#career" data-section="career"><span class="nav-number" aria-hidden="true">05</span><span>Career</span><span class="nav-korean">실무 경력</span></a><a href="#awards" data-section="awards"><span class="nav-number" aria-hidden="true">06</span><span>Awards</span><span class="nav-korean">수상 내역</span></a><a href="#about" data-section="about"><span class="nav-number" aria-hidden="true">07</span><span>About / Contact</span><span class="nav-korean">소개 · 연락처</span></a><a class="nav-cv" href="CV_2026_0823.pdf" download aria-label="이력서 PDF 다운로드">CV <span aria-hidden="true">↓</span></a></div>
 </nav></div>
@@ -509,7 +516,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   </details>
 </header>
 
-<main id="main-content" tabindex="-1"><span class="legacy-anchor" id="portfolio" aria-hidden="true"></span><span class="legacy-anchor" id="vibe" aria-hidden="true"></span><section class="portfolio-section" id="work" tabindex="-1" aria-labelledby="work-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">01 / WORK</span><div><h2 id="work-title">Work</h2><p>게임, 실시간 그래픽스, 그리고 만드는 일을 돕는 작은 도구들.</p></div></div><div class="work-grid"><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">01</span></div><figure class="game-preview"><img src="assets/work/colorzzle-preview.webp" width="960" height="444" loading="lazy" decoding="async" alt="무지개색 블록 위에 꽃과 나무가 피어난 Colorzzle의 스테이지 완료 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>Colorzzle</h3><div class="work-description"><p>색채 기반 모바일 퍼즐게임입니다. iOS, Android, Steam에서 플레이할 수 있습니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/colorzzle-%EC%BB%AC%EB%9F%AC%EC%A6%90/id1320446970" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&amp;hl=ko&amp;pli=1" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a><a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" rel="noopener noreferrer">Steam <span aria-hidden="true">↗</span></a></div></article><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">02</span></div><figure class="game-preview"><img class="game-preview-rainbowtrees" src="assets/work/rainbowtrees-google.webp" width="1052" height="526" loading="lazy" decoding="async" alt="꽃밭과 동물, 무지개나무 성장 및 스킬 메뉴가 보이는 RainbowTrees 게임 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>RainbowTrees</h3><div class="work-description"><p>탭으로 나무를 키우고 꽃과 동물을 모으는 힐링 방치형 게임입니다. 다양한 기후와 낮밤, 비와 눈으로 달라지는 풍경 속에서 나만의 작은 생태계를 가꿉니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/rainbowtrees/id6785186252?l" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.RainbowTree&amp;hl" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">03</span></div><h3>Material Lab</h3><div class="work-description"><p>재질 값을 조절하며 빛의 반사와 표면 변화를 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>금속성 · 거칠기 · 코팅 조절</li><li>금속 재질 프리셋 · 풍화 효과</li><li>PBR / BRDF 원리 가이드</li></ul></div><div class="content-actions"><a href="https://studio-penumbra.com/brdf-viewer.html" target="_blank" rel="noopener noreferrer">Launch Viewer <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">04</span></div><h3>Interior Lab</h3><div class="work-description"><p>평면 위에 입체적인 실내 공간을 표현하는 셰이더 실험입니다.</p><ul class="sim-features" aria-label="주요 기능"><li>방 깊이 · 창문 수 조절</li><li>유리 반사 · 먼지 강도 조절</li><li>방 배치 셔플 · 면 구분 보기</li></ul></div><div class="content-actions"><a href="/interior-mapping.html" target="_blank" rel="noopener noreferrer">Launch Demo <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">Web · iOS</span><span class="work-index">05</span></div><h3>Color Lab</h3><div class="work-description"><p>이미지의 색을 추출하고, 색 조합과 명도 대비를 분석합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>이미지 색 추출 · 팔레트 편집</li><li>색 조합 · 명도 대비 · 색각 검사</li><li>PNG · CSS · Unity / Unreal 내보내기</li></ul></div><div class="content-actions"><a href="https://pixel-pow.com/" target="_blank" rel="noopener noreferrer">Web App <span aria-hidden="true">↗</span></a><a href="https://apps.apple.com/kr/app/pixel-pow/id6758751368" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">Web</span><span class="work-index">06</span></div><h3>Light Lab</h3><div class="work-description"><p>광원의 밝기와 거리, 노출을 바꾸며 조명 차이를 비교합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>촛불 · 달빛 · 전구 · 햇빛 비교</li><li>광원 개수 · 거리 · 조도 조절</li><li>노출 · 화이트밸런스 비교</li></ul></div><div class="content-actions"><a href="https://studio-penumbra.com/lighting-lab.html" target="_blank" rel="noopener noreferrer">Launch Simulator <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">07</span></div><h3>Weathering Lab</h3><div class="work-description"><p>환경과 사용 조건을 바꾸며 먼지와 마모가 남는 위치를 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>먼지 쌓임 · 접촉 마모</li><li>환경 · 사용 프리셋</li><li>형태 기반 · 원인 기반 비교</li></ul></div><div class="content-actions"><a href="weathering-lab.html" target="_blank" rel="noopener noreferrer">Launch Lab <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">08</span></div><h3>UV Lab</h3><div class="work-description"><p>UV 배치와 해상도를 바꾸며 한 조각에 배정되는 픽셀을 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>FBX · OBJ 아일랜드 검사</li><li>32–4K 해상도 · 3D 비교</li><li>점유율 · 늘어짐 · 겹침 확인</li></ul></div><div class="content-actions"><a href="https://studio-penumbra.com/uv-lab.html" target="_blank" rel="noopener noreferrer">Launch Lab <span aria-hidden="true">↗</span></a></div></article></div><details class="content-fold"><summary>3ds Max Scripts <span>6 tools</span></summary><div class="compact-grid"><article class="compact-row"><h3>UV Exporter</h3><p>선택한 오브젝트의 UV를 1K · 2K · 4K PNG로 일괄 저장합니다.</p><div class="content-actions"><a href="UVWscript.ms?v=d52f5322f9bd" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Snap UV Vertices</h3><p>가까운 UV 정점을 평균 위치로 모아, 겹친 UV 아일랜드를 정렬합니다.</p><div class="content-actions"><a href="SnapUVVerts.ms?v=fd94579de9cd" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Outline Normal Baker</h3><p>MK Toon 아웃라인용 스무딩 노말을 정적 복사본의 UV7에 베이크합니다.</p><div class="content-actions"><a href="NormalSmoothing.ms?v=13c423a52c7e" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Remove Collinear Verts</h3><p>직선 위의 불필요한 정점을 찾아 정리합니다.</p><div class="content-actions"><a href="RemoveCollinearVerts.ms?v=b6149b8b39c8" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Quick Export FBX</h3><p>피벗 · 원점 · 축 방향을 정리해, 선택한 오브젝트를 FBX로 내보냅니다.</p><div class="content-actions"><a href="QuickExportFBX.ms?v=c12b2787c70b" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Batch FBX Importer</h3><p>여러 FBX를 현재 씬에 모으거나, 파일별로 새 씬에 가져옵니다.</p><div class="content-actions"><a href="BatchFBXImporter.ms?v=afd25af2f173" download>Download .ms <span aria-hidden="true">↓</span></a></div></article></div></details></div></section><section class="portfolio-section" id="research" tabindex="-1" aria-labelledby="research-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">02 / RESEARCH</span><div><h2 id="research-title">Research</h2><p>빛과 재질, 게임의 표현 방식을 탐구합니다.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2026.07</span><div><h3>PBR 텍스처에서 사실적 표현과 양식화 표현의 인지 전환점 연구: 재질별 양식화 단계 비교를 중심으로</h3><div class="publication-tags"><span>석사학위논문</span></div><p>홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공</p><p>A Study on Perceptual Transition Points between Realistic and Stylized Representations in PBR Textures · 지도교수 김현석</p></div><div class="content-actions"><a href="https://www.riss.kr/link?id=T17551909" target="_blank" rel="noopener noreferrer">RISS <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2025.12</span><div><h3>색채 기반 모바일 퍼즐게임 개발과정 연구: Practice-Based Research를 통한 게임 메커니즘 구축 사례</h3><div class="publication-tags"><span>학술지</span></div><p>DiGRA-K · 국제디지털게임연구학회 한국지회</p><p>《디지털게임연구》 2025년 겨울호 (제1권 2호), pp.13–36</p></div><div class="content-actions"><a href="https://doi.org/10.64145/kjdgs.2025.1.2.13" target="_blank" rel="noopener noreferrer">DOI <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2025.11</span><div><h3>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구</h3><div class="publication-tags"><span>우수논문</span><span>학술대회</span></div><p>한국게임학회 · 2025 추계 학술대회</p></div><div class="content-actions"><a href="Best_Paper_Award_2025_KGS.pdf" target="_blank" rel="noopener noreferrer">PDF <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2024.11</span><div><h3>Photogrammetry와 NeRF의 비교분석을 통한 실사 오브젝트 제작 방식의 미래 방향성 제안</h3><div class="publication-tags"><span>학술대회</span></div><p>한국게임학회 · 2024 추계 학술대회</p></div><div class="content-actions"><a href="Kim_SoYeon_NeRF_Research_2024.pdf" target="_blank" rel="noopener noreferrer">PDF <span aria-hidden="true">↗</span></a></div></article></div></div></section><section class="portfolio-section" id="teaching" tabindex="-1" aria-labelledby="teaching-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">03 / TEACHING</span><div><h2 id="teaching-title">Teaching</h2><p>제작 경험을 나누고, 각자의 표현을 찾아가는 과정을 함께합니다.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2026.09 - 현재</span><div><h3>신구대학교</h3><p class="position-role">정보미디어학부 게임콘텐츠과 · 겸임교수</p><p>AI콘텐츠시스템설계, 바이브코딩</p></div></article><article class="detail-row"><span class="content-kicker">2026.09 - 현재</span><div><h3>백석예술대학교</h3><p class="position-role">영상학부 게임그래픽디자인전공 · 강사</p><p>UI/UX디자인</p></div></article><article class="detail-row"><span class="content-kicker">2026.05 - 2026.10</span><div><h3>경기콘텐츠진흥원</h3><p class="position-role">경기게임아카데미 · 아트파트 멘토</p><p>인디게임팀 대상 아트 멘토링</p></div></article><article class="detail-row"><span class="content-kicker">2025.08 - 현재</span><div><h3>경기게임마이스터고등학교</h3><p class="position-role">산학교사</p><p>미술 기초 ~ 포트폴리오 지도</p></div></article><article class="detail-row"><span class="content-kicker">2025.07 - 현재</span><div><h3>청강문화산업대학</h3><p class="position-role">멘토</p><p>졸업생 특화 프로그램 포트폴리오 멘토링</p></div></article><article class="detail-row"><span class="content-kicker">2022.03 - 2023.08</span><div><h3>청강문화산업대학</h3><p class="position-role">게임스쿨 · 강사 / 겸임교수</p><p>3D그래픽연출, 3D모델링기초, 2D게임그래픽포트폴리오</p></div></article></div></div></section><span class="legacy-anchor" id="resume" aria-hidden="true"></span><section class="portfolio-section" id="education" tabindex="-1" aria-labelledby="education-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">04 / EDUCATION</span><div><h2 id="education-title">Education</h2></div></div><div class="detail-list"><article class="detail-row education-row"><span class="content-kicker">2024.03 - 2026.08</span><div><span class="degree-label">석사</span><h3>홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공</h3><p>미술학석사 (게임 콘텐츠) · 2026.08.21 학위수여 GPA 4.28 /4.5</p></div></article><article class="detail-row education-row"><span class="content-kicker">2003.03 - 2007.02</span><div><span class="degree-label">학사</span><h3>홍익대학교 디자인 영상학부 애니메이션과</h3><p>미술학사</p></div></article></div></div></section><section class="portfolio-section" id="career" tabindex="-1" aria-labelledby="career-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">05 / CAREER</span><div><h2 id="career-title">Career</h2><p>게임 아트와 테크니컬 아트 현장에서 이어온 경험.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2025.12 - 현재</span><div><h3>와일드플랜</h3><p class="position-role">아트팀</p><p>다크판타지액션 로그라이크 &#x27;레메게톤&#x27; (Unity)</p><p>배경모델링, 레벨디자인, 셰이더이펙트애니메이션</p></div></article><article class="detail-row"><span class="content-kicker">2023.08 - 2025.07</span><div><h3>애니모카게임즈</h3><p class="position-role">아트팀</p><p>글로벌 블록체인게임 &#x27;Cosmic Bomber&#x27; (Unity)</p><p>모델링, 레벨디자인, 이펙트</p></div></article><article class="detail-row"><span class="content-kicker">2021.12 - 2023.09</span><div><h3>에이블에이앤이</h3><p class="position-role">AD</p><p>&#x27;듀윙&#x27;, &#x27;롯데월드 메타버스&#x27; 등 메타버스 프로젝트 (Unity)</p><p>아트디렉팅, 모델링, 이펙트</p></div></article><article class="detail-row"><span class="content-kicker">2018.11 - 2021.09</span><div><h3>다롱스튜디오</h3><p class="position-role">AD</p><p>퍼즐게임 &#x27;Colorzzle&#x27;(59만 DL), 클리커게임 &#x27;Rainbow Tree&#x27; (Unity)</p><p>아트디렉팅, 모델링, 이펙트, UI</p></div></article><article class="detail-row"><span class="content-kicker">2017.01 - 2017.02</span><div><h3>라인플레이</h3><p class="position-role">개발3실 · 선임</p><p>MMORPG 프로젝트 (Unreal)</p><p>배경모델링, 레벨디자인</p></div></article><article class="detail-row"><span class="content-kicker">2013.10 - 2017.01</span><div><h3>네오위즈게임즈</h3><p class="position-role">로키스튜디오 · AD</p><p>&#x27;TapSonic Top&#x27;, &#x27;Animal Symphony&#x27; 등 (Unity)</p><p>아트디렉팅, 배경모델링, 레벨디자인, 이펙트, 애니메이션</p></div></article><article class="detail-row"><span class="content-kicker">2011.10 - 2013.06</span><div><h3>웹젠</h3><p class="position-role">레인보우스튜디오 · 대리</p><p>MMORPG &#x27;R2&#x27;</p><p>배경모델링, 레벨디자인</p></div></article><article class="detail-row"><span class="content-kicker">2009.01 - 2011.09</span><div><h3>이야소프트</h3><p class="position-role">개발5팀</p><p>쿼터뷰 MMORPG &#x27;에다전설&#x27;</p><p>배경모델링, 레벨디자인, 이펙트</p></div></article></div></div></section><section class="portfolio-section" id="awards" tabindex="-1" aria-labelledby="awards-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">06 / AWARDS</span><div><h2 id="awards-title">Awards</h2><p>게임 제작과 연구로 받은 수상·표창·장학 내역.</p></div></div><div class="detail-list award-list"><article class="detail-row award-row"><span class="content-kicker">2026.02</span><div><h3>홍익대학교 총장 표창장</h3><p>학술대회 우수논문 수상을 통한 본교 명예 선양 (총장 박상주)</p></div></article><article class="detail-row award-row"><span class="content-kicker">2025.11</span><div><h3>2025 한국게임학회 추계학술대회 우수논문상</h3><p>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구</p></div></article><article class="detail-row award-row"><span class="content-kicker">2025.09</span><div><h3>2025-2학기 (주)웨스트월드 기부장학금</h3><p>홍익대학교 영상·커뮤니케이션대학원 장학생 선정</p></div></article><article class="detail-row award-row"><span class="content-kicker">2018.09</span><div><h3>BIC 2018 EXCELLENCE IN CASUAL</h3><p>Colorzzle · 부산인디커넥트페스티벌(BIC) 탁월한 캐주얼 부문 수상</p></div></article><article class="detail-row award-row"><span class="content-kicker">2017.09</span><div><h3>STEP UP! PROJECT GRAND PRIZE</h3><p>Color Puzzle (성남산업진흥재단)</p></div></article></div></div></section><span class="legacy-anchor" id="contact" aria-hidden="true"></span><section class="portfolio-section" id="about" tabindex="-1" aria-labelledby="about-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">07 / ABOUT / CONTACT</span><div><h2 id="about-title">About / Contact</h2><p>빛과 그림자가 만나는 경계, Studio Penumbra.</p></div></div><div class="about-copy"><p>Studio Penumbra는 빛과 그림자가 만나는 경계, &#x27;반그림자(penumbra)&#x27;에서 이름을 딴 1인 크리에이티브 스튜디오입니다.</p><p>실시간 그래픽스와 게임 아트, 그리고 웹 위에서 돌아가는 작은 인터랙티브 실험들을 만듭니다. 3D 모델링과 테크니컬 아트부터 셰이더·렌더링 연구까지, 한 픽셀의 음영까지 들여다보는 일을 좋아합니다.</p><p>게임과 그래픽스를 만드는 실무 , 더 나은 표현을 찾는 연구 , 그리고 배운 것을 나누는 강의 — 이 세 가지를 함께 이어가고 있습니다.</p></div><div class="contact-links"><a href="mailto:cloudysnowyday@gmail.com">cloudysnowyday@gmail.com <span aria-hidden="true">↗</span></a><p>Discord / Telegram <span>@cloudysnowyday</span></p><a class="cv-link" href="CV_2026_0823.pdf" download>이력서 PDF 다운로드 <span aria-hidden="true">↓</span></a></div><details class="content-fold"><summary>Skills &amp; Tools <span>기술 · 도구</span></summary><div class="tool-tags"><span>3ds Max</span><span>ZBrush</span><span>Blender</span><span>RizomUV</span><span>Substance 3D Painter</span><span>Substance 3D Designer</span><span>Photoshop</span><span>Unity</span><span>Unreal Engine</span><span>Level Design</span><span>World Building</span><span>Character Modeling</span><span>Texturing</span><span>Lighting</span><span>VFX</span><span>Animation</span><span>UI/UX</span><span>Agentic Coding</span></div></details></div></section></main>
+<main id="main-content" tabindex="-1"><span class="legacy-anchor" id="portfolio" aria-hidden="true"></span><span class="legacy-anchor" id="vibe" aria-hidden="true"></span><section class="portfolio-section" id="work" tabindex="-1" aria-labelledby="work-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">01 / WORK</span><div><h2 id="work-title">Work</h2><p>게임, 실시간 그래픽스, 그리고 만드는 일을 돕는 작은 도구들.</p></div></div><div class="work-grid"><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">01</span></div><figure class="game-preview"><img src="assets/work/colorzzle-preview.webp" width="960" height="444" loading="lazy" decoding="async" alt="무지개색 블록 위에 꽃과 나무가 피어난 Colorzzle의 스테이지 완료 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>Colorzzle</h3><div class="work-description"><p>색채 기반 모바일 퍼즐게임입니다. iOS, Android, Steam에서 플레이할 수 있습니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/colorzzle-%EC%BB%AC%EB%9F%AC%EC%A6%90/id1320446970" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&amp;hl=ko&amp;pli=1" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a><a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" rel="noopener noreferrer">Steam <span aria-hidden="true">↗</span></a></div></article><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">02</span></div><figure class="game-preview"><img class="game-preview-rainbowtrees" src="assets/work/rainbowtrees-google.webp" width="1052" height="526" loading="lazy" decoding="async" alt="꽃밭과 동물, 무지개나무 성장 및 스킬 메뉴가 보이는 RainbowTrees 게임 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>RainbowTrees</h3><div class="work-description"><p>탭으로 나무를 키우고 꽃과 동물을 모으는 힐링 방치형 게임입니다. 다양한 기후와 낮밤, 비와 눈으로 달라지는 풍경 속에서 나만의 작은 생태계를 가꿉니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/rainbowtrees/id6785186252?l" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.RainbowTree&amp;hl" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">03</span></div><h3>Material Lab</h3><div class="work-description"><p>재질 값을 조절하며 빛의 반사와 표면 변화를 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>금속성 · 거칠기 · 코팅 조절</li><li>금속 재질 프리셋 · 풍화 효과</li><li>PBR / BRDF 원리 가이드</li></ul></div><div class="content-actions"><a aria-label="Material Lab 열기 (새 탭)" class="lab-launch" href="https://studio-penumbra.com/brdf-viewer.html" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">04</span></div><h3>Interior Lab</h3><div class="work-description"><p>평면 위에 입체적인 실내 공간을 표현하는 셰이더 실험입니다.</p><ul class="sim-features" aria-label="주요 기능"><li>방 깊이 · 창문 수 조절</li><li>유리 반사 · 먼지 강도 조절</li><li>방 배치 셔플 · 면 구분 보기</li></ul></div><div class="content-actions"><a aria-label="Interior Lab 열기 (새 탭)" class="lab-launch" href="/interior-mapping.html" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">Web · iOS</span><span class="work-index">05</span></div><h3>Color Lab</h3><div class="work-description"><p>이미지의 색을 추출하고, 색 조합과 명도 대비를 분석합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>이미지 색 추출 · 팔레트 편집</li><li>색 조합 · 명도 대비 · 색각 검사</li><li>PNG · CSS · Unity / Unreal 내보내기</li></ul></div><div class="content-actions"><a aria-label="Color Lab 열기 (새 탭)" class="lab-launch" href="https://pixel-pow.com/" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a><a href="https://apps.apple.com/kr/app/pixel-pow/id6758751368" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">Web</span><span class="work-index">06</span></div><h3>Light Lab</h3><div class="work-description"><p>광원의 밝기와 거리, 노출을 바꾸며 조명 차이를 비교합니다.</p><ul class="sim-features" aria-label="주요 기능"><li>촛불 · 달빛 · 전구 · 햇빛 비교</li><li>광원 개수 · 거리 · 조도 조절</li><li>노출 · 화이트밸런스 비교</li></ul></div><div class="content-actions"><a aria-label="Light Lab 열기 (새 탭)" class="lab-launch" href="https://studio-penumbra.com/lighting-lab.html" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">07</span></div><h3>Weathering Lab</h3><div class="work-description"><p>환경과 사용 조건을 바꾸며 먼지와 마모가 남는 위치를 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>먼지 쌓임 · 접촉 마모</li><li>환경 · 사용 프리셋</li><li>형태 기반 · 원인 기반 비교</li></ul></div><div class="content-actions"><a aria-label="Weathering Lab 열기 (새 탭)" class="lab-launch" href="weathering-lab.html" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">WebGL</span><span class="work-index">08</span></div><h3>UV Lab</h3><div class="work-description"><p>UV 배치와 해상도를 바꾸며 한 조각에 배정되는 픽셀을 살펴봅니다.</p><ul class="sim-features" aria-label="주요 기능"><li>FBX · OBJ 아일랜드 검사</li><li>32–4K 해상도 · 3D 비교</li><li>점유율 · 늘어짐 · 겹침 확인</li></ul></div><div class="content-actions"><a aria-label="UV Lab 열기 (새 탭)" class="lab-launch" href="https://studio-penumbra.com/uv-lab.html" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a></div></article></div><details class="content-fold"><summary>3ds Max Scripts <span>6 tools</span></summary><div class="compact-grid"><article class="compact-row"><h3>UV Exporter</h3><p>선택한 오브젝트의 UV를 1K · 2K · 4K PNG로 일괄 저장합니다.</p><div class="content-actions"><a href="UVWscript.ms?v=d52f5322f9bd" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Snap UV Vertices</h3><p>가까운 UV 정점을 평균 위치로 모아, 겹친 UV 아일랜드를 정렬합니다.</p><div class="content-actions"><a href="SnapUVVerts.ms?v=fd94579de9cd" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Outline Normal Baker</h3><p>MK Toon 아웃라인용 스무딩 노말을 정적 복사본의 UV7에 베이크합니다.</p><div class="content-actions"><a href="NormalSmoothing.ms?v=13c423a52c7e" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Remove Collinear Verts</h3><p>직선 위의 불필요한 정점을 찾아 정리합니다.</p><div class="content-actions"><a href="RemoveCollinearVerts.ms?v=b6149b8b39c8" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Quick Export FBX</h3><p>피벗 · 원점 · 축 방향을 정리해, 선택한 오브젝트를 FBX로 내보냅니다.</p><div class="content-actions"><a href="QuickExportFBX.ms?v=c12b2787c70b" download>Download .ms <span aria-hidden="true">↓</span></a></div></article><article class="compact-row"><h3>Batch FBX Importer</h3><p>여러 FBX를 현재 씬에 모으거나, 파일별로 새 씬에 가져옵니다.</p><div class="content-actions"><a href="BatchFBXImporter.ms?v=afd25af2f173" download>Download .ms <span aria-hidden="true">↓</span></a></div></article></div></details></div></section><section class="portfolio-section" id="research" tabindex="-1" aria-labelledby="research-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">02 / RESEARCH</span><div><h2 id="research-title">Research</h2><p>빛과 재질, 게임의 표현 방식을 탐구합니다.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2026.07</span><div><h3>PBR 텍스처에서 사실적 표현과 양식화 표현의 인지 전환점 연구: 재질별 양식화 단계 비교를 중심으로</h3><div class="publication-tags"><span>석사학위논문</span></div><p>홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공</p><p>A Study on Perceptual Transition Points between Realistic and Stylized Representations in PBR Textures · 지도교수 김현석</p></div><div class="content-actions"><a href="https://www.riss.kr/link?id=T17551909" target="_blank" rel="noopener noreferrer">RISS <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2025.12</span><div><h3>색채 기반 모바일 퍼즐게임 개발과정 연구: Practice-Based Research를 통한 게임 메커니즘 구축 사례</h3><div class="publication-tags"><span>학술지</span></div><p>DiGRA-K · 국제디지털게임연구학회 한국지회</p><p>《디지털게임연구》 2025년 겨울호 (제1권 2호), pp.13–36</p></div><div class="content-actions"><a href="https://doi.org/10.64145/kjdgs.2025.1.2.13" target="_blank" rel="noopener noreferrer">DOI <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2025.11</span><div><h3>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구</h3><div class="publication-tags"><span>우수논문</span><span>학술대회</span></div><p>한국게임학회 · 2025 추계 학술대회</p></div><div class="content-actions"><a href="Best_Paper_Award_2025_KGS.pdf" target="_blank" rel="noopener noreferrer">PDF <span aria-hidden="true">↗</span></a></div></article><article class="detail-row"><span class="content-kicker">2024.11</span><div><h3>Photogrammetry와 NeRF의 비교분석을 통한 실사 오브젝트 제작 방식의 미래 방향성 제안</h3><div class="publication-tags"><span>학술대회</span></div><p>한국게임학회 · 2024 추계 학술대회</p></div><div class="content-actions"><a href="Kim_SoYeon_NeRF_Research_2024.pdf" target="_blank" rel="noopener noreferrer">PDF <span aria-hidden="true">↗</span></a></div></article></div></div></section><section class="portfolio-section" id="teaching" tabindex="-1" aria-labelledby="teaching-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">03 / TEACHING</span><div><h2 id="teaching-title">Teaching</h2><p>제작 경험을 나누고, 각자의 표현을 찾아가는 과정을 함께합니다.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2026.09 - 현재</span><div><h3>신구대학교</h3><p class="position-role">정보미디어학부 게임콘텐츠과 · 겸임교수</p><p>AI콘텐츠시스템설계, 바이브코딩</p></div></article><article class="detail-row"><span class="content-kicker">2026.09 - 현재</span><div><h3>백석예술대학교</h3><p class="position-role">영상학부 게임그래픽디자인전공 · 강사</p><p>UI/UX디자인</p></div></article><article class="detail-row"><span class="content-kicker">2026.05 - 2026.10</span><div><h3>경기콘텐츠진흥원</h3><p class="position-role">경기게임아카데미 · 아트파트 멘토</p><p>인디게임팀 대상 아트 멘토링</p></div></article><article class="detail-row"><span class="content-kicker">2025.08 - 현재</span><div><h3>경기게임마이스터고등학교</h3><p class="position-role">산학교사</p><p>미술 기초 ~ 포트폴리오 지도</p></div></article><article class="detail-row"><span class="content-kicker">2025.07 - 현재</span><div><h3>청강문화산업대학</h3><p class="position-role">멘토</p><p>졸업생 특화 프로그램 포트폴리오 멘토링</p></div></article><article class="detail-row"><span class="content-kicker">2022.03 - 2023.08</span><div><h3>청강문화산업대학</h3><p class="position-role">게임스쿨 · 강사 / 겸임교수</p><p>3D그래픽연출, 3D모델링기초, 2D게임그래픽포트폴리오</p></div></article></div></div></section><span class="legacy-anchor" id="resume" aria-hidden="true"></span><section class="portfolio-section" id="education" tabindex="-1" aria-labelledby="education-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">04 / EDUCATION</span><div><h2 id="education-title">Education</h2></div></div><div class="detail-list"><article class="detail-row education-row"><span class="content-kicker">2024.03 - 2026.08</span><div><span class="degree-label">석사</span><h3>홍익대학교 영상·커뮤니케이션대학원 · 게임 콘텐츠 전공</h3><p>미술학석사 (게임 콘텐츠) · 2026.08.21 학위수여 GPA 4.28 /4.5</p></div></article><article class="detail-row education-row"><span class="content-kicker">2003.03 - 2007.02</span><div><span class="degree-label">학사</span><h3>홍익대학교 디자인 영상학부 애니메이션과</h3><p>미술학사</p></div></article></div></div></section><section class="portfolio-section" id="career" tabindex="-1" aria-labelledby="career-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">05 / CAREER</span><div><h2 id="career-title">Career</h2><p>게임 아트와 테크니컬 아트 현장에서 이어온 경험.</p></div></div><div class="detail-list"><article class="detail-row"><span class="content-kicker">2025.12 - 현재</span><div><h3>와일드플랜</h3><p class="position-role">아트팀</p><p>다크판타지액션 로그라이크 &#x27;레메게톤&#x27; (Unity)</p><p>배경모델링, 레벨디자인, 셰이더이펙트애니메이션</p></div></article><article class="detail-row"><span class="content-kicker">2023.08 - 2025.07</span><div><h3>애니모카게임즈</h3><p class="position-role">아트팀</p><p>글로벌 블록체인게임 &#x27;Cosmic Bomber&#x27; (Unity)</p><p>모델링, 레벨디자인, 이펙트</p></div></article><article class="detail-row"><span class="content-kicker">2021.12 - 2023.09</span><div><h3>에이블에이앤이</h3><p class="position-role">AD</p><p>&#x27;듀윙&#x27;, &#x27;롯데월드 메타버스&#x27; 등 메타버스 프로젝트 (Unity)</p><p>아트디렉팅, 모델링, 이펙트</p></div></article><article class="detail-row"><span class="content-kicker">2018.11 - 2021.09</span><div><h3>다롱스튜디오</h3><p class="position-role">AD</p><p>퍼즐게임 &#x27;Colorzzle&#x27;(59만 DL), 클리커게임 &#x27;Rainbow Tree&#x27; (Unity)</p><p>아트디렉팅, 모델링, 이펙트, UI</p></div></article><article class="detail-row"><span class="content-kicker">2017.01 - 2017.02</span><div><h3>라인플레이</h3><p class="position-role">개발3실 · 선임</p><p>MMORPG 프로젝트 (Unreal)</p><p>배경모델링, 레벨디자인</p></div></article><article class="detail-row"><span class="content-kicker">2013.10 - 2017.01</span><div><h3>네오위즈게임즈</h3><p class="position-role">로키스튜디오 · AD</p><p>&#x27;TapSonic Top&#x27;, &#x27;Animal Symphony&#x27; 등 (Unity)</p><p>아트디렉팅, 배경모델링, 레벨디자인, 이펙트, 애니메이션</p></div></article><article class="detail-row"><span class="content-kicker">2011.10 - 2013.06</span><div><h3>웹젠</h3><p class="position-role">레인보우스튜디오 · 대리</p><p>MMORPG &#x27;R2&#x27;</p><p>배경모델링, 레벨디자인</p></div></article><article class="detail-row"><span class="content-kicker">2009.01 - 2011.09</span><div><h3>이야소프트</h3><p class="position-role">개발5팀</p><p>쿼터뷰 MMORPG &#x27;에다전설&#x27;</p><p>배경모델링, 레벨디자인, 이펙트</p></div></article></div></div></section><section class="portfolio-section" id="awards" tabindex="-1" aria-labelledby="awards-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">06 / AWARDS</span><div><h2 id="awards-title">Awards</h2><p>게임 제작과 연구로 받은 수상·표창·장학 내역.</p></div></div><div class="detail-list award-list"><article class="detail-row award-row"><span class="content-kicker">2026.02</span><div><h3>홍익대학교 총장 표창장</h3><p>학술대회 우수논문 수상을 통한 본교 명예 선양 (총장 박상주)</p></div></article><article class="detail-row award-row"><span class="content-kicker">2025.11</span><div><h3>2025 한국게임학회 추계학술대회 우수논문상</h3><p>3DGS기반 게임 제작 교육의 실행 가능성 탐색: 게임 특성화 고등학교 사례 연구</p></div></article><article class="detail-row award-row"><span class="content-kicker">2025.09</span><div><h3>2025-2학기 (주)웨스트월드 기부장학금</h3><p>홍익대학교 영상·커뮤니케이션대학원 장학생 선정</p></div></article><article class="detail-row award-row"><span class="content-kicker">2018.09</span><div><h3>BIC 2018 EXCELLENCE IN CASUAL</h3><p>Colorzzle · 부산인디커넥트페스티벌(BIC) 탁월한 캐주얼 부문 수상</p></div></article><article class="detail-row award-row"><span class="content-kicker">2017.09</span><div><h3>STEP UP! PROJECT GRAND PRIZE</h3><p>Color Puzzle (성남산업진흥재단)</p></div></article></div></div></section><span class="legacy-anchor" id="contact" aria-hidden="true"></span><section class="portfolio-section" id="about" tabindex="-1" aria-labelledby="about-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">07 / ABOUT / CONTACT</span><div><h2 id="about-title">About / Contact</h2><p>빛과 그림자가 만나는 경계, Studio Penumbra.</p></div></div><div class="about-copy"><p>Studio Penumbra는 빛과 그림자가 만나는 경계, &#x27;반그림자(penumbra)&#x27;에서 이름을 딴 1인 크리에이티브 스튜디오입니다.</p><p>실시간 그래픽스와 게임 아트, 그리고 웹 위에서 돌아가는 작은 인터랙티브 실험들을 만듭니다. 3D 모델링과 테크니컬 아트부터 셰이더·렌더링 연구까지, 한 픽셀의 음영까지 들여다보는 일을 좋아합니다.</p><p>게임과 그래픽스를 만드는 실무 , 더 나은 표현을 찾는 연구 , 그리고 배운 것을 나누는 강의 — 이 세 가지를 함께 이어가고 있습니다.</p></div><div class="contact-links"><a href="mailto:cloudysnowyday@gmail.com">cloudysnowyday@gmail.com <span aria-hidden="true">↗</span></a><p>Discord / Telegram <span>@cloudysnowyday</span></p><a class="cv-link" href="CV_2026_0823.pdf" download>이력서 PDF 다운로드 <span aria-hidden="true">↓</span></a></div><details class="content-fold"><summary>Skills &amp; Tools <span>기술 · 도구</span></summary><div class="tool-tags"><span>3ds Max</span><span>ZBrush</span><span>Blender</span><span>RizomUV</span><span>Substance 3D Painter</span><span>Substance 3D Designer</span><span>Photoshop</span><span>Unity</span><span>Unreal Engine</span><span>Level Design</span><span>World Building</span><span>Character Modeling</span><span>Texturing</span><span>Lighting</span><span>VFX</span><span>Animation</span><span>UI/UX</span><span>Agentic Coding</span></div></details></div></section></main>
 <footer class="portfolio-footer"><div class="wrap"><span>© 2026 Studio Penumbra · 김소연</span><a href="#home">Back to top ↑</a></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -521,7 +528,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   const toggle=header.querySelector('.menu-toggle');
   const panel=header.querySelector('.site-links');
   const label=toggle.querySelector('.menu-toggle-label');
-  const mobile=window.matchMedia('(max-width:999px)');
+  const mobile=window.matchMedia('(max-width:1199px)');
   const links=Array.from(panel.querySelectorAll('[data-section]'));
   const sections=links.map(link=>document.getElementById(link.dataset.section));
   function setOpen(open){
@@ -588,6 +595,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   var points=[], dust=[], head=null, frameId=0, width=0, height=0, pixelRatio=1;
   var lifetime=360, previous=null, dustDistance=0;
+  var meteorDay=document.documentElement.dataset.theme==='day';
+  window.addEventListener('penumbra-theme-change',function(){
+    meteorDay=document.documentElement.dataset.theme==='day';
+    clearMeteor();
+  });
 
   function clearMeteor(){
     if(frameId) cancelAnimationFrame(frameId);
@@ -612,24 +624,24 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     for(var i=1;i<points.length;i++){
       var a=points[i-1],b=points[i];
       var fade=Math.pow(Math.max(0,1-(now-b.t)/lifetime),1.8);
-      ctx.strokeStyle='rgba(232,232,232,'+(fade*0.60)+')';
+      ctx.strokeStyle=(meteorDay ? 'rgba(56,61,67,' : 'rgba(232,232,232,')+(fade*0.60)+')';
       ctx.lineWidth=0.25+fade*(0.55+b.speed*0.42);
-      ctx.shadowColor='rgba(245,245,245,.40)'; ctx.shadowBlur=4*fade;
+      ctx.shadowColor=meteorDay ? 'rgba(82,88,95,.18)' : 'rgba(245,245,245,.40)'; ctx.shadowBlur=4*fade;
       ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
     }
     ctx.shadowBlur=0;
     dust.forEach(function(particle){
       var age=(now-particle.t)/particle.life,fade=Math.pow(1-age,1.6);
-      ctx.fillStyle='rgba(240,240,240,'+(fade*0.62)+')';
+      ctx.fillStyle=(meteorDay ? 'rgba(69,75,83,' : 'rgba(240,240,240,')+(fade*0.62)+')';
       ctx.fillRect(particle.x+particle.vx*age,particle.y+particle.vy*age,particle.size,particle.size);
     });
     if(head){
       var glow=ctx.createRadialGradient(head.x,head.y,0,head.x,head.y,6);
-      glow.addColorStop(0,'rgba(255,255,255,.90)');
-      glow.addColorStop(0.22,'rgba(248,248,248,.35)');
-      glow.addColorStop(1,'rgba(248,248,248,0)');
+      glow.addColorStop(0,meteorDay ? 'rgba(42,47,54,.72)' : 'rgba(255,255,255,.90)');
+      glow.addColorStop(0.22,meteorDay ? 'rgba(72,79,88,.16)' : 'rgba(248,248,248,.35)');
+      glow.addColorStop(1,meteorDay ? 'rgba(72,79,88,0)' : 'rgba(248,248,248,0)');
       ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(head.x,head.y,6,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='rgba(255,255,255,.95)';
+      ctx.fillStyle=meteorDay ? 'rgba(42,47,54,.90)' : 'rgba(255,255,255,.95)';
       ctx.beginPath(); ctx.arc(head.x,head.y,1.15,0,Math.PI*2); ctx.fill();
     }
     if(points.length || dust.length) frameId=requestAnimationFrame(drawMeteor);
@@ -700,7 +712,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   try{
     renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:false });
   }catch(e){ canvas.style.display='none'; return; }
-  renderer.setClearColor(0x000000, 1);
+  var isDay=document.documentElement.dataset.theme==='day';
+  var uDay={value:isDay ? 1 : 0};
+  renderer.setClearColor(isDay ? 0xf3f3f1 : 0x000000, 1);
 
   var scene  = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
@@ -719,6 +733,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var uDens = { value: planetBaseline.atmo };
 
   var bodyUniforms = {
+    uDay:    uDay,
     uAtmo:   uDens,
     uTime:   { value: 0 },
     uLight:  { value: new THREE.Vector3(1,0,0) },
@@ -742,7 +757,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   var BODY_FRAG = [
     "precision highp float;",
-    "uniform float uTime; uniform vec3 uLight; uniform float uPen; uniform float uTurb; uniform float uBand; uniform float uAtmo;",
+    "uniform float uTime; uniform vec3 uLight; uniform float uPen; uniform float uTurb; uniform float uBand; uniform float uAtmo; uniform float uDay;",
     "varying vec3 vN; varying vec3 vP; varying vec3 vV;",
     "mat2 rot(float a){ float c=cos(a),s=sin(a); return mat2(c,-s,s,c); }",
     "float hash13(vec3 p){ p=fract(p*0.3183099+0.1); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }",
@@ -774,7 +789,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     "  float scattered=smoothstep(-.28,.58,ndl)*limb*uAtmo*.42;",
     "  float earthshine=.0035*(.65+.35*cloud)*pow(mu,.6);",
     "  float lum=surface*transmission+scattered+earthshine;",
-    "  gl_FragColor=vec4(vec3(max(lum,0.)),1.);",
+    "  if(uDay>0.5){",
+    "    // Paper-background graphite: preserve incident light and the terminator, never invert them.",
+    "    // Broad, soft observation-side fill reveals curvature without moving the sun.",
+    "    float indirect=.055+pow(mu,.72)*(.17+albedo*.13);",
+    "    float graphite=indirect+surface*transmission*.64+scattered*.18;",
+    "    gl_FragColor=vec4(vec3(.97,.985,1.)*clamp(graphite,0.,.86),1.);",
+    "  }else{ gl_FragColor=vec4(vec3(max(lum,0.)),1.); }",
     "}"
   ].join('\n');
 
@@ -803,7 +824,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   starGeometry.setAttribute('aPhase',new THREE.Float32BufferAttribute(starPhases,1));
   starGeometry.setAttribute('aBrightness',new THREE.Float32BufferAttribute(starBrightness,1));
   var starMaterial=new THREE.ShaderMaterial({
-    uniforms:{uTime:bodyUniforms.uTime,uAspect:{value:1},uDpr:{value:1}},
+    uniforms:{uTime:bodyUniforms.uTime,uAspect:{value:1},uDpr:{value:1},uDay:uDay},
     vertexShader:[
       'attribute float aSize; attribute float aPhase; attribute float aBrightness;',
       'uniform float uTime; uniform float uAspect; uniform float uDpr;',
@@ -819,11 +840,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '}'
     ].join('\n'),
     fragmentShader:[
-      'precision mediump float; varying float vBrightness;',
+      'precision mediump float; uniform float uDay; varying float vBrightness;',
       'void main(){',
       '  vec2 p=gl_PointCoord-0.5;',
       '  float core=exp(-dot(p,p)*13.0)*(1.0-smoothstep(0.35,0.5,length(p)));',
-      '  gl_FragColor=vec4(vec3(0.88,0.92,1.0),core*vBrightness);',
+      '  vec3 ink=mix(vec3(0.88,0.92,1.0),vec3(0.22,0.25,0.29),uDay);',
+      '  gl_FragColor=vec4(ink,core*vBrightness*mix(1.0,0.72,uDay));',
       '}'
     ].join('\n'),
     transparent:true,depthTest:true,depthWrite:false,blending:THREE.AdditiveBlending
@@ -848,7 +870,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   var ATMO_FRAG = [
     "precision highp float;",
-    "uniform vec3 uLight; uniform float uDens; uniform float uRp; uniform float uRs;",
+    "uniform vec3 uLight; uniform float uDens; uniform float uRp; uniform float uRs; uniform float uDay;",
     "varying vec3 vMV; varying vec3 vCen;",
     "float band(float x,float k){ float a=exp(-k); return max(0.,(exp(-x*k)-a)/(1.-a)); }",
     "void main(){",
@@ -860,7 +882,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     "  float light=smoothstep(-.36,.70,dot(c/b,normalize(uLight)));",
     "  float glow=density*(.006+.994*pow(light,1.3))*uDens*.92;",
     "  // Alpha stays 1: additive blending must not square the faint halo.",
-    "  gl_FragColor=vec4(vec3(glow),1.);",
+    "  if(uDay>0.5){",
+    "    // A faint silver haze uses alpha over paper, not additive white light.",
+    "    gl_FragColor=vec4(vec3(.61,.65,.69),min(.24,glow*.27));",
+    "  }else{ gl_FragColor=vec4(vec3(glow),1.); }",
     "}"
   ].join('\n');
 
@@ -871,6 +896,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       uniforms: {
         uLight: bodyUniforms.uLight,        // 본체와 같은 벡터를 공유
         uDens:  uDens,
+        uDay:   uDay,
         uRp:    { value: 1.0 },
         uRs:    { value: ATMO_R }
       },
@@ -983,6 +1009,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         uLight: bodyUniforms.uLight,
         uPen:   bodyUniforms.uPen,
         uOpa:   uRing,
+        uDay:   uDay,
         uStrands: { value:strands },
         uTime: bodyUniforms.uTime,
         uScatter:ringScatter, uGrab:ringGrab, uLocal:ringLocal,
@@ -1002,7 +1029,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       ].join('\n'),
       fragmentShader:[
         'precision highp float;',
-        'uniform vec3 uLight; uniform float uPen; uniform float uOpa; uniform float uRi; uniform float uRo; uniform float uPlanetRadius;',
+        'uniform vec3 uLight; uniform float uPen; uniform float uOpa; uniform float uRi; uniform float uRo; uniform float uPlanetRadius; uniform float uDay;',
         'varying vec3 vObj; varying vec3 vMV; varying vec3 vCen;',
         'uniform vec3 uStrands['+strands.length+'];',
         'uniform float uScatter; uniform float uLocal; uniform float uTime; uniform vec3 uGrab;',
@@ -1050,7 +1077,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         '  float lum = (0.018 + 0.982*shadow)*towardLight*0.90;',
         '  float dissolve=smoothstep(0.02,0.70,uScatter)*influence;',
         '  float a = dens*uOpa*nearSide*(1.0-dissolve*0.94);',
-        '  gl_FragColor = vec4(vec3(lum), a);',
+        '  if(uDay>0.5){',
+        '    gl_FragColor=vec4(vec3(.115+lum*.40),min(1.0,a*1.20));',
+        '  }else{ gl_FragColor=vec4(vec3(lum),a); }',
         '}'
       ].join('\n'),
       extensions: { derivatives: true },
@@ -1068,6 +1097,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     uniforms:{
       uLight:bodyUniforms.uLight,
       uPen:bodyUniforms.uPen,
+      uDay:uDay,
       uPlanetRadius:ring.material.uniforms.uPlanetRadius,
       // The planet is centered on the rig, not on either orbiting moon.
       uPlanetCenter:{value:rig.position},
@@ -1087,7 +1117,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     fragmentShader:[
       'precision highp float;',
       'uniform vec3 uLight; uniform vec3 uColor;',
-      'uniform float uPlanetRadius; uniform float uPen;',
+      'uniform float uPlanetRadius; uniform float uPen; uniform float uDay;',
       'varying vec3 vNormal; varying vec3 vFromPlanet; varying vec3 vToEye;',
       'void main(){',
       '  vec3 L=normalize(uLight);',
@@ -1105,7 +1135,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '  float daylight=smoothstep(-pen*0.65,pen,ndl);',
       '  float incident=pow(max(ndl+pen*0.32,0.0)/(1.0+pen*0.32),0.64);',
       '  float earthshine=0.0035*pow(mu,0.6);',
-      '  gl_FragColor=vec4(uColor*(daylight*incident*sunlight+earthshine),1.0);',
+      '  float irradiance=daylight*incident*sunlight;',
+      '  if(uDay>0.5){',
+      '    float indirect=.055+.28*pow(mu,.72);',
+      '    gl_FragColor=vec4(uColor*(indirect+irradiance*.64),1.0);',
+      '  }else{ gl_FragColor=vec4(uColor*(irradiance+earthshine),1.0); }',
       '}'
     ].join('\n')
   });
@@ -1138,7 +1172,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   ringDustGeometry.setAttribute('aKick',new THREE.Float32BufferAttribute(dustKicks,3));
   ringDustGeometry.setAttribute('aSeed',new THREE.Float32BufferAttribute(dustSeeds,1));
   var ringDustMaterial=new THREE.ShaderMaterial({
-    uniforms:{uScatter:ringScatter,uGrab:ringGrab,uLocal:ringLocal,uOpa:uRing,uDpr:{value:1},uTime:bodyUniforms.uTime},
+    uniforms:{uScatter:ringScatter,uGrab:ringGrab,uLocal:ringLocal,uOpa:uRing,uDpr:{value:1},uTime:bodyUniforms.uTime,uDay:uDay},
     vertexShader:[
       'attribute vec3 aKick; attribute float aSeed;',
       'uniform float uScatter; uniform float uLocal; uniform float uDpr; uniform float uTime; uniform vec3 uGrab;',
@@ -1158,14 +1192,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '}'
     ].join('\n'),
     fragmentShader:[
-      'precision mediump float; uniform float uOpa; varying float vFade; varying float vSpark; varying float vScale;',
+      'precision mediump float; uniform float uOpa; uniform float uDay; varying float vFade; varying float vSpark; varying float vScale;',
       'void main(){',
       '  vec2 q=abs(gl_PointCoord-0.5);',
       // Preserve the original dot size as the plus-shaped rays extend around it.
       '  float soft=1.0-smoothstep(0.05,0.5,length(q)*vScale);',
       '  float rays=(1.0-smoothstep(0.025,0.095,min(q.x,q.y)))*(1.0-smoothstep(0.08,0.48,max(q.x,q.y)));',
       '  float shape=max(soft,rays*vSpark*0.92);',
-      '  gl_FragColor=vec4(vec3(0.95),shape*vFade*min(1.0,uOpa*1.8));',
+      '  gl_FragColor=vec4(vec3(mix(0.95,0.27,uDay)),shape*vFade*min(1.0,uOpa*1.8));',
       '}'
     ].join('\n'),
     transparent:true,depthWrite:false,depthTest:true,blending:THREE.AdditiveBlending
@@ -1238,6 +1272,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var markerRay=new THREE.Ray(),markerPlanet=new THREE.Sphere(),markerHit=new THREE.Vector3();
 
   /* ---------- 별 ---------- */
+  var skyStarMaterial=new THREE.PointsMaterial({
+    color:0xffffff, size:0.075, sizeAttenuation:true, transparent:true, opacity:0.38
+  });
   (function(){
     var N = 520, pos = new Float32Array(N*3), i, r, th, ph;
     for(i=0;i<N;i++){
@@ -1250,9 +1287,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }
     var g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    scene.add(new THREE.Points(g, new THREE.PointsMaterial({
-      color:0xffffff, size:0.075, sizeAttenuation:true, transparent:true, opacity:0.38
-    })));
+    scene.add(new THREE.Points(g,skyStarMaterial));
   })();
 
   /* ---------- 블룸 ----------
@@ -1324,6 +1359,24 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     renderer.setRenderTarget(target);
     renderer.render(postScene, postCam);
   }
+
+  function applySceneTheme(){
+    isDay=document.documentElement.dataset.theme==='day';
+    uDay.value=isDay ? 1 : 0;
+    renderer.setClearColor(isDay ? 0xf3f3f1 : 0x000000,1);
+    // Light ink over paper needs normal alpha; Night retains its original additive glow.
+    [starMaterial,atmo.material,ringDustMaterial].forEach(function(material){
+      material.blending=isDay ? THREE.NormalBlending : THREE.AdditiveBlending;
+    });
+    reticle.traverse(function(object){
+      if(object.material && object.material.color) object.material.color.setHex(isDay ? 0x39414b : 0xffffff);
+    });
+    moonMarker.material.color.setHex(isDay ? 0x39414b : 0xffffff);
+    skyStarMaterial.color.setHex(isDay ? 0x56606b : 0xffffff);
+    skyStarMaterial.opacity=isDay ? 0.18 : 0.38;
+  }
+  window.addEventListener('penumbra-theme-change',applySceneTheme);
+  applySceneTheme();
 
   /* ---------- 조작 ---------- */
   // Captured from the user's live controls on 2026-09-08.
@@ -1584,6 +1637,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       && markerHit.distanceTo(camera.position)<moonReticle.position.distanceTo(camera.position)-orbitMoons[0].size*rig.scale.x;
     moonReticle.visible=ring.visible && P.reticle>0.04 && trackSunlight>0.01 && !markerOccluded;
 
+    if(isDay){
+      // Render directly: blooming a paper-white clear color would wash out the entire scene.
+      // The same geometry and lighting remain, with no extra render target or animation loop.
+      renderer.setRenderTarget(null);
+      renderer.render(scene,camera);
+    }else{
     // 씬 → 오프스크린
     renderer.setRenderTarget(rtScene);
     // autoClear already clears this target immediately before rendering.
@@ -1609,6 +1668,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.tScene.value = rtScene.texture;
     compMat.uniforms.tBloom.value = rtA.texture;
     drawPost(compMat, null);
+    }
 
     // 텔레메트리
     frames++;
@@ -1625,6 +1685,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   requestAnimationFrame(frame);
 })();
 </script>
-<script type="module" src="home-tactile.js?v=49b4425bc135"></script>
+<script type="module" src="home-tactile.js?v=a6f775419cf6"></script>
 </body>
 </html>

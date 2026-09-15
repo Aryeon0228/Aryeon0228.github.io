@@ -15,6 +15,7 @@ for (const card of document.querySelectorAll('#work .work-card')) {
   face.append(...card.childNodes);
   card.append(face);
   card.dataset.tactileCard = '';
+  enhanceLabCard(card);
   const state = { card, face, pointer: null };
   cards.push(state);
 
@@ -29,8 +30,8 @@ for (const card of document.querySelectorAll('#work .work-card')) {
   card.addEventListener('pointerleave', () => resetCard(state));
   card.addEventListener('pointercancel', () => resetCard(state));
   card.addEventListener('pointerdown', (event) => {
-    // The card itself has no action: press feedback belongs to its actual links.
-    if (canTrack() && effects.tilt && event.pointerType === 'mouse' && event.button === 0 && event.target.closest('a')) {
+    if (canTrack() && effects.tilt && event.pointerType === 'mouse' && event.button === 0 &&
+        (card.hasAttribute('data-lab-card') || event.target.closest('a'))) {
       card.dataset.tactilePressed = '';
     }
   });
@@ -51,6 +52,56 @@ for (const link of document.querySelectorAll('#main-content .content-actions a, 
   link.addEventListener('pointerleave', () => resetLink(state));
   link.addEventListener('pointercancel', () => resetLink(state));
   link.addEventListener('blur', () => resetLink(state));
+}
+
+// Keep the real anchor as the only keyboard stop. The surrounding card is a
+// pointer shortcut, so text can still be selected and secondary links stay native.
+function enhanceLabCard(card) {
+  const title = card.querySelector('h3')?.textContent.trim();
+  if (!title || !/\bLab$/i.test(title)) return;
+  const primary = card.querySelector('.content-actions a.lab-launch') ||
+    [...card.querySelectorAll('.content-actions a[href]')].find((link) => {
+      const url = new URL(link.href, document.baseURI);
+      return /^(https?:)$/.test(url.protocol) && url.hostname !== 'apps.apple.com';
+    });
+  if (!primary) return;
+
+  primary.classList.add('lab-launch');
+  const arrow = document.createElement('span');
+  arrow.setAttribute('aria-hidden', 'true');
+  arrow.textContent = '↗';
+  primary.replaceChildren(document.createTextNode('Lab 열기 '), arrow);
+  primary.setAttribute('aria-label', `${title} 열기${primary.target === '_blank' ? ' (새 탭)' : ''}`);
+  card.dataset.labCard = '';
+
+  const interactive = 'a, button, input, select, textarea, summary, label, [role="button"], [role="link"], [contenteditable]:not([contenteditable="false"])';
+  let press = null;
+  card.addEventListener('pointerdown', (event) => {
+    press = event.target.closest(interactive) ? null : { x: event.clientX, y: event.clientY };
+  });
+  card.addEventListener('pointercancel', () => { press = null; });
+  card.addEventListener('dragstart', () => { press = null; });
+
+  const open = (event) => {
+    const start = press;
+    press = null;
+    if (event.defaultPrevented || !start || event.target.closest(interactive)) return;
+    if (event.button !== 0 && event.button !== 1) return;
+    if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6) return;
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed) return;
+
+    // Let anchor navigation handle the destination, target and modifier keys.
+    // A middle click is represented as Ctrl/Cmd-click on the primary anchor.
+    event.preventDefault();
+    primary.dispatchEvent(new MouseEvent('click', {
+      bubbles: true, cancelable: true, view: window,
+      ctrlKey: event.ctrlKey || event.button === 1,
+      metaKey: event.metaKey, shiftKey: event.shiftKey, altKey: event.altKey
+    }));
+  };
+  card.addEventListener('click', open);
+  card.addEventListener('auxclick', open);
 }
 
 function schedule() {
