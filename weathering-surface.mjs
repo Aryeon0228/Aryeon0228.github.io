@@ -1,6 +1,7 @@
 import * as THREE from './vendor/three/build/three.module.js';
-import { WEATHER_GLSL } from './weathering-model.mjs?v=9dd18adc1e3c';
+import { WEATHER_GLSL } from './weathering-model.mjs?v=bc2a7677e3bf';
 import { ENVIRONMENT_GLSL } from './weathering-environment.mjs?v=98d844ff44b3';
+import { RUNOFF_GLSL } from './weathering-runoff.mjs?v=c73f37fe2dac';
 
 // CSS palette entries are converted once into Three.js's linear working space.
 // Only uCoatColor is user-editable; powder, primer and hardware stay independent.
@@ -19,6 +20,8 @@ const vec3 wxRustDarkColor = ${linearColor('#623b29')};
 const vec3 wxRustLightColor = ${linearColor('#ad6d42')};
 const vec3 wxMossDarkColor = ${linearColor('#223d20')};
 const vec3 wxMossTipColor = ${linearColor('#658342')};
+const vec3 wxSedimentDarkColor = ${linearColor('#8c7657')};
+const vec3 wxSedimentLightColor = ${linearColor('#b39b73')};
 
 // This is visible oxide coverage, bounded by the iron the surface shader
 // actually exposes. Contact or primer alone cannot qualify as bare iron.
@@ -172,6 +175,33 @@ float wxDustMask = clamp(ws.x * (0.88 + 0.12 * wxClump
   + 0.26 * wxGrains + 0.10 * wxEdge), 0.0, 1.0);
 vec3 wxDustColor = mix(wxPowderColor * (0.95 + 0.06 * wxClump),
   wxPowderGrainColor, wxGrains * 0.63);
+float wxRepeatedContact = ws.z * clamp(uWear, 0.0, 1.0);
+vec4 wxRunoff = vec4(0.0);
+// Source weather is sampled before transport, on the real lid above this face.
+// A uniform branch skips both extra samples in every default/dry render.
+if (uRunoff > 0.0 && uWetness > 0.0 && uExposure > 0.0) {
+  vec3 wxSourceP = vec3(wxP.x, 0.97, wxP.z < 0.0 ? -0.58 : 0.58);
+  vec3 wxSourceN = vec3(0.0, 1.0, 0.0);
+  vec4 wxSourceWeather = weatherSignals(wxSourceP, wxSourceN,
+    vec3(0.0, 0.87, 0.0), vec3(1.32, 0.10, 0.72), 1.0,
+    uDust, uWear, uWind, uContact, uHeuristic);
+  vec4 wxSourceEnvironment = envSignals(wxSourceP, wxSourceN, 1.0,
+    uWetness, uExposure, uDrying, uWind, wxSourceWeather.w);
+  wxRunoff = wxRunoffSignals(wxP, wxN, uKind, uRunoff,
+    uWetness, uExposure, uDrying, uWind, ws.w,
+    vec2(wxSourceWeather.x, wxSourceEnvironment.z));
+}
+// Blue diagnostics report actual removed dust, including prior contact cleaning.
+// Transport never erases the underlying coat, wear relief or existing rust.
+float wxDustBeforeWash = wxDustMask;
+float wxWashMask = wxDustBeforeWash * wxRunoff.y;
+wxDustMask = max(wxDustBeforeWash - wxWashMask, 0.0);
+float wxSedimentGrain = clamp(0.64 * wxChipFineNoise + 0.36 * wxGrains, 0.0, 1.0);
+float wxSedimentMask = wxRunoff.z * (1.0 - 0.97 * wxRepeatedContact)
+  * mix(0.78, 1.0, wxSedimentGrain);
+vec3 wxSedimentColor = mix(wxSedimentDarkColor, wxSedimentLightColor, wxSedimentGrain);
+float wxMineralCoverage = clamp(wxDustMask
+  + wxSedimentMask * (1.0 - wxDustMask), 0.0, 1.0);
 
 // Fingertip contact rubs a soft, slightly polished patch. It does not generate
 // the broken-paint islands used at the case corners.
@@ -222,8 +252,7 @@ wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.60, wxPlastic);
 wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.32, wxHardware);
 wxSubstrateRoughness = mix(wxSubstrateRoughness, 0.90 + 0.07 * wxRustGrain, wxRustMask);
 float wxMossEstablishment = clamp(0.22 + 0.38 * wxSubstrateRoughness
-  + 0.46 * wxDustMask, 0.0, 1.0);
-float wxRepeatedContact = ws.z * clamp(uWear, 0.0, 1.0);
+  + 0.46 * wxMineralCoverage, 0.0, 1.0);
 float wxMossDetail = clamp(0.42 * wxChipFineNoise + 0.32 * wxChipNoise
   + 0.46 * wxGrains, 0.0, 1.0);
 float wxMossPattern = 0.5;
@@ -261,8 +290,9 @@ if (wxPlastic < 0.5) {
 wxAged = mix(wxAged, wxHardwareColor * (0.97 + 0.06 * wxClump), wxHardware);
 // Rust belongs to exposed iron, beneath the independently deposited powder.
 wxAged = mix(wxAged, wxDustColor, wxDustMask);
+wxAged = mix(wxAged, wxSedimentColor, wxSedimentMask);
 // Established colonies grow over retained residue, on either paint or plastic.
-// Layer order: substrate/rust, retained powder, then emerged moss colonies.
+// Layer order: substrate/rust, retained powder, transported residue, then moss.
 wxAged = mix(wxAged, wxMossColor, wxMossMask);
 diffuseColor.rgb = wxAged;
 
@@ -277,13 +307,15 @@ float wxPlasticHeight = wxDustMask * (0.0008 + 0.00085 * wxGrains)
   - wxScratchCore * 0.0022 - wxRubLines * 0.0026;
 wxHeight = mix(wxHeight, wxPlasticHeight, wxPlastic * (1.0 - wxHardware));
 wxHeight += wxRustMask * (0.00032 + 0.00078 * wxRustGrain) * (1.0 - wxDustMask);
+wxHeight += wxSedimentMask * (0.0006 + 0.0013 * wxSedimentGrain);
 wxHeight = mix(wxHeight, 0.0014 + 0.0028 * wxMossDetail, wxMossMask);
 
 // Preserve the existing diagnostic overlay colours, values and lighting split.
 vec3 causeColor = vec3(0.012, 0.016, 0.017);
 float causeStrength = 0.0;
 if (uLayer > 0.5 && uLayer < 1.5) {
-  causeStrength = ws.x;
+  causeStrength = ws.x * (1.0 - wxRunoff.y);
+  causeStrength += wxSedimentMask * (1.0 - causeStrength);
   causeColor = mix(causeColor, vec3(0.64, 0.45, 0.19), causeStrength);
 }
 if (uLayer > 1.5 && uLayer < 2.5) {
@@ -301,6 +333,11 @@ if (uLayer > 3.5 && uLayer < 4.5) {
 if (uLayer > 4.5 && uLayer < 5.5) {
   causeStrength = wxMossMask;
   causeColor = mix(causeColor, vec3(0.26, 0.61, 0.19), causeStrength);
+}
+if (uLayer > 5.5 && uLayer < 6.5) {
+  causeStrength = max(wxWashMask, wxSedimentMask);
+  causeColor = mix(causeColor, vec3(0.16, 0.48, 0.72), wxWashMask);
+  causeColor = mix(causeColor, vec3(0.63, 0.43, 0.21), wxSedimentMask);
 }
 if (uLayer > 0.5) diffuseColor.rgb = causeColor * 0.48;
 `;
@@ -332,6 +369,7 @@ export function createWeatherMaterial({ center, half, kind, hardware = false, un
     uWetness: { value: 0 },
     uExposure: { value: 0 },
     uDrying: { value: 0.5 },
+    uRunoff: { value: 0 },
     ...uniforms,
     uCoatColor: coatUniform,
     uCenter: { value: new THREE.Vector3(...center) },
@@ -356,29 +394,31 @@ varying vec3 vWxPosition;
 varying vec3 vWxNormal;
 uniform vec3 uCenter, uHalf, uCoatColor;
 uniform float uKind, uHardware, uDust, uWear, uWind, uContact, uHeuristic, uLayer, uPlastic;
-uniform float uWetness, uExposure, uDrying;
+uniform float uWetness, uExposure, uDrying, uRunoff;
 ${WEATHER_GLSL}
 ${ENVIRONMENT_GLSL}
+${RUNOFF_GLSL}
 ${SURFACE_HELPERS}`)
       .replace('#include <color_fragment>', `#include <color_fragment>
 ${SURFACE_COLOR}`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
 roughnessFactor = wxSubstrateRoughness;
 roughnessFactor = mix(roughnessFactor, 0.97 + 0.03 * wxGrains, wxDustMask);
+roughnessFactor = mix(roughnessFactor, 0.96 + 0.035 * wxSedimentGrain, wxSedimentMask);
 roughnessFactor = mix(roughnessFactor, 0.93 + 0.065 * wxMossDetail, wxMossMask);
 if (uLayer > 0.5) roughnessFactor = 1.0;`)
       .replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>
 metalnessFactor = mix(max(wxExposed - wxRustMask, 0.0) * 0.86 * (1.0 - wxPlastic), 0.85, wxHardware)
-  * (1.0 - wxDustMask) * (1.0 - wxMossMask);
+  * (1.0 - wxDustMask) * (1.0 - wxSedimentMask) * (1.0 - wxMossMask);
 if (uLayer > 0.5) metalnessFactor = 0.0;`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
 // r160 defines normal and vViewPosition before this chunk. Standard/physical
 // materials already enable derivatives on WebGL 1; WebGL 2 has them natively.
 if (uLayer < 0.5) {
   vec3 wxBumpedNormal = wxPerturbNormal(-vViewPosition, normal, wxHeight);
-  // Moss may occupy intact surfaces; it supplies its own bump support.
+  // Moss and transported residue may occupy otherwise untouched surfaces.
   normal = normalize(mix(normal, wxBumpedNormal,
-    clamp(max(max(ws.x, ws.y), wxMossMask), 0.0, 1.0)));
+    clamp(max(max(ws.x, ws.y), max(wxMossMask, wxSedimentMask)), 0.0, 1.0)));
 }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
 if (uLayer > 0.5) totalEmissiveRadiance = causeColor * 0.66;`)
@@ -387,7 +427,7 @@ if (uLayer > 0.5) totalEmissiveRadiance = causeColor * 0.66;`)
 // and environment specular lobes where opaque powder covers the substrate.
 // Bare paint/metal and the diagnostic overlays retain their original response.
 if (uLayer < 0.5) {
-  float wxPowderSpecular = mix(1.0, 0.01, smoothstep(0.0, 0.75, wxDustMask));
+  float wxPowderSpecular = mix(1.0, 0.01, smoothstep(0.0, 0.75, wxMineralCoverage));
   reflectedLight.directSpecular *= wxPowderSpecular;
   reflectedLight.indirectSpecular *= wxPowderSpecular;
   float wxMossSpecular = mix(1.0, 0.03, smoothstep(0.0, 0.85, wxMossMask));
@@ -396,6 +436,6 @@ if (uLayer < 0.5) {
 }`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v6-moisture-moss';
+  material.customProgramCacheKey = () => 'weathering-surface-v7-runoff-residue';
   return material;
 }

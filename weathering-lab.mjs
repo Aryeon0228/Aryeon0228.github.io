@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=9dd18adc1e3c';
-import {createWeatherMaterial} from './weathering-surface.mjs?v=5a116499aa8e';
-import {createWeatheringCamera} from './weathering-camera.mjs?v=b6dc9a5ca0b0';
+import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=bc2a7677e3bf';
+import {createWeatherMaterial} from './weathering-surface.mjs?v=982eaf549369';
+import {createWeatheringCamera} from './weathering-camera.mjs?v=79c6fb037bae';
 import {createWeatheringBox as roundedBox} from './weathering-geometry.mjs?v=e3aca10313dd';
 
 const $ = id => document.getElementById(id);
@@ -15,7 +15,7 @@ let width=0, height=0, pixelRatio=0, selectedPoint='top', split=50;
 const meshes=[], materials=[], resources=[], dustArrows=[];
 const markerRay=new THREE.Raycaster();
 const shared={
-  uWetness:{value:0},uExposure:{value:0},uDrying:{value:.5},
+  uRunoff:{value:0},uWetness:{value:0},uExposure:{value:0},uDrying:{value:.5},
   uDust:{value:0},uWear:{value:0},uWind:{value:0},uContact:{value:0},
   uHeuristic:{value:0},uLayer:{value:0},uPlastic:{value:0},uCoatColor:{value:new THREE.Color(DEFAULT_COAT)}
 };
@@ -23,7 +23,8 @@ const observationPoints={
   top:{point:[-.77,.982,.22],normal:[0,1,0],part:1,index:'01'},
   handle:{point:[0,1.19,.102],normal:[0,0,1],part:2,index:'02'},
   edge:{point:[1.23,-.10,.64],normal:[.707,0,.707],part:0,index:'03'},
-  base:{point:[1,-.952,.48],normal:[0,-1,0],part:3,index:'04'}
+  base:{point:[1,-.952,.48],normal:[0,-1,0],part:3,index:'04'},
+  runoff:{point:[.89,-.10,.652],normal:[0,0,1],part:0,index:'05'}
 };
 function weatherMaterial(center,half,kind,hardware=false){
   const material=createWeatherMaterial({center,half,kind,hardware,uniforms:shared});
@@ -92,24 +93,26 @@ function updateMarker(){
 }
 function observe(){
   const mode=state.layer,point=selectedPoint;
-  const titles={top:'먼지가 도착할 수 있는 면',handle:'형태보다 사용이 남기는 흔적',edge:'모든 모서리가 닳지는 않아요',base:'바닥과 맞닿는 곳의 흔적'};
+  const titles={top:'먼지가 도착할 수 있는 면',handle:'형태보다 사용이 남기는 흔적',edge:'모든 모서리가 닳지는 않아요',base:'바닥과 맞닿는 곳의 흔적',runoff:'위에서 흘러온 물길'};
   const texts={
+    runoff:state.runoff>0?'뚜껑 가장자리 아래로 이어지는 물길이에요. 중심의 씻긴 표면과, 가장자리·끝에 다시 남은 먼지를 비교하세요.':'지금은 빗물 흐름을 적용하지 않았어요. ‘비가 훑고 간 뒤’를 선택해 씻기기 전과 후를 비교하세요.',
     top:state.dust===0?'먼지 쌓임이 0이라 지금은 침착 흔적이 없어요. 쌓임을 올리고 윗면과 아랫면을 비교해보세요.':Math.abs(state.wind)>.15?'먼지가 비스듬히 유입되는 조건이에요. 방향을 반대로 바꾸고, 두 옆면과 뚜껑 아래의 차이를 관찰하세요.':'덮개 없이 둔 케이스의 위쪽에 먼지가 내려앉는 조건이에요. 아래쪽을 돌려 보면 같은 양으로 쌓이지 않아요.',
     handle:state.contact==='handle'?'손으로 반복해서 잡는 부위예요. 마모를 올리면 도장 또는 플라스틱 표면이 닳고, 느슨한 먼지도 닦여요.':'지금은 손잡이를 주된 접촉 부위로 정하지 않았어요. ‘주로 닿는 곳’을 손잡이로 바꾸고 차이를 확인하세요.',
     edge:state.contact==='edges'?'앞쪽 오른 모서리가 다른 물체에 부딪히는 조건이에요. 다른 모서리까지 같은 강도로 닳는지 비교하세요.':'돌출되어 있다는 이유만으로 모두 벗겨지지 않아요. ‘주로 닿는 곳’을 앞쪽 오른 모서리로 바꿔보세요.',
     base:state.contact==='base'?'케이스를 돌려 받침 아래쪽을 보세요. 바닥에 끌리는 접촉을 지정하면 아래쪽에 마모가 모이고, 윗면은 그대로 남아요.':'지금은 받침에 접촉을 지정하지 않았어요. 바닥과 닿는 흔적은 ‘주로 닿는 곳’을 받침으로 바꿔 관찰할 수 있어요.'
   };
   $('observation-title').textContent=titles[point];
-  $('observation-text').textContent=texts[point]+(mode==='dust'?' 황갈색은 현재 조건의 먼지 침착 강도예요.':mode==='wear'?(state.compare?' 왼쪽은 형태로 고른 모서리, 오른쪽은 지정한 접촉 부위를 청록색으로 보여줘요.':' 청록색은 지정한 접촉 부위예요. 실제 마모량은 마모 슬라이더로 조절해요.'):'');
+  $('observation-text').textContent=texts[point]+(mode==='dust'?(state.runoff>0?' 황갈색은 접촉과 물의 씻김·운반을 반영해 남은 먼지의 강도예요.':' 황갈색은 현재 조건의 먼지 침착 강도예요.'):mode==='wear'?(state.compare?' 왼쪽은 형태로 고른 모서리, 오른쪽은 지정한 접촉 부위를 청록색으로 보여줘요.':' 청록색은 지정한 접촉 부위예요. 실제 마모량은 마모 슬라이더로 조절해요.'):'');
   if(mode==='surface'&&state.preset==='moss'&&point==='top'){$('observation-title').textContent='오래 젖은 표면에 자리 잡은 군락';$('observation-text').textContent='먼지가 남은 표면에 이끼 군락이 자란 조건이에요. 마르는 속도를 높이거나 ‘이끼 생장’으로 전환해 자리 잡는 범위를 비교해보세요.';}
   if(mode==='surface'&&state.preset==='damp'&&point==='edge'){$('observation-title').textContent='벗겨진 표면은 물에 어떻게 반응할까?';$('observation-text').textContent=state.material==='paint'?'앞쪽 오른 모서리에 드러난 철이 반복해서 젖으며 녹이 생겨요. 젖는 정도를 줄이거나 플라스틱과 비교해보세요.':'같은 접촉과 수분 조건에서도 플라스틱에는 녹이 생기지 않아요. 긁힘은 색 대신 미세한 요철로 표현합니다.';}
+  if((mode==='surface'&&state.preset==='rain')||mode==='runoff'){$('observation-title').textContent='씻긴 자리와, 다시 쌓인 자리를 구분해요';$('observation-text').textContent=mode==='runoff'?'푸른색은 물이 씻어 간 곳, 황갈색은 위쪽 먼지를 운반해 남긴 자리예요. 유입 방향은 물의 공급을 바꾸지만 물길은 중력을 따라 아래로 이어집니다.':'윗면에서 먼지가 줄고, 뚜껑 아래로 이어지는 물길 가장자리에 침착물이 남아요. 빗물 흐름을 0으로 내려 씻기기 전의 먼지와 비교해보세요.';}
   if(mode==='wet'){$('observation-title').textContent='얼마나 오래 젖을 수 있었을까?';$('observation-text').textContent='푸른색은 공급·가림·건조를 함께 고려한 누적 습윤의 상대값이에요. 젖는 정도 또는 노출 누적이 0이면 사라져요. 실제 습도나 날짜를 뜻하지는 않아요.';}
   if(mode==='rust'){$('observation-title').textContent='철이 드러나고, 반복해서 젖었을까?';$('observation-text').textContent=state.material==='plastic'?'플라스틱 본체는 녹슬지 않아요. 긁힘은 원래 색을 유지하고 요철로만 남아요.':'주황색은 실제로 벗겨진 강철에서 생긴 녹이에요. 마모·젖는 정도·노출 누적을 차례로 줄여보세요. 온전한 도장이나 다른 합금 부품에는 녹을 칠하지 않아요.';}
   if(mode==='moss'){$('observation-title').textContent='젖은 상태가 이어지고, 자리 잡을 수 있었을까?';$('observation-text').textContent='초록색은 누적 습윤과 마르는 속도, 표면에 남은 침착물을 고려한 이끼 군락이에요. 그늘이나 틈이라는 이유만으로 생기지는 않아요. 자주 문지르는 자리는 덜 남습니다.';}
-  $('lab-status').textContent=(state.preset?PRESETS[state.preset].label:'직접 조절')+' · '+({surface:'표면 보기',dust:'먼지 원인 보기',wear:'접촉 원인 보기',wet:'습윤 이력 보기',rust:'녹 발생 보기',moss:'이끼 생장 보기'}[mode])+(state.compare?' · 먼지·마모 규칙 비교':'');
+  $('lab-status').textContent=(state.preset?PRESETS[state.preset].label:'직접 조절')+' · '+({surface:'표면 보기',dust:'먼지 원인 보기',wear:'접촉 원인 보기',wet:'습윤 이력 보기',rust:'녹 발생 보기',moss:'이끼 생장 보기',runoff:'빗물 흔적 보기'}[mode])+(state.compare?' · 먼지·마모 규칙 비교':'');
 }
 function sync(){
-  for(const id of ['dust','wear','wind','wetness','exposure','drying']){
+  for(const id of ['dust','wear','wind','wetness','exposure','drying','runoff']){
     const input=$(id);input.value=Math.round(state[id]*100);input.style.setProperty('--fill',((+input.value-+input.min)/(+input.max-+input.min)*100)+'%');
     $(id+'-value').textContent=id==='wind'?(Math.abs(state.wind)<.05?'위에서':(state.wind<0?'왼쪽 위 ':'오른쪽 위 ')+Math.round(Math.abs(state.wind)*100)):Math.round(state[id]*100);
   }
@@ -128,12 +131,13 @@ function sync(){
   $('compare').setAttribute('aria-pressed',String(state.compare));
   for(const id of ['compare-labels','compare-line','compare-scrub'])$(id).hidden=!state.compare;
   shared.uDust.value=state.dust;shared.uWear.value=state.wear;shared.uWind.value=state.wind;
+  shared.uRunoff.value=state.runoff;
   shared.uWetness.value=state.wetness;shared.uExposure.value=state.exposure;shared.uDrying.value=state.drying;
-  shared.uContact.value=CONTACT_MODES[state.contact];shared.uPlastic.value=state.material==='plastic'?1:0;shared.uLayer.value={surface:0,dust:1,wear:2,wet:3,rust:4,moss:5}[state.layer];
+  shared.uContact.value=CONTACT_MODES[state.contact];shared.uPlastic.value=state.material==='plastic'?1:0;shared.uLayer.value={surface:0,dust:1,wear:2,wet:3,rust:4,moss:5,runoff:6}[state.layer];
   for(const arrow of dustArrows){arrow.visible=state.layer==='dust'&&state.dust>0;arrow.setDirection(new THREE.Vector3(-state.wind,-1,0).normalize());}
   observe();invalidate();
 }
-function applyPreset(name){const previous=selectedPoint;Object.assign(state,PRESETS[name],{preset:name});selectedPoint=name==='handled'?'handle':['outdoor','damp'].includes(name)?'edge':'top';sync();if(previous!==selectedPoint&&stage.dataset.view!=='overview')focusObservation(selectedPoint);}
+function applyPreset(name){const previous=selectedPoint;Object.assign(state,PRESETS[name],{preset:name});selectedPoint=name==='handled'?'handle':name==='rain'?'runoff':['outdoor','damp'].includes(name)?'edge':'top';sync();if(previous!==selectedPoint&&stage.dataset.view!=='overview')focusObservation(selectedPoint);}
 function resetView(){cameraMotion.reset();}
 function focusObservation(name){
   cameraMotion.focus(name);
@@ -158,13 +162,13 @@ function installUI(){
     if(event.target.getBoundingClientRect().top<stage.getBoundingClientRect().bottom+24)event.target.scrollIntoView({block:'start',behavior:'instant'});
   });
   document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>applyPreset(b.dataset.preset)));
-  document.querySelectorAll('[data-layer]').forEach(b=>b.addEventListener('click',()=>{const previous=selectedPoint;state.layer=b.dataset.layer;if(state.layer==='wear')selectedPoint={handle:'handle',edges:'edge',base:'base'}[state.contact];if(['dust','wet','moss'].includes(state.layer))selectedPoint='top';if(state.layer==='rust')selectedPoint='edge';sync();if(previous!==selectedPoint&&stage.dataset.view!=='overview')focusObservation(selectedPoint);}));
+  document.querySelectorAll('[data-layer]').forEach(b=>b.addEventListener('click',()=>{const previous=selectedPoint;state.layer=b.dataset.layer;if(state.layer==='wear')selectedPoint={handle:'handle',edges:'edge',base:'base'}[state.contact];if(['dust','wet','moss'].includes(state.layer))selectedPoint='top';if(state.layer==='rust')selectedPoint='edge';if(state.layer==='runoff')selectedPoint='runoff';sync();if(previous!==selectedPoint&&stage.dataset.view!=='overview')focusObservation(selectedPoint);}));
   document.querySelectorAll('[data-point]').forEach(b=>b.addEventListener('click',()=>{selectedPoint=b.dataset.point;sync();focusObservation(selectedPoint);}));
   document.querySelectorAll('[data-coat]').forEach(b=>b.addEventListener('click',()=>setCoat(b.dataset.coat)));
   $('coat-color').addEventListener('input',()=>setCoat($('coat-color').value));
   $('coat-hex').addEventListener('change',()=>setCoat($('coat-hex').value));
   $('coat-hex').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();setCoat($('coat-hex').value);}});
-  for(const id of ['dust','wear','wind','wetness','exposure','drying'])$(id).addEventListener('input',()=>{state[id]=+$(id).value/100;state.preset='';sync();});
+  for(const id of ['dust','wear','wind','wetness','exposure','drying','runoff'])$(id).addEventListener('input',()=>{state[id]=+$(id).value/100;state.preset='';sync();});
   $('contact').addEventListener('change',()=>{state.contact=$('contact').value;state.preset='';selectedPoint={handle:'handle',edges:'edge',base:'base'}[state.contact];sync();focusObservation(selectedPoint);});
   $('material').addEventListener('change',()=>{state.material=$('material').value;sync();});
   $('compare').addEventListener('click',()=>{state.compare=!state.compare;sync();});
@@ -199,14 +203,14 @@ function installUI(){
     const hit=raycaster.intersectObjects(meshes,false)[0];if(!hit)return;
     const kind=hit.object.userData.kind;
     // Only the named study areas select a marker; a plain face stays unchanged.
-    if(kind===2)selectedPoint='handle';else if(kind===1)selectedPoint='top';else if(kind===3)selectedPoint='base';else if(kind===0&&hit.point.x>1&&hit.point.z>.45)selectedPoint='edge';else return;sync();focusObservation(selectedPoint);
+    if(kind===2)selectedPoint='handle';else if(kind===1)selectedPoint='top';else if(kind===3)selectedPoint='base';else if(kind===0&&hit.point.x>1&&hit.point.z>.45)selectedPoint='edge';else if(kind===0&&hit.point.z>.60&&Math.abs(Math.abs(hit.point.x)-.89)<.16&&hit.point.y<.45)selectedPoint='runoff';else return;sync();focusObservation(selectedPoint);
   });
 }
 function init(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});renderer.setClearColor(0x000000,0);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
   scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(35,1,.1,60);controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=3.7;controls.maxDistance=10;controls.enablePan=false;controls.addEventListener('change',invalidate);
-  cameraMotion=createWeatheringCamera({camera,controls,stage,invalidate,onViewChange:name=>{stage.dataset.view=name;$('view-help').textContent=name==='overview'?'드래그 회전 · 스크롤 확대':({top:'윗면',handle:'손잡이',edge:'모서리',base:'받침'}[name]+' 확대 · 드래그 회전');}});
+  cameraMotion=createWeatheringCamera({camera,controls,stage,invalidate,onViewChange:name=>{stage.dataset.view=name;$('view-help').textContent=name==='overview'?'드래그 회전 · 스크롤 확대':({top:'윗면',handle:'손잡이',edge:'모서리',base:'받침',runoff:'물길'}[name]+' 확대 · 드래그 회전');}});
   const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment(renderer),env=pmrem.fromScene(room,.04);scene.environment=env.texture;resources.push(env);room.dispose();pmrem.dispose();
   const key=new THREE.DirectionalLight(0xfff6e4,1.8);key.position.set(-4.5,4,5.5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-2.4,right:2.4,top:2.4,bottom:-2.4,near:.1,far:16});key.shadow.normalBias=.022;key.shadow.bias=-.0003;scene.add(key);
   const fill=new THREE.DirectionalLight(0xbccada,.65);fill.position.set(4,1,-3);scene.add(fill);scene.add(new THREE.HemisphereLight(0xe5e7df,0x33382f,.4));

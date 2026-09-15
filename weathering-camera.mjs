@@ -6,6 +6,7 @@ const VIEWS = {
   handle: {position: [.9, 1.9, 1.5], target: [0, 1.19, .02]},
   edge: {position: [2.7, 1.08, 2.15], target: [1.18, .10, .59]},
   base: {position: [2.32, -2.05, 2.28], target: [.88, -.87, .43]},
+  runoff: {position: [.25, 1.1, 3.3], target: [0, .1, .65]},
 };
 const DURATION = 700;
 const ease = t => t * t * (3 - 2 * t);
@@ -55,7 +56,14 @@ export function createWeatheringCamera({camera, controls, stage, invalidate, onV
         target: new Vector3(0, .10, 0), minDistance: 3.7};
     }
     const view = VIEWS[name];
-    return {position: new Vector3(...view.position), target: new Vector3(...view.target), minDistance: 1.15};
+    const position = new Vector3(...view.position), target = new Vector3(...view.target);
+    if (name === 'runoff') {
+      // Keep both latch-fed water paths in frame on tall mobile previews.
+      const ratio = stage?.clientWidth / stage?.clientHeight;
+      const aspect = Number.isFinite(ratio) && ratio > 0 ? ratio : 1.5;
+      position.sub(target).multiplyScalar(Math.max(1, 1.5 / aspect)).add(target);
+    }
+    return {position, target, minDistance: 1.15};
   }
 
   function finish() {

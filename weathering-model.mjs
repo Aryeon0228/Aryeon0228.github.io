@@ -17,7 +17,7 @@ export const PRESETS = Object.freeze({
     wear: 0.16,
     wind: 0,
     contact: 'base',
-    wetness: 0, exposure: 0, drying: 0.5,
+    wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
   }),
   outdoor: Object.freeze({
     label: '먼지 부는 야외',
@@ -26,7 +26,7 @@ export const PRESETS = Object.freeze({
     wear: 0.58,
     wind: 0.88,
     contact: 'edges',
-    wetness: 0, exposure: 0, drying: 0.5,
+    wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
   }),
   handled: Object.freeze({
     label: '자주 운반',
@@ -35,19 +35,25 @@ export const PRESETS = Object.freeze({
     wear: 0.9,
     wind: -0.22,
     contact: 'handle',
-    wetness: 0, exposure: 0, drying: 0.5,
+    wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
   }),
   damp: Object.freeze({
-    label: '비 맞은 보관',
+    label: '습한 야외 보관',
     description: '반복해서 젖는 보관 조건입니다. 도장한 강철에서는 벗겨진 철이 녹슬기 시작합니다.',
     dust: 0.18, wear: 0.92, wind: 0.6, contact: 'edges',
-    wetness: 0.9, exposure: 0.8, drying: 0.5,
+    wetness: 0.9, exposure: 0.8, drying: 0.5, runoff: 0,
   }),
   moss: Object.freeze({
     label: '오래된 습한 보관',
     description: '오래 젖고 천천히 마르는 표면에 이끼가 자리 잡은 조건입니다.',
     dust: 0.65, wear: 0.08, wind: 0.18, contact: 'handle',
-    wetness: 1, exposure: 1, drying: 0.08,
+    wetness: 1, exposure: 1, drying: 0.08, runoff: 0,
+  }),
+  rain: Object.freeze({
+    label: '비가 훑고 간 뒤',
+    description: '쌓여 있던 먼지를 물이 씻어 내리고, 뚜껑 아래 물길 가장자리에 침착물이 남습니다.',
+    dust: 0.88, wear: 0.22, wind: 0.4, contact: 'handle',
+    wetness: 1, exposure: 0.7, drying: 0.9, runoff: 1,
   }),
 });
 
@@ -60,7 +66,7 @@ export const DEFAULT_STATE = Object.freeze({
   wear: PRESETS.storage.wear,
   wind: PRESETS.storage.wind,
   contact: PRESETS.storage.contact,
-  wetness: 0, exposure: 0, drying: 0.5,
+  wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
   heuristic: false,
 });
 
