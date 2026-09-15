@@ -5,7 +5,7 @@ const VIEWS = {
   top: {position: [-1.2, 2.75, 1.65], target: [-.35, .94, .02]},
   handle: {position: [.9, 1.9, 1.5], target: [0, 1.19, .02]},
   edge: {position: [2.7, 1.08, 2.15], target: [1.18, .10, .59]},
-  base: {position: [2.32, -2.05, 2.28], target: [.88, -.87, .43]},
+  base: {position: [2.32, -2.05, 2.28], target: [.70, -.73, .34]},
   runoff: {position: [.25, 1.1, 3.3], target: [0, .1, .65]},
 };
 const DURATION = 700;

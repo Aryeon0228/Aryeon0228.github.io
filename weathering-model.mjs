@@ -81,7 +81,7 @@ const kindMask = (kind, expected) => Math.abs(kind - expected) < 0.5 ? 1 : 0;
 
 /**
  * Reference evaluator for valid UI state, with finite fallbacks for inspectors.
- * `part.kind`: 0 body, 1 lid, 2 handle, 3 feet, 4 details.
+ * `part.kind`: 0 body, 1 lid, 2 handle, 3 reserved, 4 details.
  * `state.heuristic`: true selects an intentionally shape-only comparison.
  * Increasing wear also represents repeated contact, so it clears nearby dust.
  * The returned contact and shelter are geometry masks, independent of amounts.
@@ -114,7 +114,6 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
   const body = kindMask(kind, 0);
   const lid = kindMask(kind, 1);
   const handle = kindMask(kind, 2);
-  const feet = kindMask(kind, 3);
 
   // Canonical lid overhang shields the upper body. An underside is also
   // sheltered, but shielding alone is not a source of incoming dust.
@@ -131,10 +130,15 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
   const cornerContact = (body + lid) * smoothstep(0.78, 1.12, p[0])
     * smoothstep(0.26, 0.6, p[2])
     * (1 - smoothstep(0.45, 1.05, Math.abs(p[1] - 0.35)));
-  const footContact = feet * (1 - smoothstep(-0.9, -0.81, p[1]))
-    * (0.35 + 0.65 * smoothstep(0.05, 0.9, -n[1]));
-  // The feet hold the body above the ground, so dragging touches the feet only.
-  const baseContact = footContact;
+  // The case rests directly on its bottom. Dragging mainly abrades the bottom
+  // perimeter; a narrow, weaker skirt catches the rounded lower side edges.
+  // Use the body's bounds so this footprint follows its actual ground plane.
+  const heightAboveBase = p[1] - (center[1] - half[1]);
+  const baseBand = 1 - smoothstep(0.018, 0.14, heightAboveBase);
+  const basePerimeter = smoothstep(0.56, 0.95, Math.max(q[0], q[2]));
+  const underside = smoothstep(0.12, 0.85, -n[1]);
+  const baseContact = body * baseBand * (0.22 + 0.78 * basePerimeter)
+    * (0.35 + 0.65 * underside);
   const contact = clamp(contactMode === 0 ? gripContact
     : contactMode === 1 ? cornerContact : baseContact);
 
@@ -181,7 +185,6 @@ vec4 weatherSignals(
   float wBody = wKindMask(kind, 0.0);
   float wLid = wKindMask(kind, 1.0);
   float wHandle = wKindMask(kind, 2.0);
-  float wFeet = wKindMask(kind, 3.0);
 
   float wUnderLid = wBody * wSide * smoothstep(0.22, 0.64, p.y)
     * (1.0 - smoothstep(0.76, 0.9, p.y));
@@ -194,9 +197,12 @@ vec4 weatherSignals(
   float wCornerContact = (wBody + wLid) * smoothstep(0.78, 1.12, p.x)
     * smoothstep(0.26, 0.6, p.z)
     * (1.0 - smoothstep(0.45, 1.05, abs(p.y - 0.35)));
-  float wFootContact = wFeet * (1.0 - smoothstep(-0.9, -0.81, p.y))
-    * (0.35 + 0.65 * smoothstep(0.05, 0.9, -wN.y));
-  float wBaseContact = wFootContact;
+  float wHeightAboveBase = p.y - (center.y - wHalf.y);
+  float wBaseBand = 1.0 - smoothstep(0.018, 0.14, wHeightAboveBase);
+  float wBasePerimeter = smoothstep(0.56, 0.95, max(wQ.x, wQ.z));
+  float wUnderside = smoothstep(0.12, 0.85, -wN.y);
+  float wBaseContact = wBody * wBaseBand * (0.22 + 0.78 * wBasePerimeter)
+    * (0.35 + 0.65 * wUnderside);
   float wContact = clamp(contactMode < 0.5 ? wGripContact
     : (contactMode < 1.5 ? wCornerContact : wBaseContact), 0.0, 1.0);
 
