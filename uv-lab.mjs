@@ -28,7 +28,8 @@ function analyze({file}={}){if(!worker)createWorker();jobId++;busy(true);status(
 function syncScope(){
   $('file-name').textContent=state.model.name;
   const select=$('atlas-scope');select.replaceChildren(new Option('전체 · 하나의 텍스처로 보기','-1'));
-  state.model.materialNames.forEach((name,id)=>select.add(new Option(name,String(id))));select.value=String(state.materialId);
+  const usedMaterials=new Set(state.model.materialIds);
+  state.model.materialNames.forEach((name,id)=>{if(usedMaterials.has(id))select.add(new Option(name,String(id)));});select.value=String(state.materialId);
   document.querySelectorAll('[data-demo]').forEach(button=>button.setAttribute('aria-pressed',String(state.model.demo?.layout===button.dataset.demo)));
   $('demo-note').textContent=state.model.demo?({loose:'먼저 64픽셀로 관찰하고 ‘공간 정리’와 비교해보세요.',packed:'같은 무늬, 같은 해상도. 조각에 배정된 픽셀이 늘어납니다.',stretched:'왼쪽 면의 UV를 가로로 늘렸어요. ‘늘어짐’에서 비율을 확인하세요.'}[state.model.demo.layout]):'수업 예제 버튼을 누르면 언제든 비교로 돌아갈 수 있어요.';
   $('model-tag').textContent=state.model.demo?'ROUND CASE':'LOCAL MODEL';
