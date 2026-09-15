@@ -40,6 +40,8 @@ function renderModule(){
  $('save-status').textContent=notes[module.id]?'이 브라우저에 저장한 기록이 있어요.':'기록은 저장 버튼을 눌러 이 브라우저에 보관할 수 있어요.';
  $('source-links').replaceChildren();for(const source of module.sources||[]){const li=document.createElement('li');const a=document.createElement('a');a.textContent=source.title;a.href=source.url;a.target='_blank';a.rel='noopener noreferrer';li.append(a);$('source-links').append(li);}
  document.querySelectorAll('[data-module]').forEach(a=>{if(a.dataset.module===module.id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});$('mobile-experiment').value=module.id;
+ const selectedLink=document.querySelector('[data-module="'+module.id+'"]'),navScroller=selectedLink?.closest('.nav-groups');
+ if(navScroller?.clientHeight){if(index===0)navScroller.scrollTop=0;const item=selectedLink.getBoundingClientRect(),panel=navScroller.getBoundingClientRect();if(item.top<panel.top+4)navScroller.scrollTop+=item.top-panel.top-4;else if(item.bottom>panel.bottom-4)navScroller.scrollTop+=item.bottom-panel.bottom+4;}
  for(const [element,other,prefix] of [[$('previous-experiment'),modules[index-1],'← '],[$('next-experiment'),modules[index+1],'다음 · ']]){element.textContent=other?prefix+other.title:(prefix==='← '?'첫 실험':'마지막 실험');element.href=other?'#'+other.id:'#'+module.id;element.setAttribute('aria-disabled',String(!other));element.tabIndex=other?0:-1;}
  $('experiment-counter').textContent=String(index+1).padStart(2,'0')+' / '+String(modules.length).padStart(2,'0');updateApplication();
 }
