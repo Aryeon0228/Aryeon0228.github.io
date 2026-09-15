@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=bc2a7677e3bf';
-import {createWeatherMaterial} from './weathering-surface.mjs?v=982eaf549369';
+import {PRESETS, DEFAULT_STATE, CONTACT_MODES} from './weathering-model.mjs?v=43fef8970ee4';
+import {createWeatherMaterial} from './weathering-surface.mjs?v=58f2454d8e1b';
 import {createWeatheringCamera} from './weathering-camera.mjs?v=79c6fb037bae';
 import {createWeatheringBox as roundedBox} from './weathering-geometry.mjs?v=e3aca10313dd';
 
@@ -24,7 +24,7 @@ const observationPoints={
   handle:{point:[0,1.19,.102],normal:[0,0,1],part:2,index:'02'},
   edge:{point:[1.23,-.10,.64],normal:[.707,0,.707],part:0,index:'03'},
   base:{point:[1,-.952,.48],normal:[0,-1,0],part:3,index:'04'},
-  runoff:{point:[.89,-.10,.652],normal:[0,0,1],part:0,index:'05'}
+  runoff:{point:[-.89,-.10,.652],normal:[0,0,1],part:0,index:'05'}
 };
 function weatherMaterial(center,half,kind,hardware=false){
   const material=createWeatherMaterial({center,half,kind,hardware,uniforms:shared});
@@ -95,7 +95,7 @@ function observe(){
   const mode=state.layer,point=selectedPoint;
   const titles={top:'먼지가 도착할 수 있는 면',handle:'형태보다 사용이 남기는 흔적',edge:'모든 모서리가 닳지는 않아요',base:'바닥과 맞닿는 곳의 흔적',runoff:'위에서 흘러온 물길'};
   const texts={
-    runoff:state.runoff>0?'뚜껑 가장자리 아래로 이어지는 물길이에요. 중심의 씻긴 표면과, 가장자리·끝에 다시 남은 먼지를 비교하세요.':'지금은 빗물 흐름을 적용하지 않았어요. ‘비가 훑고 간 뒤’를 선택해 씻기기 전과 후를 비교하세요.',
+    runoff:state.runoff>0?'뚜껑 이음새 아래의 넓은 침착막, 그 아래로 흘러내린 가는 자국과 끊긴 끝부분을 비교하세요.':'지금은 빗물 흐름을 적용하지 않았어요. ‘비가 훑고 간 뒤’를 선택해 씻기기 전과 후를 비교하세요.',
     top:state.dust===0?'먼지 쌓임이 0이라 지금은 침착 흔적이 없어요. 쌓임을 올리고 윗면과 아랫면을 비교해보세요.':Math.abs(state.wind)>.15?'먼지가 비스듬히 유입되는 조건이에요. 방향을 반대로 바꾸고, 두 옆면과 뚜껑 아래의 차이를 관찰하세요.':'덮개 없이 둔 케이스의 위쪽에 먼지가 내려앉는 조건이에요. 아래쪽을 돌려 보면 같은 양으로 쌓이지 않아요.',
     handle:state.contact==='handle'?'손으로 반복해서 잡는 부위예요. 마모를 올리면 도장 또는 플라스틱 표면이 닳고, 느슨한 먼지도 닦여요.':'지금은 손잡이를 주된 접촉 부위로 정하지 않았어요. ‘주로 닿는 곳’을 손잡이로 바꾸고 차이를 확인하세요.',
     edge:state.contact==='edges'?'앞쪽 오른 모서리가 다른 물체에 부딪히는 조건이에요. 다른 모서리까지 같은 강도로 닳는지 비교하세요.':'돌출되어 있다는 이유만으로 모두 벗겨지지 않아요. ‘주로 닿는 곳’을 앞쪽 오른 모서리로 바꿔보세요.',
@@ -105,7 +105,7 @@ function observe(){
   $('observation-text').textContent=texts[point]+(mode==='dust'?(state.runoff>0?' 황갈색은 접촉과 물의 씻김·운반을 반영해 남은 먼지의 강도예요.':' 황갈색은 현재 조건의 먼지 침착 강도예요.'):mode==='wear'?(state.compare?' 왼쪽은 형태로 고른 모서리, 오른쪽은 지정한 접촉 부위를 청록색으로 보여줘요.':' 청록색은 지정한 접촉 부위예요. 실제 마모량은 마모 슬라이더로 조절해요.'):'');
   if(mode==='surface'&&state.preset==='moss'&&point==='top'){$('observation-title').textContent='오래 젖은 표면에 자리 잡은 군락';$('observation-text').textContent='먼지가 남은 표면에 이끼 군락이 자란 조건이에요. 마르는 속도를 높이거나 ‘이끼 생장’으로 전환해 자리 잡는 범위를 비교해보세요.';}
   if(mode==='surface'&&state.preset==='damp'&&point==='edge'){$('observation-title').textContent='벗겨진 표면은 물에 어떻게 반응할까?';$('observation-text').textContent=state.material==='paint'?'앞쪽 오른 모서리에 드러난 철이 반복해서 젖으며 녹이 생겨요. 젖는 정도를 줄이거나 플라스틱과 비교해보세요.':'같은 접촉과 수분 조건에서도 플라스틱에는 녹이 생기지 않아요. 긁힘은 색 대신 미세한 요철로 표현합니다.';}
-  if((mode==='surface'&&state.preset==='rain')||mode==='runoff'){$('observation-title').textContent='씻긴 자리와, 다시 쌓인 자리를 구분해요';$('observation-text').textContent=mode==='runoff'?'푸른색은 물이 씻어 간 곳, 황갈색은 위쪽 먼지를 운반해 남긴 자리예요. 유입 방향은 물의 공급을 바꾸지만 물길은 중력을 따라 아래로 이어집니다.':'윗면에서 먼지가 줄고, 뚜껑 아래로 이어지는 물길 가장자리에 침착물이 남아요. 빗물 흐름을 0으로 내려 씻기기 전의 먼지와 비교해보세요.';}
+  if((mode==='surface'&&state.preset==='rain')||mode==='runoff'){$('observation-title').textContent='씻긴 자리와, 다시 쌓인 자리를 구분해요';$('observation-text').textContent=mode==='runoff'?'푸른색은 물이 씻어 간 곳, 황갈색은 위쪽 먼지를 운반해 남긴 자리예요. 유입 방향은 물의 공급을 바꾸지만 물길은 중력을 따라 아래로 이어집니다.':'이음새 아래에 모인 오염이 서로 다른 길이로 흘러내려요. 넓고 옅은 막과 가늘고 짙은 자국, 점처럼 끊긴 끝부분을 살펴보세요. 빗물 흐름을 0으로 내려 이전 표면과 비교할 수 있어요.';}
   if(mode==='wet'){$('observation-title').textContent='얼마나 오래 젖을 수 있었을까?';$('observation-text').textContent='푸른색은 공급·가림·건조를 함께 고려한 누적 습윤의 상대값이에요. 젖는 정도 또는 노출 누적이 0이면 사라져요. 실제 습도나 날짜를 뜻하지는 않아요.';}
   if(mode==='rust'){$('observation-title').textContent='철이 드러나고, 반복해서 젖었을까?';$('observation-text').textContent=state.material==='plastic'?'플라스틱 본체는 녹슬지 않아요. 긁힘은 원래 색을 유지하고 요철로만 남아요.':'주황색은 실제로 벗겨진 강철에서 생긴 녹이에요. 마모·젖는 정도·노출 누적을 차례로 줄여보세요. 온전한 도장이나 다른 합금 부품에는 녹을 칠하지 않아요.';}
   if(mode==='moss'){$('observation-title').textContent='젖은 상태가 이어지고, 자리 잡을 수 있었을까?';$('observation-text').textContent='초록색은 누적 습윤과 마르는 속도, 표면에 남은 침착물을 고려한 이끼 군락이에요. 그늘이나 틈이라는 이유만으로 생기지는 않아요. 자주 문지르는 자리는 덜 남습니다.';}

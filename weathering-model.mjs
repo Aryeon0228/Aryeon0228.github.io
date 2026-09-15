@@ -51,7 +51,7 @@ export const PRESETS = Object.freeze({
   }),
   rain: Object.freeze({
     label: '비가 훑고 간 뒤',
-    description: '쌓여 있던 먼지를 물이 씻어 내리고, 뚜껑 아래 물길 가장자리에 침착물이 남습니다.',
+    description: '위쪽 먼지가 물에 씻겨 이동하며, 이음새 아래로 길이와 농도가 다른 유출 자국을 남깁니다.',
     dust: 0.88, wear: 0.22, wind: 0.4, contact: 'handle',
     wetness: 1, exposure: 0.7, drying: 0.9, runoff: 1,
   }),

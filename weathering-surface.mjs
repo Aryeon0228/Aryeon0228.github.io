@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three/build/three.module.js';
-import { WEATHER_GLSL } from './weathering-model.mjs?v=bc2a7677e3bf';
+import { WEATHER_GLSL } from './weathering-model.mjs?v=43fef8970ee4';
 import { ENVIRONMENT_GLSL } from './weathering-environment.mjs?v=98d844ff44b3';
-import { RUNOFF_GLSL } from './weathering-runoff.mjs?v=c73f37fe2dac';
+import { RUNOFF_GLSL } from './weathering-runoff.mjs?v=9090fe25da15';
 
 // CSS palette entries are converted once into Three.js's linear working space.
 // Only uCoatColor is user-editable; powder, primer and hardware stay independent.
@@ -20,8 +20,8 @@ const vec3 wxRustDarkColor = ${linearColor('#623b29')};
 const vec3 wxRustLightColor = ${linearColor('#ad6d42')};
 const vec3 wxMossDarkColor = ${linearColor('#223d20')};
 const vec3 wxMossTipColor = ${linearColor('#658342')};
-const vec3 wxSedimentDarkColor = ${linearColor('#8c7657')};
-const vec3 wxSedimentLightColor = ${linearColor('#b39b73')};
+const vec3 wxSedimentDarkColor = ${linearColor('#514b3e')};
+const vec3 wxSedimentLightColor = ${linearColor('#a79579')};
 
 // This is visible oxide coverage, bounded by the iron the surface shader
 // actually exposes. Contact or primer alone cannot qualify as bare iron.
@@ -177,6 +177,8 @@ vec3 wxDustColor = mix(wxPowderColor * (0.95 + 0.06 * wxClump),
   wxPowderGrainColor, wxGrains * 0.63);
 float wxRepeatedContact = ws.z * clamp(uWear, 0.0, 1.0);
 vec4 wxRunoff = vec4(0.0);
+float wxSedimentThreads = 0.5;
+float wxSedimentFibres = 0.5;
 // Source weather is sampled before transport, on the real lid above this face.
 // A uniform branch skips both extra samples in every default/dry render.
 if (uRunoff > 0.0 && uWetness > 0.0 && uExposure > 0.0) {
@@ -190,18 +192,46 @@ if (uRunoff > 0.0 && uWetness > 0.0 && uExposure > 0.0) {
   wxRunoff = wxRunoffSignals(wxP, wxN, uKind, uRunoff,
     uWetness, uExposure, uDrying, uWind, ws.w,
     vec2(wxSourceWeather.x, wxSourceEnvironment.z));
+  // Many horizontal changes but slowly varying vertical coordinates make
+  // parallel fibres inside each bulk run, not another imposed drip path.
+  // This is a uniform branch, so derivative filtering remains well-defined.
+  wxSedimentThreads = wxFilteredNoise(wxP * vec3(52.0, 3.4, 9.0)
+    + vec3(8.3, 2.7, 6.1));
+  wxSedimentFibres = wxFilteredNoise(wxP * vec3(176.0, 13.0, 11.0)
+    + vec3(2.1, 9.4, 3.7));
 }
 // Blue diagnostics report actual removed dust, including prior contact cleaning.
 // Transport never erases the underlying coat, wear relief or existing rust.
 float wxDustBeforeWash = wxDustMask;
 float wxWashMask = wxDustBeforeWash * wxRunoff.y;
 wxDustMask = max(wxDustBeforeWash - wxWashMask, 0.0);
-float wxSedimentGrain = clamp(0.64 * wxChipFineNoise + 0.36 * wxGrains, 0.0, 1.0);
-float wxSedimentMask = wxRunoff.z * (1.0 - 0.97 * wxRepeatedContact)
-  * mix(0.78, 1.0, wxSedimentGrain);
-vec3 wxSedimentColor = mix(wxSedimentDarkColor, wxSedimentLightColor, wxSedimentGrain);
+float wxSedimentGrain = clamp(0.40 * wxChipFineNoise + 0.35 * wxSedimentFibres
+  + 0.25 * wxGrains, 0.0, 1.0);
+float wxSedimentBody = clamp(wxRunoff.z / max(wxRunoff.w, 0.00001), 0.0, 1.0);
+float wxSedimentFeather = smoothstep(0.015, 0.30, wxSedimentBody);
+float wxSedimentStrands = smoothstep(0.18, 0.80,
+  0.60 * wxSedimentThreads + 0.40 * wxSedimentFibres);
+// The thin outer film breaks into porous fibres and isolated surviving grains.
+// Every detail only removes density inside the transported source footprint.
+float wxSedimentPores = max(0.60 * wxSedimentFibres + 0.40 * wxChipFineNoise,
+  wxGrains * 0.88);
+float wxSedimentPoreAA = max(fwidth(wxSedimentPores) * 0.7, 0.025);
+float wxSedimentPoreThreshold = mix(0.62, 0.19, wxSedimentFeather);
+float wxSedimentPorosity = smoothstep(wxSedimentPoreThreshold - wxSedimentPoreAA,
+  wxSedimentPoreThreshold + 0.07 + wxSedimentPoreAA, wxSedimentPores);
+float wxSedimentDensity = (0.54 + 0.46 * wxSedimentStrands) * wxSedimentPorosity;
+float wxSedimentMask = wxRunoff.z * (1.0 - 0.97 * wxRepeatedContact) * wxSedimentDensity;
+// Simplified thin-stain visual response: optical hiding is distinct from the
+// relative deposited amount used for transport, height and establishment.
+float wxSedimentOpacity = 1.0 - exp(-4.0 * wxSedimentMask);
+float wxSedimentConcentration = smoothstep(0.15, 0.82,
+  (0.28 + 0.72 * wxSedimentStrands) * wxSedimentFeather);
+vec3 wxSedimentColor = mix(wxSedimentLightColor, wxSedimentDarkColor, wxSedimentConcentration);
+float wxSedimentHeight = wxSedimentMask * (0.000045 + 0.00016 * wxSedimentGrain);
 float wxMineralCoverage = clamp(wxDustMask
   + wxSedimentMask * (1.0 - wxDustMask), 0.0, 1.0);
+float wxOpticalMineralCoverage = clamp(wxDustMask
+  + wxSedimentOpacity * (1.0 - wxDustMask), 0.0, 1.0);
 
 // Fingertip contact rubs a soft, slightly polished patch. It does not generate
 // the broken-paint islands used at the case corners.
@@ -290,7 +320,7 @@ if (wxPlastic < 0.5) {
 wxAged = mix(wxAged, wxHardwareColor * (0.97 + 0.06 * wxClump), wxHardware);
 // Rust belongs to exposed iron, beneath the independently deposited powder.
 wxAged = mix(wxAged, wxDustColor, wxDustMask);
-wxAged = mix(wxAged, wxSedimentColor, wxSedimentMask);
+wxAged = mix(wxAged, wxSedimentColor, wxSedimentOpacity);
 // Established colonies grow over retained residue, on either paint or plastic.
 // Layer order: substrate/rust, retained powder, transported residue, then moss.
 wxAged = mix(wxAged, wxMossColor, wxMossMask);
@@ -307,7 +337,8 @@ float wxPlasticHeight = wxDustMask * (0.0008 + 0.00085 * wxGrains)
   - wxScratchCore * 0.0022 - wxRubLines * 0.0026;
 wxHeight = mix(wxHeight, wxPlasticHeight, wxPlastic * (1.0 - wxHardware));
 wxHeight += wxRustMask * (0.00032 + 0.00078 * wxRustGrain) * (1.0 - wxDustMask);
-wxHeight += wxSedimentMask * (0.0006 + 0.0013 * wxSedimentGrain);
+// A dried film has fine surface relief, not the raised edge of a rope or bead.
+wxHeight += wxSedimentHeight;
 wxHeight = mix(wxHeight, 0.0014 + 0.0028 * wxMossDetail, wxMossMask);
 
 // Preserve the existing diagnostic overlay colours, values and lighting split.
@@ -404,12 +435,12 @@ ${SURFACE_COLOR}`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
 roughnessFactor = wxSubstrateRoughness;
 roughnessFactor = mix(roughnessFactor, 0.97 + 0.03 * wxGrains, wxDustMask);
-roughnessFactor = mix(roughnessFactor, 0.96 + 0.035 * wxSedimentGrain, wxSedimentMask);
+roughnessFactor = mix(roughnessFactor, 0.96 + 0.035 * wxSedimentGrain, wxSedimentOpacity);
 roughnessFactor = mix(roughnessFactor, 0.93 + 0.065 * wxMossDetail, wxMossMask);
 if (uLayer > 0.5) roughnessFactor = 1.0;`)
       .replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>
 metalnessFactor = mix(max(wxExposed - wxRustMask, 0.0) * 0.86 * (1.0 - wxPlastic), 0.85, wxHardware)
-  * (1.0 - wxDustMask) * (1.0 - wxSedimentMask) * (1.0 - wxMossMask);
+  * (1.0 - wxDustMask) * (1.0 - wxSedimentOpacity) * (1.0 - wxMossMask);
 if (uLayer > 0.5) metalnessFactor = 0.0;`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
 // r160 defines normal and vViewPosition before this chunk. Standard/physical
@@ -427,7 +458,7 @@ if (uLayer > 0.5) totalEmissiveRadiance = causeColor * 0.66;`)
 // and environment specular lobes where opaque powder covers the substrate.
 // Bare paint/metal and the diagnostic overlays retain their original response.
 if (uLayer < 0.5) {
-  float wxPowderSpecular = mix(1.0, 0.01, smoothstep(0.0, 0.75, wxMineralCoverage));
+  float wxPowderSpecular = mix(1.0, 0.01, smoothstep(0.0, 0.75, wxOpticalMineralCoverage));
   reflectedLight.directSpecular *= wxPowderSpecular;
   reflectedLight.indirectSpecular *= wxPowderSpecular;
   float wxMossSpecular = mix(1.0, 0.03, smoothstep(0.0, 0.85, wxMossMask));
@@ -436,6 +467,6 @@ if (uLayer < 0.5) {
 }`);
   };
 
-  material.customProgramCacheKey = () => 'weathering-surface-v7-runoff-residue';
+  material.customProgramCacheKey = () => 'weathering-surface-v9-thin-stain-optics';
   return material;
 }
