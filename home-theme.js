@@ -11,7 +11,7 @@ function applyTheme(theme) {
   root.style.colorScheme = theme === 'day' ? 'light' : 'dark';
   choices.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === theme)));
   document.getElementById('gl')?.setAttribute('aria-label', theme === 'day'
-    ? '밝은 천문도 위에 흑연색 행성과 은회색 고리가 떠 있습니다. 행성의 그림자 사이로 작은 위성이 공전하고, 먼 별과 궤도 눈금이 은은하게 보입니다.'
+    ? '밝은 천문도 위에 밝은 은회색 행성과 섬세한 고리가 떠 있습니다. 행성의 그림자 사이로 작은 위성이 공전하고, 먼 별과 궤도 눈금이 은은하게 보입니다.'
     : '어둠 속 행성의 가장자리에 은빛 초승달이 떠 있습니다. 희미한 구름결과 실 같은 고리 사이로 작은 위성이 공전하고, 먼 별들이 은은하게 반짝입니다.');
   window.dispatchEvent(new CustomEvent('penumbra-theme-change', { detail: { theme } }));
 }

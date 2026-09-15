@@ -423,8 +423,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=5f99804c5004">
-<link rel="stylesheet" href="home-theme.css?v=44ede29ea79e">
-<script src="home-theme.js?v=54ca69dd4f44" defer></script>
+<link rel="stylesheet" href="home-theme.css?v=4276861486dc">
+<script src="home-theme.js?v=39edd8bd6ac4" defer></script>
 </head>
 <body>
 
@@ -790,11 +790,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     "  float earthshine=.0035*(.65+.35*cloud)*pow(mu,.6);",
     "  float lum=surface*transmission+scattered+earthshine;",
     "  if(uDay>0.5){",
-    "    // Paper-background graphite: preserve incident light and the terminator, never invert them.",
-    "    // Broad, soft observation-side fill reveals curvature without moving the sun.",
-    "    float indirect=.055+pow(mu,.72)*(.17+albedo*.13);",
-    "    float graphite=indirect+surface*transmission*.64+scattered*.18;",
-    "    gl_FragColor=vec4(vec3(.97,.985,1.)*clamp(graphite,0.,.86),1.);",
+    "    // Silver over paper: broad indirect light keeps the unlit hemisphere readable.",
+    "    // A soft highlight shoulder preserves cloud detail as the sun moves toward the viewer.",
+    "    float indirect=.24+pow(mu,.62)*(.24+albedo*.22);",
+    "    float direct=surface*transmission*.64+scattered*.18;",
+    "    float silver=indirect+(.92-indirect)*(1.-exp(-direct*2.2));",
+    "    gl_FragColor=vec4(vec3(.97,.985,1.)*silver,1.);",
     "  }else{ gl_FragColor=vec4(vec3(max(lum,0.)),1.); }",
     "}"
   ].join('\n');
