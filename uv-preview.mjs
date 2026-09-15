@@ -60,6 +60,15 @@ export function createPreview(canvas,{onSelect}) {
   const resize=()=>{const box=canvas.parentElement.getBoundingClientRect();renderer.setSize(box.width,box.height,false);camera.aspect=box.width/Math.max(1,box.height);camera.updateProjectionMatrix();invalidate();};
   const observer=new ResizeObserver(resize);observer.observe(canvas.parentElement);controls.addEventListener('change',invalidate);
   function reset(){camera.position.set(3.2,2.2,3.8);controls.target.set(0,0,0);controls.update();invalidate();}
+  function getView(){return {position:camera.position.toArray(),target:controls.target.toArray()};}
+  function setView(view){
+    const validVector=value=>Array.isArray(value)&&value.length===3&&value.every(Number.isFinite);
+    if(!view||!validVector(view.position)||!validVector(view.target))return false;
+    const distance=Math.hypot(...view.position.map((value,index)=>value-view.target[index]));
+    if(!Number.isFinite(distance)||distance===0)return false;
+    camera.position.fromArray(view.position);controls.target.fromArray(view.target);controls.update();invalidate();
+    return true;
+  }
   function clearObject(object){if(!object)return;root.remove(object);object.geometry.dispose();object.material.dispose();}
   function guardUV(material){
     material.onBeforeCompile=shader=>{
@@ -126,5 +135,15 @@ export function createPreview(canvas,{onSelect}) {
   function up(event){if(!mesh||!start||Math.hypot(event.clientX-start[0],event.clientY-start[1])>5)return;const box=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((event.clientX-box.left)/box.width*2-1,1-(event.clientY-box.top)/box.height*2),camera);const hit=raycaster.intersectObject(mesh)[0];if(hit)onSelect(analysis.faceIsland[faceOrder[hit.faceIndex]]);start=null;}
   function keyboard(event){if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;event.preventDefault();const v=camera.position.clone().sub(controls.target),s=new THREE.Spherical().setFromVector3(v);if(event.key==='ArrowLeft')s.theta-=.12;if(event.key==='ArrowRight')s.theta+=.12;if(event.key==='ArrowUp')s.phi-=.12;if(event.key==='ArrowDown')s.phi+=.12;s.makeSafe();camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(s));controls.update();invalidate();}
   canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointerup',up);canvas.addEventListener('keydown',keyboard);reset();resize();
-  return {get textureCanvas(){return options.mode==='bleed'?colorAtlas:atlas;},setColorAtlas(value){colorAtlas=value;if(options.mode==='bleed')appearance({forceTexture:true});},setModel(m,a){model=m;analysis=a;colorAtlas=null;options.materialId=-1;clearObject(mesh);mesh=null;appearance({forceTexture:true});reset();},setAppearance:appearance,reset,dispose(){disposed=true;cancelAnimationFrame(frame);observer.disconnect();controls.dispose();clearObject(mesh);clearObject(highlight);texture?.dispose();renderer.dispose();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('keydown',keyboard);}};
+  return {
+    get textureCanvas(){return options.mode==='bleed'?colorAtlas:atlas;},
+    setColorAtlas(value){colorAtlas=value;if(options.mode==='bleed')appearance({forceTexture:true});},
+    setModel(m,a,{preserveView=false}={}){
+      model=m;analysis=a;colorAtlas=null;options.materialId=-1;clearObject(mesh);mesh=null;
+      appearance({forceTexture:true});
+      if(!preserveView)reset();
+    },
+    setAppearance:appearance,reset,getView,setView,
+    dispose(){disposed=true;cancelAnimationFrame(frame);observer.disconnect();controls.dispose();clearObject(mesh);clearObject(highlight);texture?.dispose();renderer.dispose();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('keydown',keyboard);}
+  };
 }

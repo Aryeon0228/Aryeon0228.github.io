@@ -1,46 +1,81 @@
 import {createDemo} from './uv-demo.mjs?v=9fad2b96a670';
-import {createPreview,makeAtlas,islandColor,metricColor} from './uv-preview.mjs?v=abeca1995cf1';
+import {createPreview,makeAtlas,islandColor,metricColor} from './uv-preview.mjs?v=61e4d1bb67fd';
 import {boundaryDeviation} from './uv-grid.mjs?v=04f82c311841';
 import {pickAtlasIsland} from './uv-color-atlas.mjs?v=536a719a5512';
 
 const $=id=>document.getElementById(id);
 const percent=value=>`${(value*100).toFixed(1)}%`;
 const number=value=>Number.isFinite(value)?value.toLocaleString('ko-KR',{maximumFractionDigits:1}):'—';
-const state={model:null,analysis:null,resolution:64,mode:'texture',selected:-1,materialId:-1,listLimit:24,filter:'nearest',seed:123,padding:0};
+const state={source:'demo',model:null,analysis:null,resolution:64,mode:'texture',selected:-1,materialId:-1,listLimit:24,filter:'nearest',seed:123,padding:0};
 let preview=null,atlas=null,paths=[],boundaryPaths=[],jobId=0,worker=null,uvTransform=null;
+let analyzing=false,pendingAnalysis=null;
+const sessions={demo:null,file:null};
 let colorMap=null,colorWorker=null,colorJob=0,colorPending=false;
 const viewport={zoom:1,panX:0,panY:0};
 const canvas=$('uv-canvas'),context=canvas.getContext('2d');
 
-function status(message,error=false){$('load-status').textContent=message;$('load-status').classList.toggle('error',error);}
-function busy(value){document.querySelectorAll('[data-demo],#atlas-scope,#model-file').forEach(e=>e.disabled=value);$('drop-zone').setAttribute('aria-busy',String(value));}
+function status(message,error=false){$('load-status').textContent=message;$('load-status').classList.toggle('error',error);$('source-feedback').textContent=error?message:'';$('source-feedback').hidden=!error;}
+function syncSource(){
+  const hasModel=!!state.analysis;document.querySelector('.quick-controls').dataset.ready=String(hasModel);
+  document.querySelectorAll('[data-source]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.source===state.source)));
+  $('example-controls').hidden=state.source!=='demo';$('file-controls').hidden=state.source!=='file';
+  $('empty-model').hidden=hasModel;$('preview-content').hidden=!hasModel;$('analysis-results').hidden=!hasModel;
+  $('file-action').textContent=state.source==='file'&&state.model?'파일 교체':'파일 열기';
+  $('file-name').textContent=state.model?.name||'아직 가져온 모델이 없어요.';
+  $('demo-note').hidden=state.source!=='demo';
+  document.querySelectorAll('[data-source],[data-demo],#demo-layout,#model-file,#empty-open-file').forEach(e=>e.disabled=analyzing);
+  document.querySelectorAll('[data-resolution],[data-mode],[data-filter],#view-mode,#atlas-padding,#shuffle-colors,#atlas-scope').forEach(e=>e.disabled=analyzing||!hasModel);
+  $('drop-zone').setAttribute('aria-busy',String(analyzing));
+}
+function busy(value){analyzing=value;syncSource();}
+function clearColorMap(){colorWorker?.terminate();colorWorker=null;colorJob++;colorMap=null;colorPending=false;atlas=null;setColorBusy(false);}
+function rememberSource(){
+  if(!state.model||!state.analysis)return;
+  sessions[state.source]={model:state.model,analysis:state.analysis,materialId:state.materialId,selected:state.selected,listLimit:state.listLimit,viewport:{...viewport},camera:preview?.getView()};
+}
+function presentModel({preserveView=false,camera}={}){
+  clearColorMap();syncSource();buildPaths();if(!preserveView)resetUV();
+  try{if(preview){preview.setModel(state.model,state.analysis,{preserveView});if(camera)preview.setView(camera);}updateAppearance();}
+  catch(error){console.error(error);$('render-error').hidden=false;atlas=state.mode==='bleed'?null:makeAtlas(state.model,state.resolution,undefined,state.mode==='checker');}
+  if(state.mode==='bleed')requestColorAtlas();sync();
+}
+function setSource(source){
+  if(analyzing||state.source===source)return;
+  rememberSource();state.source=source;jobId++;clearColorMap();
+  const saved=sessions[source];
+  if(saved){Object.assign(state,{model:saved.model,analysis:saved.analysis,materialId:saved.materialId,selected:saved.selected,listLimit:saved.listLimit});Object.assign(viewport,saved.viewport);syncScope();presentModel({preserveView:true,camera:saved.camera});status('이전에 보던 모델과 시점을 불러왔어요.');}
+  else{state.model=null;state.analysis=null;state.selected=-1;state.materialId=-1;syncSource();status('FBX 또는 OBJ를 열면 검사를 시작합니다.');}
+}
 function createWorker(){
   worker=new Worker(new URL('./uv-worker.mjs?v=c89b5225578c',import.meta.url),{type:'module'});
   worker.onmessage=({data})=>{
-    if(data.id!==jobId)return;busy(false);
-    if(data.error){status(data.error,true);return;}
-    if(data.model){state.model=data.model;state.materialId=-1;syncScope();}
-    state.analysis=data.result;state.selected=-1;state.listLimit=24;
-    colorWorker?.terminate();colorWorker=null;colorJob++;colorMap=null;colorPending=false;setColorBusy(false);
-    buildPaths();resetUV();
-    try{if(preview)preview.setModel(state.model,state.analysis);updateAppearance();}catch(error){console.error(error);$('render-error').hidden=false;atlas=state.mode==='bleed'?null:makeAtlas(state.model,state.resolution,undefined,state.mode==='checker');}
-    if(state.mode==='bleed')requestColorAtlas();
-    sync();status(`${state.model.demo?'예제 준비 완료':'검사 완료'} · ${number(state.analysis.stats.triangles)}개 삼각형 · ${state.analysis.islands.length}개 아일랜드`);
+    if(data.id!==jobId)return;
+    const request=pendingAnalysis;pendingAnalysis=null;
+    if(data.error){if(state.model)syncScope();busy(false);status(data.error,true);return;}
+    if(request.file)rememberSource();
+    state.model=data.model||request.model;state.materialId=request.materialId;
+    state.source=state.model.demo?'demo':'file';state.analysis=data.result;state.selected=-1;state.listLimit=24;
+    syncScope();busy(false);presentModel({preserveView:request.preserveView});
+    status(`${state.model.demo?'예제 준비 완료':'검사 완료'} · ${number(state.analysis.stats.triangles)}개 삼각형 · ${state.analysis.islands.length}개 아일랜드`);
   };
-  worker.onerror=()=>{busy(false);status('파일을 읽는 중 문제가 생겼어요. 다른 파일이나 예제를 선택해 다시 시도해주세요.',true);worker.terminate();worker=null;};
+  worker.onerror=()=>{pendingAnalysis=null;if(state.model)syncScope();busy(false);status('파일을 읽는 중 문제가 생겼어요. 다른 파일이나 예제를 선택해 다시 시도해주세요.',true);worker.terminate();worker=null;};
 }
-function analyze({file}={}){if(!worker)createWorker();jobId++;busy(true);status(file?'파일을 읽고 UV를 검사하고 있어요…':'UV 배치를 검사하고 있어요…');worker.postMessage({id:jobId,model:file?null:state.model,file,options:{materialId:file?-1:state.materialId,resolution:state.resolution}});}
+function analyze({file,model=state.model,materialId=state.materialId,preserveView=false}={}){
+  if(!worker)createWorker();jobId++;pendingAnalysis={file,model,materialId:file?-1:materialId,preserveView};busy(true);
+  status(file?'파일을 읽고 UV를 검사하고 있어요…':'UV 배치를 검사하고 있어요…');
+  worker.postMessage({id:jobId,model:file?null:model,file,options:{materialId:pendingAnalysis.materialId,resolution:state.resolution}});
+}
 function syncScope(){
-  $('file-name').textContent=state.model.name;
   const select=$('atlas-scope');select.replaceChildren(new Option('전체 · 하나의 텍스처로 보기','-1'));
   const usedMaterials=new Set(state.model.materialIds);
   state.model.materialNames.forEach((name,id)=>{if(usedMaterials.has(id))select.add(new Option(name,String(id)));});select.value=String(state.materialId);
   document.querySelectorAll('[data-demo]').forEach(button=>button.setAttribute('aria-pressed',String(state.model.demo?.layout===button.dataset.demo)));
-  $('demo-note').textContent=state.model.demo?({loose:'먼저 64픽셀로 관찰하고 ‘공간 정리’와 비교해보세요.',packed:'같은 무늬, 같은 해상도. 조각에 배정된 픽셀이 늘어납니다.',tilted:'직각 체크와 색 번짐에서 비스듬한 경계의 계단을 살펴보세요.',stretched:'왼쪽 면의 UV를 가로로 늘렸어요. ‘늘어짐’에서 비율을 확인하세요.'}[state.model.demo.layout]):'수업 예제 버튼을 누르면 언제든 비교로 돌아갈 수 있어요.';
+  if(state.model.demo)$('demo-layout').value=state.model.demo.layout;
+  $('demo-note').textContent=state.model.demo?({loose:'먼저 64픽셀로 관찰하고 ‘공간 정리’와 비교해보세요.',packed:'같은 무늬, 같은 해상도. 조각에 배정된 픽셀이 늘어납니다.',tilted:'직각 체크와 색 번짐에서 비스듬한 경계의 계단을 살펴보세요.',stretched:'왼쪽 면의 UV를 가로로 늘렸어요. ‘늘어짐’에서 비율을 확인하세요.'}[state.model.demo.layout]):'';
   $('model-tag').textContent=state.model.demo?'ROUND CASE':'LOCAL MODEL';
 }
-function useDemo(layout){if(layout==='stretched')state.mode='checker';state.model=createDemo(layout);state.materialId=-1;syncScope();analyze();}
-function openFile(file){if(!file)return;if(!/\.(obj|fbx)$/i.test(file.name)){status('OBJ 또는 FBX 파일을 선택해주세요.',true);return;}if(file.size>20*1024*1024){status('20 MiB 이하 파일을 사용해주세요. 큰 모델은 나누어 가져올 수 있어요.',true);return;}analyze({file});}
+function useDemo(layout){analyze({model:createDemo(layout),materialId:-1,preserveView:!!state.model?.demo});}
+function openFile(file){if(!file||analyzing)return;if(!/\.(obj|fbx)$/i.test(file.name)){status('OBJ 또는 FBX 파일을 선택해주세요.',true);return;}if(file.size>20*1024*1024){status('20 MiB 이하 파일을 사용해주세요. 큰 모델은 나누어 가져올 수 있어요.',true);return;}analyze({file});}
 
 function updateAppearance(){
   preview?.setAppearance(state);
@@ -108,7 +143,7 @@ function drawUV(){
   context.fillStyle='#949b97';context.font='10px monospace';context.fillText('0',ox-13,oy+side+14);context.fillText('1',ox+side+5,oy+side+14);context.fillText('1',ox-13,oy+4);
   context.fillStyle='#9aaa9f';context.fillText(state.resolution+' × '+state.resolution+' PX',16,h-12);
 }
-function select(id){state.selected=id>=0&&state.analysis?.islands[id]?id:-1;preview?.setAppearance({selected:state.selected});drawUV();renderList();renderSelection();}
+function select(id){if(!state.analysis)return;state.selected=id>=0&&state.analysis?.islands[id]?id:-1;preview?.setAppearance({selected:state.selected});drawUV();renderList();renderSelection();}
 function renderList(){
   const list=$('island-list'),focusId=list.contains(document.activeElement)?document.activeElement.dataset.islandId:null;list.replaceChildren();const islands=state.analysis.islands;
   $('allocation-title').textContent=state.mode==='bleed'?'실제 텍셀':'배정 영역';
@@ -141,6 +176,7 @@ function renderSelection(){
   $('selection-description').textContent=`${number(island.faces.length)}개 삼각형 · 배정 영역 ${number(island.uvArea*state.resolution**2)} px². `+(island.stretch>1.3?'체크 무늬가 길어지는 방향을 3D에서 살펴보세요.':island.densityRatio<.75?'평균보다 픽셀을 적게 받는 부위예요. 중요한 부위인지 확인해보세요.':'해상도를 낮추면서 글자와 가는 선이 유지되는지 살펴보세요.');
 }
 function sync(){
+  syncSource();$('view-mode').value=state.mode;
   if(!state.analysis)return;
   document.querySelectorAll('[data-resolution]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.resolution===state.resolution)));
   document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===state.mode)));
@@ -173,15 +209,20 @@ function sync(){
   $('check-list').replaceChildren(...[...new Set(notes)].map(text=>{const li=document.createElement('li');li.textContent=text;return li;}));
   renderList();renderSelection();drawUV();
 }
+document.querySelectorAll('[data-source]').forEach(b=>b.onclick=()=>setSource(b.dataset.source));
 document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>useDemo(b.dataset.demo));
+$('demo-layout').onchange=event=>useDemo(event.target.value);
+$('empty-open-file').onclick=()=>$('model-file').click();
 document.querySelectorAll('[data-resolution]').forEach(b=>b.onclick=()=>{state.resolution=+b.dataset.resolution;if(state.model){updateAppearance();if(state.mode==='bleed')requestColorAtlas();}sync();});
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;if(state.model){updateAppearance();if(state.mode==='bleed')requestColorAtlas();}sync();});
+function setMode(mode){state.mode=mode;if(state.model){updateAppearance();if(state.mode==='bleed')requestColorAtlas();}sync();}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$('view-mode').onchange=event=>setMode(event.target.value);
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;updateAppearance();sync();});
 $('shuffle-colors').onclick=()=>{state.seed=(state.seed+0x9e3779b9)>>>0;requestColorAtlas();sync();};
 $('atlas-padding').onchange=event=>{state.padding=+event.target.value;requestColorAtlas();sync();};
 $('clear-view-selection').onclick=()=>select(-1);
 $('model-file').onchange=event=>{openFile(event.target.files[0]);event.target.value='';};
-$('atlas-scope').onchange=event=>{state.materialId=+event.target.value;analyze();};
+$('atlas-scope').onchange=event=>analyze({materialId:+event.target.value,preserveView:true});
 $('more-islands').onclick=()=>{state.listLimit+=60;renderList();};$('clear-selection').onclick=()=>select(-1);
 $('view-reset').onclick=()=>preview?.reset();$('uv-reset').onclick=resetUV;$('pixel-grid').onchange=drawUV;
 function zoom(factor){viewport.zoom=Math.max(.2,Math.min(12,viewport.zoom*factor));drawUV();}
@@ -193,7 +234,12 @@ canvas.addEventListener('pointermove',event=>{if(!pointer||event.pointerId!==poi
 canvas.addEventListener('pointerup',event=>{if(!pointer)return;const moved=Math.hypot(event.clientX-pointer.x,event.clientY-pointer.y);pointer=null;if(moved>5||!uvTransform||!state.analysis)return;const box=canvas.getBoundingClientRect(),{side,ox,oy}=uvTransform,u=(event.clientX-box.left-ox)/side,v=1-(event.clientY-box.top-oy)/side;if(state.mode==='bleed'){if(!colorPending&&colorMap)select(pickAtlasIsland(state.model,state.analysis,{u,v,resolution:state.resolution,padding:state.padding}));return;}context.save();context.setTransform(1,0,0,1,0,0);let hit=-1;for(let i=paths.length-1;i>=0;i--)if(context.isPointInPath(paths[i],u,v)){hit=i;break;}context.restore();select(hit);});
 canvas.addEventListener('pointercancel',()=>pointer=null);
 new ResizeObserver(drawUV).observe(canvas.parentElement);
-const drop=$('drop-zone');drop.addEventListener('dragover',event=>{event.preventDefault();drop.classList.add('dragging');});drop.addEventListener('dragleave',()=>drop.classList.remove('dragging'));drop.addEventListener('drop',event=>{event.preventDefault();drop.classList.remove('dragging');if(!$('model-file').disabled)openFile(event.dataTransfer.files[0]);});
-window.addEventListener('dragover',event=>event.preventDefault());window.addEventListener('drop',event=>event.preventDefault());
+new ResizeObserver(entries=>{document.documentElement.style.setProperty('--uv-controls-height',`${entries[0].target.getBoundingClientRect().height}px`);}).observe(document.querySelector('.quick-controls'));
+for(const drop of [$('drop-zone'),$('empty-model')]){
+  drop.addEventListener('dragover',event=>{event.preventDefault();drop.classList.add('dragging');});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('dragging'));
+  drop.addEventListener('drop',event=>{event.preventDefault();event.stopPropagation();drop.classList.remove('dragging');openFile(event.dataTransfer.files[0]);});
+}
+window.addEventListener('dragover',event=>event.preventDefault());window.addEventListener('drop',event=>{event.preventDefault();openFile(event.dataTransfer.files[0]);});
 try{preview=createPreview($('model-canvas'),{onSelect:select});}catch(error){console.warn('UV Lab 3D preview unavailable',error);$('render-error').hidden=false;}
 useDemo('loose');
