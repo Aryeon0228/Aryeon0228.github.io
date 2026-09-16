@@ -1,5 +1,7 @@
 // Color remains a stimulus only where the experiment compares color grouping.
-const COLORS = { ink: '#e8e8e8', muted: '#a8a8a8', stimulus: '#dedede', blue: '#4da6ff', orange: '#ffb547', ground: '#080808' };
+// Screen approximations of Mocha Mousse and Cloud Dancer.
+const COLORS = { ink: '#e8e8e8', muted: '#a8a8a8', stimulus: '#dedede', mocha: '#a47864', cloud: '#f0eee9', ground: '#080808' };
+const colorDescription = '모카 무스(갈색)와 클라우드 댄서(부드러운 흰색)';
 const source = (title, path) => ({ title, url: `https://www.nngroup.com/${path}` });
 const SOURCES = {
   proximity: source('NN/g · Proximity Principle in Visual Design', 'articles/gestalt-proximity/'),
@@ -61,10 +63,10 @@ function mountSimilarity({ stage, controls, signal }) {
       const col = i % 6, row = Math.floor(i / 6);
       const group = pattern === 'columns' ? col % 2 : pattern === 'rows' ? row % 2 : (col + row + Math.floor(col / 3)) % 2;
       const x = 180 + col * 80, y = 95 + row * 70;
-      const fill = cue === 'none' || cue === 'shape' ? COLORS.stimulus : group ? COLORS.orange : COLORS.blue;
+      const fill = cue === 'none' || cue === 'shape' ? COLORS.stimulus : group ? COLORS.cloud : COLORS.mocha;
       return group && (cue === 'shape' || cue === 'both') ? `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" rx="2" fill="${fill}"/>` : `<circle cx="${x}" cy="${y}" r="12" fill="${fill}"/>`;
     }).join('');
-    caption(scene, cue === 'none' ? '간격과 모양이 모두 같습니다. 어느 방향으로 읽히나요?' : '공간은 그대로인데, 무엇이 같은 묶음으로 보이나요?', `같은 간격의 도형 24개. ${cue === 'none' ? '모두 같은 원입니다.' : `${cue === 'color' ? '파랑과 주황' : cue === 'shape' ? '원과 사각형' : '색과 형태'} 단서가 ${pattern === 'columns' ? '열' : pattern === 'rows' ? '행' : '섞인 위치'}에 반복됩니다.`}`);
+    caption(scene, cue === 'none' ? '간격과 모양이 모두 같습니다. 어느 방향으로 읽히나요?' : '공간은 그대로인데, 무엇이 같은 묶음으로 보이나요?', `같은 간격의 도형 24개. ${cue === 'none' ? '모두 같은 원입니다.' : `${cue === 'color' ? colorDescription : cue === 'shape' ? '원과 사각형' : `${colorDescription}, 원과 사각형`} 단서가 ${pattern === 'columns' ? '열' : pattern === 'rows' ? '행' : '섞인 위치'}에 반복됩니다.`}`);
   }
   ['similarity-cue', 'similarity-pattern'].forEach(id => listen(controls, id, draw, signal));
   draw();
@@ -106,13 +108,13 @@ function mountContinuity({ stage, controls, signal }) {
     const angle = Number(value(controls, 'continuity-angle').value);
     const dy = Math.tan(angle * Math.PI / 180) * 260;
     const top = 200 - dy, bottom = 200 + dy;
-    scene.art.innerHTML = `<g fill="none" stroke-width="7" stroke-linecap="round"><path d="M120 ${top} L640 ${bottom}" stroke="${distinguish ? COLORS.blue : COLORS.stimulus}"/><path d="M120 ${bottom} L640 ${top}" stroke="${distinguish ? COLORS.orange : COLORS.stimulus}"/></g>${cover ? `<circle cx="380" cy="200" r="42" fill="${COLORS.ground}"/>` : ''}<g class="pc-endpoints" fill="${COLORS.ink}" text-anchor="middle"><text x="87" y="${top + 6}">A</text><text x="673" y="${top + 6}">B</text><text x="87" y="${bottom + 6}">C</text><text x="673" y="${bottom + 6}">D</text></g>`;
+    scene.art.innerHTML = `<g fill="none" stroke-width="7" stroke-linecap="round"><path d="M120 ${top} L640 ${bottom}" stroke="${distinguish ? COLORS.mocha : COLORS.stimulus}"/><path d="M120 ${bottom} L640 ${top}" stroke="${distinguish ? COLORS.cloud : COLORS.stimulus}"/></g>${cover ? `<circle cx="380" cy="200" r="42" fill="${COLORS.ground}"/>` : ''}<g class="pc-endpoints" fill="${COLORS.ink}" text-anchor="middle"><text x="87" y="${top + 6}">A</text><text x="673" y="${top + 6}">B</text><text x="87" y="${bottom + 6}">C</text><text x="673" y="${bottom + 6}">D</text></g>`;
     setOutput(controls, 'continuity-angle', `${angle}°`);
     for (const [id, enabled, off, active] of [['continuity-color', distinguish, '두 선 색 구분', '같은 색으로 보기'], ['continuity-cover', cover, '교차점 가리기', '교차점 보이기']]) {
       value(controls, id).setAttribute('aria-pressed', String(enabled));
       value(controls, id).textContent = enabled ? active : off;
     }
-    caption(scene, distinguish ? 'A–D와 C–B를 각각 하나의 선으로 그렸습니다.' : 'A에서 출발하면 B와 D 중 어디로 시선이 이어지나요?', `A와 D, C와 B를 잇는 두 직선이 ${angle * 2}도 각도로 교차합니다. ${cover ? '중앙은 원으로 가려져 있습니다.' : ''} ${distinguish ? '두 선은 서로 다른 색입니다.' : '두 선은 같은 색입니다.'}`);
+    caption(scene, distinguish ? '모카 무스는 A–D, 클라우드 댄서는 C–B로 이어집니다.' : 'A에서 출발하면 B와 D 중 어디로 시선이 이어지나요?', `A와 D, C와 B를 잇는 두 직선이 ${angle * 2}도 각도로 교차합니다. ${cover ? '중앙은 원으로 가려져 있습니다.' : ''} ${distinguish ? `두 선을 ${colorDescription}으로 구분합니다.` : '두 선은 같은 색입니다.'}`);
   }
   listen(controls, 'continuity-angle', draw, signal);
   listen(controls, 'continuity-color', () => { distinguish = !distinguish; draw(); }, signal, 'click');
