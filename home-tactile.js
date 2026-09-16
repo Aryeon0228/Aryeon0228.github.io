@@ -58,7 +58,7 @@ for (const link of document.querySelectorAll('#main-content .content-actions a, 
 // pointer shortcut, so text can still be selected and secondary links stay native.
 function enhanceLabCard(card) {
   const title = card.querySelector('h3')?.textContent.trim();
-  if (!title || !/\bLab$/i.test(title)) return;
+  if (!title || (!card.querySelector('.lab-launch') && !/\bLab$/i.test(title))) return;
   const primary = card.querySelector('.content-actions a.lab-launch') ||
     [...card.querySelectorAll('.content-actions a[href]')].find((link) => {
       const url = new URL(link.href, document.baseURI);
