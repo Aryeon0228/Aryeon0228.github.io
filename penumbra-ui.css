@@ -18,7 +18,7 @@
 .skip-link{position:fixed;top:12px;left:16px;z-index:50;background:white;color:black;padding:10px 16px;transform:translateY(-160%)}
 .skip-link:focus{transform:none}
 a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #eee;outline-offset:5px}
-@media(max-width:999px){
+@media(max-width:1199px){
  .site-nav{height:66px}
  .menu-toggle{display:flex;align-items:center;gap:13px;min-height:44px;padding:8px 0 8px 12px;background:none;border:0;color:#ddd;font:12px var(--f-ko);cursor:pointer}
  .menu-toggle-icon{position:relative;display:block;width:20px;height:12px;border-top:1px solid;border-bottom:1px solid;transition:transform .2s}
@@ -34,6 +34,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 }
 .site-links[hidden]{display:none}
 .site-header{max-width:none;padding:0;margin:0}.site-nav{padding-block:0}.site-header .menu-toggle{border:0;border-radius:0;background:none}.site-header .site-links>a{font-size:14px}.site-header .nav-cv{font-size:12px}.site-header .wordmark{color:#fff}.site-header .wordmark small{font-size:9px}.site-header .site-links{line-height:1.5}.site-header .brand-orbit{filter:none}.site-header .site-nav a:hover{background:none}.site-header .site-nav .menu-toggle{color:#ddd}
-@media(max-width:999px){.site-header .site-links>a{font-size:21px}.site-header .nav-korean{font-size:12px}.study-heading{align-items:start;flex-direction:column;gap:12px}.study-tools{font-size:12px}.study-heading h1{font-size:36px}}
+@media(max-width:1199px){.site-header .site-links>a{font-size:21px}.site-header .nav-korean{font-size:12px}}
+@media(max-width:999px){.study-heading{align-items:start;flex-direction:column;gap:12px}.study-tools{font-size:12px}.study-heading h1{font-size:36px}}
 @media(max-width:640px){.study-heading h1{font-size:32px}.portfolio-footer{flex-direction:column;gap:8px}.study-tools{gap:22px}.study-heading p{font-size:14px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}

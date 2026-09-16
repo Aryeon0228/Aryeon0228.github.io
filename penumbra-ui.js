@@ -4,7 +4,7 @@
   const toggle=header.querySelector('.menu-toggle');
   const panel=header.querySelector('.site-links');
   const label=toggle.querySelector('.menu-toggle-label');
-  const mobile=window.matchMedia('(max-width:999px)');
+  const mobile=window.matchMedia('(max-width:1199px)');
   function setOpen(open){
     open=mobile.matches && open;
     header.classList.toggle('menu-open',open);

@@ -9,7 +9,7 @@ const cards = [];
 const links = [];
 let pendingFrame = 0;
 
-for (const card of document.querySelectorAll('#work .work-card')) {
+for (const card of document.querySelectorAll('#work .work-card, #lab .work-card')) {
   const face = document.createElement('div');
   face.className = 'work-card-face';
   face.append(...card.childNodes);

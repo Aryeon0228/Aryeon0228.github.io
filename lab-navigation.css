@@ -119,7 +119,7 @@ body[data-lab] .lab-heading {
   font: 300 14px/1.7 var(--f-ko);
 }
 
-@media (max-width: 999px) {
+@media (max-width: 1199px) {
   body[data-lab] {
     --lab-site-header-height: 66px;
   }
@@ -132,6 +132,9 @@ body[data-lab] .lab-heading {
     max-height: calc(100dvh - var(--lab-site-header-height) - var(--lab-navigation-height) - 2px);
   }
 
+}
+
+@media (max-width: 999px) {
   .lab-heading h1 {
     font-size: 36px;
   }
