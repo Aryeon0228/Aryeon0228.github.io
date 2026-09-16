@@ -71,7 +71,8 @@ function enhanceLabCard(card) {
   arrow.setAttribute('aria-hidden', 'true');
   arrow.textContent = '↗';
   primary.replaceChildren(document.createTextNode('Lab 열기 '), arrow);
-  primary.setAttribute('aria-label', `${title} 열기${primary.target === '_blank' ? ' (새 탭)' : ''}`);
+  const status = card.querySelector('.lab-card-status')?.textContent.trim();
+  primary.setAttribute('aria-label', `${title}${status ? ` (${status})` : ''} 열기${primary.target === '_blank' ? ' (새 탭)' : ''}`);
   card.dataset.labCard = '';
 
   const interactive = 'a, button, input, select, textarea, summary, label, [role="button"], [role="link"], [contenteditable]:not([contenteditable="false"])';
