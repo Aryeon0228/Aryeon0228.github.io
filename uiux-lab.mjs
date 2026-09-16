@@ -1,4 +1,4 @@
-import {perceptionModules} from './uiux-perception.mjs';
+import {perceptionModules} from './uiux-perception.mjs?v=126c2acf11';
 import {behaviorModules} from './uiux-behavior.mjs';
 import {reviewModules} from './uiux-review.mjs';
 export const modules=[...perceptionModules,...behaviorModules,...reviewModules];

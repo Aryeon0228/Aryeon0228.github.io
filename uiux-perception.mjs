@@ -124,7 +124,15 @@ function mountContinuity({ stage, controls, signal }) {
 function mountCommonFate({ stage, controls, signal, announce = () => {} }) {
   const scene = canvas(stage, 'common-fate', '같은 모습의 점들이 움직이는 방향과 속도로 묶이는 공동운명 실험.');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  controls.innerHTML = select('fate-relation', '두 묶음의 움직임', [['opposite', '서로 반대 방향 · 같은 속도'], ['same', '같은 방향 · 같은 속도'], ['cross', '가로와 세로 · 같은 속도'], ['speed', '가로 왕복 · 다른 주기']]) + range('fate-speed', '재생 속도', .25, 1.5, .75, '×', .25) + actions([['fate-play', '재생', true], ['fate-step', '한 걸음'], ['fate-reset', '처음 위치']]) + `<p class="control-note" data-motion-note>${reduced.matches ? '기기의 동작 줄이기 설정이 켜져 있습니다. 한 걸음씩 관찰하거나 직접 재생할 수 있습니다.' : '정지 상태에서 먼저 묶음을 찾아본 뒤 재생해 보세요.'}</p>`;
+  const icons = {
+    play: '<path d="M8 5l11 7-11 7Z" fill="currentColor"/>',
+    pause: '<path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3"/>',
+    step: '<path d="m5 5 10 7-10 7Z" fill="currentColor"/><path d="M19 5v14" stroke="currentColor" stroke-width="2"/>',
+    reset: '<path d="M3 10a9 9 0 1 1 2.5 8M3 4v6h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>',
+  };
+  const icon = name => `<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">${icons[name]}</svg>`;
+  const motionActions = `<div class="control-actions pc-motion-actions" role="group" aria-label="움직임 조작">${[['play', '재생'], ['step', '한 단계 진행'], ['reset', '처음 위치']].map(([name, label]) => `<button type="button" class="lab-button${name === 'play' ? ' primary' : ''}" data-control="fate-${name}" aria-label="${label}" title="${label}">${icon(name)}</button>`).join('')}</div>`;
+  controls.innerHTML = select('fate-relation', '두 묶음의 움직임', [['opposite', '서로 반대 방향 · 같은 속도'], ['same', '같은 방향 · 같은 속도'], ['cross', '가로와 세로 · 같은 속도'], ['speed', '가로 왕복 · 다른 주기']]) + range('fate-speed', '재생 속도', .25, 1.5, .75, '×', .25) + motionActions + `<p class="control-note" data-motion-note>${reduced.matches ? '기기의 동작 줄이기 설정이 켜져 있습니다. 한 단계씩 관찰하거나 직접 재생할 수 있습니다.' : '정지 상태에서 먼저 묶음을 찾아본 뒤 재생해 보세요.'}</p>`;
   const origins = Array.from({ length: 24 }, (_, i) => ({ x: 180 + i % 6 * 80, y: 95 + Math.floor(i / 6) * 70, group: (i % 6 + Math.floor(i / 6)) % 2 }));
   scene.art.innerHTML = origins.map(({ x, y }) => `<circle cx="${x}" cy="${y}" r="9" fill="${COLORS.stimulus}"/>`).join('');
   const dots = [...scene.art.children];
@@ -141,8 +149,12 @@ function mountCommonFate({ stage, controls, signal, announce = () => {} }) {
     });
   }
   function updateState() {
-    value(controls, 'fate-play').textContent = running ? '일시 정지' : '재생';
-    value(controls, 'fate-play').setAttribute('aria-pressed', String(running));
+    const play = value(controls, 'fate-play');
+    const label = running ? '일시 정지' : '재생';
+    play.innerHTML = icon(running ? 'pause' : 'play');
+    play.setAttribute('aria-label', label);
+    play.title = label;
+    play.setAttribute('aria-pressed', String(running));
     const text = running
       ? value(controls, 'fate-relation').value === 'speed'
         ? '서로 다른 주기로 가로 왕복합니다. 같은 리듬으로 움직이는 점들을 찾아보세요.'
@@ -162,14 +174,14 @@ function mountCommonFate({ stage, controls, signal, announce = () => {} }) {
     if (running) { pause(); announce('움직임을 일시 정지했습니다.'); }
     else { running = true; previous = null; updateState(); raf = requestAnimationFrame(tick); announce('움직임을 재생합니다.'); }
   }, signal, 'click');
-  listen(controls, 'fate-step', () => { pause(); phase += .38; draw(); updateState(); announce('한 걸음 이동했습니다.'); }, signal, 'click');
+  listen(controls, 'fate-step', () => { pause(); phase += .38; draw(); updateState(); announce('한 단계 진행했습니다.'); }, signal, 'click');
   listen(controls, 'fate-reset', () => { pause(); phase = 0; draw(); updateState(); announce('점들을 처음 위치로 되돌렸습니다.'); }, signal, 'click');
   listen(controls, 'fate-speed', () => setOutput(controls, 'fate-speed', `${Number(value(controls, 'fate-speed').value).toFixed(2).replace(/0$/, '')}×`), signal);
   listen(controls, 'fate-relation', () => { phase = 0; previous = null; draw(); updateState(); }, signal);
   on(document, 'visibilitychange', () => { if (document.hidden) pause(); }, signal);
   on(reduced, 'change', () => {
     if (reduced.matches) pause();
-    query(controls, '[data-motion-note]').textContent = reduced.matches ? '동작 줄이기 설정이 켜져 있습니다. 한 걸음씩 관찰하거나 직접 재생할 수 있습니다.' : '정지 상태에서 먼저 묶음을 찾아본 뒤 재생해 보세요.';
+    query(controls, '[data-motion-note]').textContent = reduced.matches ? '동작 줄이기 설정이 켜져 있습니다. 한 단계씩 관찰하거나 직접 재생할 수 있습니다.' : '정지 상태에서 먼저 묶음을 찾아본 뒤 재생해 보세요.';
   }, signal);
   function cleanup() { disposed = true; running = false; cancelAnimationFrame(raf); }
   if (signal) signal.addEventListener('abort', cleanup, { once: true });

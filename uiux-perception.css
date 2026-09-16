@@ -14,6 +14,8 @@
 .pc-endpoints { font: 500 19px/1 var(--f-lat, sans-serif); }
 .pc-check { display: flex; align-items: center; gap: 10px; color: #e8e8e8; font-size: 16px; line-height: 1.5; cursor: pointer; }
 .pc-check input { width: 18px; height: 18px; accent-color: #dedede; }
+.experiment-controls .pc-motion-actions .lab-button { width: 44px; height: 44px; padding: 0; }
+.pc-motion-actions svg { display: block; width: 18px; height: 18px; flex-shrink: 0; }
 .pc-booking {
   --pc-title-size: 33.6px;
   --pc-title-weight: 640;
