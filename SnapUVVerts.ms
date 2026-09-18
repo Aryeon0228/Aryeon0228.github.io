@@ -7,14 +7,18 @@
 
 try(destroyDialog SnapUVVerts) catch()
 
-rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
+rollout SnapUVVerts "Snap UV Vertices 1.1" width:400 height:240
 (
-	spinner spnThresh "Threshold:" range:[0.00001, 1.0, 0.005] type:#float scale:0.0001 pos:[10,15] width:280
+	local lastReadError = ""
+
+	spinner spnThresh "Threshold:" range:[0.00001, 1.0, 0.005] type:#float scale:0.0001 pos:[10,15] width:380
 	checkbox chkSelOnly "Selected vertices only" checked:true pos:[10,48]
-	label lblInfo "" pos:[10,72]
-	label lblDetail "" pos:[10,90]
-	button btnRun "Snap to Average" pos:[10,115] width:280 height:40
-	button btnPreview "Preview (Count Groups)" pos:[10,160] width:280 height:22
+	-- Empty captions need explicit bounds so later status text is not clipped.
+	label lblInfo "Reading selection..." pos:[10,72] width:380 height:20 align:#center
+	label lblDetail "" pos:[10,96] width:380 height:20 align:#center
+	button btnRun "Snap to Average" pos:[10,124] width:380 height:40 enabled:false
+	button btnPreview "Preview (Count Groups)" pos:[10,172] width:380 height:24 enabled:false
+	button btnDetails "Status / Error Details" pos:[10,204] width:380 height:24
 	timer tmrUpdate interval:500 active:true
 
 	fn getUnwrapMod =
@@ -147,6 +151,7 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 
 	fn updateInfo =
 	(
+		lastReadError = ""
 		local uwMod = getUnwrapMod()
 		if uwMod == undefined then
 		(
@@ -162,25 +167,49 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 		)
 		else
 		(
-			local numTV = uwMod.numberVerticesByNode selection[1]
-			local sel = uwMod.getSelectedVerticesByNode selection[1]
-			lblInfo.text = ("Target: " + $.name)
+			local obj = selection[1]
+			local numTV = uwMod.numberVerticesByNode obj
+			local sel = uwMod.getSelectedVerticesByNode obj
+			lblInfo.text = ("Target: " + obj.name)
 			lblDetail.text = ("UV Verts: " + numTV as string + "  |  Selected: " + sel.numberSet as string)
 			btnRun.enabled = true
 			btnPreview.enabled = true
 		)
 	)
 
-	on SnapUVVerts open do updateInfo()
-	on tmrUpdate tick do
+	fn refreshInfo =
 	(
 		try (updateInfo()) catch
 		(
+			lastReadError = getCurrentException()
 			lblInfo.text = "Cannot read this Unwrap UVW."
-			lblDetail.text = "Select the modifier in the stack."
+			lblDetail.text = "See Status / Error Details below."
 			btnRun.enabled = false
 			btnPreview.enabled = false
 		)
+		-- align controls placement, not the text inside a fixed-width label.
+		-- Max 2020+ can resize native labels; center the measured text bounds.
+		if (maxVersion())[1] >= 22000 do
+		(
+			for statusLabel in #(lblInfo, lblDetail) do
+			(
+				local textWidth = amin 380 ((ceil (getTextExtent statusLabel.text).x) + 8)
+				statusLabel.width = textWidth
+				statusLabel.pos = [(400 - textWidth) / 2, statusLabel.pos.y]
+			)
+		)
+	)
+
+	on SnapUVVerts open do refreshInfo()
+	on tmrUpdate tick do refreshInfo()
+
+	on btnDetails pressed do
+	(
+		refreshInfo()
+		local details = lblInfo.text + "\n" + lblDetail.text
+		if lastReadError != "" do details += "\n\nUV read error:\n" + lastReadError
+		-- A separate dialog keeps long object names and errors readable in full.
+		messageBox details title:"Snap UV Vertices 1.1 - Status"
 	)
 
 	on btnPreview pressed do
@@ -238,7 +267,7 @@ rollout SnapUVVerts "Snap UV Vertices" width:300 height:210
 			msg = "No UV vertices need moving at this threshold."
 
 		messageBox msg title:"Snap UV Vertices"
-		updateInfo()
+		refreshInfo()
 	)
 )
 
