@@ -108,6 +108,22 @@ html[data-theme="day"] #lab .lab-card-status { color: #72539f; }
   font: 400 11px/1.4 var(--f-mono);
 }
 .lab-script-download:hover { text-decoration: underline; text-underline-offset: 4px; }
+.lab-script-qt {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  min-height: 32px;
+  margin-top: 4px;
+  border-top: 1px solid var(--ln);
+  color: var(--w);
+  font: 400 11px/1.5 var(--f-ko);
+}
+.lab-script-qt span { color: var(--g2); font-family: var(--f-mono); }
+.lab-script-qt:hover { text-decoration: underline; text-underline-offset: 4px; }
+.lab-script-qt:focus-visible { outline: 1px solid var(--w); outline-offset: 4px; }
 
 @media (max-width: 979px) {
   #lab .work-grid,
