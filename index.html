@@ -81,9 +81,10 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
    ============================================================ */
 .hero{ position:relative; min-height:760px; display:flex; align-items:stretch; overflow:hidden; }
 #gl{ position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0; }
+#meteor-sky{ position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; }
 #meteor-trail{ position:absolute; inset:0; width:100%; height:100%; z-index:4; pointer-events:none; }
 .hero.meteor-active,.hero.meteor-active .planet-drag{ cursor:none; }
-@media (prefers-reduced-motion:reduce){ #meteor-trail{ display:none; } }
+@media (prefers-reduced-motion:reduce){ #meteor-trail,#meteor-sky{ display:none; } }
 /* Hit area follows the projected planet; the rest of the page remains scrollable. */
 .planet-drag{
   position:absolute; z-index:3; transform:translate(-50%,-50%); border:0;
@@ -442,6 +443,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   <div class="hero-fb"></div>
   <canvas id="gl" aria-label="어둠 속 행성의 가장자리에 은빛 초승달이 떠 있습니다. 희미한 구름결과 실 같은 고리 사이로 작은 위성이 공전하고, 먼 별들이 은은하게 반짝입니다."></canvas>
   <div class="hero-veil"></div>
+  <canvas id="meteor-sky" aria-hidden="true"></canvas>
   <canvas id="meteor-trail" aria-hidden="true"></canvas>
   <button type="button" id="planet-drag" class="planet-drag" hidden
     aria-label="행성과 고리 회전" title="드래그해서 회전 · 방향키로 미세 조절"></button>
@@ -1688,5 +1690,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 })();
 </script>
 <script type="module" src="home-tactile.js?v=db5317fc6841"></script>
+<script type="module" src="home-meteors.js?v=bde91b774490"></script>
 </body>
 </html>
