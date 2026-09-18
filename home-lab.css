@@ -97,33 +97,36 @@ html[data-theme="day"] #lab .lab-card-status { color: #72539f; }
   color: var(--g2);
   font: 400 12px/1.75 var(--f-ko);
 }
-.lab-script-download {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--w);
-  font: 400 11px/1.4 var(--f-mono);
-}
-.lab-script-download:hover { text-decoration: underline; text-underline-offset: 4px; }
-.lab-script-qt {
+.lab-script-card { grid-template-rows: auto 1fr auto; }
+.lab-script-card h4 { grid-column: 1 / -1; }
+.lab-script-card p { align-self: start; }
+.lab-script-variants {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+.lab-script-variant {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  min-height: 32px;
-  margin-top: 4px;
-  border-top: 1px solid var(--ln);
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 8px 10px;
+  border: 1px solid var(--ln);
   color: var(--w);
   font: 400 11px/1.5 var(--f-ko);
 }
-.lab-script-qt span { color: var(--g2); font-family: var(--f-mono); }
-.lab-script-qt:hover { text-decoration: underline; text-underline-offset: 4px; }
-.lab-script-qt:focus-visible { outline: 1px solid var(--w); outline-offset: 4px; }
+.lab-script-variant span { color: var(--g2); font: 400 10px/1.5 var(--f-mono); }
+.lab-script-variant:hover { border-color: var(--g2); }
+.lab-script-variant:focus-visible,
+.lab-script-bundles a:focus-visible { outline: 1px solid var(--w); outline-offset: 3px; }
+.lab-script-bundles { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 10px; }
+.lab-script-bundles a { color: var(--w); font: 400 12px/1.6 var(--f-ko); text-decoration: underline; text-underline-offset: 4px; }
+.lab-script-version-note { color: var(--g2); font: 400 11px/1.7 var(--f-ko); margin: 0 0 16px; }
 
 @media (max-width: 979px) {
   #lab .work-grid,
