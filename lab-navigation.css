@@ -67,6 +67,9 @@ body[data-lab] .site-header {
   border-bottom-color: #ccc;
 }
 
+.lab-development-status { color: #b9a3e3; }
+.lab-navigation .lab-development-status { margin-left: .5em; }
+
 .lab-navigation a:focus-visible {
   outline: 2px solid #eee;
   outline-offset: -4px;
