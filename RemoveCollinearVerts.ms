@@ -6,13 +6,21 @@
 
 try(destroyDialog RemoveCollinearVerts) catch()
 
-rollout RemoveCollinearVerts "Remove Collinear Vertices" width:300 height:200
+rollout RemoveCollinearVerts "Remove Collinear Vertices" width:400 height:354
 (
-	spinner spnThresh "Threshold (world units):" range:[0.0001, 10.0, 0.001] type:#float scale:0.001 pos:[10,15] width:280
-	label lblInfo "" pos:[10,50]
-	label lblDetail "" pos:[10,68]
-	button btnRun "Remove" pos:[10,95] width:280 height:40 enabled:false
-	button btnSelect "Select Verts (Preview)" pos:[10,140] width:280 height:22 enabled:false
+	label lblIntro "Clean up extra vertices along straight edges." pos:[16,14] width:368 height:20 align:#left
+	groupBox grpTarget "Target / selection" pos:[16,42] width:368 height:102
+	label lblInfo "Reading selection..." pos:[28,66] width:344 height:34 align:#left
+	label lblDetail "" pos:[28,112] width:344 height:20 align:#left
+
+	groupBox grpSettings "Cleanup settings" pos:[16,156] width:368 height:90
+	spinner spnThresh "Threshold (world units):" range:[0.0001, 10.0, 0.001] type:#float scale:0.001 pos:[28,182] width:344 fieldwidth:96
+	label lblScope "Checks all vertices on eligible objects." pos:[28,214] width:344 height:20 align:#left
+
+	button btnSelect "Select verts / Preview" pos:[16,260] width:168 height:36 enabled:false
+	button btnRun "Remove vertices" pos:[196,260] width:188 height:36 enabled:false
+	button btnDetails "Selection details" pos:[16,312] width:156 height:26
+	label lblBrand "STUDIO PENUMBRA" pos:[238,316] width:146 height:16 align:#right
 	timer tmrSelection interval:500 active:true
 
 	fn getTargets =
@@ -136,6 +144,9 @@ rollout RemoveCollinearVerts "Remove Collinear Vertices" width:300 height:200
 	)
 
 	on RemoveCollinearVerts open do updateInfo()
+
+	on btnDetails pressed do
+		messageBox (lblInfo.text + "\n" + lblDetail.text) title:"Selection Details"
 
 	on tmrSelection tick do
 	(

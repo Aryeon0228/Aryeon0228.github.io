@@ -6,18 +6,24 @@
 
 try(destroyDialog QuickExportFBX) catch()
 
-rollout QuickExportFBX "Quick Export FBX" width:400 height:220
+rollout QuickExportFBX "Quick Export FBX" width:400 height:428
 (
-	label lblFolder "Export Folder:" pos:[10,10]
-	edittext edtFolder "" pos:[10,28] width:310 readOnly:true
-	button btnBrowse "..." pos:[325,28] width:65 height:20
+	groupBox grpDestination "Destination" pos:[16,16] width:368 height:90
+	label lblFolder "Export folder" pos:[28,38] width:344 height:16
+	edittext edtFolder "" pos:[28,64] width:252 height:17 readOnly:true
+	button btnBrowse "Browse..." pos:[288,60] width:84 height:26
 
-	checkbox chkResetXForm "Reset XForm" pos:[10,60] checked:true
-	checkbox chkCenterPivot "Center pivot to object" pos:[10,80] checked:true
-	checkbox chkMoveOrigin "Move object to origin (0,0,0)" pos:[10,100] checked:true
-	checkbox chkIndividual "Export each object as separate file" pos:[10,120] checked:true
-	label lblSafe "Existing files are kept; duplicate names get a suffix." pos:[10,145]
-	button btnExport "Export" pos:[10,175] width:380 height:35
+	groupBox grpPreparation "Preparation" pos:[16,118] width:368 height:124
+	label lblPreparation "Applied to copies; original objects stay intact." pos:[28,140] width:344 height:16
+	checkbox chkResetXForm "Reset XForm" pos:[28,164] width:344 height:20 checked:true
+	checkbox chkCenterPivot "Center pivot to object" pos:[28,188] width:344 height:20 checked:true
+	checkbox chkMoveOrigin "Move object to origin (0, 0, 0)" pos:[28,212] width:344 height:20 checked:true
+
+	groupBox grpOutput "Output" pos:[16,254] width:368 height:80
+	checkbox chkIndividual "Export each object as a separate file" pos:[28,276] width:344 height:20 checked:true
+	label lblSafe "Existing files are kept; duplicates get a suffix." pos:[28,304] width:344 height:16
+	button btnExport "Export FBX" pos:[16,346] width:368 height:36
+	label lblStudio "STUDIO PENUMBRA" pos:[238,396] width:146 height:16
 
 	local exportPath = ""
 

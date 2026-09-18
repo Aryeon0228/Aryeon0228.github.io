@@ -4,13 +4,20 @@
 */
 try(destroyDialog rlt_uv_exporter)catch()
 
-rollout rlt_uv_exporter "UV Exporter" width:180 height:145
+rollout rlt_uv_exporter "UV Exporter" width:400 height:280
 (
-    label lbl_res "Export PNG templates"
-    button btn_1k "1024 px" width:160 height:25
-    button btn_2k "2048 px" width:160 height:25
-    button btn_4k "4096 px" width:160 height:25
-    label lbl_folder "Choose a folder after clicking." align:#center
+    groupBox grpSource "Source" pos:[16,16] width:368 height:88
+    label lblSource "Export UV templates from selected geometry." pos:[28,40] width:344 height:18
+    label lblOriginal "Original objects and modifier stacks are kept." pos:[28,64] width:344 height:18
+
+    groupBox grpExport "Export" pos:[16,116] width:368 height:116
+    label lbl_res "PNG resolution" pos:[28,140] width:344 height:18
+    button btn_1k "1024 px" pos:[28,164] width:108 height:36
+    button btn_2k "2048 px" pos:[146,164] width:108 height:36
+    button btn_4k "4096 px" pos:[264,164] width:108 height:36
+    label lbl_folder "Choose a folder after clicking a resolution." pos:[28,208] width:344 height:16
+
+    label lblStudio "STUDIO PENUMBRA" pos:[238,248] width:146 height:16
 
     fn uniqueOutputPath folder objectName res =
     (

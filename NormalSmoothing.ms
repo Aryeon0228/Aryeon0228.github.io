@@ -1,29 +1,24 @@
 try(destroyDialog rlSmoothNormalBaker)catch()
 callbacks.removeScripts id:#smoothNormalBakerCallback
 
-rollout rlSmoothNormalBaker "Outline Normal Baker v1.5" width:320
+rollout rlSmoothNormalBaker "Outline Normal Baker v1.5" width:400 height:522
 (
-    group "Info"
-    (
-        label lbl1 "MK Toon outline normals: UV7 / Max map 8" align:#left
-        label lbl2 "Creates mesh copies at the current frame." align:#left
-        label lbl3 "Original objects and modifier stacks are kept." align:#left
-    )
+    groupBox grpOutput "Output" pos:[16,16] width:368 height:116
+    label lbl1 "MK Toon outline normals: UV7 / Max map 8" pos:[28,40] width:344 height:18
+    label lbl2 "Creates mesh copies at the current frame." pos:[28,64] width:344 height:18
+    label lbl3 "Original objects and modifier stacks are kept." pos:[28,88] width:344 height:32
 
-    group "Bake"
-    (
-        label lblSelected "Selected: 0 objects" align:#left
-        button btnBake "BAKE COPIES" width:280 height:40
-        progressBar pbProgress value:0 width:280 height:10
-    )
+    groupBox grpBake "Bake" pos:[16,144] width:368 height:120
+    label lblSelected "Selected: 0 objects" pos:[28,168] width:344 height:18
+    button btnBake "BAKE COPIES" pos:[28,192] width:344 height:36
+    progressBar pbProgress value:0 pos:[28,240] width:344 height:10
 
-    group "Log"
-    (
-        editText etLog "" height:120 readOnly:true
-    )
+    groupBox grpLog "Log" pos:[16,276] width:368 height:164
+    editText etLog "" pos:[28,300] width:344 height:128 readOnly:true
 
-    button btnHelp "How to Use" width:140 align:#left across:2
-    button btnClose "Close" width:140 align:#right
+    button btnHelp "How to Use" pos:[16,452] width:178 height:26
+    button btnClose "Close" pos:[206,452] width:178 height:26
+    label lblStudio "STUDIO PENUMBRA" pos:[238,490] width:146 height:16
 
     fn isBakeCandidate obj =
     (

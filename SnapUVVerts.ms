@@ -7,18 +7,23 @@
 
 try(destroyDialog SnapUVVerts) catch()
 
-rollout SnapUVVerts "Snap UV Vertices 1.1" width:400 height:240
+rollout SnapUVVerts "Snap UV Vertices 1.2" width:400 height:342
 (
 	local lastReadError = ""
 
-	spinner spnThresh "Threshold:" range:[0.00001, 1.0, 0.005] type:#float scale:0.0001 pos:[10,15] width:380
-	checkbox chkSelOnly "Selected vertices only" checked:true pos:[10,48]
-	-- Empty captions need explicit bounds so later status text is not clipped.
-	label lblInfo "Reading selection..." pos:[10,72] width:380 height:20 align:#center
-	label lblDetail "" pos:[10,96] width:380 height:20 align:#center
-	button btnRun "Snap to Average" pos:[10,124] width:380 height:40 enabled:false
-	button btnPreview "Preview (Count Groups)" pos:[10,172] width:380 height:24 enabled:false
-	button btnDetails "Status / Error Details" pos:[10,204] width:380 height:24
+	label lblIntro "Align nearby UV vertices to their average position." pos:[16,14] width:368 height:20 align:#left
+	groupBox grpTarget "Target / UV selection" pos:[16,42] width:368 height:90
+	label lblInfo "Reading selection..." pos:[28,66] width:344 height:20 align:#center
+	label lblDetail "" pos:[28,94] width:344 height:20 align:#center
+
+	groupBox grpSettings "Snap settings" pos:[16,144] width:368 height:90
+	spinner spnThresh "Threshold (UV units):" range:[0.00001, 1.0, 0.005] type:#float scale:0.0001 pos:[28,170] width:344 fieldwidth:96
+	checkbox chkSelOnly "Selected vertices only" checked:true pos:[28,204] width:344 height:18
+
+	button btnPreview "Preview groups" pos:[16,248] width:128 height:36 enabled:false
+	button btnRun "Snap to Average" pos:[156,248] width:228 height:36 enabled:false
+	button btnDetails "Status / Error Details" pos:[16,300] width:156 height:26
+	label lblBrand "STUDIO PENUMBRA" pos:[238,304] width:146 height:16 align:#right
 	timer tmrUpdate interval:500 active:true
 
 	fn getUnwrapMod =
@@ -193,7 +198,7 @@ rollout SnapUVVerts "Snap UV Vertices 1.1" width:400 height:240
 		(
 			for statusLabel in #(lblInfo, lblDetail) do
 			(
-				local textWidth = amin 380 ((ceil (getTextExtent statusLabel.text).x) + 8)
+				local textWidth = amin 344 ((ceil (getTextExtent statusLabel.text).x) + 8)
 				statusLabel.width = textWidth
 				statusLabel.pos = [(400 - textWidth) / 2, statusLabel.pos.y]
 			)
@@ -209,7 +214,7 @@ rollout SnapUVVerts "Snap UV Vertices 1.1" width:400 height:240
 		local details = lblInfo.text + "\n" + lblDetail.text
 		if lastReadError != "" do details += "\n\nUV read error:\n" + lastReadError
 		-- A separate dialog keeps long object names and errors readable in full.
-		messageBox details title:"Snap UV Vertices 1.1 - Status"
+		messageBox details title:"Snap UV Vertices 1.2 - Status"
 	)
 
 	on btnPreview pressed do

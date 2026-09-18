@@ -6,17 +6,22 @@
 
 try(destroyDialog BatchFBXImporter) catch()
 
-rollout BatchFBXImporter "Batch FBX Importer" width:400 height:350
+rollout BatchFBXImporter "Batch FBX Importer" width:400 height:516
 (
-	label lblInfo "Add FBX files to import." pos:[10,10]
-	listbox lbxFiles "" pos:[10,30] width:380 height:10
-	button btnAdd "Add Files" pos:[10,210] width:120 height:30
-	button btnRemove "Remove Selected" pos:[140,210] width:120 height:30
-	button btnClear "Clear All" pos:[270,210] width:120 height:30
-	checkbox chkNewScene "New scene for each file (prompts to save)" pos:[10,250]
-	checkbox chkMerge "Add files to current scene" pos:[10,270] checked:true
-	label lblSave "New-scene mode keeps only the last scene open." pos:[10,291]
-	button btnImport "Import" pos:[10,315] width:380 height:30
+	groupBox grpFiles "Files" pos:[16,16] width:368 height:280
+	label lblInfo "Add FBX files to import." pos:[28,38] width:344 height:16
+	-- Listbox height is in rows; leave room before the file actions.
+	listbox lbxFiles "" pos:[28,62] width:344 height:10
+	button btnAdd "Add Files" pos:[28,252] width:108 height:26
+	button btnRemove "Remove Selected" pos:[146,252] width:108 height:26
+	button btnClear "Clear All" pos:[264,252] width:108 height:26
+
+	groupBox grpMode "Import mode" pos:[16,308] width:368 height:112
+	checkbox chkMerge "Add files to current scene" pos:[28,330] width:344 height:20 checked:true
+	checkbox chkNewScene "New scene for each file" pos:[28,354] width:344 height:20
+	label lblSave "New scenes prompt to save; only the last stays open." pos:[28,382] width:344 height:16
+	button btnImport "Import FBX Files" pos:[16,432] width:368 height:36
+	label lblStudio "STUDIO PENUMBRA" pos:[238,484] width:146 height:16
 
 	local filePaths = #()
 
