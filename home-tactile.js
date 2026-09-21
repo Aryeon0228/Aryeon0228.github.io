@@ -57,7 +57,7 @@ for (const link of document.querySelectorAll('#main-content .content-actions a, 
 // Keep the real anchor as the only keyboard stop. The surrounding card is a
 // pointer shortcut, so text can still be selected and secondary links stay native.
 function enhanceLabCard(card) {
-  const title = card.querySelector('h3')?.textContent.trim();
+  const title = card.querySelector('.lab-card-title, h3')?.textContent.trim();
   if (!title || (!card.querySelector('.lab-launch') && !/\bLab$/i.test(title))) return;
   const primary = card.querySelector('.content-actions a.lab-launch') ||
     [...card.querySelectorAll('.content-actions a[href]')].find((link) => {

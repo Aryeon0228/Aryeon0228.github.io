@@ -1,4 +1,5 @@
-// Behavior observations, with records kept only in this mounted session.
+import {captureControls, restoreControls, savedRecords} from './uiux-session.mjs?v=3ba308e9f6f1';
+// Keep completed observations across experiments; never resume a live reaction timer.
 const $ = (root, selector) => root.querySelector(selector);
 const $$ = (root, selector) => [...root.querySelectorAll(selector)];
 const mean = values => values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
@@ -28,7 +29,9 @@ function history(root, rows, empty = '아직 기록이 없습니다. 한 번 실
   for (const text of rows) { const p = document.createElement('p'); p.className = 'bh-history-row'; p.textContent = text; list.append(p); }
 }
 const resetButton = '<button type="button" class="lab-button" data-reset>기록 초기화</button>';
-const endNote = '<p class="experiment-caption">기록은 이 실험을 연 동안만 남습니다. 개인의 관찰 기록으로, 보편적인 법칙을 검증하는 결과는 아닙니다.</p>';
+const endNote = '<p class="experiment-caption">조정값과 완료한 기록은 이 탭에 남습니다. 진행 중 측정은 화면을 떠나면 중단됩니다. 개인의 관찰 기록으로, 보편적인 법칙을 검증하는 결과는 아닙니다.</p>';
+const mountedState = (ctx, extra) => ({ cleanup: ctx.clean, getState: () => ({ controls: captureControls(ctx.controls), ...extra() }) });
+const restoredNotice = (stage, state) => { if (state?.interrupted) status(stage, '화면을 떠나 진행 중 측정은 중단됐습니다. 조정값과 완료한 기록은 남아 있습니다.'); };
 
 function mountHick(args) {
   const ctx = scope(args); const { stage, controls } = ctx;
@@ -37,7 +40,7 @@ function mountHick(args) {
   controls.innerHTML = `<div class="control-group"><label class="control-label" for="bh-hick-count">선택지 수</label><select id="bh-hick-count" data-count><option value="2">2개</option><option value="4">4개</option><option value="8">8개</option></select></div><div class="control-group"><label class="control-label" for="bh-hick-input">입력 방법</label><select id="bh-hick-input" data-input><option value="pointer">터치 / 마우스</option><option value="keyboard">숫자키 1–8</option></select><p class="control-note">기호와 키의 짝은 고정됩니다. 키보드 실험은 숫자키로만 응답합니다.</p></div><div class="control-actions"><button type="button" class="lab-button primary" data-start>이 조건 시작</button>${resetButton}</div><p class="control-note">조건마다 연습 2회 후 8회를 기록합니다. 기록 구간에서 각 기호는 같은 횟수로 나옵니다.</p>`;
   stage.innerHTML = `<div class="bh-experiment bh-hick" tabindex="0" aria-label="기호 선택 실험. 숫자키로 응답할 수 있습니다."><div class="mini-label" data-progress>먼저 기호와 키의 짝을 살펴보세요</div><div class="bh-stimulus" data-stimulus aria-label="아직 제시된 기호 없음">?</div><p class="readout" data-status role="status" aria-live="polite">위 기호에 맞는 응답을 고르세요.</p><div class="bh-choice-grid" data-choices></div><div class="bh-results"><h3 class="mini-label">내 조건별 기록</h3><div data-history></div></div><p class="experiment-caption">이 실험은 고정된 자극–응답 매핑의 선택 반응을 관찰합니다. 기록은 기호가 나온 순간부터 정답 선택까지 걸린 시간이며, 오답을 고치는 시간도 포함됩니다. 버튼 입력에는 시각 탐색과 손의 이동도 포함됩니다. 목록 검색 속도와 힉 법칙을 동일하게 해석하지 않습니다.</p>${endNote}</div>`;
   const board = $(stage, '.bh-experiment'); let phase = 'idle', n = 2, method = 'pointer', trial = 0, target = 0, shownAt = 0, wrong = 0, anticipations = 0, deck = [], seed = 19052;
-  const records = []; const start = $(controls, '[data-start]'); const count = $(controls, '[data-count]'); const input = $(controls, '[data-input]');
+  const records = savedRecords(args.state); const start = $(controls, '[data-start]'); const count = $(controls, '[data-count]'); const input = $(controls, '[data-input]');
   function renderChoices() { const choices = $(stage, '[data-choices]'); choices.innerHTML = symbols.map((symbol, i) => `<button type="button" class="lab-button bh-choice" data-choice="${i}" aria-label="${i + 1}번 ${names[i]}" ${i >= n ? 'hidden' : ''}><span aria-hidden="true">${symbol}</span><span class="bh-key">${i + 1}</span></button>`).join(''); }
   function setLocked(locked) { count.disabled = locked; input.disabled = locked; start.disabled = locked; }
   function showHistory() { const groups = new Map(); records.forEach(r => { const key = `${r.n}개 · ${inputName(r.device)}`; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(r); }); history(stage, [...groups].map(([key, values]) => `${key} · ${values.length}회 · 정답 선택까지 평균 ${ms(mean(values.map(v => v.time)))} · 오답 ${values.reduce((s, v) => s + v.wrong, 0)}회`)); }
@@ -65,7 +68,9 @@ function mountHick(args) {
   ctx.on(count, 'change', () => { n = Number(count.value); renderChoices(); status(stage, '이 조건 시작을 눌러 연습부터 진행하세요.'); });
   ctx.on($(controls, '[data-reset]'), 'click', () => { ctx.cancel(); records.length = 0; seed = 19052; phase = 'idle'; trial = 0; setLocked(false); $(stage, '[data-stimulus]').textContent = '?'; $(stage, '[data-stimulus]').setAttribute('aria-label', '아직 제시된 기호 없음'); $(stage, '[data-progress]').textContent = '기호와 키의 짝을 다시 살펴보세요'; status(stage, '기록을 지웠습니다. 같은 자극 순서로 다시 시작합니다.'); showHistory(); });
   ctx.on(document, 'visibilitychange', () => { if (document.hidden && ['waiting', 'active', 'feedback'].includes(phase)) { ctx.cancel(); phase = 'idle'; setLocked(false); status(stage, '화면을 벗어나 이번 진행을 멈췄습니다. 완료된 기록만 남습니다.'); } });
-  renderChoices(); showHistory(); return ctx.clean;
+  restoreControls(controls, args.state?.controls); n = Number(count.value); method = input.value;
+  renderChoices(); showHistory(); restoredNotice(stage, args.state);
+  return mountedState(ctx, () => ({ records, interrupted: ['waiting', 'active', 'feedback'].includes(phase) }));
 }
 
 function mountFitts(args) {
@@ -73,7 +78,7 @@ function mountFitts(args) {
   controls.innerHTML = `<div class="control-group"><label class="control-label" for="bh-fitts-variable">이번에 바꿀 변수</label><select id="bh-fitts-variable" data-variable><option value="width">목표 너비 W · 거리는 고정</option><option value="distance">거리 D · 너비는 고정</option></select></div><div class="control-group"><label class="control-label" for="bh-fitts-level" data-level-label>목표 너비</label><select id="bh-fitts-level" data-level></select><p class="control-note" data-fixed></p></div><div class="control-actions">${resetButton}</div><p class="control-note">출발 버튼을 누른 뒤 목표를 누르세요. 같은 조건에서 여러 번 반복한 기록을 비교합니다.</p>`;
   stage.innerHTML = `<div class="bh-experiment"><div class="mini-label" data-geometry></div><div class="bh-fitts-field" data-field><div class="bh-distance-line" aria-hidden="true"></div><button type="button" class="lab-button bh-fitts-start" data-origin aria-label="출발. 누른 뒤 목표를 누르세요.">출발</button><button type="button" class="bh-fitts-target" data-target disabled aria-label="목표"><span aria-hidden="true">◎</span></button></div><p class="readout" data-status role="status" aria-live="polite">출발 → 목표. 첫 기록을 만들어 보세요.</p><div class="bh-results"><h3 class="mini-label">내 조건별 기록</h3><div data-history></div></div><p class="experiment-caption">D는 두 버튼의 중심 거리, W는 이동 방향의 목표 너비입니다. 실제 화면의 px로 기록합니다. 창 크기와 입력 도구를 유지해 비교하세요.</p><p class="experiment-caption">Tab과 Enter로도 조작할 수 있습니다. 키보드 조작 시간은 포인터 이동 시간에 합치지 않습니다.</p>${endNote}</div>`;
   const variable = $(controls, '[data-variable]'); const level = $(controls, '[data-level]'); const field = $(stage, '[data-field]'); const origin = $(stage, '[data-origin]'); const target = $(stage, '[data-target]');
-  let active = false, time = 0, misses = 0, width = 48, distance = 180, startDevice = 'mouse'; const records = []; let lastSize = 0;
+  let active = false, time = 0, misses = 0, width = 48, distance = 180, startDevice = 'mouse'; const records = savedRecords(args.state); let lastSize = 0;
   const device = rememberPointer(ctx, field);
   function draw() { const available = Math.max(1, field.clientWidth - 36 - 40 - 12); width = variable.value === 'width' ? Number(level.value) : 48; distance = Math.min(variable.value === 'distance' ? Number(level.value) : 180, available); target.style.width = `${width}px`; target.style.left = `${36 + distance}px`; field.style.setProperty('--bh-distance', `${distance}px`); $(stage, '[data-geometry]').textContent = `거리 D ${Math.round(distance)} px · 목표 너비 W ${width} px`; $(controls, '[data-fixed]').textContent = variable.value === 'width' ? `거리 ${Math.round(distance)} px 고정. 목표 높이는 64 px입니다.` : `목표 너비 48 px 고정. 화면이 좁으면 거리가 화면 안으로 조정됩니다.`; lastSize = field.clientWidth; }
   function options() { level.innerHTML = variable.value === 'width' ? '<option value="24">24 px</option><option value="48" selected>48 px</option><option value="80">80 px</option>' : '<option value="80">80 px</option><option value="140" selected>140 px</option><option value="220">220 px</option>'; $(controls, '[data-level-label]').textContent = variable.value === 'width' ? '목표 너비 W' : '중심 거리 D'; draw(); }
@@ -86,7 +91,8 @@ function mountFitts(args) {
   ctx.on($(controls, '[data-reset]'), 'click', () => { unlock(); records.length = 0; draw(); showHistory(); status(stage, '기록을 지웠습니다. 출발 버튼으로 다시 시작하세요.'); });
   if (typeof ResizeObserver !== 'undefined') { const observer = new ResizeObserver(() => { if (lastSize && Math.abs(lastSize - field.clientWidth) > 1 && active) { unlock(); status(stage, '화면 크기가 바뀌어 이번 이동을 취소했습니다. 출발부터 다시 시작하세요.'); } draw(); }); observer.observe(field); ctx.dispose(() => observer.disconnect()); }
   ctx.on(document, 'visibilitychange', () => { if (document.hidden && active) { unlock(); status(stage, '화면을 벗어나 이번 이동을 취소했습니다.'); } });
-  options(); showHistory(); return ctx.clean;
+  restoreControls(controls, args.state?.controls); options(); restoreControls(controls, args.state?.controls); draw(); showHistory(); restoredNotice(stage, args.state);
+  return mountedState(ctx, () => ({ records, interrupted: active }));
 }
 
 const jakobItems = [
@@ -100,7 +106,7 @@ function mountJakob(args) {
   controls.innerHTML = `<div class="control-group"><label class="control-label" for="bh-jakob-layout">비교할 배치</label><select id="bh-jakob-layout" data-layout><option value="learned">연습한 배치</option><option value="changed">순서를 바꾼 배치</option></select><p class="control-note">먼저 4회 연습합니다. 비교에서는 메뉴 이름·크기와 과제 순서를 유지하고 위치만 바꿉니다.</p></div><div class="control-actions"><button type="button" class="lab-button primary" data-start>기본 배치 4회 연습</button>${resetButton}</div><p class="control-note">연습 뒤에는 두 조건을 번갈아 실행해 보세요. 시작 순서와 반복 학습도 결과에 영향을 줍니다.</p>`;
   stage.innerHTML = `<div class="bh-experiment"><div class="mini-label" data-progress>장비 대여 서비스 · 메뉴 찾기</div><p class="bh-task" data-task>기본 배치부터 익혀봅니다.</p><div class="bh-shop demo-card"><div class="bh-shop-heading"><span>GEAR ROOM</span><span class="control-note">메뉴 탐색 체험</span></div><nav class="bh-jakob-menu" aria-label="실험용 장비 서비스 메뉴" data-menu></nav><div class="bh-shop-content" aria-hidden="true"><span>CAMERA</span><span>LIGHT</span><span>AUDIO</span></div></div><p class="readout" data-status role="status" aria-live="polite">연습 시작을 눌러주세요.</p><div class="bh-results"><h3 class="mini-label">내 배치별 기록</h3><div data-history></div></div><p class="experiment-caption">다른 제품에서 익힌 기대와, 이 실험에서 방금 배운 위치를 구분해 보세요. 낯선 배치를 나쁜 디자인으로 단정하지 않습니다. 이 기록에는 탐색·이동·학습 효과가 함께 들어갑니다.</p>${endNote}</div>`;
   const layout = $(controls, '[data-layout]'); const start = $(controls, '[data-start]'); const menu = $(stage, '[data-menu]'); const device = rememberPointer(ctx, menu);
-  let trained = false, running = false, training = true, round = 0, wrong = 0, began = 0, condition = 'learned', target = '', order = []; const records = [];
+  let trained = args.state?.trained === true, running = false, training = true, round = 0, wrong = 0, began = 0, condition = 'learned', target = '', order = []; const records = savedRecords(args.state);
   function renderMenu() { const order = condition === 'changed' ? [2, 0, 3, 1] : [0, 1, 2, 3]; menu.innerHTML = order.map(i => `<button type="button" class="lab-button bh-menu-item" data-item="${jakobItems[i].id}"><span aria-hidden="true">${jakobItems[i].icon}</span>${jakobItems[i].name}</button>`).join(''); }
   function summary() { const groups = new Map(); records.forEach(r => { const key = `${r.condition === 'learned' ? '연습한 배치' : '바꾼 배치'} · ${inputName(r.device)}`; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(r); }); history(stage, [...groups].map(([key, rows]) => `${key} · ${rows.length}회 · 평균 ${ms(mean(rows.map(r => r.time)))} · 잘못 선택 ${rows.reduce((s, r) => s + r.wrong, 0)}회`)); }
   function next() { if (round >= 4) { running = false; layout.disabled = false; start.disabled = false; if (training) trained = true; start.textContent = '선택한 배치 4회 실행'; $(stage, '[data-task]').textContent = training ? '배치를 익혔습니다. 두 조건을 비교해 보세요.' : '4회 완료. 다른 배치도 실행해 보세요.'; status(stage, training ? '연습 기록은 비교에서 제외했습니다.' : '이번 조건의 기록을 아래에 합쳤습니다.'); return; } wrong = 0; target = order[round]; const item = jakobItems.find(item => item.id === target); $(stage, '[data-progress]').textContent = `${training ? '연습 · 기록 제외' : condition === 'learned' ? '연습한 배치' : '바꾼 배치'} · ${round + 1} / 4`; $(stage, '[data-task]').textContent = item.task; status(stage, '알맞은 메뉴를 선택하세요.'); running = true; began = performance.now(); ctx.say(item.task); }
@@ -109,7 +115,10 @@ function mountJakob(args) {
   ctx.on(layout, 'change', () => { if (trained) { condition = layout.value; renderMenu(); } });
   ctx.on($(controls, '[data-reset]'), 'click', () => { ctx.cancel(); records.length = 0; trained = false; running = false; training = true; condition = 'learned'; round = 0; layout.value = 'learned'; layout.disabled = false; start.disabled = false; start.textContent = '기본 배치 4회 연습'; renderMenu(); summary(); $(stage, '[data-progress]').textContent = '장비 대여 서비스 · 메뉴 찾기'; $(stage, '[data-task]').textContent = '기본 배치부터 익혀봅니다.'; status(stage, '기록을 지웠습니다. 다시 연습할 수 있습니다.'); });
   ctx.on(document, 'visibilitychange', () => { if (document.hidden && start.disabled) { ctx.cancel(); running = false; start.disabled = false; layout.disabled = false; status(stage, '화면을 벗어나 이번 진행을 멈췄습니다. 완료된 기록만 남습니다.'); } });
-  renderMenu(); summary(); return ctx.clean;
+  restoreControls(controls, args.state?.controls);
+  if (trained) { condition = layout.value; start.textContent = '선택한 배치 4회 실행'; $(stage, '[data-task]').textContent = '배치를 익혔습니다. 두 조건을 비교해 보세요.'; status(stage, '선택한 배치로 다시 실행할 수 있습니다.'); }
+  renderMenu(); summary(); restoredNotice(stage, args.state);
+  return mountedState(ctx, () => ({ records, trained, interrupted: start.disabled }));
 }
 
 function mountMiller(args) {
@@ -133,7 +142,18 @@ function mountMiller(args) {
   ctx.on(count, 'change', () => { seed++; reset('길이가 바뀌어 비교 기록을 초기화했습니다.'); });
   ctx.on($(controls, '[data-reset]'), 'click', () => { seed++; reset('기록을 지웠습니다. 새 숫자와 반대 순서로 시작합니다.'); });
   ctx.on(document, 'visibilitychange', () => { if (document.hidden && (phase === 'showing' || phase === 'recall')) { ctx.cancel(); phase = 'idle'; answer.disabled = true; check.disabled = true; start.disabled = false; seed++; win.innerHTML = '<span class="bh-memory-placeholder">화면을 벗어나 이번 숫자를 취소했습니다.</span>'; status(stage, '완료된 기록은 남습니다. 새 숫자로 이어갈 수 있습니다.'); } });
-  reset('먼저 기억할 준비를 해주세요.'); return ctx.clean;
+  restoreControls(controls, args.state?.controls);
+  reset('먼저 기억할 준비를 해주세요.');
+  if (args.state) {
+    records.push(...savedRecords(args.state).slice(0, 4)); round = records.length;
+    if (Number.isSafeInteger(args.state.seed)) seed = args.state.seed;
+    if (Array.isArray(args.state.conditions) && args.state.conditions.length === 4 && args.state.conditions.every(item => ['plain', 'grouped'].includes(item))) conditions = [...args.state.conditions];
+    phase = round === 4 ? 'done' : 'idle'; start.disabled = round === 4; count.disabled = round > 0 && round < 4;
+    if (round > 0) start.textContent = round === 4 ? '4회 비교 완료' : '다음 숫자 보기';
+    preview(); summary(); restoredNotice(stage, args.state);
+    if (round === 4) status(stage, '4회 비교 기록을 불러왔습니다. 기록 초기화로 다시 시작할 수 있습니다.');
+  }
+  return mountedState(ctx, () => { const interrupted = phase === 'showing' || phase === 'recall'; return { records, seed: seed + (interrupted ? 1 : 0), conditions, interrupted }; });
 }
 
 export const behaviorModules = [

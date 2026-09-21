@@ -183,7 +183,13 @@ $('iorNumber').addEventListener('change',event=>updateIorFromInput(event.target,
 $('geometrySelect').addEventListener('change',()=>{++modelSerial;createGeometry($('geometrySelect').value);});
 document.querySelectorAll('[data-preset-category]').forEach(button=>button.addEventListener('click',()=>showPresetCategory(button.dataset.presetCategory)));showPresetCategory('metals');
 for(const id of ['mainLight','ambientLight'])$(id).addEventListener('input',updateLighting);$('envMapSelect').addEventListener('change',()=>{$('backgroundToggle').checked=true;setBackground();loadEnvironment($('envMapSelect').value);});$('backgroundToggle').addEventListener('change',setBackground);$('iorToggle').addEventListener('change',()=>updateMaterial(false));$('ssaoToggle').addEventListener('change',toggleAO);$('resetView').addEventListener('click',resetView);
-$('modelFile').addEventListener('change',event=>loadCustomModel(event.target));$('normalMapFile').addEventListener('change',event=>loadNormalMap(event.target));$('resetModel').addEventListener('click',()=>{++modelSerial;++normalSerial;createGeometry('sphere');$('geometrySelect').value='sphere';material.normalMap?.dispose();material.normalMap=null;material.needsUpdate=true;$('modelFile').value='';$('normalMapFile').value='';applyPreset(currentPreset||'brass');status('기본 구와 현재 재질로 돌아왔습니다.');});
+$('modelFile').addEventListener('change',event=>loadCustomModel(event.target));$('normalMapFile').addEventListener('change',event=>loadNormalMap(event.target));
+$('resetModel').addEventListener('click',()=>{
+ ++modelSerial;createGeometry('sphere');$('geometrySelect').value='sphere';$('modelFile').value='';
+ const preset=Object.values(presetCategories).flat().find(item=>item.id===currentPreset);
+ $('specimenName').textContent=preset?preset.name.toUpperCase():'CUSTOM';
+ status('기본 구로 돌아왔습니다. 재질 설정과 노멀맵은 유지됩니다.');
+});
 $('openReference').addEventListener('click',()=>$('referencePanel').showModal());$('openGuide').addEventListener('click',()=>$('infoModal').showModal());document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>$(button.dataset.close).close()));for(const dialog of document.querySelectorAll('dialog'))dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)dirty=true;});
 window.addEventListener('pagehide',event=>{if(event.persisted)return;disposed=true;cancelAnimationFrame(frame);controls?.dispose();composer?.dispose();renderer?.dispose();for(const target of envTargets)target.dispose();});

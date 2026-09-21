@@ -12,9 +12,9 @@ export const heuristics=[
 ];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const button=(text,action,extra='')=>`<button class="review-button" type="button" data-action="${action}" ${extra}>${text}</button>`;
-function mountReview({stage,controls,signal,announce}){
+function mountReview({stage,controls,signal,announce,state:saved}){
  stage.classList.add('uiux-review-stage');controls.classList.add('uiux-review-controls');
- let rule=Math.min(10,Math.max(1,Math.floor(Number(new URLSearchParams(location.search).get('rule'))||1))),improved=false,state={},timer;
+ let rule=Math.min(10,Math.max(1,Math.floor(Number(new URLSearchParams(location.search).get('rule'))||Number(saved?.rule)||1))),improved=saved?.rule===rule&&saved?.improved===true,state={},timer;
  function resetState(){clearTimeout(timer);state={step:0,removed:false,status:'',busy:false,start:'2',end:'1',camera:'',lens:'',tripod:'',code:'',help:false};if(improved&&rule===5)state.end=state.start;}
  function setQuery(){const url=new URL(location.href);url.searchParams.set('rule',String(rule));history.replaceState(null,'',url);}
  function renderControls(){const focused=controls.contains(document.activeElement)?document.activeElement:null;const focusedAction=focused?.dataset.action;const h=heuristics[rule-1];controls.innerHTML=`<div class="control-group"><label class="control-label" for="heuristic-select">평가할 원칙</label><select id="heuristic-select">${heuristics.map(x=>`<option value="${x.id}" ${x.id===rule?'selected':''}>${String(x.id).padStart(2,'0')} ${x.title}</option>`).join('')}</select><div class="control-actions">${button('이전 원칙','prev',rule===1?'disabled':'')}${button('다음 원칙','next',rule===10?'disabled':'')}</div></div><div class="review-principle"><span class="mini-label">NIELSEN ${String(rule).padStart(2,'0')}</span><h3>${h.title}</h3><p>${h.description}</p></div><div class="control-group"><span class="control-label">같은 과업, 두 설계</span><div class="review-switch" role="group" aria-label="설계 비교"><button type="button" data-action="mode-a" aria-pressed="${!improved}">A · ${h.a}</button><button type="button" data-action="mode-b" aria-pressed="${improved}">B · ${h.b}</button></div><p class="control-note">설계를 바꾸면 이 사례만 처음부터 시작합니다.</p></div><div class="review-question"><span class="mini-label">비교 후 관찰하기</span><p>${h.question}</p></div><p class="control-note">각 화면은 특정 상황을 보여주는 예시입니다. 실제 평가에서는 사용자·과업·문제의 영향을 함께 적어주세요.</p>`;if(focused){const next=focusedAction?controls.querySelector(`[data-action="${focusedAction}"]`):null;(next&&!next.disabled?next:controls.querySelector("#heuristic-select"))?.focus({preventScroll:true});}}
@@ -30,7 +30,7 @@ function mountReview({stage,controls,signal,announce}){
   if(rule===7)content=`<h3>다시 예약하기</h3><p class="review-inline-help">지난 구성: 미러리스 A + 표준 렌즈 + 삼각대</p>${improved?button('지난 구성 불러오기','repeat'):''}<div class="review-repeat">${field('카메라','camera',[['','선택'],['a','미러리스 A'],['b','미러리스 B']])}${field('렌즈','lens',[['','선택'],['standard','표준 렌즈'],['wide','광각 렌즈']])}${field('추가 장비','tripod',[['','선택'],['yes','삼각대'],['no','추가 없음']])}</div>${button('구성 확인','repeat-check')}<div class="review-feedback" role="status">${esc(state.status)}</div>`;
   if(rule===8)content=`${!improved?'<div class="review-promo"><span>이번 달 영상 행사</span><strong>행사 · 이벤트 · 신제품 소식</strong><p>여러 소식을 한 번에 만나보세요.</p></div>':''}<h3>카메라 예약 확인</h3><dl class="review-definition"><div><dt>구성품</dt><dd>카메라 · 렌즈 · 배터리</dd></div><div><dt>대여 비용</dt><dd>1일 30,000원</dd></div><div><dt>수령 조건</dt><dd>신분증 지참</dd></div></dl>${!improved?'<div class="review-promo small">대여 소식 · 인기 콘텐츠 · SNS 채널</div>':''}${button('예약 확정','confirm')}<div class="review-feedback" role="status">${esc(state.status)}</div>`;
   if(rule===9)content=`<h3>대여 기간</h3>${dates(false)}${button('예약 요청','error-submit')}<div class="review-feedback ${state.status&&+state.end<+state.start?'error':''}" role="status">${esc(state.status)}</div>${state.status&&improved&&+state.end<+state.start?button('반납일 수정하기','focus-end'):''}`;
-  if(rule===10)content=`<h3>예약 완료</h3><div class="review-selection"><strong>미러리스 카메라 1대</strong><p>화요일 10:00 · 매장 수령</p></div>${improved?`<details class="review-help"><summary>수령 방법 보기</summary><ol><li>신분증과 예약 번호를 준비합니다.</li><li>대여 데스크에서 예약 내역을 보여줍니다.</li><li>카메라·렌즈·배터리를 함께 확인합니다.</li></ol></details>`:'<p class="review-fine">예약이 완료되었습니다.</p>'}`;
+  if(rule===10)content=`<h3>예약 완료</h3><div class="review-selection"><strong>미러리스 카메라 1대</strong><p>화요일 10:00 · 매장 수령</p></div>${improved?`<details class="review-help" ${state.help?'open':''}><summary>수령 방법 보기</summary><ol><li>신분증과 예약 번호를 준비합니다.</li><li>대여 데스크에서 예약 내역을 보여줍니다.</li><li>카메라·렌즈·배터리를 함께 확인합니다.</li></ol></details>`:'<p class="review-fine">예약이 완료되었습니다.</p>'}`;
   stage.innerHTML=`<div class="review-task"><span class="mini-label">직접 해보기</span><p>${h.task}</p></div><div class="review-device"><div class="review-device-bar"><span>EQUIPMENT RENTAL</span><span>설계 ${improved?'B':'A'}</span></div><div class="review-device-body">${content}</div></div><p class="experiment-caption">장비 예약 흐름을 비교하는 실험 화면입니다.</p>`;
   if(focused){
    const nextAction={remove:'undo',undo:'remove','remember-back':'remember-next'}[savedAction]||savedAction;
@@ -60,8 +60,15 @@ function mountReview({stage,controls,signal,announce}){
  }
  stage.addEventListener('click',action,{signal});controls.addEventListener('click',action,{signal});
  controls.addEventListener('change',e=>{if(e.target.id==='heuristic-select')switchRule(Number(e.target.value));},{signal});
+ stage.addEventListener('toggle',e=>{if(e.target.matches('.review-help'))state.help=e.target.open;},{signal,capture:true});
  stage.addEventListener('input',e=>{if(e.target.name)state[e.target.name]=e.target.value;},{signal});
  stage.addEventListener('change',e=>{if(e.target.name)state[e.target.name]=e.target.value;if(rule===5&&improved&&e.target.name==='start'){if(+state.end<+state.start)state.end=state.start;render();}},{signal});
- resetState();renderControls();render();return()=>clearTimeout(timer);
+ resetState();
+ if(saved?.rule===rule&&saved?.state&&typeof saved.state==='object'){
+  for(const key of Object.keys(state)){if(typeof saved.state[key]===typeof state[key])state[key]=saved.state[key];}
+  state.step=Math.min(2,Math.max(0,Math.floor(state.step)||0));
+  if(state.busy){state.busy=false;state.status='화면을 떠나 요청이 중단됐어요. 예약 요청을 다시 눌러주세요.';}
+ }
+ renderControls();render();return{cleanup:()=>clearTimeout(timer),getState:()=>({rule,improved,state:{...state}})};
 }
 export const reviewModules=[{id:'heuristics',title:'닐슨 10원칙',en:'Nielsen’s Usability Heuristics',week:4,category:'화면 진단',summary:'장비 예약 화면의 두 설계를 비교하고, 문제의 근거와 개선 방향을 설명해보세요.',prompt:'어떤 사용자가 어느 단계에서 어려움을 겪고, 어떤 원칙으로 설명할 수 있나요?',applications:{service:'직접 사용하는 앱에서 문제 지점 하나를 고르고, 사용자의 목표·화면의 근거·관련 원칙·개선안을 적어보세요. 한 문제에 여러 원칙이 연결될 수도 있습니다.',game:'인벤토리, 장비 강화, 게임 종료 등 한 과업을 고르세요. 현재 상태를 알 수 있는지, 실수에서 돌아올 수 있는지, 익숙한 표현이 유지되는지 확인해보세요.'},sources:[{title:'Nielsen Norman Group · 10 Usability Heuristics',url:'https://www.nngroup.com/articles/ten-usability-heuristics/'}],mount:mountReview}];

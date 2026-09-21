@@ -1,8 +1,19 @@
 /* Compact Lab specimens share the homepage theme and tactile behavior. */
 #lab .work-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
+
+.lab-group + .lab-group { margin-top: 36px; }
+.lab-group-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 14px;
+}
+.lab-group-heading h3 { margin: 0; font: 400 18px/1.5 var(--f-ko); color: var(--w); }
+.lab-group-heading p { margin: 0; font: 400 12px/1.6 var(--f-ko); color: var(--g2); }
 
 #lab .work-card,
 #lab .work-card-face { padding: 20px; }
@@ -15,7 +26,7 @@
   color: var(--g2);
   letter-spacing: .04em;
 }
-#lab .work-card h3 { font: 400 20px/1.3 var(--f-lat); }
+#lab .work-card .lab-card-title { margin: 0; font: 400 20px/1.3 var(--f-lat); }
 #lab .lab-card-status {
   margin: 6px 0 0;
   color: #b9a3e3;

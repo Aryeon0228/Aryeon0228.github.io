@@ -75,6 +75,35 @@ body[data-lab] .site-header {
   outline-offset: -4px;
 }
 
+.lab-picker { display: none; }
+@media (max-width: 640px) {
+  .has-lab-picker .lab-navigation { display: none; }
+  .lab-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--lab-navigation-height);
+    padding: 0 var(--pad);
+    font: 400 12px/1.4 var(--f-ko);
+  }
+  .lab-picker > span { flex: none; color: #aaa; }
+  .lab-picker select {
+    flex: 1;
+    width: 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px 0;
+    border: 0;
+    border-radius: 0;
+    color: #eee;
+    background: #000;
+    color-scheme: dark;
+    font: 400 12px/1.4 var(--f-ko);
+    cursor: pointer;
+  }
+  .lab-picker select:focus-visible { outline: 2px solid #eee; outline-offset: 0; }
+}
+
 body[data-lab] .shell,
 body[data-lab] .study-shell {
   width: 100%;
