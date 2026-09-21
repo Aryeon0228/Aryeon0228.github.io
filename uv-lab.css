@@ -48,3 +48,15 @@
 .quick-controls[data-ready=false]>.resolution-controls,.quick-controls[data-ready=false]>.view-toolbar,.quick-controls[data-ready=false]>.mode-choice,.quick-controls[data-ready=false]>#bleed-settings,.quick-controls[data-ready=false] #atlas-scope,.quick-controls[data-ready=false] .scope-control{display:none}
 
 .source-feedback{padding:10px 13px;margin-top:8px;border:1px solid #745347;background:#211815;color:#ecc2ad;font-size:12px;line-height:1.8}
+
+/* Keep each preview's legend beside the image it explains. */
+.viewport > .view-legend { margin: 0; padding: 9px 14px; min-height: 42px; color: #bbc5be; font-size: 12px; line-height: 1.7; border-bottom: 1px solid #333; }
+.view-mode-group { min-width: 0; }
+.view-mode-label { display: block; margin-bottom: 5px; color: #aaa; font-size: 11px; line-height: 1.5; }
+@media (min-width: 1101px) {
+  .quick-controls .view-toolbar { display: flex; justify-content: flex-end; align-items: flex-end; gap: 14px; }
+  .view-mode-group + .view-mode-group { padding-left: 14px; border-left: 1px solid #444; }
+}
+@media (max-width: 720px) {
+  .viewport > .view-legend { padding: 8px 12px; }
+}

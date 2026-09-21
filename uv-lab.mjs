@@ -188,7 +188,10 @@ function sync(){
   $('budget-note').textContent=`${r} × ${r} · ${number(r*r)} pixels · RGBA8 ${memory} · ${r===4096?'4K 픽셀 수':`4K의 ${number(4096**2/r**2)}분의 1 픽셀`}`;
   $('resolution-label').textContent=`${r} × ${r}`;
   $('resolution-brief').textContent=`${r} × ${r}`;
-  $('view-legend').textContent={texture:'같은 테스트 무늬 · 최근접 샘플링',bleed:`실제 ${r} × ${r} 맵 · ${state.filter==='linear'?'주변 텍셀을 섞어 경계를 부드럽게':'텍셀 한 칸씩 또렷하게'} · 같은 색을 유지하며 해상도를 낮춰보세요.`,grid:'UV의 주황 경계 = 비스듬한 방향 · 3D의 주황 면 = 픽셀 축이 직각에서 벗어난 곳 (30° 이상).',checker:'정사각 체커 · 길어지거나 휘는 방향을 확인하세요.',islands:'같은 색은 UV가 이어지는 하나의 아일랜드 · 해상도와 무관한 구분 보기',stretch:'회녹색 1× → 주황색 4× 이상 · 비율이 달라진 정도',density:'파랑 0.5× 이하 · 회색 1× · 주황 2× 이상 · 전체 대비'}[state.mode];
+  const viewLegend={texture:'같은 테스트 무늬 · 최근접 샘플링',bleed:`실제 ${r} × ${r} 맵 · ${state.filter==='linear'?'주변 텍셀을 섞어 경계를 부드럽게':'텍셀 한 칸씩 또렷하게'} · 같은 색을 유지하며 해상도를 낮춰보세요.`,grid:'UV의 주황 경계 = 비스듬한 방향 · 3D의 주황 면 = 픽셀 축이 직각에서 벗어난 곳 (30° 이상).',checker:'정사각 체커 · 길어지거나 휘는 방향을 확인하세요.',islands:'같은 색은 UV가 이어지는 하나의 아일랜드 · 해상도와 무관한 구분 보기',stretch:'회녹색 1× → 주황색 4× 이상 · 비율이 달라진 정도',density:'파랑 0.5× 이하 · 회색 1× · 주황 2× 이상 · 전체 대비'}[state.mode];
+  document.querySelectorAll('[data-view-legend]').forEach(legend=>{
+    legend.textContent=state.mode==='grid'?(legend.dataset.viewLegend==='uv'?'주황 경계 = 가로·세로 축에서 비스듬한 방향':'주황 면 = 픽셀 축의 직각 이탈 30° 이상'):viewLegend;
+  });
   const s=state.analysis.stats;
   $('occupancy-value').textContent=percent(s.occupancy);$('occupancy-note').textContent=`빈 영역 ${percent(1-s.occupancy)} · 512² 표본 추정`;$('occupancy-meter').style.width=percent(s.occupancy);
   $('island-count').textContent=number(state.analysis.islands.length);$('island-note').textContent=`${number(s.triangles)}개 삼각형 · 첫 UV 세트`;

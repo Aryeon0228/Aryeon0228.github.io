@@ -51,6 +51,7 @@ function update(){
   const l=linearDisplay(v.lux,state.rho,v.exposure);$(side+'-status').textContent=l<.001?'현재 노출에서 반사광이 거의 보이지 않습니다.':l>.95?'하이라이트가 흰색에 가까워집니다.':state.mode==='individual'?'자동 노출에 공통·개별 보정을 더한 화면입니다.':state.offsets.left===state.offsets.right?'같은 노출로 비교 중입니다.':'개별 노출 보정이 적용된 화면입니다.';
   const marker=$(side+'-marker');marker.style.left=(Math.max(0,Math.min(1,(Math.log10(v.lux)+2)/8))*100)+'%';marker.querySelector('span').textContent=label+' · '+src.name;marker.title=fmt(v.lux)+' lx';
  }
+ $('comparison-condition').textContent=state.mode==='individual'?'물체·반사율·색 기준을 같게 두고, 각 장면 자동 노출로 광원을 비교합니다.':state.offsets.left!==state.offsets.right?'물체·반사율·색 기준은 같고, 광원과 개별 노출이 다른 비교입니다.':'물체·반사율·노출·색 기준을 같게 두고, 왼쪽과 오른쪽 광원을 비교합니다.';
  $('reflectance-out').value=Math.round(state.rho*100)+'%';$('exposure-out').value=signed(state.exposure)+' stops';$('exposure').disabled=false;
  $('shared').setAttribute('aria-pressed',state.mode==='shared'&&state.offsets.left===state.offsets.right);$('individual').setAttribute('aria-pressed',state.mode==='individual');
  $('mode-explanation').textContent=state.mode==='individual'?'각 장면의 18% 회색 기준이 비슷하게 보이도록 카메라 노출을 따로 맞춥니다. 광원의 세기는 그대로입니다.':'공통 밝기는 양쪽에, 개별 노출 보정은 해당 화면에 더해집니다. 같은 노출로 맞추기를 누르면 개별 보정이 초기화됩니다.';

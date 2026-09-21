@@ -50,6 +50,9 @@ body[data-lab="uiux"] .uiux-heading { display: flex; align-items: flex-end; just
 .frame-label { display: flex; align-items: center; gap: 9px; color: #aaa; font-size: 11px; }
 .frame-label svg { width: 15px; height: 15px; color: #999; }
 .frame-position { color: #888; font: 10px var(--f-mono); letter-spacing: .05em; }
+.frame-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.frame-actions .lab-button { min-height: 36px; }
+.notes-export-scope { margin: 12px 0 0; color: #aaa; font-size: 12px; line-height: 1.7; }
 .experiment-layout { display: grid; grid-template-columns: minmax(0, 1fr) 256px; }
 .experiment-stage { position: relative; min-width: 0; min-height: 420px; padding: 24px; display: flex; flex-direction: column; justify-content: center; gap: 18px; background: var(--panel); }
 .experiment-stage svg { max-width: 100%; height: auto; }
@@ -168,6 +171,26 @@ body[data-lab="uiux"] :is(input, select):focus-visible { outline-offset: 2px; }
   .experiment-heading { flex-wrap: wrap; gap: 12px; }
   .experiment-heading > .lab-button { margin-top: 0; }
   .application-heading { align-items: flex-start; flex-direction: column; gap: 13px; }
+}
+@media (max-width: 700px) {
+  body[data-lab="uiux"] .uiux-heading { padding: 16px 0; }
+  .uiux-heading .study-kicker { margin-bottom: 6px; }
+  .uiux-heading p { margin-top: 8px; }
+  .uiux-workspace { padding-top: 14px; }
+  .experiment-nav { margin-bottom: 16px; }
+  .mobile-picker { display: flex; align-items: center; gap: 12px; }
+  .mobile-picker label { margin: 0; }
+  .mobile-picker select { flex: 1; min-width: 0; }
+  .experiment-heading { gap: 8px; margin-bottom: 12px; }
+  .experiment-heading h2 { margin: 4px 0 6px; }
+  .experiment-heading > .lab-button { margin-top: 0; }
+  .experiment-frame-head { min-height: 44px; padding: 4px 12px; gap: 8px; }
+  .frame-actions { gap: 8px; }
+  .frame-actions .lab-button { min-height: 36px; padding: 6px 8px; }
+  .experiment-stage { min-height: 240px; padding: 16px; }
+  .experiment-stage .pc-experiment, .experiment-stage .pc-canvas { min-height: 0; }
+  .experiment-stage .pc-caption { margin: 10px 0 0; }
+  .experiment-controls { padding: 18px 16px; }
 }
 @media (max-width: 420px) {
   .uiux-behavior-stage .bh-choice { flex-direction: column; gap: 5px; }

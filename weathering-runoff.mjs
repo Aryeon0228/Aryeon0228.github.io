@@ -1,4 +1,4 @@
-import { sampleEnvironment } from './weathering-environment.mjs?v=98d844ff44b3';
+import { sampleEnvironment } from './weathering-environment.mjs?v=c55ba2b7eaa8';
 
 /**
  * Relative dust wash/transport fields for the canonical, axis-aligned case.
@@ -166,14 +166,14 @@ vec3 wxRunoffPaths(vec3 p, float strength, float startBridge, float halfWidth) {
 
 vec4 wxRunoffSignals(
   vec3 p, vec3 n, float kind, float runoff,
-  float wetness, float exposure, float drying, float wind, float shelter, vec2 source
+  float wetness, float exposure, float drying, float shelter, vec2 source
 ) {
   float amount = clamp(runoff, 0.0, 1.0);
   if (amount == 0.0 || clamp(wetness, 0.0, 1.0) == 0.0
     || clamp(exposure, 0.0, 1.0) == 0.0) return vec4(0.0);
   float normalLength = length(n);
   vec3 normal = normalLength > 0.000001 ? n / normalLength : vec3(0.0, 1.0, 0.0);
-  vec4 env = envSignals(p, normal, kind, wetness, exposure, drying, wind, shelter);
+  vec4 env = envSignals(p, normal, kind, wetness, exposure, drying, shelter);
   float directWash = amount * env.z * smoothstep(0.20, 0.85, normal.y);
   float strength = amount * clamp(source.y, 0.0, 1.0);
   float sourceLoad = strength * clamp(source.x, 0.0, 1.0);

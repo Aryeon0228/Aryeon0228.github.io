@@ -9,64 +9,28 @@
 
 export const CONTACT_MODES = Object.freeze({ handle: 0, edges: 1, base: 2 });
 
-export const PRESETS = Object.freeze({
-  storage: Object.freeze({
-    label: '실내 보관',
-    description: '덮개 없이 보관해 먼지가 내려앉고, 접촉은 적은 상태입니다.',
-    dust: 0.86,
-    wear: 0.16,
-    wind: 0,
-    contact: 'base',
-    wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
-  }),
-  outdoor: Object.freeze({
-    label: '먼지 부는 야외',
-    description: '건조한 먼지가 오른쪽에서 들어오며, 앞쪽 오른 모서리에 부딪힌 흔적이 있습니다.',
-    dust: 0.74,
-    wear: 0.58,
-    wind: 0.88,
-    contact: 'edges',
-    wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
-  }),
-  handled: Object.freeze({
-    label: '자주 운반',
-    description: '손잡이를 자주 잡아 먼지가 닦이고, 그 자리에 마모가 남은 예시입니다.',
-    dust: 0.58,
-    wear: 0.9,
-    wind: -0.22,
-    contact: 'handle',
-    wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
-  }),
-  damp: Object.freeze({
-    label: '습한 야외 보관',
-    description: '반복해서 젖는 보관 조건입니다. 도장한 강철에서는 벗겨진 철이 녹슬기 시작합니다.',
-    dust: 0.18, wear: 0.92, wind: 0.6, contact: 'edges',
-    wetness: 0.9, exposure: 0.8, drying: 0.5, runoff: 0,
-  }),
-  moss: Object.freeze({
-    label: '오래된 습한 보관',
-    description: '오래 젖고 천천히 마르는 표면에 이끼가 자리 잡은 조건입니다.',
-    dust: 0.65, wear: 0.08, wind: 0.18, contact: 'handle',
-    wetness: 1, exposure: 1, drying: 0.08, runoff: 0,
-  }),
-  rain: Object.freeze({
-    label: '비가 훑고 간 뒤',
-    description: '위쪽 먼지가 물에 씻겨 이동하며, 이음새 아래로 길이와 농도가 다른 유출 자국을 남깁니다.',
-    dust: 0.88, wear: 0.22, wind: 0.4, contact: 'handle',
-    wetness: 1, exposure: 0.7, drying: 0.9, runoff: 1,
-  }),
+export const EFFECTS = Object.freeze({
+  dust: Object.freeze({label: '먼지', color: '#e6bd69', description: '위에서 내려앉는 가루', amount: 0.86}),
+  wear: Object.freeze({label: '스크래치·마모', color: '#67dce5', description: '접촉이 남긴 긁힘', amount: 0.82}),
+  wet: Object.freeze({label: '현재 젖음', color: '#7199ee', description: '지금 표면에 남은 수분막', amount: 0.75}),
+  rust: Object.freeze({label: '녹', color: '#f08463', description: '벗겨진 강철의 부식', amount: 0.90}),
+  moss: Object.freeze({label: '이끼', color: '#91c96b', description: '표면에 자리 잡은 군락', amount: 0.85}),
+  runoff: Object.freeze({label: '물자국', color: '#b49aef', description: '먼지가 씻기고 흐른 자리', amount: 0.90}),
 });
 
 export const DEFAULT_STATE = Object.freeze({
-  preset: 'storage',
+  effects: Object.freeze({dust: true, wear: false, wet: false, rust: false, moss: false, runoff: false}),
   material: 'paint',
-  layer: 'surface',
+  view: 'surface',
+  inspect: 'all',
   compare: false,
-  dust: PRESETS.storage.dust,
-  wear: PRESETS.storage.wear,
-  wind: PRESETS.storage.wind,
-  contact: PRESETS.storage.contact,
-  wetness: 0, exposure: 0, drying: 0.5, runoff: 0,
+  dust: EFFECTS.dust.amount,
+  wear: EFFECTS.wear.amount,
+  wet: EFFECTS.wet.amount,
+  rust: EFFECTS.rust.amount,
+  moss: EFFECTS.moss.amount,
+  runoff: EFFECTS.runoff.amount,
+  contact: 'edges',
   heuristic: false,
 });
 
@@ -78,6 +42,49 @@ const smoothstep = (low, high, value) => {
   return t * t * (3 - 2 * t);
 };
 const kindMask = (kind, expected) => Math.abs(kind - expected) < 0.5 ? 1 : 0;
+
+/** Layer switches preserve the authored amounts while controlling rendering. */
+export function getEffectUniforms(state = {}) {
+  const effects = state.effects ?? DEFAULT_STATE.effects;
+  const amount = key => effects[key] && !(key === 'rust' && state.material === 'plastic')
+    ? clamp(finite(state[key], EFFECTS[key].amount)) : 0;
+  return {uDust: amount('dust'), uWear: amount('wear'), uWet: amount('wet'), uRust: amount('rust'),
+    uMoss: amount('moss'), uRunoff: amount('runoff')};
+}
+
+/** Current water film, independent of the fixed histories behind old marks. */
+export function sampleCurrentWetness(normal, amount = 0, shelter = 0) {
+  const n = vector3(normal, [0, 1, 0]);
+  const length = Math.hypot(...n);
+  const up = Math.max(0, length > 0.000001 ? n[1] / length : 1);
+  return clamp(finite(amount, 0)) * (0.18 + 0.82 * up)
+    * (1 - 0.35 * clamp(finite(shelter, 0)));
+}
+
+/**
+ * Contact around the case's front-right upper vertex, shared across body/lid.
+ * Both part bounds resolve to the same canonical anchor [1.29, .95, .69].
+ * The footprint spreads across the top/front/right and becomes narrower and
+ * weaker below the vertex. Handles, hardware and every other corner stay clear.
+ */
+export function sampleCornerContact(point, part = {}) {
+  const p = vector3(point, [0, 0, 0]);
+  const center = vector3(part?.center, [0, 0, 0]);
+  const half = vector3(part?.half, [1, 1, 1]).map(v => Math.max(0.00001, v));
+  const kind = finite(part?.kind, 0);
+  const body = kindMask(kind, 0), lid = kindMask(kind, 1);
+  if (!body && !lid) return 0;
+  const offset = lid ? [-0.03, -0.02, -0.03] : [0.04, 0.18, 0.04];
+  const corner = center.map((value, axis) => value + half[axis] + offset[axis]);
+  const drop = Math.max(corner[1] - p[1], 0);
+  const taper = smoothstep(0, 0.76, drop);
+  const reachX = 0.58 * (1 - taper) + 0.18 * taper;
+  const reachZ = 0.48 * (1 - taper) + 0.14 * taper;
+  const distance = Math.hypot((p[0] - corner[0]) / reachX, (p[2] - corner[2]) / reachZ);
+  const spread = 1 - smoothstep(0.04, 1, distance);
+  const down = Math.pow(1 - smoothstep(0, 0.86, drop), 1.35);
+  return clamp(spread * down);
+}
 
 /**
  * Reference evaluator for valid UI state, with finite fallbacks for inspectors.
@@ -94,11 +101,9 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
   const normalLength = Math.hypot(...n);
   n = normalLength > 0.000001 ? n.map(v => v / normalLength) : [0, 1, 0];
   const kind = finite(part.kind, 0);
-  const preset = PRESETS[state.preset] ?? PRESETS[DEFAULT_STATE.preset];
-  const dustAmount = clamp(finite(state.dust, preset.dust));
-  const wearAmount = clamp(finite(state.wear, preset.wear));
-  const wind = clamp(finite(state.wind, preset.wind), -1, 1);
-  const contactMode = CONTACT_MODES[state.contact] ?? CONTACT_MODES[preset.contact];
+  const dustAmount = clamp(finite(state.dust, DEFAULT_STATE.dust));
+  const wearAmount = clamp(finite(state.wear, DEFAULT_STATE.wear));
+  const contactMode = CONTACT_MODES[state.contact] ?? CONTACT_MODES[DEFAULT_STATE.contact];
   const heuristic = state.heuristic === true ? 1 : clamp(finite(state.heuristic, 0));
 
   // Relative distances detect proximity to TWO box faces, not a face centre.
@@ -109,7 +114,7 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
     Math.min(edgeAxes[1], edgeAxes[2]),
     Math.min(edgeAxes[2], edgeAxes[0]),
   );
-  const up = smoothstep(-0.08, 0.72, n[1]);
+  const up = clamp(n[1]);
   const side = 1 - Math.abs(n[1]);
   const body = kindMask(kind, 0);
   const lid = kindMask(kind, 1);
@@ -126,10 +131,7 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
   // The high-centred crossgrip is touched; the two lower handle posts are not.
   const gripContact = handle * smoothstep(1.1, 1.15, center[1])
     * (1 - smoothstep(0.56, 0.94, q[0]));
-  // A localized front-right footprint, rather than a blanket edge-wear rule.
-  const cornerContact = (body + lid) * smoothstep(0.78, 1.12, p[0])
-    * smoothstep(0.26, 0.6, p[2])
-    * (1 - smoothstep(0.45, 1.05, Math.abs(p[1] - 0.35)));
+  const cornerContact = sampleCornerContact(p, {center, half, kind});
   // The case rests directly on its bottom. Dragging mainly abrades the bottom
   // perimeter; a narrow, weaker skirt catches the rounded lower side edges.
   // Use the body's bounds so this footprint follows its actual ground plane.
@@ -142,9 +144,10 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
   const contact = clamp(contactMode === 0 ? gripContact
     : contactMode === 1 ? cornerContact : baseContact);
 
-  // Wind is a signed X-direction input; pure downward faces get no deposition.
-  const windFacing = Math.max(n[0] * wind, 0);
-  const incoming = clamp(0.92 * up + 0.06 * side + 0.28 * windFacing);
+  // Gravity-only settling. Projected arrival and weaker retention on a slope
+  // each follow the upward normal: their product fades across the WHOLE arc.
+  // No flat plateau on the first half of a bevel, or side-facing dust floor.
+  const incoming = 0.92 * up * up;
   const depositedDust = incoming * (1 - 0.78 * shelter)
     * (1 - 0.96 * contact * wearAmount);
   const contactWear = contact * (0.78 + 0.22 * edge);
@@ -164,13 +167,37 @@ export function sampleWeather(point, normal, part = {}, state = {}) {
  * Helpers and locals are prefixed to coexist with Three.js shader chunks.
  */
 export const WEATHER_GLSL = /* glsl */ `
+float currentWetness(vec3 n, float amount, float shelter) {
+  float nLength = length(n);
+  float up = max(0.0, nLength > 0.000001 ? n.y / nLength : 1.0);
+  return clamp(amount, 0.0, 1.0) * (0.18 + 0.82 * up)
+    * (1.0 - 0.35 * clamp(shelter, 0.0, 1.0));
+}
+
 float wKindMask(float wKind, float wExpected) {
   return 1.0 - step(0.5, abs(wKind - wExpected));
 }
 
+// GLSL counterpart of sampleCornerContact. Body and lid meet around one world
+// anchor, avoiding a full-height wear stripe or a reset at the lid/body seam.
+float wCornerContact(vec3 p, vec3 center, vec3 halfSize, float kind) {
+  float wBody = wKindMask(kind, 0.0), wLid = wKindMask(kind, 1.0);
+  if (wBody + wLid < 0.5) return 0.0;
+  vec3 wHalf = max(halfSize, vec3(0.00001));
+  vec3 wCorner = center + wHalf
+    + mix(vec3(0.04, 0.18, 0.04), vec3(-0.03, -0.02, -0.03), wLid);
+  float wDrop = max(wCorner.y - p.y, 0.0);
+  float wTaper = smoothstep(0.0, 0.76, wDrop);
+  vec2 wReach = mix(vec2(0.58, 0.48), vec2(0.18, 0.14), wTaper);
+  float wDistance = length((p.xz - wCorner.xz) / wReach);
+  float wSpread = 1.0 - smoothstep(0.04, 1.0, wDistance);
+  float wDown = pow(1.0 - smoothstep(0.0, 0.86, wDrop), 1.35);
+  return clamp(wSpread * wDown, 0.0, 1.0);
+}
+
 vec4 weatherSignals(
   vec3 p, vec3 n, vec3 center, vec3 halfSize, float kind,
-  float dustAmount, float wearAmount, float wind,
+  float dustAmount, float wearAmount,
   float contactMode, float heuristic
 ) {
   float wNormalLength = length(n);
@@ -180,7 +207,7 @@ vec4 weatherSignals(
   vec3 wEdgeAxes = smoothstep(vec3(0.76), vec3(0.99), wQ);
   float wEdge = max(max(min(wEdgeAxes.x, wEdgeAxes.y),
     min(wEdgeAxes.y, wEdgeAxes.z)), min(wEdgeAxes.z, wEdgeAxes.x));
-  float wUp = smoothstep(-0.08, 0.72, wN.y);
+  float wUp = clamp(wN.y, 0.0, 1.0);
   float wSide = 1.0 - abs(wN.y);
   float wBody = wKindMask(kind, 0.0);
   float wLid = wKindMask(kind, 1.0);
@@ -194,9 +221,7 @@ vec4 weatherSignals(
 
   float wGripContact = wHandle * smoothstep(1.1, 1.15, center.y)
     * (1.0 - smoothstep(0.56, 0.94, wQ.x));
-  float wCornerContact = (wBody + wLid) * smoothstep(0.78, 1.12, p.x)
-    * smoothstep(0.26, 0.6, p.z)
-    * (1.0 - smoothstep(0.45, 1.05, abs(p.y - 0.35)));
+  float wCornerFootprint = wCornerContact(p, center, wHalf, kind);
   float wHeightAboveBase = p.y - (center.y - wHalf.y);
   float wBaseBand = 1.0 - smoothstep(0.018, 0.14, wHeightAboveBase);
   float wBasePerimeter = smoothstep(0.56, 0.95, max(wQ.x, wQ.z));
@@ -204,14 +229,12 @@ vec4 weatherSignals(
   float wBaseContact = wBody * wBaseBand * (0.22 + 0.78 * wBasePerimeter)
     * (0.35 + 0.65 * wUnderside);
   float wContact = clamp(contactMode < 0.5 ? wGripContact
-    : (contactMode < 1.5 ? wCornerContact : wBaseContact), 0.0, 1.0);
+    : (contactMode < 1.5 ? wCornerFootprint : wBaseContact), 0.0, 1.0);
 
   float wDustAmount = clamp(dustAmount, 0.0, 1.0);
   float wWearAmount = clamp(wearAmount, 0.0, 1.0);
-  float wWind = clamp(wind, -1.0, 1.0);
   float wHeuristic = clamp(heuristic, 0.0, 1.0);
-  float wWindFacing = max(wN.x * wWind, 0.0);
-  float wIncoming = clamp(0.92 * wUp + 0.06 * wSide + 0.28 * wWindFacing, 0.0, 1.0);
+  float wIncoming = 0.92 * wUp * wUp;
   float wDepositedDust = wIncoming * (1.0 - 0.78 * wShelter)
     * (1.0 - 0.96 * wContact * wWearAmount);
   float wContactWear = wContact * (0.78 + 0.22 * wEdge);

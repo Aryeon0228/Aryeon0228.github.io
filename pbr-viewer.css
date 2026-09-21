@@ -97,3 +97,13 @@
  .preset-grid .preset-card{min-height:54px}
 }
 .preset-grid.has-notes{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* Keep material properties together; the preview toolbar only changes the view. */
+.specimen-controls{grid-template-columns:1.15fr 1fr;min-height:145px}
+.reflection-settings .ior-control{margin:20px 0}
+.reflection-settings .field-label{font-size:14px;line-height:1.6;margin-bottom:8px}
+.reflection-settings .panel-note{margin:14px 0}
+.material-subheading{font-size:13px;font-weight:500;color:#aaa;letter-spacing:.02em;margin:20px 0 4px}
+.material-subheading:not(:first-child){border-top:1px solid var(--line);padding-top:20px}
+@media(min-width:761px) and (max-width:1200px){.specimen-controls{min-height:145px}.material-stage{height:calc(var(--height) - 145px)}}
+@media(max-width:760px){.specimen-controls{grid-template-columns:1.15fr 1fr;min-height:0}.material-stage{height:var(--height)}}

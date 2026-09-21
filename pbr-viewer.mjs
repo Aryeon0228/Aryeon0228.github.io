@@ -43,6 +43,7 @@ function updateMaterial(custom=true,preserveIorNumber=false){
  for(const id of parameters){const out=$(id==='envMapIntensity'?'envMapValue':id+'Value');if(out)out.textContent=(+$(id).value).toFixed(2);fill($(id));}
  $('colorReading').textContent=$('baseColor').value;$('roughnessReading').textContent=v.roughness.toFixed(2);$('metalReading').textContent=v.metallic.toFixed(2);
  if(custom){currentPreset='';$('specimenName').textContent='CUSTOM';}
+ $('reflectionContext').textContent=v.metallic===1?'금속성 1에서는 비금속 반사 조절이 표면에 나타나지 않습니다. 비금속 프리셋에서도 비교해보세요.':!$('iorToggle').checked?'비금속 프레넬 반사가 꺼져 있습니다. 반사 차이를 보려면 위에서 켜세요.':'현재 비금속 성분에 반사 설정을 적용합니다. 투과를 높이면 내부로 통과하는 빛도 볼 수 있어요.';
  syncPresetSelection();
  dirty=true;
 }

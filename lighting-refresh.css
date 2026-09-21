@@ -10,3 +10,35 @@ body{overflow-x:hidden}.study-shell{padding-bottom:28px}button,select{background
 
 /* Keep selected states after component backgrounds so the label stays readable. */
 button[aria-pressed=true],button.selected{background:#ddd;color:#111;border-color:#ddd}
+
+/* Group every shared comparison condition directly below the preview. */
+.comparison-condition{font-size:14px;line-height:1.75;color:#bbb;margin:0 0 18px;word-break:keep-all;overflow-wrap:anywhere}
+.shared-conditions{border:1px solid var(--line);background:#080808;min-width:0}
+.shared-conditions-heading{padding:20px 22px;border-bottom:1px solid var(--line)}
+.shared-conditions-heading h2{font-size:18px;margin:0 0 6px}
+.shared-conditions-heading p{font-size:13px;line-height:1.7;color:#aaa}
+.shared-conditions .global-controls{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,1fr);gap:0;margin:0}
+.shared-conditions .global-controls>section{border:0;margin:0;min-width:0}
+.shared-conditions .brightness-control{grid-column:1/-1;border-bottom:1px solid var(--line)!important}
+.shared-conditions .color-control{border-right:1px solid var(--line)!important}
+.shared-conditions .color-row{display:flex;flex-wrap:wrap;gap:12px}
+.shared-conditions .wb-buttons{order:2;flex-basis:100%;justify-content:flex-start}
+.shared-conditions .color-caption{flex-wrap:wrap}
+.shared-conditions .control-note{font-size:13px;line-height:1.7}
+@media(max-width:760px){
+ .shared-conditions-heading{padding:18px}
+ .shared-conditions .global-controls{grid-template-columns:1fr}
+ .shared-conditions .global-controls>section{padding:18px}
+ .shared-conditions .color-control{border-right:0!important;border-bottom:1px solid var(--line)!important}
+ .comparison-condition{font-size:13px}
+}
+@media(min-width:1150px){
+ .comparison-workbench{grid-template-columns:minmax(0,1fr) 320px}
+ .shared-conditions{grid-column:2;grid-row:1/3;align-self:start}
+ .shared-conditions .global-controls{display:block}
+ .shared-conditions .color-control{border-right:0!important;border-bottom:1px solid var(--line)!important}
+ .shared-conditions-heading{padding:20px}
+ .shared-conditions .global-controls>section{padding:20px}
+ .shared-conditions .wb-buttons{display:grid;grid-template-columns:1fr;width:100%}
+}
+.comparison-workbench>.source-library{grid-column:1/-1}
