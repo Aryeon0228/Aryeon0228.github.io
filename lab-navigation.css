@@ -189,3 +189,9 @@ body[data-lab] .lab-heading {
     font-size: 11px;
   }
 }
+
+/* Contextual links explain which question the next lab answers. */
+.lab-connection{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;margin:24px 0;padding:18px 0;border-top:1px solid #282828;color:#aaa;font-size:14px;line-height:1.8;word-break:keep-all;overflow-wrap:anywhere}
+.lab-connection a{color:#ddd;text-decoration:underline;text-decoration-color:#666;text-underline-offset:4px}
+.lab-connection a:hover{color:#fff;text-decoration-color:currentColor}
+.lab-connection a:focus-visible{outline:2px solid #ddd;outline-offset:5px}

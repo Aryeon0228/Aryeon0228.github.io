@@ -67,7 +67,7 @@ html{scroll-padding-top:95px}body{font-weight:300;word-break:keep-all;overflow-w
 
 .layout-note{margin:0 0 6px;color:#aaa;font-size:12px;line-height:1.7}.action:disabled{opacity:.45;cursor:default}.action[aria-pressed=true]{border-color:#ddd;background:#222;color:#fff}
 </style>
-<link rel="stylesheet" href="lab-navigation.css?v=a7826029ce78">
+<link rel="stylesheet" href="lab-navigation.css?v=9001fc32cf19">
 <script src="lab-navigation.js?v=464bc0361c5a" defer></script>
 </head>
 <body id="top" data-lab="interior">
@@ -91,7 +91,7 @@ html{scroll-padding-top:95px}body{font-weight:300;word-break:keep-all;overflow-w
 <div class="inspector-tabs" role="tablist" aria-label="미리보기 패널"><button id="controlsTab" role="tab" aria-selected="true" aria-controls="controlsPanel">공간 조절</button><button id="sourceTab" role="tab" aria-selected="false" aria-controls="sourcePanel" tabindex="-1"><span class="code-symbol" aria-hidden="true">&lt;/&gt;</span>셰이더 코드</button></div>
 <section class="panel" id="controlsPanel" role="tabpanel" aria-labelledby="controlsTab">
 <div class="panel-title"><h2>공간 조절</h2><span>LIVE STUDY</span></div>
-<div class="section"><span class="section-label">01 / LIGHT</span><div class="light-choices" role="group" aria-label="시간대"><button data-light="day" aria-pressed="false">주간</button><button data-light="dusk" aria-pressed="true">해질녘</button><button data-light="night" aria-pressed="false">야간</button></div></div>
+<div class="section"><span class="section-label">01 / VIEW</span><div class="light-choices" role="group" aria-label="보기 환경 · 시간대"><button data-light="day" aria-pressed="false">주간</button><button data-light="dusk" aria-pressed="true">해질녘</button><button data-light="night" aria-pressed="false">야간</button></div></div>
 <div class="section"><span class="section-label">02 / SPACE</span><div class="control"><label for="depth">실내 깊이 <output id="dV" for="depth">4.8 m</output></label><input id="depth" type="range" min="300" max="700" step="10" value="480"><div class="ends"><span>얕게</span><span>깊게</span></div></div><div class="control"><label for="grid">창문 열 수 <output id="gV" for="grid">5 bays</output></label><input id="grid" type="range" min="2" max="7" value="5"></div></div>
 <div class="section glass-section"><span class="section-label">03 / GLASS</span><div class="control"><label for="reflStr">유리 반사 <output id="rV" for="reflStr">28%</output></label><input id="reflStr" type="range" min="0" max="100" value="28"></div><div class="control"><label for="dustStr">표면 흔적 <output id="duV" for="dustStr">8%</output></label><input id="dustStr" type="range" min="0" max="100" value="8"></div><div class="toggle-row"><span id="reflectionLabel">반사 표시</span><button id="bRefl" class="toggle" role="switch" aria-checked="true" aria-labelledby="reflectionLabel"></button></div><div class="toggle-row"><span id="dustLabel">표면 흔적 표시</span><button id="bDust" class="toggle" role="switch" aria-checked="true" aria-labelledby="dustLabel"></button></div></div>
 <div class="actions"><button class="action" id="bShuffle">실내 구성 바꾸기 <span aria-hidden="true">↗</span></button><button class="action" id="bCompare" aria-pressed="false" disabled>이전 구성 비교 <span aria-hidden="true">⇄</span></button><p class="layout-note">구성을 바꾼 뒤, 같은 시점에서 이전 구성과 번갈아 비교하세요.</p><button class="action" id="bReset">시점 초기화 <span aria-hidden="true">↺</span></button><button class="text-button" id="bMode" aria-pressed="false">면 구분 보기</button><span class="sr-only" id="announce" aria-live="polite"></span></div>
@@ -105,7 +105,8 @@ html{scroll-padding-top:95px}body{font-weight:300;word-break:keep-all;overflow-w
 </section>
 </aside>
 </main>
-<div class="caption"><span><strong>석재 · 브론즈 · 유리</strong> &nbsp; / &nbsp; 따뜻한 실내와 차가운 외부광</span><span>INTERIOR MAPPING &nbsp; / &nbsp; STUDIO PENUMBRA</span></div>
+<div class="caption"><span><strong>시점 · 깊이 · 가려짐</strong> &nbsp; / &nbsp; 움직이며 공간감을 비교하세요.</span><span>INTERIOR MAPPING</span></div>
+<p class="lab-connection"><span>창빛과 실내 조명이 밝기에 더하는 몫은</span><a href="lighting-lab.html#room-panel">Light Lab · 실내 빛 더하기 ↗</a></p>
 <details><summary>공간과 반사는 어떻게 만들어질까요?</summary><div class="notes"><p>창문 안쪽의 벽·바닥·천장과 가구를 광선으로 계산합니다. 같은 평면을 통해 보더라도 가구가 놓인 거리에 따라 서로 다른 패럴랙스가 생깁니다. 창틀과 층 사이 슬래브는 공간의 경계를 만들고, 벽 모서리와 가구 아래의 음영은 깊이를 더합니다.</p><p>유리는 정면에서 투명하게 보이고 비스듬히 볼수록 주변 하늘과 건물을 더 강하게 반사합니다. 반사는 실내 깊이와 분리한 시선 방향으로 계산하며, 먼지와 가장자리 흔적은 유리 표면에 고정됩니다. 외부 이미지 없이 실행되는 절차적 공간 스터디입니다.</p></div></details>
 </div>
 <footer class="portfolio-footer"><span>© 2026 Studio Penumbra · 김소연</span><a href="https://studio-penumbra.com/#lab">Back to Lab ↗</a></footer>

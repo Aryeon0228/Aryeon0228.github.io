@@ -126,15 +126,27 @@ function render(id,lux,rho,stops,color){
  });
 }
 const panels=['experiment','room','guide'];
-function showPanel(panel,focus=false){
- for(const key of panels){const selected=key===panel;$(key==='guide'?'guide':key+'-panel').hidden=!selected;$('tab-'+key).setAttribute('aria-selected',selected);$('tab-'+key).tabIndex=selected?0:-1;}
+const panelId=key=>key==='guide'?'guide':key+'-panel';
+function showPanel(panel,focus=false,updateHash=true){
+ if(!panels.includes(panel))return;
+ for(const key of panels){const selected=key===panel;$(panelId(key)).hidden=!selected;$('tab-'+key).setAttribute('aria-selected',selected);$('tab-'+key).tabIndex=selected?0:-1;}
+ if(updateHash)history.replaceState(history.state,'','#'+panelId(panel));
  if(focus)$('tab-'+panel).focus();
 }
+function openLinkedPanel(){
+ const target=$(location.hash.slice(1));
+ const container=target?.closest('[role="tabpanel"]');
+ const panel=panels.find(key=>panelId(key)===container?.id||'tab-'+key===target?.id);
+ if(!panel)return;
+ showPanel(panel,false,false);
+ requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));
+}
+window.addEventListener('hashchange',openLinkedPanel);
 for(const key of panels){const tab=$('tab-'+key);tab.onclick=()=>showPanel(key);tab.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const index=panels.indexOf(key);showPanel(e.key==='Home'?panels[0]:e.key==='End'?panels.at(-1):panels[(index+(e.key==='ArrowRight'?1:-1)+panels.length)%panels.length],true);}});}
 $('open-guide').onclick=()=>showPanel('guide',true);$('back-experiment').onclick=()=>showPanel('experiment',true);$('color-help').onclick=()=>{showPanel('guide');$('color-guide').scrollIntoView({block:'start'});};
 
 initRoomLab(()=>showPanel('room'));
-sync();update();
+sync();update();openLinkedPanel();
 const context=document.modelContext;
 if(context?.registerTool){
  const lifecycle=new AbortController(),sourceEnum=Object.keys(SOURCES);
