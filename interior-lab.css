@@ -53,3 +53,10 @@ html{scroll-padding-top:95px}body{font-weight:300;word-break:keep-all;overflow-w
 
 
 .layout-note{margin:0 0 6px;color:#a6a6a6;font-size:12px;line-height:1.7}.action:disabled{opacity:.45;cursor:default}.action[aria-pressed=true]{border-color:#ddd;background:#222;color:#fff}
+/* Auto tour toggle: the stage's only clickable label, so it opts back into pointer events. */
+.stage-actions{display:flex;align-items:center;gap:16px}
+.tour-toggle{pointer-events:auto;flex-shrink:0;white-space:nowrap;min-height:32px;padding:5px 12px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.55);color:#d9d9d9;font:12px var(--mono);letter-spacing:.04em;cursor:pointer}
+.tour-toggle:hover{border-color:#8f8f8f;color:#fff}
+.tour-toggle[aria-pressed="true"]{color:#fff;border-color:#8f8f8f}
+.tour-toggle[hidden]{display:none}
+@media(max-width:760px){.tour-toggle{min-height:36px;padding:6px 10px;font-size:11px}}

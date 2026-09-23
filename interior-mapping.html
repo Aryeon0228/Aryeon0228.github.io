@@ -10,10 +10,10 @@
 <link rel="icon" type="image/png" href="assets/penumbra.png">
 <meta name="description" content="창 너머의 공간, 빛, 유리를 탐색하는 Studio Penumbra Interior Lab.">
 <title>Interior Lab | Studio Penumbra</title>
-<link rel="stylesheet" href="interior-lab.css?v=577506adbfd8">
+<link rel="stylesheet" href="interior-lab.css?v=c75426113f7b">
 <link rel="stylesheet" href="lab-navigation.css?v=5699cb22f9f6">
 <script src="penumbra-ui.js?v=92c3a0ed2a1f" defer></script>
-<script type="module" src="interior-lab.mjs?v=b1652498de85"></script>
+<script type="module" src="interior-lab.mjs?v=e8ccb4394753"></script>
 <script src="lab-navigation.js?v=464bc0361c5a" defer></script>
 </head>
 <body id="top" data-lab="interior">
@@ -27,7 +27,7 @@
 <div class="lab-heading"><div class="study-kicker"><a href="https://studio-penumbra.com/#lab">LAB</a><span>/</span>표면과 공간</div><h1>Interior <b>Lab</b></h1><p>평면 위의 실내가 시점에 따라 깊어 보이는 원리를 살펴보세요.</p></div>
 <main class="workspace" id="study">
 <section class="stage" aria-label="건물 내부 미리보기">
-<div class="stage-top"><span class="stage-label">RESIDENTIAL FACADE · <span id="sceneName">BLUE HOUR</span></span><span class="status"><i></i>실시간 렌더링</span></div>
+<div class="stage-top"><span class="stage-label">RESIDENTIAL FACADE · <span id="sceneName">BLUE HOUR</span></span><span class="stage-actions"><span class="status"><i></i><span id="statusText">실시간 렌더링</span></span><button type="button" class="tour-toggle" id="bTour" aria-pressed="false" hidden>자동 둘러보기 ▶</button></span></div>
 <canvas id="gl" tabindex="0" aria-label="건물 내부 3D 미리보기. 드래그 또는 방향키로 시점을 이동하고 R 키로 초기화합니다." aria-describedby="canvasHint"></canvas>
 <div class="legend" id="legend"><span><i style="--c:#809eae"></i>뒷벽</span><span><i style="--c:#b69a72"></i>바닥</span><span><i style="--c:#bec6bc"></i>천장</span><span><i style="--c:#78988c"></i>왼쪽 벽</span><span><i style="--c:#b08580"></i>오른쪽 벽</span></div>
 <div class="stage-bottom"><span id="canvasHint">↔ 드래그로 둘러보기 · 방향키로 이동</span><span class="coordinates" id="readout">AZ +12° / EL +4°</span></div>
