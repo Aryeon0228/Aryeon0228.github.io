@@ -1,0 +1,121 @@
+/* Focus Lab. Chrome follows the Penumbra wedge (#000 … #fff); colour appears only as content:
+   the desk photo and the three subject marks shared by the photo tags and the side view. */
+.fl-toolbar{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:4px 0 24px;border-bottom:1px solid var(--line)}
+.fl-tabs{display:flex;gap:26px;overflow-x:auto;scrollbar-width:none}
+.fl-tabs button{flex:none;min-height:44px;padding:10px 0;border:0;border-bottom:2px solid transparent;background:none;color:#8f8f8f;font:400 14px var(--f-ko)}
+.fl-tabs button:hover{color:#d9d9d9}
+.fl-tabs button[aria-selected="true"]{color:#fff;border-bottom-color:#fff}
+.fl-tools{display:flex;flex:none}
+.fl-quiet{min-height:44px;padding:10px 0 10px 18px;border:0;background:none;color:#a6a6a6;font:12px var(--f-mono);white-space:nowrap}
+.fl-quiet:hover,.fl-quiet[aria-pressed="true"]{color:#fff}
+.fl-quiet[hidden]{display:none}
+.fl-label{margin:0 0 10px;color:#8f8f8f;font:11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase}
+.fl-note{margin:10px 0 0;color:#8f8f8f;font-size:12px;line-height:1.7}
+.fl-note a{color:#d9d9d9}
+
+.fl-workbench{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start}
+.fl-main{display:grid;gap:28px;min-width:0}
+.fl-photo{margin:0}
+.fl-frame{position:relative;aspect-ratio:3/2;background:#070707;border:1px solid var(--line);overflow:hidden}
+.fl-frame canvas{display:block;width:100%;height:100%}
+.fl-hud{position:absolute;left:14px;bottom:12px;display:flex;gap:16px;color:#ececec;font:12px var(--f-mono);text-shadow:0 1px 8px rgba(0,0,0,.7);pointer-events:none}
+.fl-tag{position:absolute;display:flex;align-items:center;gap:6px;padding:3px 9px 3px 7px;transform:translate(-50%,-150%);border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.6);color:#ececec;font:11px var(--f-mono);white-space:nowrap;pointer-events:none;transition:opacity .2s}
+.fl-tag i{width:7px;height:7px;border-radius:50%}
+.fl-tag.is-soft{color:#a6a6a6}
+.fl-tag.is-soft i{background:none!important;border:1px solid currentColor}
+.fl-error{position:absolute;inset:auto 16px 16px;margin:0;padding:12px 14px;background:#101010;border:1px solid #333;color:#d9d9d9;font-size:13px;line-height:1.7}
+.fl-error[hidden]{display:none}
+.fl-why{margin:14px 0 0;padding-left:14px;border-left:1px solid rgba(255,255,255,.22);max-width:80ch;color:#d9d9d9;font-size:15px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
+.fl-why strong{color:#fff;font-weight:500}
+
+.fl-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.fl-frame-btn{display:block;padding:0;border:1px solid var(--line);background:#070707;color:#a6a6a6;text-align:left;cursor:pointer}
+.fl-frame-btn canvas{display:block;width:100%;height:auto;aspect-ratio:3/2}
+.fl-frame-btn span{display:block;padding:7px 8px;font:11px var(--f-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl-frame-btn:hover{border-color:#8f8f8f}
+.fl-frame-btn[aria-pressed="true"]{border-color:#ececec;color:#fff}
+
+.fl-side{margin:0}
+.fl-side figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.fl-side-note{color:#8f8f8f;font-size:12px}
+.fl-side svg{display:block;width:100%;height:auto;background:#070707;border:1px solid var(--line)}
+.sv-axis line{stroke:#4d4d4d}
+.sv-axis text,.sv-caption{fill:#8f8f8f;font:10px var(--f-mono)}
+.sv-zone{fill:rgba(255,255,255,.08)}
+.sv-plane{stroke:#ececec;stroke-dasharray:4 4}
+.sv-plane-label{fill:#ececec;font:11px var(--f-mono)}
+.sv-lens{fill:rgba(255,255,255,.05);stroke:#8f8f8f}
+.sv-iris{fill:#bfbfbf}
+.sv-sensor{stroke:#ececec;stroke-width:2}
+.sv-rays line{stroke-width:1.2}
+.sv-disc{stroke-width:5;stroke-linecap:round}
+.sv-disc-label,.sv-subject text{font:10.5px var(--f-mono)}
+
+.fl-controls{position:sticky;top:calc(var(--lab-navigation-height,52px) + 90px);padding:6px 22px 22px;background:#070707;border:1px solid var(--line)}
+.fl-controls section{padding:16px 0 18px;border-bottom:1px solid var(--line)}
+.fl-control-title{margin:0 0 12px;color:#fff;font-size:15px;font-weight:500}
+.fl-seg{display:flex;flex-wrap:wrap;gap:6px}
+.fl-seg button{flex:1;min-height:40px;padding:6px 8px;border:1px solid #333;background:#101010;color:#d9d9d9;font:13px var(--f-ko);cursor:pointer}
+.fl-seg button:hover{border-color:#8f8f8f}
+.fl-seg button[aria-pressed="true"]{border-color:#ececec;background:#ececec;color:#000}
+.fl-presets button{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.3}
+.fl-presets small{color:inherit;opacity:.7;font:10.5px var(--f-mono)}
+.fl-apertures{display:grid;grid-template-columns:repeat(4,1fr)}
+.fl-apertures button{font:12px var(--f-mono)}
+.fl-slider-label{display:flex;justify-content:space-between;margin:18px 0 4px;color:#a6a6a6;font-size:13px}
+.fl-slider-label output{color:#fff;font:13px var(--f-mono)}
+.fl-range{position:relative;height:34px}
+.fl-zone{position:absolute;top:50%;height:12px;transform:translateY(-50%);background:rgba(255,255,255,.3);pointer-events:none}
+.fl-range input{position:relative;width:100%;height:34px;margin:0;background:transparent;accent-color:#ececec;cursor:pointer}
+.fl-scale{display:flex;justify-content:space-between;color:#666;font:10px var(--f-mono)}
+.fl-readout{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;margin:18px 0 0}
+.fl-readout dt{color:#8f8f8f;font:11px var(--f-mono)}
+.fl-readout dd{margin:3px 0 0;color:#fff;font:15px var(--f-mono)}
+.fl-conditions{padding-top:14px;border-top:1px solid var(--line)}
+
+.fl-exposure{display:grid;gap:18px}
+.fl-exposure[hidden],.fl-guide[hidden],.fl-workbench[hidden]{display:none}
+.fl-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fl-compare figure{margin:0}
+.fl-compare canvas{display:block;width:100%;height:auto;aspect-ratio:3/2;background:#070707;border:1px solid var(--line)}
+.fl-compare figcaption{margin-top:8px;color:#a6a6a6;font:12px var(--f-mono)}
+.fl-compare figcaption b{color:#fff;font-weight:500}
+.fl-exposure-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
+.fl-exposure-controls .fl-slider-label{margin:0}
+.fl-exposure-controls select{min-height:40px;padding:6px 10px;border:1px solid #333;background:#101010;color:#d9d9d9;font:13px var(--f-mono)}
+.fl-exposure-controls .fl-seg{flex:1;min-width:260px}
+
+.fl-guide{display:grid;gap:30px;max-width:78ch}
+.fl-guide h2{margin:0 0 10px;color:#fff;font-size:18px;font-weight:500}
+.fl-guide p{margin:0 0 10px;color:#bfbfbf;font-size:15px;line-height:1.85;word-break:keep-all}
+.fl-guide b{color:#fff;font-weight:500}
+.fl-formula{padding:12px 14px;background:#070707;border:1px solid var(--line);color:#ececec!important;font:13px/1.8 var(--f-mono)!important}
+.fl-formula small{color:#8f8f8f}
+.fl-table-wrap{overflow-x:auto;margin:6px 0 12px}
+.fl-table{width:100%;border-collapse:collapse;font:12.5px var(--f-mono)}
+.fl-table caption{padding-bottom:8px;color:#8f8f8f;font-size:12px;text-align:left}
+.fl-table th,.fl-table td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;color:#d9d9d9;white-space:nowrap}
+.fl-table th{color:#8f8f8f;font-weight:400}
+.fl-table th:first-child,.fl-table td:first-child{text-align:left}
+
+@media(max-width:1100px){.fl-workbench{grid-template-columns:minmax(0,1fr) 270px}}
+@media(max-width:900px){
+ .fl-workbench{display:flex;flex-direction:column;gap:24px}
+ .fl-main{display:contents}
+ .fl-photo{order:1}.fl-controls{order:2;position:static;width:100%}.fl-strip-block{order:3}.fl-side{order:4}
+ .fl-photo,.fl-strip-block,.fl-side{width:100%;min-width:0}
+}
+@media(max-width:640px){
+ .fl-toolbar{flex-direction:column;align-items:stretch;gap:0}
+ .fl-tools{justify-content:flex-end;margin-top:-4px}
+ .fl-strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px}
+ .fl-frame-btn{flex:0 0 42%;scroll-snap-align:start}
+ .fl-compare{grid-template-columns:1fr}
+ .fl-why{font-size:14px}
+ .fl-hud{font-size:11px;gap:10px}
+ .fl-tag{font-size:10px;padding:2px 7px 2px 6px}
+}
+@media(prefers-reduced-motion:reduce){.fl-tag{transition:none}}
+/* The side view keeps a readable size on phones and scrolls sideways instead of shrinking. */
+.fl-side-scroll{overflow-x:auto}
+@media(max-width:640px){.fl-side-scroll svg{min-width:620px}}
