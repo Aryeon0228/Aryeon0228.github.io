@@ -1,6 +1,7 @@
 import {initRoomLab} from './room-lab.mjs';
 import {fitExposure,linearDisplay,srgb} from './lighting-physics.mjs';
 import {SOURCES,preset,illuminance,comparison,validateSettings,comparisonColors,daylightPreset} from './light-sources.mjs';
+import {explain} from './lighting-why.mjs';
 const $=id=>document.getElementById(id);
 const fmt=x=>x>=1000?Math.round(x).toLocaleString('en-US'):x>=10?x.toFixed(2):x.toFixed(2);
 const signed=x=>(x>=0?'+':'')+x.toFixed(1);
@@ -61,6 +62,7 @@ function update(){
  $('stops').textContent=Math.abs(diff).toFixed(2);$('ratio-text').replaceChildren();
  if(Math.abs(diff)<1e-8){$('ratio-text').textContent='두 측정면의 조도가 같습니다.';}
  else{const stronger=diff>0?'right':'left',name=SOURCES[state[stronger].source].name,strong=document.createElement('strong');strong.textContent=fmt(2**Math.abs(diff))+'배';$('ratio-text').append((stronger==='left'?'왼쪽':'오른쪽')+' '+name+' 쪽이 ',strong,' 강합니다.');}
+ $('why').replaceChildren(...explain(state).map(part=>{if(!part.strong)return part.text;const b=document.createElement('strong');b.textContent=part.text;return b;}));
  $('takeaway').textContent=state.mode==='individual'?'비슷하게 보여도 조도는 다를 수 있습니다. 각 그림 위의 노출 보정값을 비교해보세요.':'노출을 올려도 두 빛의 물리적인 비율은 바뀌지 않습니다.';
  $('exposure-note').textContent=state.mode==='individual'?'각 장면 자동 노출 + 공통 밝기 + 개별 보정':'공통 밝기 + 개별 보정 · 조도(lx)는 바뀌지 않습니다.';
  document.querySelectorAll('.source-card').forEach(card=>{const id=card.dataset.source,sides=['left','right'].filter(side=>state[side].source===id);card.classList.toggle('active',sides.length>0);$('chosen-'+id).textContent=sides.map(s=>s==='left'?'왼쪽':'오른쪽').join(' · ');});

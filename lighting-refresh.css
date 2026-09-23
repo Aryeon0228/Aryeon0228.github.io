@@ -42,3 +42,7 @@ button[aria-pressed=true],button.selected{background:#ddd;color:#111;border-colo
  .shared-conditions .wb-buttons{display:grid;grid-template-columns:1fr;width:100%}
 }
 .comparison-workbench>.source-library{grid-column:1/-1}
+/* One live sentence on why the two views look this way. */
+.why-caption{margin:-8px 0 20px;padding-left:14px;border-left:1px solid rgba(255,255,255,.22);max-width:80ch;font-size:15px;line-height:1.75;color:#d9d9d9;word-break:keep-all;overflow-wrap:anywhere}
+.why-caption strong{color:#fff;font-weight:500}
+@media(max-width:700px){.why-caption{font-size:14px}}
