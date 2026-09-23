@@ -52,7 +52,7 @@ body[data-lab] .site-header {
   min-height: var(--lab-navigation-height);
   padding: 12px 0;
   border-bottom: 1px solid transparent;
-  color: #999;
+  color: #8f8f8f;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -86,7 +86,7 @@ body[data-lab] .site-header {
     padding: 0 var(--pad);
     font: 400 12px/1.4 var(--f-ko);
   }
-  .lab-picker > span { flex: none; color: #aaa; }
+  .lab-picker > span { flex: none; color: #a6a6a6; }
   .lab-picker select {
     flex: 1;
     width: 0;
@@ -95,7 +95,8 @@ body[data-lab] .site-header {
     padding: 6px 0;
     border: 0;
     border-radius: 0;
-    color: #eee;
+    font: inherit;
+    color: #ececec;
     background: #000;
     color-scheme: dark;
     font: 400 12px/1.4 var(--f-ko);
@@ -119,7 +120,7 @@ body[data-lab] .lab-heading {
 
 .lab-heading .study-kicker {
   margin: 0 0 12px;
-  color: #999;
+  color: #8f8f8f;
   font: 400 12px/1.7 var(--f-mono);
   letter-spacing: .12em;
 }
@@ -131,7 +132,7 @@ body[data-lab] .lab-heading {
 
 .lab-heading .study-kicker span {
   margin: 0 9px;
-  color: #555;
+  color: #666666;
 }
 
 .lab-heading h1 {
@@ -147,7 +148,7 @@ body[data-lab] .lab-heading {
 .lab-heading p {
   max-width: none;
   margin: 10px 0 0;
-  color: #aaa;
+  color: #a6a6a6;
   font: 300 14px/1.7 var(--f-ko);
 }
 
@@ -191,7 +192,7 @@ body[data-lab] .lab-heading {
 }
 
 /* Contextual links explain which question the next lab answers. */
-.lab-connection{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;margin:24px 0;padding:18px 0;border-top:1px solid #282828;color:#aaa;font-size:14px;line-height:1.8;word-break:keep-all;overflow-wrap:anywhere}
-.lab-connection a{color:#ddd;text-decoration:underline;text-decoration-color:#666;text-underline-offset:4px}
+.lab-connection{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;margin:24px 0;padding:18px 0;border-top:1px solid #282828;color:#a6a6a6;font-size:14px;line-height:1.8;word-break:keep-all;overflow-wrap:anywhere}
+.lab-connection a{color:#d9d9d9;text-decoration:underline;text-decoration-color:#666;text-underline-offset:4px}
 .lab-connection a:hover{color:#fff;text-decoration-color:currentColor}
 .lab-connection a:focus-visible{outline:2px solid #ddd;outline-offset:5px}
