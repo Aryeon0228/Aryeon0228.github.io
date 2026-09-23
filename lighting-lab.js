@@ -97,10 +97,11 @@ for(const zone of zones){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')endDrag();});
 $('reset').onclick=()=>{state={left:preset('candle'),right:preset('sun'),mode:'shared',offsets:{left:0,right:0},exposure:0,rho:.18,color:true,whiteBalance:'neutral'};endDrag();sync();update();$('assignment-status').textContent='촛불과 햇빛의 기본 비교로 초기화했습니다.';};
-const W=520,H=390,normal=[-.5,.7,.5099019513592785];
+// A taller frame than the old 4:3 so each view can fill the stage; the sphere spans 56% of the width.
+const W=520,H=600,SPAN=3.6,normal=[-.5,.7,.5099019513592785];
 const geometry=new Float32Array(W*H);
 for(let y=0;y<H;y++)for(let x=0;x<W;x++){
- const px=(x/W-.5)*4.5, py=(.53-y/H)*3.375, z2=1-px*px-py*py;
+ const px=(x/W-.5)*SPAN, py=(.47-y/H)*SPAN*H/W, z2=1-px*px-py*py;
  let shade=0;
  if(z2>=0){shade=Math.max(0,px*normal[0]+py*normal[1]+Math.sqrt(z2)*normal[2]);}
  else if(py<-.99){
