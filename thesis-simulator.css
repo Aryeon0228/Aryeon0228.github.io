@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    font-family: 'IBM Plex Sans KR', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
     color: #e0e0e0;
     overflow-x: hidden;
@@ -979,3 +979,6 @@ body {
 .loading {
     animation: pulse 2s ease-in-out infinite;
 }
+
+/* Form controls do not inherit the page font by default. */
+button, input, select, textarea { font-family: inherit; }

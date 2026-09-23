@@ -5,7 +5,7 @@ import {initSourcePanel} from './interior-source.mjs?v=8a2a9e3f966d';
 const $=id=>document.getElementById(id),canvas=$('gl');
 const initial={yaw:.20,pitch:.065,depth:4.8,grid:5,seed:0,refl:.28,dust:.08,day:.34,mode:0,reflOn:true,dustOn:true};
 const state={...initial};let previousSeed=null,currentSeed=initial.seed,nextSeed=initial.seed;let gl,program,uniforms={},pending=0,dragging=false,lastX=0,lastY=0;
-function fail(message){$('errorText').textContent=message;$('error').hidden=false;document.querySelector('.status').lastChild.textContent='미리보기 중단';}
+function fail(message){stopTour();$('bTour').hidden=true;$('errorText').textContent=message;$('error').hidden=false;$('statusText').textContent='미리보기 중단';}
 function shader(type,source){const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){const message=gl.getShaderInfoLog(s);gl.deleteShader(s);throw Error(message);}return s;}
 function init(){
  try{
@@ -40,9 +40,39 @@ $('bShuffle').addEventListener('click',()=>{previousSeed=state.seed;nextSeed+=13
 $('bCompare').addEventListener('click',()=>{if(previousSeed===null)return;const compare=$('bCompare').getAttribute('aria-pressed')!=='true';state.seed=compare?previousSeed:currentSeed;$('bCompare').setAttribute('aria-pressed',String(compare));$('announce').textContent=compare?'이전 실내 구성입니다. 다시 누르면 새 구성으로 돌아갑니다.':'새 실내 구성입니다.';requestRender();});
 $('bMode').addEventListener('click',()=>{state.mode=1-state.mode;$('bMode').setAttribute('aria-pressed',String(!!state.mode));$('bMode').textContent=state.mode?'재질 보기':'면 구분 보기';$('legend').classList.toggle('visible',!!state.mode);requestRender();});
 const lights={day:{value:1,label:'DAYLIGHT'},dusk:{value:.34,label:'BLUE HOUR'},night:{value:.035,label:'AFTER DARK'}};
-for(const button of document.querySelectorAll('[data-light]'))button.addEventListener('click',()=>{state.day=lights[button.dataset.light].value;$('sceneName').textContent=lights[button.dataset.light].label;for(const other of document.querySelectorAll('[data-light]'))other.setAttribute('aria-pressed',String(other===button));requestRender();});
+function showLight(key){$('sceneName').textContent=lights[key].label;for(const button of document.querySelectorAll('[data-light]'))button.setAttribute('aria-pressed',String(button.dataset.light===key));}
+for(const button of document.querySelectorAll('[data-light]'))button.addEventListener('click',()=>{state.day=lights[button.dataset.light].value;showLight(button.dataset.light);requestRender();});
+
+// ---- auto tour: a slow look around while the light cycles, until the visitor takes over.
+// It never starts by itself under prefers-reduced-motion, and it draws nothing while the canvas is off screen or the tab is hidden.
+const TOUR_LIGHTS=[[0,'dusk'],[9,'night'],[18,'day'],[27,'dusk']],TOUR_PERIOD=36,EASE_IN=1.6,LIGHT_EASE=1.8;
+const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+const hintText=$('canvasHint').textContent;
+let touring=false,tourFrame=0,tourStart=0,tourBeat=-1,pausedAt=0,onScreen=true,from={yaw:0,pitch:0},dayFrom=state.day,dayTo=state.day,dayAt=0;
+function tourButton(){$('bTour').setAttribute('aria-pressed',String(touring));$('bTour').textContent=touring?'자동 둘러보기 ❚❚':'자동 둘러보기 ▶';$('canvasHint').textContent=touring?'자동 둘러보기 중 · 드래그하거나 조절하면 멈춥니다':hintText;}
+function tourTick(now){
+ tourFrame=0;if(!touring)return;
+ if(!onScreen||document.hidden){pausedAt=pausedAt||now;return;}
+ if(pausedAt){tourStart+=now-pausedAt;dayAt+=now-pausedAt;pausedAt=0;}
+ const t=(now-tourStart)/1000,w=smooth(t/EASE_IN);
+ state.yaw=from.yaw+(initial.yaw+.46*Math.sin(t*Math.PI*2/18)-from.yaw)*w;
+ state.pitch=from.pitch+(initial.pitch+.07*Math.sin(t*Math.PI*2/27)-from.pitch)*w;
+ const phase=t%TOUR_PERIOD;let beat=0;TOUR_LIGHTS.forEach(([at],i)=>{if(phase>=at)beat=i;});
+ if(beat!==tourBeat){tourBeat=beat;const key=TOUR_LIGHTS[beat][1];dayFrom=state.day;dayTo=lights[key].value;dayAt=now;showLight(key);}
+ state.day=dayFrom+(dayTo-dayFrom)*smooth((now-dayAt)/1000/LIGHT_EASE);
+ render();tourFrame=requestAnimationFrame(tourTick);
+}
+function startTour(){if(touring||!gl)return;touring=true;tourStart=performance.now();tourBeat=-1;pausedAt=0;from={yaw:state.yaw,pitch:state.pitch};tourButton();tourFrame=requestAnimationFrame(tourTick);}
+function stopTour(){if(!touring)return;touring=false;cancelAnimationFrame(tourFrame);tourFrame=0;state.day=dayTo;tourButton();requestRender();}
+function resumeTour(){if(touring&&!tourFrame)tourFrame=requestAnimationFrame(tourTick);}
+$('bTour').addEventListener('click',()=>touring?stopTour():startTour());
+// Any hand on the canvas or the controls ends the tour; the visitor's change then applies to a still scene.
+canvas.addEventListener('pointerdown',stopTour,true);canvas.addEventListener('keydown',stopTour,true);
+for(const event of ['pointerdown','keydown'])$('controlsPanel').addEventListener(event,stopTour,true);
+new IntersectionObserver(entries=>{onScreen=entries[0].isIntersecting;if(onScreen)resumeTour();}).observe(canvas);
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();if(pending)cancelAnimationFrame(pending);pending=0;fail('그래픽 연결이 잠시 끊겼어요. 다시 시도하면 미리보기를 복구합니다.');});
 canvas.addEventListener('webglcontextrestored',init);$('retry').addEventListener('click',()=>location.reload());
-new ResizeObserver(resize).observe(canvas);document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestRender();});
+new ResizeObserver(resize).observe(canvas);document.addEventListener('visibilitychange',()=>{if(!document.hidden){requestRender();resumeTour();}});
 init();
+if(gl&&program){$('bTour').hidden=false;tourButton();if(!matchMedia('(prefers-reduced-motion: reduce)').matches)startTour();}
 initSourcePanel(shaders);
