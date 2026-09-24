@@ -179,6 +179,29 @@ input[type=range]::-moz-range-thumb{ width:9px; height:9px; background:var(--w);
 input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px; }
 .knob-scale{ display:flex; justify-content:space-between; margin-top:6px; font-family:var(--f-mono); font-size:9px; color:var(--g1); letter-spacing:.06em; }
 
+/* ---------- Post FX switch (prototype) ---------- */
+.fx-switch{
+  position:absolute; z-index:3; left:var(--pad); bottom:calc(clamp(26px,4vw,40px) + 52px);
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+}
+.fx-switch .lbl{ margin-right:6px; }
+.fx-switch button{
+  min-height:32px; padding:4px 10px; border:1px solid var(--ln2); background:rgba(0,0,0,.6);
+  color:#a6a6a6; font:500 12px var(--f-mono); letter-spacing:.06em; cursor:pointer;
+}
+.fx-switch button:hover{ color:var(--w); }
+.fx-switch button[aria-pressed="true"]{ color:#000; background:var(--w); border-color:var(--w); }
+.fx-switch button:focus-visible{ outline:1px solid var(--w); outline-offset:3px; }
+.fx-layers{ display:none; gap:4px; margin-left:10px; padding-left:12px; border-left:1px solid var(--ln2); }
+.hero[data-fx="xray"] .fx-layers{ display:flex; }
+.xray-label{
+  position:absolute; z-index:2; left:0; top:0; display:none; pointer-events:none; white-space:nowrap;
+  color:var(--w); font:12px var(--f-mono); letter-spacing:.06em; text-shadow:0 0 6px #000;
+}
+.hero[data-fx="xray"] .xray-label{ display:block; }
+html[data-theme="day"] .fx-switch{ display:none; }
+html[data-theme="day"] .xray-label{ display:none !important; }
+
 /* ---------- 텔레메트리 ---------- */
 .tele{
   position:absolute; z-index:3; left:var(--pad); bottom:clamp(26px,4vw,40px);
@@ -193,6 +216,7 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
   .hero-name{ font-size:clamp(52px,9.6vw,96px); }
   .hero-inner{ align-items:flex-start; }
   .tele{ position:static; margin-top:30px; }
+  .fx-switch{ position:static; margin-top:18px; }
   .hero{ min-height:680px; }
   .hero-veil{ background:linear-gradient(90deg,rgba(0,0,0,.70),transparent 64%); }
 }
@@ -206,6 +230,8 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
   .tele{ position:absolute; left:var(--pad); bottom:85px; gap:18px; }
   .tele div:last-child{ display:none; }
   .rack[open]{ max-height:560px; }
+  .fx-switch{ position:absolute; left:var(--pad); right:var(--pad); bottom:134px; margin:0; }
+  .fx-layers{ margin-left:0; padding-left:0; border-left:0; }
   .frame{ opacity:.18; }
 }
 
@@ -448,6 +474,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   <button type="button" id="planet-drag" class="planet-drag" hidden
     aria-label="행성과 고리 회전" title="드래그해서 회전 · 방향키로 미세 조절"></button>
   <div class="frame"><span></span><span></span><span></span><span></span></div>
+  <div class="xray-label" id="xray-label" aria-hidden="true"></div>
 
   <div class="hero-inner">
     <div class="wrap">
@@ -471,6 +498,18 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         <div><span class="lbl">Incidence</span><b id="t-inc">0.0°</b></div>
         <div><span class="lbl">Render</span><b id="t-fps">60 fps</b></div>
         <div><span class="lbl">Renderer</span><b id="t-eng">THREE r128</b></div>
+      </div>
+      <div class="fx-switch" role="group" aria-label="후처리 효과 실험">
+        <span class="lbl">Post FX</span>
+        <button type="button" data-fx="off" aria-pressed="true">OFF</button>
+        <button type="button" data-fx="xray" aria-pressed="false">X-RAY</button>
+        <button type="button" data-fx="eclipse" aria-pressed="false">ECLIPSE</button>
+        <span class="fx-layers" role="group" aria-label="돋보기로 볼 렌더 패스 (숫자 1–4)">
+          <button type="button" data-xray-layer aria-pressed="true">N·L</button>
+          <button type="button" data-xray-layer aria-pressed="false">NRM</button>
+          <button type="button" data-xray-layer aria-pressed="false">DEP</button>
+          <button type="button" data-xray-layer aria-pressed="false">WIRE</button>
+        </span>
       </div>
     </div>
   </div>
@@ -652,7 +691,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(points.length || dust.length) frameId=requestAnimationFrame(drawMeteor);
   }
   function moveMeteor(e){
-    if(e.pointerType!=='mouse' || !finePointer.matches || reducedMotion.matches || document.hidden){
+    if(e.pointerType!=='mouse' || !finePointer.matches || reducedMotion.matches || document.hidden || hero.dataset.fx === 'xray'){
       clearMeteor(); return;
     }
     var rect=hero.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
@@ -1344,18 +1383,76 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ].join('\n')
   });
 
+  // The sun of the eclipse effect: a small disc with a soft corona, in screen space.
+  var SUN_GLSL = [
+    'uniform vec2 uSun; uniform float uSunR; uniform float uAspect; uniform vec2 uCorona;',
+    'float sunLight(vec2 uv){',
+    '  vec2 d = uv - uSun; d.x *= uAspect; float r = length(d);',
+    '  return smoothstep(uSunR, uSunR*.82, r)*2.6 + exp(-r/(uSunR*1.6))*.22;',
+    '}',
+    // Only the rays see the corona. As the sun slips behind the planet (uCorona.y) it spreads
+    // to just past the limb (uCorona.x), so light leaks around the edge in totality.
+    'float sunHalo(vec2 uv){',
+    '  vec2 d = uv - uSun; d.x *= uAspect; float r = length(d);',
+    '  return sunLight(uv) + exp(-max(r - uCorona.x, 0.0)/(uSunR*1.7))*.4*uCorona.y;',
+    '}'
+  ].join('\n');
+
   var compMat = new THREE.ShaderMaterial({
-    uniforms:{ tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42} },
+    uniforms:{
+      tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
+      tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
+      tOcc:{value:null}, tRays:{value:null}, uEclipse:{value:0},
+      uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:.04}, uAspect:{value:1}, uCorona:{value:new THREE.Vector2()}
+    },
     vertexShader: POST_VERT,
     fragmentShader:[
       'precision mediump float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
+      'uniform sampler2D tX; uniform vec4 uLens;',
+      'uniform sampler2D tOcc; uniform sampler2D tRays; uniform float uEclipse;',
+      SUN_GLSL,
       'void main(){',
       '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
+      // The sun shows only where nothing stands in front of it; its scattered rays are added on top.
+      '  if(uEclipse > 0.0){',
+      '    c += (sunLight(vUv) * texture2D(tOcc, vUv).r + texture2D(tRays, vUv).rgb) * uEclipse;',
+      '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
       '  c = pow(1.0-exp(-max(c,vec3(0.0))*1.45), vec3(0.88));',
+      // Inside the lens, one render pass replaces the finished image.
+      '  if(uLens.w > 0.0){',
+      '    float r = length(gl_FragCoord.xy - uLens.xy);',
+      '    float inside = 1.0 - smoothstep(uLens.z - 1.0, uLens.z, r);',
+      '    float edge = 1.0 - smoothstep(0.0, 1.4, abs(r - uLens.z));',
+      '    c = mix(c, texture2D(tX, vUv).rgb, inside * uLens.w) + edge * .75 * uLens.w;',
+      '  }',
       '  float d = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898,78.233)))*43758.5453);',
       '  gl_FragColor = vec4(c + (d-0.5)/255.0, 1.0);',
+      '}'
+    ].join('\n')
+  });
+
+  // Light scattering (GPU Gems 3, ch. 13): march from each pixel toward the sun through the
+  // occlusion mask, so light leaking past the planet's limb streaks outward as rays.
+  var raysMat = new THREE.ShaderMaterial({
+    uniforms:{ tOcc:compMat.uniforms.tOcc, uSun:compMat.uniforms.uSun, uSunR:compMat.uniforms.uSunR, uAspect:compMat.uniforms.uAspect, uCorona:compMat.uniforms.uCorona },
+    vertexShader: POST_VERT,
+    fragmentShader:[
+      'precision mediump float;',
+      'uniform sampler2D tOcc; varying vec2 vUv;',
+      SUN_GLSL,
+      'void main(){',
+      '  vec2 step = (vUv - uSun) / 56.0 * .92;',
+      '  vec2 uv = vUv; float decay = 1.0, sum = 0.0;',
+      '  for(int i = 0; i < 56; i++){',
+      '    uv -= step;',
+      '    sum += sunHalo(uv) * texture2D(tOcc, uv).r * decay;',
+      '    decay *= .962;',
+      '  }',
+      '  float v = sum * .06;',
+      // Squaring keeps the bright streaks and drops the faint haze that would grey the sky.
+      '  gl_FragColor = vec4(vec3(v * v * 1.6 + v * .12), 1.0);',
       '}'
     ].join('\n')
   });
@@ -1523,6 +1620,152 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     turnPlanet(delta[0]*step,delta[1]*step);
   });
 
+  /* ---------- Post FX prototypes ----------
+     Two optional effects, chosen with the Post FX switch (or ?fx=xray / ?fx=eclipse):
+     X-RAY shows one of the render's inner passes inside a lens under the cursor;
+     ECLIPSE shows the panel's sun and scatters its light into rays past the planet's limb. */
+  var heroEl = document.querySelector('.hero');
+  var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
+  var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
+  var lensLabel = document.getElementById('xray-label');
+  var fxMode = 'off', xrayLayer = 0;
+  var fxPointer = { x:0, y:0, inside:false };
+  var lens = { x:0, y:0, amount:0, radius:120 };
+  var finePointerFx = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+  var XRAY_LAYERS = [
+    { name:'N·L LIGHTING', note:'빛을 받는 양만' },
+    { name:'NORMAL', note:'표면이 향한 방향' },
+    { name:'DEPTH', note:'카메라까지의 거리' },
+    { name:'WIREFRAME', note:'실제 폴리곤' }
+  ];
+  var XRAY_VERT = [
+    'varying vec3 vN; varying float vZ;',
+    'void main(){',
+    '  vN = normalize(normalMatrix * normal);',
+    '  vec4 mv = modelViewMatrix * vec4(position,1.0);',
+    '  vZ = -mv.z;',
+    '  gl_Position = projectionMatrix * mv;',
+    '}'
+  ].join('\n');
+  function xrayMaterial(body){
+    return new THREE.ShaderMaterial({
+      uniforms:{ uLight:bodyUniforms.uLight },
+      vertexShader:XRAY_VERT,
+      fragmentShader:['precision highp float;','uniform vec3 uLight; varying vec3 vN; varying float vZ;',
+        'void main(){ vec3 n = normalize(vN) * (gl_FrontFacing ? 1.0 : -1.0);', body, '}'].join('\n'),
+      side:THREE.DoubleSide
+    });
+  }
+  var xrayMaterials = [
+    // The unlit side keeps a faint cosine gradient so the form still reads.
+    xrayMaterial('float l = dot(n, normalize(uLight)); gl_FragColor = vec4(vec3(max(l, 0.0) * .9 + (l * .5 + .5) * .12), 1.0);'),
+    xrayMaterial('gl_FragColor = vec4(n * .5 + .5, 1.0);'),
+    // Linear depth with contour lines every third of a unit, like a survey map.
+    xrayMaterial('float d = clamp((vZ - 3.5) / 7.0, 0.0, 1.0); float iso = smoothstep(.93, 1.0, fract(vZ * 3.0));' +
+      ' gl_FragColor = vec4(vec3((1.0 - d) * .85 + iso * .25), 1.0);'),
+    new THREE.MeshBasicMaterial({ color:0xffffff, wireframe:true, transparent:true, opacity:.3 })
+  ];
+  var occluderMaterial = new THREE.MeshBasicMaterial({ color:0x000000 });
+  var rtX = new THREE.WebGLRenderTarget(2, 2, RT);
+  var rtOcc = new THREE.WebGLRenderTarget(2, 2, RT);
+  var rtRays = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
+
+  // Render only the solid bodies with one material; points, lines, labels and the glow shell step aside.
+  function renderPass(material, target, clearHex, hideRing){
+    var hidden = [];
+    scene.traverse(function(object){
+      if(object.visible && (object.isPoints || object.isLine || object.isSprite || object === atmo || (hideRing && object === ring))){
+        object.visible = false; hidden.push(object);
+      }
+    });
+    scene.overrideMaterial = material;
+    renderer.setClearColor(clearHex, 1);
+    renderer.setRenderTarget(target);
+    renderer.render(scene, camera);
+    renderer.setClearColor(0x000000, 1);
+    scene.overrideMaterial = null;
+    hidden.forEach(function(object){ object.visible = true; });
+  }
+
+  function setFx(mode){
+    fxMode = mode;
+    if(mode === 'off') delete heroEl.dataset.fx; else heroEl.dataset.fx = mode;
+    fxButtons.forEach(function(button){ button.setAttribute('aria-pressed', String(button.dataset.fx === mode)); });
+    lens.amount = 0;
+    updateLensLabel();
+  }
+  function setLayer(index){
+    xrayLayer = (index + XRAY_LAYERS.length) % XRAY_LAYERS.length;
+    layerButtons.forEach(function(button, i){ button.setAttribute('aria-pressed', String(i === xrayLayer)); });
+    updateLensLabel();
+  }
+  function updateLensLabel(){
+    var layer = XRAY_LAYERS[xrayLayer];
+    lensLabel.textContent = '0' + (xrayLayer + 1) + ' / ' + layer.name + '  ·  ' + layer.note;
+  }
+  fxButtons.forEach(function(button){ button.addEventListener('click', function(){ setFx(button.dataset.fx); }); });
+  layerButtons.forEach(function(button, i){ button.addEventListener('click', function(){ setLayer(i); }); });
+  document.addEventListener('keydown', function(e){
+    if(fxMode !== 'xray' || e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input,textarea,select')) return;
+    var index = '1234'.indexOf(e.key);
+    if(index >= 0) setLayer(index);
+  });
+  heroEl.addEventListener('pointermove', function(e){
+    var bounds = canvas.getBoundingClientRect();
+    fxPointer.x = e.clientX - bounds.left; fxPointer.y = e.clientY - bounds.top;
+    fxPointer.inside = e.pointerType === 'mouse' && !e.target.closest('.rack,.tele,.fx-switch,a,input,summary,button:not(#planet-drag)');
+  }, { passive:true });
+  heroEl.addEventListener('pointerleave', function(){ fxPointer.inside = false; }, { passive:true });
+  var requestedFx = new URLSearchParams(location.search).get('fx');
+  setLayer(0);
+  setFx(requestedFx === 'xray' || requestedFx === 'eclipse' ? requestedFx : 'off');
+
+  // Where the planet sits on screen, in CSS pixels; the lens and the sun rest there without a mouse.
+  var fxCenter = new THREE.Vector3();
+  function planetOnScreen(){
+    fxCenter.copy(rig.position).project(camera);
+    return { x:(fxCenter.x + 1) * canvas.clientWidth / 2, y:(1 - fxCenter.y) * canvas.clientHeight / 2 };
+  }
+  function ease(current, target, dt, speed){ return current + (target - current) * (1 - Math.exp(-dt * speed)); }
+
+  function updateLens(dt){
+    var w = canvas.clientWidth, h = canvas.clientHeight, dpr = renderer.getPixelRatio();
+    var mouse = finePointerFx.matches && fxPointer.inside;
+    var home = planetOnScreen();
+    var tx = mouse ? fxPointer.x : home.x, ty = mouse ? fxPointer.y : home.y;
+    if(lens.amount === 0){ lens.x = tx; lens.y = ty; }
+    lens.x = ease(lens.x, tx, dt, 18); lens.y = ease(lens.y, ty, dt, 18);
+    lens.radius = Math.max(84, Math.min(150, Math.min(w, h) * .17)) * (mouse ? 1 : 1.25);
+    lens.amount = ease(lens.amount, 1, dt, 8);
+    compMat.uniforms.uLens.value.set(lens.x * dpr, (h - lens.y) * dpr, lens.radius * dpr, lens.amount);
+    // Keep the label beside the lens and inside the hero; flip it to the left near the right edge.
+    var labelWidth = lensLabel.offsetWidth, lx = lens.x + lens.radius * .72, ly = lens.y + lens.radius * .72;
+    if(lx + labelWidth > w - 12) lx = lens.x - lens.radius * .72 - labelWidth;
+    // A resting lens (no mouse) carries its label centred above it, clear of the controls below.
+    if(!mouse){ lx = lens.x - labelWidth / 2; ly = lens.y - lens.radius - 26; }
+    lx = Math.max(12, Math.min(lx, w - labelWidth - 12));
+    ly = Math.min(ly, h - 28);
+    lensLabel.style.transform = 'translate(' + Math.round(lx) + 'px,' + Math.round(ly) + 'px)';
+  }
+
+  // The sun stays where the panel's SUN AZIMUTH puts it, so every control keeps working.
+  // On screen it sits along the light's direction from the planet: beside the limb when the
+  // light comes from the side, hidden behind the disc when it comes from behind (a total
+  // eclipse), and out of view when it shines from the viewer's side.
+  function updateSun(){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    var home = planetOnScreen(), planetR = dragDiameter / 2.08;
+    var L = bodyUniforms.uLight.value;
+    var sx = home.x + L.x * planetR * 1.9, sy = home.y - L.y * planetR * 1.9;
+    compMat.uniforms.uSun.value.set(sx / w, 1 - sy / h);
+    compMat.uniforms.uAspect.value = w / h;
+    compMat.uniforms.uSunR.value = Math.max(12, planetR * .15) / h;
+    var depth = 1 - THREE.MathUtils.smoothstep(Math.hypot(sx - home.x, sy - home.y), planetR * .55, planetR * 1.15);
+    compMat.uniforms.uCorona.value.set(planetR * 1.02 / h, depth);
+    return THREE.MathUtils.smoothstep(-L.z, -.3, .05);
+  }
+
   var reduce = false;
   try{
     var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -1577,6 +1820,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       var bw = Math.max(2, pw>>2), bh = Math.max(2, ph>>2);
       rtA.setSize(bw, bh); rtB.setSize(bw, bh);
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
+      rtX.setSize(pw, ph);
+      rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
+      rtRays.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
     }
     renderWidth=w; renderHeight=h; renderDpr=dpr;
   }
@@ -1669,6 +1915,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       drawPost(blurMat, rtA);
     }
     blurMat.uniforms.uDir.value.set(dx, dy);
+
+    // Post FX: one inner pass for the lens, or the occlusion mask and its rays for the eclipse.
+    if(fxMode === 'xray'){
+      renderPass(xrayMaterials[xrayLayer], rtX, 0x000000, xrayLayer === 3);
+      compMat.uniforms.tX.value = rtX.texture;
+      updateLens(dt);
+    }else compMat.uniforms.uLens.value.w = 0;
+    if(fxMode === 'eclipse'){
+      renderPass(occluderMaterial, rtOcc, 0xffffff, true);
+      compMat.uniforms.tOcc.value = rtOcc.texture;
+      drawPost(raysMat, rtRays);
+      compMat.uniforms.tRays.value = rtRays.texture;
+      compMat.uniforms.uEclipse.value = updateSun();
+    }else compMat.uniforms.uEclipse.value = 0;
 
     // 합성 → 화면
     compMat.uniforms.tScene.value = rtScene.texture;
