@@ -1654,9 +1654,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   /* ---------- Post FX prototypes ----------
      Two optional effects, chosen with the Post FX switch (or ?fx=xray / ?fx=eclipse):
      X-RAY shows one of the render's inner passes inside a lens under the cursor;
-     ECLIPSE moves a far sun behind the planet: a total eclipse, a flare as it breaks out, then rays. */
+     ECLIPSE moves a far sun behind the name and the planet: rays, a total eclipse, a flare. */
   var heroEl = document.querySelector('.hero');
-  var heroName = document.querySelector('.hero-name'), nameShadow = '';
+  var heroName = document.querySelector('.hero-name'), nameShadow = '', nameBlur = '0.0';
   var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
   var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
   var lensLabel = document.getElementById('xray-label');
@@ -1736,7 +1736,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   function setFx(mode){
     fxMode = mode;
-    if(mode !== 'eclipse' && heroName.style.textShadow){ heroName.style.textShadow = ''; nameShadow = ''; }
+    if(mode !== 'eclipse'){ heroName.style.textShadow = ''; heroName.style.filter = ''; nameShadow = ''; nameBlur = '0.0'; }
     if(mode === 'off') delete heroEl.dataset.fx; else heroEl.dataset.fx = mode;
     fxButtons.forEach(function(button){ button.setAttribute('aria-pressed', String(button.dataset.fx === mode)); });
     lens.amount = 0;
@@ -1796,21 +1796,53 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     lensLabel.style.transform = 'translate(' + Math.round(lx) + 'px,' + Math.round(ly) + 'px)';
   }
 
-  // A far sun, moved by the panel's SUN AZIMUTH along a path that passes right behind the
-  // planet. At the default setting camera, planet and sun line up: a total eclipse, with only the
-  // lit atmosphere and the rays around the limb. A little further the sun breaks out at the edge
-  // with a flare, then leaves the frame; its light keeps streaming in from far off screen.
-  // Past a quarter turn the sun is behind the viewer and the effect fades out.
-  var sunTarget = new THREE.Vector3(), sunUp = new THREE.Vector3(0, 1, 0), sunTurn = new THREE.Quaternion();
-  var sunRight = new THREE.Vector3(), sunTilt = new THREE.Quaternion();
+  // A far sun, moved by the panel's SUN AZIMUTH. At 0 it shines from exactly where it does with
+  // Post FX off (above the frame), so the rays pour down from the start. Moving the slider, it
+  // comes down across the sky, passes behind the name, then right behind the planet (a total
+  // eclipse, flaring as it breaks out), and leaves the frame at the lower right. For the rest
+  // of the turn it swings behind the viewer, lighting the planet's face, and returns to the top.
+  // The on-screen part of the path is a smooth curve through those points; each point on screen
+  // is turned back into the light direction that would put the sun there.
+  var sunNdc = new THREE.Vector2(), pathPoints = [0,0,0,0,0,0].map(function(){ return new THREE.Vector2(); });
+  var lightStart = new THREE.Vector3(), lightExit = new THREE.Vector3(), lightFront = new THREE.Vector3(.3, .45, .84).normalize();
+  var PATH_KNOTS = [0, .12, .26, .42];
+  function toNdc(target, x, y, w, h){ return target.set(x / w * 2 - 1, 1 - y / h * 2); }
+  function lightFromNdc(target, ndc, tanHalf){
+    return target.set(ndc.x * tanHalf * camera.aspect, ndc.y * tanHalf, -1).normalize();
+  }
+  function catmullRom(out, p0, p1, p2, p3, u){
+    var u2 = u * u, u3 = u2 * u;
+    return out.set(
+      .5 * (2 * p1.x + (-p0.x + p2.x) * u + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * u2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * u3),
+      .5 * (2 * p1.y + (-p0.y + p2.y) * u + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * u2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * u3));
+  }
   function updateSun(){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
-    var turn = ((P.sun - planetBaseline.sun) % 1 + 1.5) % 1 - .5;
-    sunTarget.copy(rig.position).sub(camera.position).normalize();
-    sunRight.crossVectors(sunTarget, sunUp).normalize();
-    sunTilt.setFromAxisAngle(sunRight, .035);
-    sunTurn.setFromAxisAngle(sunUp, -turn * Math.PI * 2);
-    var L = bodyUniforms.uLight.value.copy(sunTarget).applyQuaternion(sunTilt).applyQuaternion(sunTurn);
+    var turn = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
+    var start = planetBaseline.sun * Math.PI * 2;
+    lightStart.set(Math.cos(start), .42, Math.sin(start)).normalize();
+    // Path points on screen: the start (the default light's vanishing point), the name, the
+    // planet, and an exit beyond the lower right; phantom ends keep the curve smooth.
+    var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect(), home = planetOnScreen();
+    var p = pathPoints;
+    p[1].set(lightStart.x / -lightStart.z / (tanHalf * camera.aspect), lightStart.y / -lightStart.z / tanHalf);
+    toNdc(p[2], nameBox.left - canvasBox.left + nameBox.width * .55, nameBox.top - canvasBox.top + nameBox.height * .38, w, h);
+    toNdc(p[3], home.x, home.y, w, h);
+    p[4].copy(p[3]).sub(p[2]).setLength(1.8).add(p[3]);
+    p[0].copy(p[1]).multiplyScalar(2).sub(p[2]);
+    p[5].copy(p[4]).multiplyScalar(2).sub(p[3]);
+    var L = bodyUniforms.uLight.value;
+    if(turn < PATH_KNOTS[3]){
+      var k = turn < PATH_KNOTS[1] ? 0 : turn < PATH_KNOTS[2] ? 1 : 2;
+      catmullRom(sunNdc, p[k], p[k + 1], p[k + 2], p[k + 3], (turn - PATH_KNOTS[k]) / (PATH_KNOTS[k + 1] - PATH_KNOTS[k]));
+      lightFromNdc(L, sunNdc, tanHalf);
+    }else{
+      // Off screen: swing from the exit round the viewer's side and back to the start.
+      lightFromNdc(lightExit, p[4], tanHalf);
+      var u = (turn - PATH_KNOTS[3]) / (1 - PATH_KNOTS[3]);
+      if(u < .4) L.copy(lightExit).lerp(lightFront, u / .4).normalize();
+      else L.copy(lightFront).lerp(lightStart, (u - .4) / .6).normalize();
+    }
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
     compMat.uniforms.uAspect.value = w / h;
@@ -1830,18 +1862,26 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var sx = compMat.uniforms.uSun.value.x * canvasBox.width, sy = (1 - compMat.uniforms.uSun.value.y) * canvasBox.height;
     var covered = 1 - THREE.MathUtils.smoothstep(Math.hypot(sx - home.x, sy - home.y), planetR * .9, planetR * 1.12);
     var light = amount * (1 - covered);
-    var dx = nameBox.left - canvasBox.left + nameBox.width / 2 - sx, dy = nameBox.top - canvasBox.top + nameBox.height / 2 - sy;
+    var nx = nameBox.left - canvasBox.left, ny = nameBox.top - canvasBox.top;
+    var dx = nx + nameBox.width / 2 - sx, dy = ny + nameBox.height / 2 - sy;
     var length = Math.hypot(dx, dy) || 1, ux = dx / length, uy = dy / length;
+    // Straight behind the name the shadow falls toward the viewer, so it shortens.
+    var reach = Math.min(1, length / 260);
     var layers = [];
     if(light > .02){
       layers.push((-ux * 1.2).toFixed(2) + 'px ' + (-uy * 1.2).toFixed(2) + 'px 2px rgba(255,255,255,' + (.55 * light).toFixed(3) + ')');
       for(var i = 1; i <= 14; i++){
-        var d = i * 2.2;
+        var d = i * 2.2 * reach;
         layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.5 * light * (1 - i / 16)).toFixed(3) + ')');
       }
     }
     var next = layers.join(',');
     if(next !== nameShadow){ heroName.style.textShadow = next; nameShadow = next; }
+    // Depth of field: with the bright sun right behind it, the name drops out of focus.
+    var gapX = Math.max(nx - sx, 0, sx - (nx + nameBox.width)), gapY = Math.max(ny - sy, 0, sy - (ny + nameBox.height));
+    var behind = 1 - THREE.MathUtils.smoothstep(Math.hypot(gapX, gapY), 0, 150);
+    var blur = (behind * light * 7).toFixed(1);
+    if(blur !== nameBlur){ heroName.style.filter = blur === '0.0' ? '' : 'blur(' + blur + 'px)'; nameBlur = blur; }
   }
 
   var reduce = false;
