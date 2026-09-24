@@ -691,7 +691,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(points.length || dust.length) frameId=requestAnimationFrame(drawMeteor);
   }
   function moveMeteor(e){
-    if(e.pointerType!=='mouse' || !finePointer.matches || reducedMotion.matches || document.hidden || hero.dataset.fx){
+    if(e.pointerType!=='mouse' || !finePointer.matches || reducedMotion.matches || document.hidden || hero.dataset.fx === 'xray'){
       clearMeteor(); return;
     }
     var rect=hero.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
@@ -1623,7 +1623,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   /* ---------- Post FX prototypes ----------
      Two optional effects, chosen with the Post FX switch (or ?fx=xray / ?fx=eclipse):
      X-RAY shows one of the render's inner passes inside a lens under the cursor;
-     ECLIPSE lets the cursor carry the sun behind the planet and scatters its light into rays. */
+     ECLIPSE shows the panel's sun and scatters its light into rays past the planet's limb. */
   var heroEl = document.querySelector('.hero');
   var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
   var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
@@ -1631,7 +1631,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var fxMode = 'off', xrayLayer = 0;
   var fxPointer = { x:0, y:0, inside:false };
   var lens = { x:0, y:0, amount:0, radius:120 };
-  var sunPx = { x:0, y:0, ready:false };
   var finePointerFx = window.matchMedia('(hover: hover) and (pointer: fine)');
 
   var XRAY_LAYERS = [
@@ -1693,7 +1692,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     fxMode = mode;
     if(mode === 'off') delete heroEl.dataset.fx; else heroEl.dataset.fx = mode;
     fxButtons.forEach(function(button){ button.setAttribute('aria-pressed', String(button.dataset.fx === mode)); });
-    lens.amount = 0; sunPx.ready = false;
+    lens.amount = 0;
     updateLensLabel();
   }
   function setLayer(index){
@@ -1750,30 +1749,21 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     lensLabel.style.transform = 'translate(' + Math.round(lx) + 'px,' + Math.round(ly) + 'px)';
   }
 
-  // The sun follows the cursor; without one it drifts along a slow path that crosses behind the planet.
-  var sunRay = new THREE.Vector3(), sunWorld = new THREE.Vector3();
-  function updateSun(t, dt){
+  // The sun stays where the panel's SUN AZIMUTH puts it, so every control keeps working.
+  // On screen it sits along the light's direction from the planet: beside the limb when the
+  // light comes from the side, hidden behind the disc when it comes from behind (a total
+  // eclipse), and out of view when it shines from the viewer's side.
+  function updateSun(){
     var w = canvas.clientWidth, h = canvas.clientHeight;
-    var home = planetOnScreen(), reach = Math.max(120, dragDiameter * .9);
-    var tx, ty;
-    if(finePointerFx.matches && fxPointer.inside){ tx = fxPointer.x; ty = fxPointer.y; }
-    else{
-      var phase = reduce ? 1.2 : t * .22;
-      tx = home.x + Math.cos(phase) * reach * 1.25;
-      ty = home.y + Math.sin(phase * 2.0) * reach * .18 - reach * .04;
-    }
-    if(!sunPx.ready){ sunPx.x = tx; sunPx.y = ty; sunPx.ready = true; }
-    sunPx.x = ease(sunPx.x, tx, dt, 6); sunPx.y = ease(sunPx.y, ty, dt, 6);
-    compMat.uniforms.uSun.value.set(sunPx.x / w, 1 - sunPx.y / h);
+    var home = planetOnScreen(), planetR = dragDiameter / 2.08;
+    var L = bodyUniforms.uLight.value;
+    var sx = home.x + L.x * planetR * 1.9, sy = home.y - L.y * planetR * 1.9;
+    compMat.uniforms.uSun.value.set(sx / w, 1 - sy / h);
     compMat.uniforms.uAspect.value = w / h;
-    compMat.uniforms.uSunR.value = Math.max(16, dragDiameter * .075) / h;
-    var planetR = dragDiameter / 2.08, fromCenter = Math.hypot(sunPx.x - home.x, sunPx.y - home.y);
-    var depth = 1 - THREE.MathUtils.smoothstep(fromCenter, planetR * .55, planetR * 1.15);
+    compMat.uniforms.uSunR.value = Math.max(12, planetR * .15) / h;
+    var depth = 1 - THREE.MathUtils.smoothstep(Math.hypot(sx - home.x, sy - home.y), planetR * .55, planetR * 1.15);
     compMat.uniforms.uCorona.value.set(planetR * 1.02 / h, depth);
-    // Light the planet from a point far behind it, along the ray through the sun on screen.
-    sunRay.set(sunPx.x / w * 2 - 1, 1 - sunPx.y / h * 2, .5).unproject(camera).sub(camera.position).normalize();
-    sunWorld.copy(camera.position).addScaledVector(sunRay, (camera.position.z - rig.position.z + 16) / -sunRay.z);
-    bodyUniforms.uLight.value.copy(sunWorld).sub(rig.position).normalize();
+    return THREE.MathUtils.smoothstep(-L.z, -.3, .05);
   }
 
   var reduce = false;
@@ -1862,7 +1852,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // 태양 방위각
     var a = P.sun * Math.PI*2;
     bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
-    if(fxMode === 'eclipse' && !isDay) updateSun(t, dt);
     bodyUniforms.uTime.value  = t;
     orbitMoons.forEach(function(orbit){
       var angle=orbit.phase+t*orbit.speed;
@@ -1938,7 +1927,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       compMat.uniforms.tOcc.value = rtOcc.texture;
       drawPost(raysMat, rtRays);
       compMat.uniforms.tRays.value = rtRays.texture;
-      compMat.uniforms.uEclipse.value = 1;
+      compMat.uniforms.uEclipse.value = updateSun();
     }else compMat.uniforms.uEclipse.value = 0;
 
     // 합성 → 화면
