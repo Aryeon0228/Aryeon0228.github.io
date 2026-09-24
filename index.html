@@ -1798,69 +1798,39 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     lensLabel.style.transform = 'translate(' + Math.round(lx) + 'px,' + Math.round(ly) + 'px)';
   }
 
-  // A far sun, moved by the panel's SUN AZIMUTH along one loop: from above the frame (where
-  // Post FX off puts it) down across the sky, behind the name, right behind the planet (a total
-  // eclipse, flaring as it breaks out), out at the lower right, then behind the viewer (lighting
-  // the planet's face) and back to the top. SUN AZIMUTH 0 is set just inside the limb (see below).
-  // The on-screen part of the path is a smooth curve through those points; each point on screen
-  // is turned back into the light direction that would put the sun there.
-  var sunNdc = new THREE.Vector2(), pathPoints = [0,0,0,0,0,0].map(function(){ return new THREE.Vector2(); });
-  var lightStart = new THREE.Vector3(), lightExit = new THREE.Vector3(), lightFront = new THREE.Vector3(.3, .45, .84).normalize();
-  var PATH_KNOTS = [0, .12, .26, .42];
-  function toNdc(target, x, y, w, h){ return target.set(x / w * 2 - 1, 1 - y / h * 2); }
-  function lightFromNdc(target, ndc, tanHalf){
-    return target.set(ndc.x * tanHalf * camera.aspect, ndc.y * tanHalf, -1).normalize();
+  // A far sun, moved by the panel's SUN AZIMUTH along a straight sweep: it turns about the
+  // vertical axis through the line from the camera to the planet, so on screen it travels
+  // across the frame at the planet's height. SUN AZIMUTH 0 puts it just inside the planet's
+  // right limb (96% of the radius): the frame is dark and only the rays blaze round the edge.
+  // Moving the slider it breaks out with a flare and leaves the frame on the right; it passes
+  // behind the viewer (lighting the planet's face), comes back in from the left behind the
+  // name, and slips behind the planet again.
+  var sunTarget = new THREE.Vector3(), sunUp = new THREE.Vector3(0, 1, 0), sunRight = new THREE.Vector3();
+  var sunTilt = new THREE.Quaternion(), sunTurn = new THREE.Quaternion(), sunProbe = new THREE.Vector3();
+  function sweepLight(out, angle){
+    sunTurn.setFromAxisAngle(sunUp, -angle);
+    return out.copy(sunTarget).applyQuaternion(sunTilt).applyQuaternion(sunTurn);
   }
-  function catmullRom(out, p0, p1, p2, p3, u){
-    var u2 = u * u, u3 = u2 * u;
-    return out.set(
-      .5 * (2 * p1.x + (-p0.x + p2.x) * u + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * u2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * u3),
-      .5 * (2 * p1.y + (-p0.y + p2.y) * u + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * u2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * u3));
+  function screenOf(L, w, h, tanHalf){
+    var back = Math.max(-L.z, .02);
+    return { x:(1 + L.x / back / (tanHalf * camera.aspect)) * w / 2, y:(1 - L.y / back / tanHalf) * h / 2 };
   }
-  function pathAt(out, p, turn){
-    var k = turn < PATH_KNOTS[1] ? 0 : turn < PATH_KNOTS[2] ? 1 : 2;
-    return catmullRom(out, p[k], p[k + 1], p[k + 2], p[k + 3], (turn - PATH_KNOTS[k]) / (PATH_KNOTS[k + 1] - PATH_KNOTS[k]));
-  }
-  var limbProbe = new THREE.Vector2();
-  function eclipseStart(p, w, h, home){
-    var target = dragDiameter / 2.08 * .96, lo = PATH_KNOTS[2], hi = PATH_KNOTS[3];
-    for(var i = 0; i < 14; i++){
-      var mid = (lo + hi) / 2;
-      pathAt(limbProbe, p, mid);
-      var d = Math.hypot((limbProbe.x + 1) * w / 2 - home.x, (1 - limbProbe.y) * h / 2 - home.y);
-      if(d < target) lo = mid; else hi = mid;
+  function limbAngle(w, h, tanHalf, home){
+    var target = dragDiameter / 2.08 * .96, lo = 0, hi = .6;
+    for(var i = 0; i < 16; i++){
+      var mid = (lo + hi) / 2, at = screenOf(sweepLight(sunProbe, mid), w, h, tanHalf);
+      if(Math.hypot(at.x - home.x, at.y - home.y) < target) lo = mid; else hi = mid;
     }
     return (lo + hi) / 2;
   }
   function updateSun(dt){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
-    var start = planetBaseline.sun * Math.PI * 2;
-    lightStart.set(Math.cos(start), .42, Math.sin(start)).normalize();
-    // Path points on screen: the start (the default light's vanishing point), the name, the
-    // planet, and an exit beyond the lower right; phantom ends keep the curve smooth.
-    var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect(), home = planetOnScreen();
-    var p = pathPoints;
-    p[1].set(lightStart.x / -lightStart.z / (tanHalf * camera.aspect), lightStart.y / -lightStart.z / tanHalf);
-    toNdc(p[2], nameBox.left - canvasBox.left + nameBox.width * .55, nameBox.top - canvasBox.top + nameBox.height * .38, w, h);
-    toNdc(p[3], home.x, home.y, w, h);
-    p[4].copy(p[3]).sub(p[2]).setLength(1.8).add(p[3]);
-    p[0].copy(p[1]).multiplyScalar(2).sub(p[2]);
-    p[5].copy(p[4]).multiplyScalar(2).sub(p[3]);
-    // SUN AZIMUTH 0 is the moment the sun sits just inside the planet's limb: the frame is dark
-    // and only the rays blaze round the edge. Found on the path each frame, so it holds on any screen.
-    var limb = eclipseStart(p, w, h, home);
-    var turn = ((P.sun - planetBaseline.sun + limb) % 1 + 1) % 1;
-    var L = bodyUniforms.uLight.value;
-    if(turn < PATH_KNOTS[3]){
-      pathAt(sunNdc, p, turn);
-      lightFromNdc(L, sunNdc, tanHalf);
-    }else{
-      // Off screen: swing from the exit round the viewer's side and back to the start.
-      lightFromNdc(lightExit, p[4], tanHalf);
-      var u = (turn - PATH_KNOTS[3]) / (1 - PATH_KNOTS[3]);
-      if(u < .4) L.copy(lightExit).lerp(lightFront, u / .4).normalize();
-      else L.copy(lightFront).lerp(lightStart, (u - .4) / .6).normalize();
-    }
+    var home = planetOnScreen();
+    sunTarget.copy(rig.position).sub(camera.position).normalize();
+    sunRight.crossVectors(sunTarget, sunUp).normalize();
+    sunTilt.setFromAxisAngle(sunRight, .02);
+    var turn = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
+    var L = sweepLight(bodyUniforms.uLight.value, limbAngle(w, h, tanHalf, home) + turn * Math.PI * 2);
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
     compMat.uniforms.uAspect.value = w / h;
