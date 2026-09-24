@@ -1383,19 +1383,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ].join('\n')
   });
 
-  // The sun of the eclipse effect: a small disc with a soft corona, in screen space.
+  // The sun of the eclipse effect is far away: a tiny, very bright disc (uDisc, in screen
+  // heights) inside a wide glow (uSunR). It may sit on screen, behind the planet, or far outside.
   var SUN_GLSL = [
-    'uniform vec2 uSun; uniform float uSunR; uniform float uAspect; uniform vec2 uCorona;',
-    'float sunLight(vec2 uv){',
-    '  vec2 d = uv - uSun; d.x *= uAspect; float r = length(d);',
-    '  return smoothstep(uSunR, uSunR*.82, r)*2.6 + exp(-r/(uSunR*1.6))*.22;',
-    '}',
-    // Only the rays see the corona. As the sun slips behind the planet (uCorona.y) it spreads
-    // to just past the limb (uCorona.x), so light leaks around the edge in totality.
-    'float sunHalo(vec2 uv){',
-    '  vec2 d = uv - uSun; d.x *= uAspect; float r = length(d);',
-    '  return sunLight(uv) + exp(-max(r - uCorona.x, 0.0)/(uSunR*1.7))*.4*uCorona.y;',
-    '}'
+    'uniform vec2 uSun; uniform float uSunR; uniform float uAspect; uniform float uDisc;',
+    'float sunDist(vec2 uv){ vec2 d = uv - uSun; d.x *= uAspect; return length(d); }',
+    'float sunDisc(vec2 uv){ float r = sunDist(uv); return smoothstep(uDisc, uDisc*.55, r)*4.0 + exp(-r/(uDisc*3.5))*.9; }',
+    'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }'
   ].join('\n');
 
   var compMat = new THREE.ShaderMaterial({
@@ -1403,7 +1397,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
       tOcc:{value:null}, tRays:{value:null}, uEclipse:{value:0},
-      uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:.04}, uAspect:{value:1}, uCorona:{value:new THREE.Vector2()}
+      uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
     },
     vertexShader: POST_VERT,
     fragmentShader:[
@@ -1416,7 +1410,32 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
       // The sun shows only where nothing stands in front of it; its scattered rays are added on top.
       '  if(uEclipse > 0.0){',
-      '    c += (sunLight(vUv) * texture2D(tOcc, vUv).r + texture2D(tRays, vUv).rgb) * uEclipse;',
+      '    float open = texture2D(tOcc, vUv).r;',
+      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + texture2D(tRays, vUv).rgb) * uEclipse;',
+      // Lens flare: how much of the disc is uncovered, and how far inside the frame it is.
+      '    vec2 o = vec2(uDisc / uAspect, uDisc) * .7;',
+      '    float seen = (texture2D(tOcc, uSun).r + texture2D(tOcc, uSun + vec2(o.x, 0.0)).r + texture2D(tOcc, uSun - vec2(o.x, 0.0)).r',
+      '      + texture2D(tOcc, uSun + vec2(0.0, o.y)).r + texture2D(tOcc, uSun - vec2(0.0, o.y)).r) / 5.0;',
+      '    vec2 outside = max(max(-uSun, uSun - 1.0), 0.0);',
+      '    float flare = seen * (1.0 - smoothstep(0.0, .12, max(outside.x, outside.y))) * uEclipse;',
+      '    if(flare > 0.0){',
+      // A six-point diffraction star and a thin horizontal streak around the sun.
+      '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d), a = atan(d.y, d.x);',
+      '      float star = pow(abs(cos(a * 3.0)), 80.0) * exp(-r / .09) * .55;',
+      '      float streak = exp(-abs(d.y) * 420.0) * exp(-abs(d.x) * 2.6) * .35;',
+      // Ghosts: soft discs and rings along the line from the sun through the frame centre.
+      '      vec2 axis = vec2(.5) - uSun; float ghosts = 0.0;',
+      '      for(int i = 0; i < 6; i++){',
+      '        float fi = float(i);',
+      '        float t = .35 + fi * .33 + mod(fi, 2.0) * .12;',
+      '        float size = .018 + mod(fi * 7.0, 5.0) * .016;',
+      '        vec2 g = vUv - (uSun + axis * t * 2.0); g.x *= uAspect; float gr = length(g);',
+      '        float disc = smoothstep(size, size * .75, gr);',
+      '        float ring = exp(-abs(gr - size) * 900.0);',
+      '        ghosts += mod(fi, 3.0) == 1.0 ? ring * .07 : disc * (.025 + mod(fi, 2.0) * .02);',
+      '      }',
+      '      c += (star + streak + ghosts) * flare;',
+      '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
       '  c = pow(1.0-exp(-max(c,vec3(0.0))*1.45), vec3(0.88));',
@@ -1436,23 +1455,26 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // Light scattering (GPU Gems 3, ch. 13): march from each pixel toward the sun through the
   // occlusion mask, so light leaking past the planet's limb streaks outward as rays.
   var raysMat = new THREE.ShaderMaterial({
-    uniforms:{ tOcc:compMat.uniforms.tOcc, uSun:compMat.uniforms.uSun, uSunR:compMat.uniforms.uSunR, uAspect:compMat.uniforms.uAspect, uCorona:compMat.uniforms.uCorona },
+    uniforms:{ tOcc:compMat.uniforms.tOcc, uSun:compMat.uniforms.uSun, uSunR:compMat.uniforms.uSunR, uAspect:compMat.uniforms.uAspect, uDisc:compMat.uniforms.uDisc },
     vertexShader: POST_VERT,
     fragmentShader:[
       'precision mediump float;',
       'uniform sampler2D tOcc; varying vec2 vUv;',
       SUN_GLSL,
       'void main(){',
-      '  vec2 step = (vUv - uSun) / 56.0 * .92;',
+      // March toward the sun for at most one screen length; beyond the frame the sky is open.
+      '  vec2 toSun = uSun - vUv; toSun *= min(1.0, 1.0 / length(toSun));',
+      '  vec2 step = -toSun / 56.0;',
       '  vec2 uv = vUv; float decay = 1.0, sum = 0.0;',
       '  for(int i = 0; i < 56; i++){',
       '    uv -= step;',
-      '    sum += sunHalo(uv) * texture2D(tOcc, uv).r * decay;',
-      '    decay *= .962;',
+      '    sum += sunLight(uv) * texture2D(tOcc, clamp(uv, 0.0, 1.0)).r * decay;',
+      '    decay *= .975;',
       '  }',
-      '  float v = sum * .06;',
-      // Squaring keeps the bright streaks and drops the faint haze that would grey the sky.
-      '  gl_FragColor = vec4(vec3(v * v * 1.6 + v * .12), 1.0);',
+      // Normalise by the total weight (about 32), then square: open sky stays a faint haze
+      // while the planet's shadow shaft and the gaps between threads read as streaks.
+      '  float v = sum / 32.0;',
+      '  gl_FragColor = vec4(vec3(v * v * .3 + v * .02), 1.0);',
       '}'
     ].join('\n')
   });
@@ -1623,7 +1645,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   /* ---------- Post FX prototypes ----------
      Two optional effects, chosen with the Post FX switch (or ?fx=xray / ?fx=eclipse):
      X-RAY shows one of the render's inner passes inside a lens under the cursor;
-     ECLIPSE shows the panel's sun and scatters its light into rays past the planet's limb. */
+     ECLIPSE moves a far sun behind the planet: a total eclipse, a flare as it breaks out, then rays. */
   var heroEl = document.querySelector('.hero');
   var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
   var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
@@ -1667,24 +1689,38 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     new THREE.MeshBasicMaterial({ color:0xffffff, wireframe:true, transparent:true, opacity:.3 })
   ];
   var occluderMaterial = new THREE.MeshBasicMaterial({ color:0x000000 });
+  // In the passes the ring shows what it depicts: each orbit as a thin thread (a torus),
+  // instead of the flat disc its shader draws the strands on.
+  var ringThreads = new THREE.Group();
+  strands.slice(0, continuousStrandCount).forEach(function(strand){
+    var radius = RING_I + strand.x * (RING_O - RING_I);
+    ringThreads.add(new THREE.Mesh(new THREE.TorusGeometry(radius, .006, 5, 320), occluderMaterial));
+  });
+  ringThreads.visible = false;
+  ring.add(ringThreads);
   var rtX = new THREE.WebGLRenderTarget(2, 2, RT);
   var rtOcc = new THREE.WebGLRenderTarget(2, 2, RT);
   var rtRays = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
 
   // Render only the solid bodies with one material; points, lines, labels and the glow shell step aside.
-  function renderPass(material, target, clearHex, hideRing){
+  function renderPass(material, target, clearHex){
     var hidden = [];
     scene.traverse(function(object){
-      if(object.visible && (object.isPoints || object.isLine || object.isSprite || object === atmo || (hideRing && object === ring))){
+      if(object.visible && (object.isPoints || object.isLine || object.isSprite || object === atmo)){
         object.visible = false; hidden.push(object);
       }
     });
+    // The disc steps aside (its children stay), and the threads take its place.
+    ring.material.visible = false;
+    ringThreads.visible = ring.visible;
     scene.overrideMaterial = material;
     renderer.setClearColor(clearHex, 1);
     renderer.setRenderTarget(target);
     renderer.render(scene, camera);
     renderer.setClearColor(0x000000, 1);
     scene.overrideMaterial = null;
+    ring.material.visible = true;
+    ringThreads.visible = false;
     hidden.forEach(function(object){ object.visible = true; });
   }
 
@@ -1749,21 +1785,27 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     lensLabel.style.transform = 'translate(' + Math.round(lx) + 'px,' + Math.round(ly) + 'px)';
   }
 
-  // The sun stays where the panel's SUN AZIMUTH puts it, so every control keeps working.
-  // On screen it sits along the light's direction from the planet: beside the limb when the
-  // light comes from the side, hidden behind the disc when it comes from behind (a total
-  // eclipse), and out of view when it shines from the viewer's side.
+  // A far sun, moved by the panel's SUN AZIMUTH along a path that passes right behind the
+  // planet. At the default setting camera, planet and sun line up: a total eclipse, with only the
+  // lit atmosphere and the rays around the limb. A little further the sun breaks out at the edge
+  // with a flare, then leaves the frame; its light keeps streaming in from far off screen.
+  // Past a quarter turn the sun is behind the viewer and the effect fades out.
+  var sunTarget = new THREE.Vector3(), sunUp = new THREE.Vector3(0, 1, 0), sunTurn = new THREE.Quaternion();
+  var sunRight = new THREE.Vector3(), sunTilt = new THREE.Quaternion();
   function updateSun(){
-    var w = canvas.clientWidth, h = canvas.clientHeight;
-    var home = planetOnScreen(), planetR = dragDiameter / 2.08;
-    var L = bodyUniforms.uLight.value;
-    var sx = home.x + L.x * planetR * 1.9, sy = home.y - L.y * planetR * 1.9;
-    compMat.uniforms.uSun.value.set(sx / w, 1 - sy / h);
+    var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
+    var turn = ((P.sun - planetBaseline.sun) % 1 + 1.5) % 1 - .5;
+    sunTarget.copy(rig.position).sub(camera.position).normalize();
+    sunRight.crossVectors(sunTarget, sunUp).normalize();
+    sunTilt.setFromAxisAngle(sunRight, .035);
+    sunTurn.setFromAxisAngle(sunUp, -turn * Math.PI * 2);
+    var L = bodyUniforms.uLight.value.copy(sunTarget).applyQuaternion(sunTilt).applyQuaternion(sunTurn);
+    var back = Math.max(-L.z, .02);
+    compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
     compMat.uniforms.uAspect.value = w / h;
-    compMat.uniforms.uSunR.value = Math.max(12, planetR * .15) / h;
-    var depth = 1 - THREE.MathUtils.smoothstep(Math.hypot(sx - home.x, sy - home.y), planetR * .55, planetR * 1.15);
-    compMat.uniforms.uCorona.value.set(planetR * 1.02 / h, depth);
-    return THREE.MathUtils.smoothstep(-L.z, -.3, .05);
+    compMat.uniforms.uSunR.value = 1.1;
+    compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
+    return THREE.MathUtils.smoothstep(-L.z, -.1, .2);
   }
 
   var reduce = false;
@@ -1852,6 +1894,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // 태양 방위각
     var a = P.sun * Math.PI*2;
     bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
+    // ECLIPSE lights the planet from its own sun, before anything is drawn.
+    var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun() : 0;
     bodyUniforms.uTime.value  = t;
     orbitMoons.forEach(function(orbit){
       var angle=orbit.phase+t*orbit.speed;
@@ -1918,16 +1962,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
     // Post FX: one inner pass for the lens, or the occlusion mask and its rays for the eclipse.
     if(fxMode === 'xray'){
-      renderPass(xrayMaterials[xrayLayer], rtX, 0x000000, xrayLayer === 3);
+      renderPass(xrayMaterials[xrayLayer], rtX, 0x000000);
       compMat.uniforms.tX.value = rtX.texture;
       updateLens(dt);
     }else compMat.uniforms.uLens.value.w = 0;
     if(fxMode === 'eclipse'){
-      renderPass(occluderMaterial, rtOcc, 0xffffff, true);
+      renderPass(occluderMaterial, rtOcc, 0xffffff);
       compMat.uniforms.tOcc.value = rtOcc.texture;
       drawPost(raysMat, rtRays);
       compMat.uniforms.tRays.value = rtRays.texture;
-      compMat.uniforms.uEclipse.value = updateSun();
+      compMat.uniforms.uEclipse.value = eclipseAmount;
     }else compMat.uniforms.uEclipse.value = 0;
 
     // 합성 → 화면
