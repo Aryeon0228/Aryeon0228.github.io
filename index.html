@@ -1656,6 +1656,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      X-RAY shows one of the render's inner passes inside a lens under the cursor;
      ECLIPSE moves a far sun behind the planet: a total eclipse, a flare as it breaks out, then rays. */
   var heroEl = document.querySelector('.hero');
+  var heroName = document.querySelector('.hero-name'), nameShadow = '';
   var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
   var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
   var lensLabel = document.getElementById('xray-label');
@@ -1735,6 +1736,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   function setFx(mode){
     fxMode = mode;
+    if(mode !== 'eclipse' && heroName.style.textShadow){ heroName.style.textShadow = ''; nameShadow = ''; }
     if(mode === 'off') delete heroEl.dataset.fx; else heroEl.dataset.fx = mode;
     fxButtons.forEach(function(button){ button.setAttribute('aria-pressed', String(button.dataset.fx === mode)); });
     lens.amount = 0;
@@ -1814,7 +1816,32 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uAspect.value = w / h;
     compMat.uniforms.uSunR.value = 1.1;
     compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
-    return THREE.MathUtils.smoothstep(-L.z, -.1, .2);
+    var amount = THREE.MathUtils.smoothstep(-L.z, -.1, .2);
+    shadeName(amount);
+    return amount;
+  }
+
+  // The name catches the same sun: a long shadow falls away from it and the facing edge
+  // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
+  // fades when the sun hides behind the planet or goes behind the viewer.
+  function shadeName(amount){
+    var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect();
+    var home = planetOnScreen(), planetR = dragDiameter / 2.08;
+    var sx = compMat.uniforms.uSun.value.x * canvasBox.width, sy = (1 - compMat.uniforms.uSun.value.y) * canvasBox.height;
+    var covered = 1 - THREE.MathUtils.smoothstep(Math.hypot(sx - home.x, sy - home.y), planetR * .9, planetR * 1.12);
+    var light = amount * (1 - covered);
+    var dx = nameBox.left - canvasBox.left + nameBox.width / 2 - sx, dy = nameBox.top - canvasBox.top + nameBox.height / 2 - sy;
+    var length = Math.hypot(dx, dy) || 1, ux = dx / length, uy = dy / length;
+    var layers = [];
+    if(light > .02){
+      layers.push((-ux * 1.2).toFixed(2) + 'px ' + (-uy * 1.2).toFixed(2) + 'px 2px rgba(255,255,255,' + (.55 * light).toFixed(3) + ')');
+      for(var i = 1; i <= 14; i++){
+        var d = i * 2.2;
+        layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.5 * light * (1 - i / 16)).toFixed(3) + ')');
+      }
+    }
+    var next = layers.join(',');
+    if(next !== nameShadow){ heroName.style.textShadow = next; nameShadow = next; }
   }
 
   var reduce = false;
