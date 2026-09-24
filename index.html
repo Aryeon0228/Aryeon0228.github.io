@@ -1423,18 +1423,27 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d), a = atan(d.y, d.x);',
       '      float star = pow(abs(cos(a * 3.0)), 80.0) * exp(-r / .09) * .55;',
       '      float streak = exp(-abs(d.y) * 420.0) * exp(-abs(d.x) * 2.6) * .35;',
-      // Ghosts: soft discs and rings along the line from the sun through the frame centre.
-      '      vec2 axis = vec2(.5) - uSun; float ghosts = 0.0;',
+      // Ghosts along the line from the sun through the frame centre. Six aperture blades make
+      // them hexagons, and the lens coatings tint each one (teal, violet, amber, green, blue, rose);
+      // ring ghosts split slightly by wavelength. The sun, star and streak stay white.
+      '      vec2 axis = vec2(.5) - uSun; vec3 ghosts = vec3(0.0);',
       '      for(int i = 0; i < 6; i++){',
       '        float fi = float(i);',
       '        float t = .35 + fi * .33 + mod(fi, 2.0) * .12;',
       '        float size = .018 + mod(fi * 7.0, 5.0) * .016;',
-      '        vec2 g = vUv - (uSun + axis * t * 2.0); g.x *= uAspect; float gr = length(g);',
-      '        float disc = smoothstep(size, size * .75, gr);',
-      '        float ring = exp(-abs(gr - size) * 900.0);',
-      '        ghosts += mod(fi, 3.0) == 1.0 ? ring * .07 : disc * (.025 + mod(fi, 2.0) * .02);',
+      '        vec2 g = vUv - (uSun + axis * t * 2.0); g.x *= uAspect;',
+      '        g = mat2(.966, -.259, .259, .966) * g;',
+      '        vec2 q = abs(g); float hex = max(q.x * .866 + q.y * .5, q.y);',
+      '        vec3 tint = fi < 1.0 ? vec3(.5,1.0,.88) : fi < 2.0 ? vec3(.82,.55,1.0) : fi < 3.0 ? vec3(1.0,.74,.4)',
+      '          : fi < 4.0 ? vec3(.6,1.0,.55) : fi < 5.0 ? vec3(.55,.78,1.0) : vec3(1.0,.58,.76);',
+      '        if(mod(fi, 3.0) == 1.0){',
+      '          vec3 edge = vec3(size * 1.03, size, size * .97);',
+      '          ghosts += exp(-abs(vec3(hex) - edge) * 700.0) * tint * .11;',
+      '        }else{',
+      '          ghosts += smoothstep(size, size * .82, hex) * tint * (.04 + mod(fi, 2.0) * .03);',
+      '        }',
       '      }',
-      '      c += (star + streak + ghosts) * flare;',
+      '      c += (vec3(star + streak) + ghosts) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -1647,6 +1656,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      X-RAY shows one of the render's inner passes inside a lens under the cursor;
      ECLIPSE moves a far sun behind the planet: a total eclipse, a flare as it breaks out, then rays. */
   var heroEl = document.querySelector('.hero');
+  var heroName = document.querySelector('.hero-name'), nameShadow = '';
   var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
   var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
   var lensLabel = document.getElementById('xray-label');
@@ -1726,6 +1736,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   function setFx(mode){
     fxMode = mode;
+    if(mode !== 'eclipse' && heroName.style.textShadow){ heroName.style.textShadow = ''; nameShadow = ''; }
     if(mode === 'off') delete heroEl.dataset.fx; else heroEl.dataset.fx = mode;
     fxButtons.forEach(function(button){ button.setAttribute('aria-pressed', String(button.dataset.fx === mode)); });
     lens.amount = 0;
@@ -1805,7 +1816,32 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uAspect.value = w / h;
     compMat.uniforms.uSunR.value = 1.1;
     compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
-    return THREE.MathUtils.smoothstep(-L.z, -.1, .2);
+    var amount = THREE.MathUtils.smoothstep(-L.z, -.1, .2);
+    shadeName(amount);
+    return amount;
+  }
+
+  // The name catches the same sun: a long shadow falls away from it and the facing edge
+  // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
+  // fades when the sun hides behind the planet or goes behind the viewer.
+  function shadeName(amount){
+    var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect();
+    var home = planetOnScreen(), planetR = dragDiameter / 2.08;
+    var sx = compMat.uniforms.uSun.value.x * canvasBox.width, sy = (1 - compMat.uniforms.uSun.value.y) * canvasBox.height;
+    var covered = 1 - THREE.MathUtils.smoothstep(Math.hypot(sx - home.x, sy - home.y), planetR * .9, planetR * 1.12);
+    var light = amount * (1 - covered);
+    var dx = nameBox.left - canvasBox.left + nameBox.width / 2 - sx, dy = nameBox.top - canvasBox.top + nameBox.height / 2 - sy;
+    var length = Math.hypot(dx, dy) || 1, ux = dx / length, uy = dy / length;
+    var layers = [];
+    if(light > .02){
+      layers.push((-ux * 1.2).toFixed(2) + 'px ' + (-uy * 1.2).toFixed(2) + 'px 2px rgba(255,255,255,' + (.55 * light).toFixed(3) + ')');
+      for(var i = 1; i <= 14; i++){
+        var d = i * 2.2;
+        layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.5 * light * (1 - i / 16)).toFixed(3) + ')');
+      }
+    }
+    var next = layers.join(',');
+    if(next !== nameShadow){ heroName.style.textShadow = next; nameShadow = next; }
   }
 
   var reduce = false;
