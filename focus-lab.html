@@ -7,11 +7,12 @@
 <link rel="icon" type="image/png" href="assets/penumbra.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@200;300;400;500;600&family=IBM+Plex+Sans+KR:wght@200;300;400;500;600&display=swap">
-<link rel="stylesheet" href="penumbra-ui.css?v=2e57f9fd109b"><link rel="stylesheet" href="lab-navigation.css?v=5699cb22f9f6"><link rel="stylesheet" href="focus-lab.css?v=f631606b8607">
-<script src="penumbra-ui.js?v=92c3a0ed2a1f" defer></script>
+<link rel="stylesheet" href="penumbra-ui.css?v=040eb593b248"><link rel="stylesheet" href="lab-navigation.css?v=2925e8681cc0"><link rel="stylesheet" href="lab-shell.css?v=34c8d186eb01"><link rel="stylesheet" href="focus-lab.css?v=9af31eaae4ef">
+<script src="penumbra-ui.js?v=6fe9293ba561" defer></script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
 <script type="module" src="focus-lab.mjs?v=1c076bc65ffa"></script>
 <script src="lab-navigation.js?v=464bc0361c5a" defer></script>
+<script src="lab-shell.js?v=38736d957dc1" defer></script>
 </head>
 <body data-lab="focus"><a class="skip-link" href="#focus-main">실험으로 건너뛰기</a>
 <div class="site-header"><nav class="site-nav nav-wrap" aria-label="주 메뉴">
@@ -30,7 +31,7 @@
 <div class="fl-strip-block"><p class="fl-label">같은 장면, 초점만 다르게 <span id="strip-aperture">f/2</span></p><div class="fl-strip" role="group" aria-label="초점 거리별 사진. 누르면 그 거리로 초점을 옮깁니다."><button type="button" class="fl-frame-btn" data-focus="0.3" aria-pressed="false"><canvas width="240" height="160" aria-hidden="true"></canvas><span>가까이 · 30 cm</span></button><button type="button" class="fl-frame-btn" data-focus="0.4" aria-pressed="false"><canvas width="240" height="160" aria-hidden="true"></canvas><span>선인장 · 40 cm</span></button><button type="button" class="fl-frame-btn" data-focus="0.8" aria-pressed="false"><canvas width="240" height="160" aria-hidden="true"></canvas><span>머그컵 · 80 cm</span></button><button type="button" class="fl-frame-btn" data-focus="2" aria-pressed="false"><canvas width="240" height="160" aria-hidden="true"></canvas><span>곰 인형 · 2 m</span></button><button type="button" class="fl-frame-btn" data-focus="10" aria-pressed="false"><canvas width="240" height="160" aria-hidden="true"></canvas><span>멀리 · 10 m</span></button></div></div>
 <figure class="fl-side"><figcaption><span class="fl-label">측면도</span><span class="fl-side-note">렌즈 뒤쪽은 과장해서 그렸습니다. 상면의 원반은 실제 크기에 비례합니다.</span></figcaption><div class="fl-side-scroll" tabindex="0" aria-label="측면도, 좁은 화면에서는 옆으로 밀어서 봅니다"><svg id="side" viewBox="0 0 720 260" role="img" aria-labelledby="side-desc"><desc id="side-desc">물체에서 나온 빛이 렌즈와 조리개를 지나 상면에 모이는 모습</desc></svg></div></figure>
 </div>
-<aside class="fl-controls" aria-label="초점과 조리개 조절">
+<aside class="fl-controls" aria-label="초점과 조리개 조절" data-lab-sheet="초점과 조리개">
 <section><h2 class="fl-control-title">초점</h2><div class="fl-seg fl-presets" role="group" aria-label="초점 맞출 물체"><button type="button" data-subject="cactus" aria-pressed="false">선인장<small>40 cm</small></button><button type="button" data-subject="mug" aria-pressed="true">머그컵<small>80 cm</small></button><button type="button" data-subject="bear" aria-pressed="false">곰 인형<small>2 m</small></button></div>
 <label class="fl-slider-label" for="focus">초점 거리 <output id="focus-out" for="focus">80 cm</output></label>
 <div class="fl-range"><div class="fl-zone" id="zone-band" aria-hidden="true"></div><input type="range" id="focus" min="0" max="1000" step="1" value="0"></div>

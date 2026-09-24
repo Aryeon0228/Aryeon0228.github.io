@@ -29,7 +29,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
  .site-links>a{display:grid;grid-template-columns:28px 1fr auto;gap:12px;padding:16px 0;font-size:23px;border-bottom:1px solid var(--ln);white-space:normal}
  .site-links>a[data-section]::after{display:none}
  .site-links>a[aria-current] .nav-number{color:#fff}
- .nav-number{display:block;font:10px var(--f-mono);color:#666}.nav-korean{display:block;font:11px var(--f-ko);color:#8f8f8f}
+ .nav-number{display:block;font:12px var(--f-mono);color:#666}.nav-korean{display:block;font:12px var(--f-ko);color:#8f8f8f}
  .site-links>.nav-cv{display:flex;justify-content:space-between;border:0;padding:20px 0 0;margin-left:40px;font-size:13px}
 }
 .site-links[hidden]{display:none}

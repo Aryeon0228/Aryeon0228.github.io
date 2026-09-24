@@ -4,7 +4,8 @@
   const toggle=header.querySelector('.menu-toggle');
   const panel=header.querySelector('.site-links');
   const label=toggle.querySelector('.menu-toggle-label');
-  const mobile=window.matchMedia('(max-width:1199px)');
+  // Labs use a mini header whose site links always live in the menu; the homepage collapses them on narrow screens.
+  const mobile=window.matchMedia(document.body.hasAttribute('data-lab')?'all':'(max-width:1199px)');
   function setOpen(open){
     open=mobile.matches && open;
     header.classList.toggle('menu-open',open);
