@@ -1396,7 +1396,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
-      tOcc:{value:null}, tRays:{value:null}, uEclipse:{value:0},
+      tOcc:{value:null}, tRays:{value:null}, uEclipse:{value:0}, uExposure:{value:1},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
     },
     vertexShader: POST_VERT,
@@ -1404,7 +1404,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'precision mediump float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'uniform sampler2D tX; uniform vec4 uLens;',
-      'uniform sampler2D tOcc; uniform sampler2D tRays; uniform float uEclipse;',
+      'uniform sampler2D tOcc; uniform sampler2D tRays; uniform float uEclipse; uniform float uExposure;',
       SUN_GLSL,
       'void main(){',
       '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
@@ -1436,18 +1436,19 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '        vec2 q = abs(g); float hex = max(q.x * .866 + q.y * .5, q.y);',
       '        vec3 tint = fi < 1.0 ? vec3(.5,1.0,.88) : fi < 2.0 ? vec3(.82,.55,1.0) : fi < 3.0 ? vec3(1.0,.74,.4)',
       '          : fi < 4.0 ? vec3(.6,1.0,.55) : fi < 5.0 ? vec3(.55,.78,1.0) : vec3(1.0,.58,.76);',
+      // Every ghost is a filled hexagon; a few carry a slightly brighter, wavelength-split rim.
+      '        float fill = smoothstep(size, size * .82, hex);',
+      '        ghosts += fill * tint * (.04 + mod(fi, 2.0) * .03);',
       '        if(mod(fi, 3.0) == 1.0){',
-      '          vec3 edge = vec3(size * 1.03, size, size * .97);',
-      '          ghosts += exp(-abs(vec3(hex) - edge) * 700.0) * tint * .11;',
-      '        }else{',
-      '          ghosts += smoothstep(size, size * .82, hex) * tint * (.04 + mod(fi, 2.0) * .03);',
+      '          vec3 edge = vec3(size * 1.02, size, size * .98);',
+      '          ghosts += exp(-abs(vec3(hex) - edge) * 900.0) * tint * .04;',
       '        }',
       '      }',
       '      c += (vec3(star + streak) + ghosts) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
-      '  c = pow(1.0-exp(-max(c,vec3(0.0))*1.45), vec3(0.88));',
+      '  c = pow(1.0-exp(-max(c,vec3(0.0))*1.45*uExposure), vec3(0.88));',
       // Inside the lens, one render pass replaces the finished image.
       '  if(uLens.w > 0.0){',
       '    float r = length(gl_FragCoord.xy - uLens.xy);',
@@ -1656,7 +1657,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      X-RAY shows one of the render's inner passes inside a lens under the cursor;
      ECLIPSE moves a far sun behind the name and the planet: rays, a total eclipse, a flare. */
   var heroEl = document.querySelector('.hero');
-  var heroName = document.querySelector('.hero-name'), nameShadow = '', nameBlur = '0.0';
+  var heroName = document.querySelector('.hero-name'), nameShadow = '', nameBlur = '';
   var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
   var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
   var lensLabel = document.getElementById('xray-label');
@@ -1736,7 +1737,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   function setFx(mode){
     fxMode = mode;
-    if(mode !== 'eclipse'){ heroName.style.textShadow = ''; heroName.style.filter = ''; nameShadow = ''; nameBlur = '0.0'; }
+    if(mode !== 'eclipse'){ heroName.style.textShadow = ''; heroName.style.filter = ''; nameShadow = ''; nameBlur = ''; }
     if(mode === 'off') delete heroEl.dataset.fx; else heroEl.dataset.fx = mode;
     fxButtons.forEach(function(button){ button.setAttribute('aria-pressed', String(button.dataset.fx === mode)); });
     lens.amount = 0;
@@ -1816,7 +1817,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       .5 * (2 * p1.x + (-p0.x + p2.x) * u + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * u2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * u3),
       .5 * (2 * p1.y + (-p0.y + p2.y) * u + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * u2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * u3));
   }
-  function updateSun(){
+  function updateSun(dt){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
     var turn = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
     var start = planetBaseline.sun * Math.PI * 2;
@@ -1849,14 +1850,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uSunR.value = 1.1;
     compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
     var amount = THREE.MathUtils.smoothstep(-L.z, -.1, .2);
-    shadeName(amount);
+    shadeName(amount, dt);
     return amount;
   }
 
   // The name catches the same sun: a long shadow falls away from it and the facing edge
   // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
   // fades when the sun hides behind the planet or goes behind the viewer.
-  function shadeName(amount){
+  function shadeName(amount, dt){
     var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect();
     var home = planetOnScreen(), planetR = dragDiameter / 2.08;
     var sx = compMat.uniforms.uSun.value.x * canvasBox.width, sy = (1 - compMat.uniforms.uSun.value.y) * canvasBox.height;
@@ -1877,11 +1878,42 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }
     var next = layers.join(',');
     if(next !== nameShadow){ heroName.style.textShadow = next; nameShadow = next; }
-    // Depth of field: with the bright sun right behind it, the name drops out of focus.
     var gapX = Math.max(nx - sx, 0, sx - (nx + nameBox.width)), gapY = Math.max(ny - sy, 0, sy - (ny + nameBox.height));
     var behind = 1 - THREE.MathUtils.smoothstep(Math.hypot(gapX, gapY), 0, 150);
-    var blur = (behind * light * 7).toFixed(1);
-    if(blur !== nameBlur){ heroName.style.filter = blur === '0.0' ? '' : 'blur(' + blur + 'px)'; nameBlur = blur; }
+    var inFrame = sx > -40 && sy > -40 && sx < canvasBox.width + 40 && sy < canvasBox.height + 40 ? 1 : 0;
+    runCamera(light * inFrame, behind * light, dt);
+  }
+
+  // Like a phone camera meeting a sudden bright light. Auto exposure follows the sun's
+  // brightness with a lag and a small overshoot (a spring), so the frame dims a beat late and
+  // settles. When the light behind the name jumps, autofocus hunts: the name blurs, pulls in
+  // and out a couple of times, and settles sharp, leaving only a trace of veiling glare.
+  var cam = { exposure:1, velocity:0, glare:0, hunt:0, age:9 };
+  function runCamera(sunInFrame, backlight, dt){
+    dt = Math.min(dt || .016, .05);
+    var target = 1 - .3 * sunInFrame;
+    if(reduce){ cam.exposure = target; cam.velocity = 0; }
+    else{
+      cam.velocity += ((target - cam.exposure) * 38 - cam.velocity * 7.5) * dt;
+      cam.exposure += cam.velocity * dt;
+    }
+    var jump = backlight - cam.glare;
+    if(jump > .015 && !reduce){ cam.hunt = Math.min(1, cam.hunt * Math.exp(-cam.age * 1.6) + jump * 3.2); cam.age = 0; }
+    cam.glare = backlight;
+    cam.age += dt;
+    var hunting = cam.hunt * Math.exp(-cam.age * 1.6) * (.55 + .45 * Math.cos(cam.age * 13));
+    applyCamera((hunting * 8 + backlight * .7).toFixed(1));
+  }
+  function applyCamera(blur){
+    compMat.uniforms.uExposure.value = cam.exposure;
+    // The name follows the exposure only halfway, so it stays readable.
+    var nameExposure = 1 - (1 - cam.exposure) * .5;
+    var filter = (blur === '0.0' ? '' : 'blur(' + blur + 'px) ') + (Math.abs(nameExposure - 1) > .005 ? 'brightness(' + nameExposure.toFixed(3) + ')' : '');
+    if(filter !== nameBlur){ heroName.style.filter = filter; nameBlur = filter; }
+  }
+  function resetCamera(){
+    cam.exposure = 1; cam.velocity = 0; cam.glare = 0; cam.hunt = 0; cam.age = 9;
+    applyCamera('0.0');
   }
 
   var reduce = false;
@@ -1971,7 +2003,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var a = P.sun * Math.PI*2;
     bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
     // ECLIPSE lights the planet from its own sun, before anything is drawn.
-    var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun() : 0;
+    var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
+    if(!eclipseAmount && compMat.uniforms.uExposure.value !== 1) resetCamera();
     bodyUniforms.uTime.value  = t;
     orbitMoons.forEach(function(orbit){
       var angle=orbit.phase+t*orbit.speed;
