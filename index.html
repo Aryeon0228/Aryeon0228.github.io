@@ -501,9 +501,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       </div>
       <div class="fx-switch" role="group" aria-label="후처리 효과 실험">
         <span class="lbl">Post FX</span>
-        <button type="button" data-fx="off" aria-pressed="true">OFF</button>
+        <button type="button" data-fx="eclipse" aria-pressed="true">ECLIPSE</button>
         <button type="button" data-fx="xray" aria-pressed="false">X-RAY</button>
-        <button type="button" data-fx="eclipse" aria-pressed="false">ECLIPSE</button>
+        <button type="button" data-fx="off" aria-pressed="false">OFF</button>
         <span class="fx-layers" role="group" aria-label="돋보기로 볼 렌더 패스 (숫자 1–4)">
           <button type="button" data-xray-layer aria-pressed="true">N·L</button>
           <button type="button" data-xray-layer aria-pressed="false">NRM</button>
@@ -1767,7 +1767,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   heroEl.addEventListener('pointerleave', function(){ fxPointer.inside = false; }, { passive:true });
   var requestedFx = new URLSearchParams(location.search).get('fx');
   setLayer(0);
-  setFx(requestedFx === 'xray' || requestedFx === 'eclipse' ? requestedFx : 'off');
+  // ECLIPSE is the default; ?fx=off or ?fx=xray opens the others.
+  setFx(requestedFx === 'xray' || requestedFx === 'off' ? requestedFx : 'eclipse');
 
   // Where the planet sits on screen, in CSS pixels; the lens and the sun rest there without a mouse.
   var fxCenter = new THREE.Vector3();
@@ -1797,11 +1798,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     lensLabel.style.transform = 'translate(' + Math.round(lx) + 'px,' + Math.round(ly) + 'px)';
   }
 
-  // A far sun, moved by the panel's SUN AZIMUTH. At 0 it shines from exactly where it does with
-  // Post FX off (above the frame), so the rays pour down from the start. Moving the slider, it
-  // comes down across the sky, passes behind the name, then right behind the planet (a total
-  // eclipse, flaring as it breaks out), and leaves the frame at the lower right. For the rest
-  // of the turn it swings behind the viewer, lighting the planet's face, and returns to the top.
+  // A far sun, moved by the panel's SUN AZIMUTH along one loop: from above the frame (where
+  // Post FX off puts it) down across the sky, behind the name, right behind the planet (a total
+  // eclipse, flaring as it breaks out), out at the lower right, then behind the viewer (lighting
+  // the planet's face) and back to the top. SUN AZIMUTH 0 is set just inside the limb (see below).
   // The on-screen part of the path is a smooth curve through those points; each point on screen
   // is turned back into the light direction that would put the sun there.
   var sunNdc = new THREE.Vector2(), pathPoints = [0,0,0,0,0,0].map(function(){ return new THREE.Vector2(); });
@@ -1817,9 +1817,23 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       .5 * (2 * p1.x + (-p0.x + p2.x) * u + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * u2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * u3),
       .5 * (2 * p1.y + (-p0.y + p2.y) * u + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * u2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * u3));
   }
+  function pathAt(out, p, turn){
+    var k = turn < PATH_KNOTS[1] ? 0 : turn < PATH_KNOTS[2] ? 1 : 2;
+    return catmullRom(out, p[k], p[k + 1], p[k + 2], p[k + 3], (turn - PATH_KNOTS[k]) / (PATH_KNOTS[k + 1] - PATH_KNOTS[k]));
+  }
+  var limbProbe = new THREE.Vector2();
+  function eclipseStart(p, w, h, home){
+    var target = dragDiameter / 2.08 * .96, lo = PATH_KNOTS[2], hi = PATH_KNOTS[3];
+    for(var i = 0; i < 14; i++){
+      var mid = (lo + hi) / 2;
+      pathAt(limbProbe, p, mid);
+      var d = Math.hypot((limbProbe.x + 1) * w / 2 - home.x, (1 - limbProbe.y) * h / 2 - home.y);
+      if(d < target) lo = mid; else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
   function updateSun(dt){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
-    var turn = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
     var start = planetBaseline.sun * Math.PI * 2;
     lightStart.set(Math.cos(start), .42, Math.sin(start)).normalize();
     // Path points on screen: the start (the default light's vanishing point), the name, the
@@ -1832,10 +1846,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     p[4].copy(p[3]).sub(p[2]).setLength(1.8).add(p[3]);
     p[0].copy(p[1]).multiplyScalar(2).sub(p[2]);
     p[5].copy(p[4]).multiplyScalar(2).sub(p[3]);
+    // SUN AZIMUTH 0 is the moment the sun sits just inside the planet's limb: the frame is dark
+    // and only the rays blaze round the edge. Found on the path each frame, so it holds on any screen.
+    var limb = eclipseStart(p, w, h, home);
+    var turn = ((P.sun - planetBaseline.sun + limb) % 1 + 1) % 1;
     var L = bodyUniforms.uLight.value;
     if(turn < PATH_KNOTS[3]){
-      var k = turn < PATH_KNOTS[1] ? 0 : turn < PATH_KNOTS[2] ? 1 : 2;
-      catmullRom(sunNdc, p[k], p[k + 1], p[k + 2], p[k + 3], (turn - PATH_KNOTS[k]) / (PATH_KNOTS[k + 1] - PATH_KNOTS[k]));
+      pathAt(sunNdc, p, turn);
       lightFromNdc(L, sunNdc, tanHalf);
     }else{
       // Off screen: swing from the exit round the viewer's side and back to the start.
