@@ -1,7 +1,7 @@
 import {captureControls, restoreControls} from './uiux-session.mjs?v=3ba308e9f6f1';
 // Color remains a stimulus only where the experiment compares color grouping.
 // Screen approximations of Mocha Mousse and Cloud Dancer.
-const COLORS = { ink: '#e8e8e8', muted: '#a8a8a8', stimulus: '#dedede', mocha: '#a47864', cloud: '#f0eee9', ground: '#080808' };
+const COLORS = { ink: '#ececec', muted: '#a6a6a6', stimulus: '#d9d9d9', mocha: '#a47864', cloud: '#f0eee9', ground: '#000000' };
 const colorDescription = '모카 무스(갈색)와 클라우드 댄서(부드러운 흰색)';
 const source = (title, path) => ({ title, url: `https://www.nngroup.com/${path}` });
 const SOURCES = {
@@ -22,8 +22,18 @@ const range = (id, label, min, max, initial, suffix = '', step = 1) => `<div cla
 const select = (id, label, options) => `<div class="control-group"><label class="control-label" for="pc-${id}">${label}</label><select id="pc-${id}" data-control="${id}">${options.map(([key, text]) => `<option value="${key}">${text}</option>`).join('')}</select></div>`;
 const actions = (buttons) => `<div class="control-actions">${buttons.map(([id, text, primary = false]) => `<button type="button" class="lab-button${primary ? ' primary' : ''}" data-control="${id}">${text}</button>`).join('')}</div>`;
 const setOutput = (root, id, text) => { query(root, `[data-value="${id}"]`).textContent = text; };
+// Letters drawn in a scene keep at least a 13px reading size however narrow the drawing gets.
+function keepLetterSize(svg) {
+  const fit = () => { const width = svg.getBoundingClientRect().width; if (width > 0) svg.style.setProperty('--pc-min-type', `${(13 * 760 / width).toFixed(2)}px`); };
+  if (typeof ResizeObserver === 'function') {
+    const observer = new ResizeObserver(() => { if (svg.isConnected) fit(); else observer.disconnect(); });
+    observer.observe(svg);
+  }
+  fit();
+}
 function canvas(stage, id, description) {
   stage.innerHTML = `<div class="pc-experiment pc-${id}"><svg class="pc-canvas" viewBox="0 0 760 400" role="img" aria-labelledby="pc-${id}-title pc-${id}-description"><title id="pc-${id}-title">${description}</title><desc id="pc-${id}-description"></desc><g data-art></g></svg><p class="experiment-caption pc-caption" data-caption></p></div>`;
+  keepLetterSize(query(stage, 'svg'));
   return { art: query(stage, '[data-art]'), desc: query(stage, 'desc'), caption: query(stage, '[data-caption]') };
 }
 function caption(scene, text, description = text) {
@@ -210,9 +220,9 @@ function mountHierarchy({ stage, controls, signal, announce = () => {}, state })
     booking.style.setProperty('--pc-title-size', `${16 + size * .22}px`);
     booking.style.setProperty('--pc-title-weight', String(Math.round(400 + size * 3)));
     booking.style.setProperty('--pc-section-gap', `${9 + spacing * .22}px`);
-    booking.style.setProperty('--pc-action-bg', mix('#303030', COLORS.stimulus, contrast / 100));
-    booking.style.setProperty('--pc-action-color', contrast > 45 ? '#111111' : '#e8e8e8');
-    booking.style.setProperty('--pc-support', mix('#e8e8e8', '#a8a8a8', contrast / 100));
+    booking.style.setProperty('--pc-action-bg', mix('#333333', COLORS.stimulus, contrast / 100));
+    booking.style.setProperty('--pc-action-color', contrast > 45 ? '#000000' : '#ececec');
+    booking.style.setProperty('--pc-support', mix('#ececec', '#a6a6a6', contrast / 100));
     booking.classList.toggle('pc-unaligned', !value(controls, 'hierarchy-align').checked);
     query(stage, '[data-caption]').textContent = '장비명, 대여 시간, 확인 버튼 중 무엇이 먼저 보이나요?';
   }

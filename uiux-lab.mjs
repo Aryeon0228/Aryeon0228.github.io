@@ -1,4 +1,4 @@
-import {perceptionModules} from './uiux-perception.mjs?v=d5f47699ca22';
+import {perceptionModules} from './uiux-perception.mjs?v=34dbb23e061c';
 import {behaviorModules} from './uiux-behavior.mjs?v=fedd388ead8d';
 import {reviewModules} from './uiux-review.mjs?v=282dc6746934';
 import {createExperimentSession} from './uiux-session.mjs?v=3ba308e9f6f1';
