@@ -45,7 +45,7 @@ body[data-lab] .lab-heading p { max-width: 560px; color: var(--k6); font: 300 14
 /* Sliders: a row of dots and a slim white bar. */
 :where(body[data-lab] main) input[type=range] {
   -webkit-appearance: none; appearance: none; display: block; width: 100%; min-width: 0; height: 32px;
-  margin: 0; padding: 0; border: 0; background: transparent; cursor: ew-resize; accent-color: var(--k10);
+  margin: 0; padding: 0; border: 0; background: transparent; color: var(--k9); cursor: ew-resize; accent-color: var(--k10);
 }
 :where(body[data-lab] main) input[type=range]:disabled { opacity: .4; cursor: default; }
 :where(body[data-lab] main) input[type=range]::-webkit-slider-runnable-track {
