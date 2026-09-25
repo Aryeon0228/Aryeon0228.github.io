@@ -1396,7 +1396,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
-      tOcc:{value:null}, tRays:{value:null}, uEclipse:{value:0}, uExposure:{value:1},
+      tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
     },
     vertexShader: POST_VERT,
@@ -1404,14 +1404,19 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'precision mediump float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'uniform sampler2D tX; uniform vec4 uLens;',
-      'uniform sampler2D tOcc; uniform sampler2D tRays; uniform float uEclipse; uniform float uExposure;',
+      'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure;',
+      // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
+      'vec3 tent(sampler2D t, vec2 texel){ vec2 e = texel * .5, f = vec2(e.x, -e.y);',
+      '  return (texture2D(t, vUv - e).rgb + texture2D(t, vUv + e).rgb + texture2D(t, vUv - f).rgb + texture2D(t, vUv + f).rgb) * .25; }',
       SUN_GLSL,
       'void main(){',
       '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
       // The sun shows only where nothing stands in front of it; its scattered rays are added on top.
+      // The tent softens the half-resolution mask's stair-steps where the glow meets the limb,
+      // and the grain the march leaves in the rays.
       '  if(uEclipse > 0.0){',
-      '    float open = texture2D(tOcc, vUv).r;',
-      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + texture2D(tRays, vUv).rgb) * uEclipse;',
+      '    float open = tent(tOcc, uOccTexel).r;',
+      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + tent(tRays, uRaysTexel)) * uEclipse;',
       // Lens flare: how much of the disc is uncovered, and how far inside the frame it is.
       '    vec2 o = vec2(uDisc / uAspect, uDisc) * .7;',
       '    float seen = (texture2D(tOcc, uSun).r + texture2D(tOcc, uSun + vec2(o.x, 0.0)).r + texture2D(tOcc, uSun - vec2(o.x, 0.0)).r',
@@ -1464,30 +1469,44 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   // Light scattering (GPU Gems 3, ch. 13): march from each pixel toward the sun through the
   // occlusion mask, so light leaking past the planet's limb streaks outward as rays.
-  var raysMat = new THREE.ShaderMaterial({
-    uniforms:{ tOcc:compMat.uniforms.tOcc, uSun:compMat.uniforms.uSun, uSunR:compMat.uniforms.uSunR, uAspect:compMat.uniforms.uAspect, uDisc:compMat.uniforms.uDisc },
-    vertexShader: POST_VERT,
-    fragmentShader:[
-      'precision mediump float;',
-      'uniform sampler2D tOcc; varying vec2 vUv;',
-      SUN_GLSL,
-      'void main(){',
-      // March toward the sun for at most one screen length; beyond the frame the sky is open.
-      '  vec2 toSun = uSun - vUv; toSun *= min(1.0, 1.0 / length(toSun));',
-      '  vec2 step = -toSun / 56.0;',
-      '  vec2 uv = vUv; float decay = 1.0, sum = 0.0;',
-      '  for(int i = 0; i < 56; i++){',
-      '    uv -= step;',
-      '    sum += sunLight(uv) * texture2D(tOcc, clamp(uv, 0.0, 1.0)).r * decay;',
-      '    decay *= .975;',
-      '  }',
-      // Normalise by the total weight (about 32), then square: open sky stays a faint haze
-      // while the planet's shadow shaft and the gaps between threads read as streaks.
-      '  float v = sum / 32.0;',
-      '  gl_FragColor = vec4(vec3(v * v * .3 + v * .02), 1.0);',
-      '}'
-    ].join('\n')
-  });
+  // Each step brings the sample the same distance closer to the sun, so the glow's weight
+  // grows by a constant factor and the loop needs no exp(). Every pixel starts the march at
+  // its own offset within a step (interleaved gradient noise): the steps no longer print
+  // copies of the thin threads, and the grain left behind is smoothed in the composite.
+  function raysMaterial(samples){
+    return new THREE.ShaderMaterial({
+      uniforms:{ tOcc:compMat.uniforms.tOcc, uSun:compMat.uniforms.uSun, uSunR:compMat.uniforms.uSunR, uAspect:compMat.uniforms.uAspect, uDisc:compMat.uniforms.uDisc },
+      defines:{ SAMPLES:samples },
+      vertexShader: POST_VERT,
+      fragmentShader:[
+        'precision mediump float;',
+        'uniform sampler2D tOcc; varying vec2 vUv;',
+        SUN_GLSL,
+        'void main(){',
+        // March toward the sun for at most one screen length; beyond the frame the sky is open.
+        '  vec2 toSun = uSun - vUv; float reach = min(1.0, 1.0 / length(toSun));',
+        '  vec2 stride = toSun * reach / float(SAMPLES);',
+        '  highp vec2 pixel = gl_FragCoord.xy;',
+        '  float offset = fract(52.9829189 * fract(dot(pixel, vec2(.06711056, .00583715))));',
+        '  float grow = exp(sunDist(vUv) * reach / (float(SAMPLES) * uSunR));',
+        // Fewer steps decay faster, so the rays keep their length in screen space.
+        '  float fade = grow * pow(.975, 56.0 / float(SAMPLES));',
+        '  float weight = sunLight(vUv) * pow(grow, 1.0 - offset), sum = 0.0;',
+        '  for(int i = 0; i < SAMPLES; i++){',
+        '    vec2 uv = vUv + stride * (float(i) + 1.0 - offset);',
+        '    sum += weight * texture2D(tOcc, clamp(uv, 0.0, 1.0)).r;',
+        '    weight *= fade;',
+        '  }',
+        // Normalise by the total weight of 56 steps (about 32), then square: open sky stays a
+        // faint haze while the planet's shadow shaft and the gaps between threads read as streaks.
+        '  float v = sum * 56.0 / float(SAMPLES) / 32.0;',
+        '  gl_FragColor = vec4(vec3(v * v * .3 + v * .02), 1.0);',
+        '}'
+      ].join('\n')
+    });
+  }
+  // Phones march half the steps into a quarter-resolution target (see raysTier below).
+  var raysMats = { high:raysMaterial(56), low:raysMaterial(28) };
 
   function drawPost(mat, target){
     postQuad.material = mat;
@@ -1712,6 +1731,35 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var rtX = new THREE.WebGLRenderTarget(2, 2, RT);
   var rtOcc = new THREE.WebGLRenderTarget(2, 2, RT);
   var rtRays = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
+
+  // The rays are ECLIPSE's costliest pass. Phones (a coarse pointer on a small screen) march
+  // half the steps into a quarter-resolution target; any other device that turns out slow in
+  // its first seconds of ECLIPSE steps down to the same, once. ?fxq=low or ?fxq=high fixes the
+  // tier, to compare the two on one screen.
+  var fxQuality = new URLSearchParams(location.search).get('fxq');
+  var phone = window.matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) <= 600;
+  var raysTier = fxQuality === 'low' || fxQuality === 'high' ? fxQuality : phone ? 'low' : 'high';
+  var tierWatch = fxQuality || raysTier === 'low' ? null : { since:0, frames:[] };
+  function sizeRays(){
+    var shift = raysTier === 'low' ? 2 : 1;
+    var rw = Math.max(2, rtScene.width >> shift), rh = Math.max(2, rtScene.height >> shift);
+    if(rtRays.width !== rw || rtRays.height !== rh) rtRays.setSize(rw, rh);
+    compMat.uniforms.uRaysTexel.value.set(1 / rw, 1 / rh);
+    canvas.dataset.rays = raysTier;
+  }
+  // Frame intervals while the rays run: a second of warm-up, then a second and a half of
+  // frames (at least eight). Hiding the page or scrolling the hero away restarts the warm-up.
+  // A median over 28 ms (under ~36 fps) steps down.
+  function watchTier(now, interval){
+    if(!tierWatch.since){ tierWatch.since = now; tierWatch.frames.length = 0; return; }
+    if(now - tierWatch.since < 1000) return;
+    tierWatch.frames.push(interval);
+    if(now - tierWatch.since < 2500 || tierWatch.frames.length < 8) return;
+    tierWatch.frames.sort(function(a, b){ return a - b; });
+    if(tierWatch.frames[tierWatch.frames.length >> 1] > 28){ raysTier = 'low'; sizeRays(); }
+    tierWatch = null;
+  }
+  document.addEventListener('visibilitychange', function(){ if(tierWatch) tierWatch.since = 0; });
 
   // Render only the solid bodies with one material; points, lines, labels and the glow shell step aside.
   function renderPass(material, target, clearHex){
@@ -1959,7 +2007,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
       rtX.setSize(pw, ph);
       rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
-      rtRays.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
+      compMat.uniforms.uOccTexel.value.set(1 / rtOcc.width, 1 / rtOcc.height);
+      sizeRays();
     }
     renderWidth=w; renderHeight=h; renderDpr=dpr;
   }
@@ -1975,11 +2024,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   function frame(now){
     requestAnimationFrame(frame);
-    if(!visible || document.hidden) return;
+    if(!visible || document.hidden){ if(tierWatch) tierWatch.since = 0; return; }
     resize();
 
     var t = reduce ? frozen : (now - t0)/1000;
-    var dt=Math.min((now-lastFrame)/1000,0.05); lastFrame=now;
+    var interval=now-lastFrame, dt=Math.min(interval/1000,0.05); lastFrame=now;
     dragEnergy*=Math.exp(-dt*3);
     var scatterTarget=activePointer!==null && dragMoved ? 0.72+dragEnergy*0.28 : 0;
     ringScatter.value=reduce ? 0 : ringScatter.value+(scatterTarget-ringScatter.value)*(1-Math.exp(-dt*(activePointer!==null ? 12 : 3.5)));
@@ -2062,12 +2111,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       compMat.uniforms.tX.value = rtX.texture;
       updateLens(dt);
     }else compMat.uniforms.uLens.value.w = 0;
-    if(fxMode === 'eclipse'){
+    // With the sun behind the viewer there is nothing to mask or scatter.
+    if(fxMode === 'eclipse' && eclipseAmount > 0){
       renderPass(occluderMaterial, rtOcc, 0xffffff);
       compMat.uniforms.tOcc.value = rtOcc.texture;
-      drawPost(raysMat, rtRays);
+      drawPost(raysMats[raysTier], rtRays);
       compMat.uniforms.tRays.value = rtRays.texture;
       compMat.uniforms.uEclipse.value = eclipseAmount;
+      if(tierWatch) watchTier(now, interval);
     }else compMat.uniforms.uEclipse.value = 0;
 
     // 합성 → 화면
