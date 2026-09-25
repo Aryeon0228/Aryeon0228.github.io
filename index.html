@@ -1679,6 +1679,35 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      ECLIPSE moves a far sun behind the name and the planet: rays, a total eclipse, a flare. */
   var heroEl = document.querySelector('.hero');
   var heroName = document.querySelector('.hero-name'), nameShadow = '', nameBlur = '';
+  // The name is shaded letter by letter, so each letter darkens and glows by its own distance
+  // from the sun. Screen readers get the whole name from the heading's label.
+  heroName.setAttribute('aria-label', heroName.innerText.replace(/\s+/g, ' ').trim());
+  var nameLetters = [], lettersDirty = true;
+  (function splitLetters(node){
+    Array.prototype.slice.call(node.childNodes).forEach(function(child){
+      if(child.nodeType === 1){ splitLetters(child); return; }
+      if(child.nodeType !== 3 || !child.textContent.trim()) return;
+      var run = document.createDocumentFragment(), from = node.classList.contains('ko') ? 143 : 255;
+      Array.prototype.forEach.call(child.textContent, function(character){
+        if(/\s/.test(character)){ run.appendChild(document.createTextNode(character)); return; }
+        var letter = document.createElement('span');
+        letter.textContent = character;
+        letter.setAttribute('aria-hidden', 'true');
+        run.appendChild(letter);
+        nameLetters.push({ el:letter, from:from, x:0, y:0, w:0, h:0, shadow:'', color:'' });
+      });
+      node.replaceChild(run, child);
+    });
+  })(heroName);
+  // Where each letter sits over the canvas, in CSS pixels; re-measured when the layout or the fonts change.
+  function measureLetters(){
+    lettersDirty = false;
+    var box = canvas.getBoundingClientRect();
+    nameLetters.forEach(function(letter){
+      var rect = letter.el.getBoundingClientRect();
+      letter.x = rect.left - box.left; letter.y = rect.top - box.top; letter.w = rect.width; letter.h = rect.height;
+    });
+  }
   var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
   var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
   var lensLabel = document.getElementById('xray-label');
@@ -1775,7 +1804,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   document.addEventListener('visibilitychange', function(){ if(tierWatch) tierWatch.since = 0; });
 
   // The name is part of the eclipse: its letters go into the occlusion mask, so a stroke hides
-  // the sun and dims the flare, and the rays stream out between the letters. Each text run is
+  // the sun and dims the flare, and the rays stream out between the letters. Each letter is
   // drawn where the page lays it out, redrawn when the layout or the fonts change.
   var nameMask = document.createElement('canvas'), nameMaskDirty = true;
   var nameTexture = new THREE.CanvasTexture(nameMask);
@@ -1794,23 +1823,17 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var context = nameMask.getContext('2d');
     context.setTransform(rtOcc.width / box.width, 0, 0, rtOcc.height / box.height, 0, 0);
     context.fillStyle = '#fff';
-    var runs = [heroName.firstChild, heroName.querySelector('b').firstChild, heroName.querySelector('.ko').firstChild];
-    runs.forEach(function(node){
-      var text = node && node.textContent, start = text ? text.search(/\S/) : -1;
-      if(start < 0) return;
-      var range = document.createRange();
-      range.setStart(node, start); range.setEnd(node, text.replace(/\s+$/, '').length);
-      var rect = range.getBoundingClientRect(), style = getComputedStyle(node.parentElement);
+    if(lettersDirty) measureLetters();
+    nameLetters.forEach(function(letter){
+      var style = getComputedStyle(letter.el), character = letter.el.textContent;
       context.font = style.fontWeight + ' ' + style.fontSize + ' ' + style.fontFamily;
-      if('letterSpacing' in context) context.letterSpacing = style.letterSpacing;
-      var word = text.trim(), metrics = context.measureText(word);
-      var ascent = metrics.fontBoundingBoxAscent || rect.height * .8;
-      context.fillText(word, rect.left - box.left, rect.top - box.top + ascent);
+      var ascent = context.measureText(character).fontBoundingBoxAscent || letter.h * .8;
+      context.fillText(character, letter.x, letter.y + ascent);
     });
     nameTexture.needsUpdate = true;
   }
-  if('ResizeObserver' in window) new ResizeObserver(function(){ nameMaskDirty = true; }).observe(heroName);
-  if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', function(){ nameMaskDirty = true; });
+  if('ResizeObserver' in window) new ResizeObserver(function(){ nameMaskDirty = lettersDirty = true; }).observe(heroName);
+  if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', function(){ nameMaskDirty = lettersDirty = true; });
 
   // Render the solid bodies with one material and the ring's grains with the pass's own;
   // stars, lines, labels and the glow shell step aside.
@@ -1951,10 +1974,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   // The name catches the same sun: a long shadow falls away from it and the facing edge
   // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
-  // fades when the sun hides behind the planet or goes behind the viewer. Straight behind the
-  // name, the name eclipses the sun: the letters go dark against the glare and the light
-  // spills round their edges, and they turn white again as the sun moves on.
-  var nameSilhouette = -1;
+  // fades when the sun hides behind the planet or goes behind the viewer. Where the sun passes
+  // behind the name, the letters inside its glare eclipse it: they go dark, the light spills
+  // round their edges, the nearest most, and they turn white again as the sun moves on.
   function shadeName(amount, dt){
     var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect();
     var home = planetOnScreen(), planetR = dragDiameter / 2.08;
@@ -1963,45 +1985,66 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var light = amount * (1 - covered);
     var nx = nameBox.left - canvasBox.left, ny = nameBox.top - canvasBox.top;
     var gapX = Math.max(nx - sx, 0, sx - (nx + nameBox.width)), gapY = Math.max(ny - sy, 0, sy - (ny + nameBox.height));
-    var gap = Math.hypot(gapX, gapY);
-    var behind = 1 - THREE.MathUtils.smoothstep(gap, 0, 150);
+    var behind = 1 - THREE.MathUtils.smoothstep(Math.hypot(gapX, gapY), 0, 150);
     var inFrame = sx > -40 && sy > -40 && sx < canvasBox.width + 40 && sy < canvasBox.height + 40 ? 1 : 0;
-    var silhouette = light * inFrame * (1 - THREE.MathUtils.smoothstep(gap, 0, 70));
     var dx = nx + nameBox.width / 2 - sx, dy = ny + nameBox.height / 2 - sy;
     var length = Math.hypot(dx, dy) || 1, ux = dx / length, uy = dy / length;
     // Straight behind the name the shadow falls toward the viewer, so it shortens.
     var reach = Math.min(1, length / 260);
-    var layers = [];
-    if(silhouette > .01){
-      layers.push('0 0 1px rgba(255,255,255,' + (.85 * silhouette).toFixed(3) + ')',
-        '0 0 6px rgba(255,255,255,' + (.5 * silhouette).toFixed(3) + ')',
-        '0 0 18px rgba(255,255,255,' + (.25 * silhouette).toFixed(3) + ')');
-    }
-    if(light > .02){
-      layers.push((-ux * 1.2).toFixed(2) + 'px ' + (-uy * 1.2).toFixed(2) + 'px 2px rgba(255,255,255,' + (.55 * light).toFixed(3) + ')');
-      for(var i = 1; i <= 14; i++){
-        var d = i * 2.2 * reach;
-        layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.5 * light * (1 - silhouette) * (1 - i / 16)).toFixed(3) + ')');
+    // A letter lies in the glare when it is within about a quarter of the canvas height of the sun.
+    if(lettersDirty) measureLetters();
+    var glare = Math.max(90, canvasBox.height * .24), strongest = 0;
+    nameLetters.forEach(function(letter){
+      var gx = Math.max(letter.x - sx, 0, sx - (letter.x + letter.w)), gy = Math.max(letter.y - sy, 0, sy - (letter.y + letter.h));
+      letter.silhouette = Math.round(light * inFrame * (1 - THREE.MathUtils.smoothstep(Math.hypot(gx, gy), glare * .3, glare * 1.15)) * 100) / 100;
+      strongest = Math.max(strongest, letter.silhouette);
+    });
+    // The lit edge and the long shadow; a silhouetted letter's shadow falls toward the viewer and goes.
+    function cast(silhouette){
+      var layers = [];
+      if(light > .02){
+        layers.push((-ux * 1.2).toFixed(2) + 'px ' + (-uy * 1.2).toFixed(2) + 'px 2px rgba(255,255,255,' + (.55 * light).toFixed(3) + ')');
+        for(var i = 1; i <= 14; i++){
+          var d = i * 2.2 * reach;
+          layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.5 * light * (1 - silhouette) * (1 - i / 16)).toFixed(3) + ')');
+        }
       }
+      return layers;
     }
-    var next = layers.join(',');
-    if(next !== nameShadow){ heroName.style.textShadow = next; nameShadow = next; }
-    silhouetteName(silhouette);
+    if(strongest <= 0){
+      setNameShadow(cast(0).join(','));
+      unshadeLetters();
+    }else{
+      setNameShadow('');
+      nameLetters.forEach(function(letter){
+        var s = letter.silhouette, layers = [], color = '';
+        if(s > 0){
+          layers.push('0 0 1px rgba(255,255,255,' + (.9 * s).toFixed(2) + ')',
+            '0 0 5px rgba(255,255,255,' + (.6 * s).toFixed(2) + ')',
+            '0 0 16px rgba(255,255,255,' + (.35 * s).toFixed(2) + ')');
+          // White (the Korean name's #8f8f8f) darkens toward #1a1a1a.
+          var v = Math.round(letter.from + (26 - letter.from) * s);
+          color = 'rgb(' + v + ',' + v + ',' + v + ')';
+        }
+        var shadow = layers.concat(cast(s)).join(',');
+        if(shadow !== letter.shadow){ letter.el.style.textShadow = shadow; letter.shadow = shadow; }
+        if(color !== letter.color){ letter.el.style.color = color; letter.color = color; }
+      });
+    }
     runCamera(light * inFrame, behind * light, dt);
   }
-  // White (and the Korean name's #8f8f8f) darken to #1a1a1a.
-  function silhouetteName(amount){
-    amount = Math.round(amount * 100) / 100;
-    if(amount === nameSilhouette) return;
-    nameSilhouette = amount;
-    if(amount <= 0){ heroName.style.color = ''; heroName.style.removeProperty('--g2'); return; }
-    function grey(from){ var v = Math.round(from + (26 - from) * amount); return 'rgb(' + v + ',' + v + ',' + v + ')'; }
-    heroName.style.color = grey(255);
-    heroName.style.setProperty('--g2', grey(143));
+  function setNameShadow(value){
+    if(value !== nameShadow){ heroName.style.textShadow = value; nameShadow = value; }
+  }
+  function unshadeLetters(){
+    nameLetters.forEach(function(letter){
+      if(letter.shadow){ letter.el.style.textShadow = ''; letter.shadow = ''; }
+      if(letter.color){ letter.el.style.color = ''; letter.color = ''; }
+    });
   }
   function clearName(){
-    if(nameShadow){ heroName.style.textShadow = ''; nameShadow = ''; }
-    silhouetteName(0);
+    setNameShadow('');
+    unshadeLetters();
   }
 
   // Like a phone camera meeting a sudden bright light. Auto exposure follows the sun's
@@ -2093,7 +2136,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       rtX.setSize(pw, ph);
       rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       compMat.uniforms.uOccTexel.value.set(1 / rtOcc.width, 1 / rtOcc.height);
-      nameMaskDirty = true;
+      nameMaskDirty = lettersDirty = true;
       sizeRays();
     }
     renderWidth=w; renderHeight=h; renderDpr=dpr;
