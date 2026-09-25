@@ -1130,8 +1130,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   });
 
   /* ---------- 고리 먼지 ----------
-     The ring is dust: every orbit above is a stream of fine grains, so the pairs, the trio and
-     the open gaps keep their places. Every stream is one straight line of grains along its orbit;
+     The ring is dust: half of the orbits above are streams of fine grains, so the open gaps keep
+     their places. Every stream is one straight line of grains along its orbit;
      the orbits that were fuller threads carry slightly larger grains. Grains orbit with the
      moons: a power law through both moons' radii and speeds, so each moon rides its own stream
      and the inner streams overtake the outer ones. Dragging still throws them off their orbits;
@@ -1143,11 +1143,37 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   }
   var spinPower = Math.log(orbitMoons[0].speed / orbitMoons[1].speed) / Math.log(orbitMoons[1].radius / orbitMoons[0].radius);
   var ringSpin = { value:new THREE.Vector2(orbitMoons[0].speed * Math.pow(orbitMoons[0].radius, spinPower), spinPower) };
+  // Half as many rings, each a denser line: the two closest orbits merge until half remain, so
+  // the open gaps keep their places, and the grains of the dropped orbits are shared out among
+  // the rest. A moon's orbit always stays; a full orbit outlasts a near-side cluster.
+  function strandGrains(strand){ return (RING_I + strand.x * (RING_O - RING_I)) * 400 * (0.5 + strand.z * 0.6); }
+  function strandRank(index){
+    var moon = orbitMoons.some(function(orbit){ return orbit.strand === index; });
+    return (moon ? 2 : 0) + (index < continuousStrandCount ? 1 : 0) + strands[index].y;
+  }
+  var strandKept = strands.map(function(){ return true; });
+  for(var merges = strands.length >> 1; merges > 0; merges--){
+    var order = strands.map(function(strand, index){ return index; })
+      .filter(function(index){ return strandKept[index]; })
+      .sort(function(a, b){ return strands[a].x - strands[b].x; });
+    var tightest = 1;
+    for(var k = 2; k < order.length; k++){
+      if(strands[order[k]].x - strands[order[k-1]].x < strands[order[tightest]].x - strands[order[tightest-1]].x) tightest = k;
+    }
+    var near = order[tightest-1], far = order[tightest];
+    strandKept[strandRank(near) >= strandRank(far) ? far : near] = false;
+  }
+  var allGrains = 0, keptGrains = 0;
+  strands.forEach(function(strand, index){
+    allGrains += strandGrains(strand);
+    if(strandKept[index]) keptGrains += strandGrains(strand);
+  });
   var dustOrbits = [], dustKicks = [], dustLooks = [];
   strands.forEach(function(strand, index){
+    if(!strandKept[index]) return;
     var span = RING_O - RING_I, radius = RING_I + strand.x * span;
     var fuller = strand.y * span * 0.25;
-    var count = Math.round(radius * 400 * (0.5 + strand.z * 0.6));
+    var count = Math.round(strandGrains(strand) * allGrains / keptGrains);
     // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
     var clump = dustRandom() * 0.45, phase = dustRandom() * Math.PI * 2;
     var breaks = [1,4,7,10,13].indexOf(index) >= 0 ? [dustRandom(), dustRandom(), dustRandom()] : [];
@@ -1164,6 +1190,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       dustLooks.push(0.0022 + boulder * 0.0022 + fuller, 0.55 + dustRandom() * 0.3 + boulder * 0.15, dustRandom(), index >= continuousStrandCount ? 1 : 0);
     }
   });
+  // Only the rings that stay can be grabbed.
+  strands = strands.filter(function(strand, index){ return strandKept[index]; });
   var dustGeometry = new THREE.BufferGeometry();
   // position holds each grain's angle at t = 0, its radius and its height above the ring plane.
   dustGeometry.setAttribute('position', new THREE.Float32BufferAttribute(dustOrbits, 3));
