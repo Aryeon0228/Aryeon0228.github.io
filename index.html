@@ -1128,8 +1128,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   /* ---------- 고리 먼지 ----------
      The ring is dust: every orbit above is a stream of fine grains, so the pairs, the trio and
-     the open gaps keep their places. A stream spreads over a fifth of the space to its nearest
-     neighbour, so lone orbits read as dust while close ones stay distinct. Grains orbit with the
+     the open gaps keep their places. A stream keeps within its orbit's own width, so every orbit
+     reads as one fine line of grains, a little fuller where the orbit was. Grains orbit with the
      moons: a power law through both moons' radii and speeds, so each moon rides its own stream
      and the inner streams overtake the outer ones. Dragging still throws them off their orbits;
      they come back to where the orbit has carried their place. */
@@ -1143,8 +1143,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var dustOrbits = [], dustKicks = [], dustLooks = [];
   strands.forEach(function(strand, index){
     var span = RING_O - RING_I, radius = RING_I + strand.x * span;
-    var gap = strands.reduce(function(best, other){ return other === strand ? best : Math.min(best, Math.abs(other.x - strand.x) * span); }, 1);
-    var spread = Math.min(Math.max(gap * 0.2, 0.0035), 0.02) + strand.y * span;
+    var spread = strand.y * span + 0.0012;
     var count = Math.round(radius * 400 * (0.5 + strand.z * 0.6));
     // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
     var clump = dustRandom() * 0.45, phase = dustRandom() * Math.PI * 2;
@@ -1155,7 +1154,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       if(dustRandom() < clump * (0.5 + 0.5 * Math.sin(turn * Math.PI * 6 + phase))) continue;
       // Most grains are fine; a few are boulders, a little larger and brighter.
       var boulder = Math.pow(dustRandom(), 3);
-      dustOrbits.push(turn * Math.PI * 2, radius + (dustRandom() + dustRandom() + dustRandom() - 1.5) * spread * 1.15, (dustRandom() - .5) * 0.006);
+      dustOrbits.push(turn * Math.PI * 2, radius + (dustRandom() + dustRandom() + dustRandom() - 1.5) * spread * 1.15, (dustRandom() - .5) * 0.002);
       // Dragging stirs most grains a little, so the streams blur; a few fly as far as the old dust did.
       var fling = 0.12 + 0.88 * Math.pow(dustRandom(), 2.5);
       dustKicks.push((dustRandom() - .5) * 0.60 * fling, (dustRandom() - .5) * 0.48 * fling, (dustRandom() - .5) * 0.42 * fling);
