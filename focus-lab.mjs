@@ -1,7 +1,7 @@
 // Focus Lab: move the plane of focus through a desk and watch what lands as a point.
 import {SUBJECTS,sharpZone,stopsBetween,focusToScale,scaleToFocus,blurDisc,isSharp,formatLength,formatAperture,FOCUS_MIN,FOCUS_MAX} from './focus-optics.mjs?v=fbf860ce43e1';
 import {explain} from './focus-why.mjs?v=aa099c8e4764';
-import {createSideView,SUBJECT_COLORS} from './focus-side.mjs?v=f78b2452f3d5';
+import {createSideView,SUBJECT_COLORS} from './focus-side.mjs?v=952dfe5778a0';
 
 const $=id=>document.getElementById(id);
 const INITIAL={s:.8,N:2};
