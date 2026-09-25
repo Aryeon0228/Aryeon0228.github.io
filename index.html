@@ -769,6 +769,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   scene.add(rig);
   // Rotate the celestial system while keeping the observation scale facing the viewer.
   var celestial = new THREE.Group();
+  // It opens turned as dragged for the opening view, about 149° round an axis 57° up the screen:
+  // the ring's near side sweeps down across the name and its far side arcs over the planet.
+  celestial.quaternion.set(0.5204, 0.8112, -0.0244, 0.2655).normalize();
   rig.add(celestial);
 
   /* ---------- 천체 ---------- */
@@ -1918,11 +1921,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   // A far sun, moved by the panel's SUN AZIMUTH along a straight sweep: it turns about the
   // vertical axis through the line from the camera to the planet, so on screen it travels
-  // across the frame at the planet's height. SUN AZIMUTH 0 puts it just inside the planet's
-  // right limb (96% of the radius): the frame is dark and only the rays blaze round the edge.
-  // Moving the slider it breaks out with a flare and leaves the frame on the right; it passes
-  // behind the viewer (lighting the planet's face), comes back in from the left behind the
-  // name, and slips behind the planet again.
+  // across the frame at the planet's height. SUN AZIMUTH 0 rests it just inside the frame's
+  // left edge (3.8% of the width), the name between it and the crescent it lights. Moving the
+  // slider it passes behind the name and slips behind the planet, breaks out past the right
+  // limb with a flare and leaves the frame on the right; it passes behind the viewer (lighting
+  // the planet's face) and comes back in from the left.
   var sunTarget = new THREE.Vector3(), sunUp = new THREE.Vector3(0, 1, 0), sunRight = new THREE.Vector3();
   var sunTilt = new THREE.Quaternion(), sunTurn = new THREE.Quaternion(), sunProbe = new THREE.Vector3();
   function sweepLight(out, angle){
@@ -1933,17 +1936,22 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var back = Math.max(-L.z, .02);
     return { x:(1 + L.x / back / (tanHalf * camera.aspect)) * w / 2, y:(1 - L.y / back / tanHalf) * h / 2 };
   }
-  function limbAngle(w, h, tanHalf, home){
-    var target = dragDiameter / 2.08 * .96, lo = 0, hi = .6;
-    for(var i = 0; i < 16; i++){
-      var mid = (lo + hi) / 2, at = screenOf(sweepLight(sunProbe, mid), w, h, tanHalf);
-      if(Math.hypot(at.x - home.x, at.y - home.y) < target) lo = mid; else hi = mid;
+  // How far the sun can come back in from the left while its screen point (CSS pixels) still fits.
+  function sweepUntil(fits, w, h, tanHalf){
+    var lo = Math.PI, hi = Math.PI * 2;
+    for(var i = 0; i < 18; i++){
+      var mid = (lo + hi) / 2;
+      if(fits(screenOf(sweepLight(sunProbe, mid), w, h, tanHalf))) lo = mid; else hi = mid;
     }
     return (lo + hi) / 2;
   }
-  // The first time ECLIPSE shows, the sun starts well behind the planet, where only a thin ring
-  // of light shows all round, and eases out to the limb moment over six seconds: the light
-  // starts to leak round the right-hand limb about halfway. Reduced motion, or touching
+  // A letter lies in the glare when it is within about a quarter of the canvas height of the sun.
+  function sunGlare(height){ return Math.max(90, height * .24); }
+  function letterGap(letter, x, y){
+    return Math.hypot(Math.max(letter.x - x, 0, x - (letter.x + letter.w)), Math.max(letter.y - y, 0, y - (letter.y + letter.h)));
+  }
+  // The first time ECLIPSE shows, the sun comes in from 8° further out and eases to its place
+  // over six seconds, its glow brightening along the edge first. Reduced motion, or touching
   // SUN AZIMUTH, skips it.
   var introStart = 0;
   document.getElementById('s-sun').addEventListener('input', function(){ introStart = -1; });
@@ -1952,16 +1960,22 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(introStart < 0) return 1;
     var progress = Math.min(1, (performance.now() - introStart) / 6000);
     if(progress >= 1) introStart = -1;
-    return .4 + .6 * progress * progress * (3 - 2 * progress);
+    return progress * progress * (3 - 2 * progress);
   }
   function updateSun(dt){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
-    var home = planetOnScreen();
     sunTarget.copy(rig.position).sub(camera.position).normalize();
     sunRight.crossVectors(sunTarget, sunUp).normalize();
     sunTilt.setFromAxisAngle(sunRight, .02);
+    // At rest it stands just inside the left edge, but never within the glare's reach of a letter:
+    // where the name starts close to the edge it waits further out, beyond it on narrow screens.
+    if(lettersDirty) measureLetters();
+    var reach = sunGlare(h) * 1.15, edge = w * .038;
+    var rest = sweepUntil(function(at){
+      return at.x <= edge && nameLetters.every(function(letter){ return letterGap(letter, at.x, at.y) >= reach; });
+    }, w, h, tanHalf);
     var turn = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
-    var L = sweepLight(bodyUniforms.uLight.value, limbAngle(w, h, tanHalf, home) * introRise() + turn * Math.PI * 2);
+    var L = sweepLight(bodyUniforms.uLight.value, rest - (1 - introRise()) * .14 + turn * Math.PI * 2);
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
     compMat.uniforms.uAspect.value = w / h;
@@ -1991,12 +2005,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var length = Math.hypot(dx, dy) || 1, ux = dx / length, uy = dy / length;
     // Straight behind the name the shadow falls toward the viewer, so it shortens.
     var reach = Math.min(1, length / 260);
-    // A letter lies in the glare when it is within about a quarter of the canvas height of the sun.
     if(lettersDirty) measureLetters();
-    var glare = Math.max(90, canvasBox.height * .24), strongest = 0;
+    var glare = sunGlare(canvasBox.height), strongest = 0;
     nameLetters.forEach(function(letter){
-      var gx = Math.max(letter.x - sx, 0, sx - (letter.x + letter.w)), gy = Math.max(letter.y - sy, 0, sy - (letter.y + letter.h));
-      letter.silhouette = Math.round(light * inFrame * (1 - THREE.MathUtils.smoothstep(Math.hypot(gx, gy), glare * .3, glare * 1.15)) * 100) / 100;
+      letter.silhouette = Math.round(light * inFrame * (1 - THREE.MathUtils.smoothstep(letterGap(letter, sx, sy), glare * .3, glare * 1.15)) * 100) / 100;
       strongest = Math.max(strongest, letter.silhouette);
     });
     // The lit edge and the long shadow; a silhouetted letter's shadow falls toward the viewer and goes.
