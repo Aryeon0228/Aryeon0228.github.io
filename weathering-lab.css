@@ -49,7 +49,7 @@
 .stage-label > span, .stage-bottom p, .compare-labels span, .point-marker b, .light-handle span {
   border-radius: 999px; background: rgb(0 0 0 / .72); color: var(--k8); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
 }
-.stage-label > span { display: inline-block; padding: 0 12px; font: 12px/28px var(--f-mono); letter-spacing: .06em; white-space: pre-wrap; }
+.stage-label > span { display: inline-block; padding: 4px 12px; border-radius: 14px; font: 12px/20px var(--f-mono); letter-spacing: .06em; }
 .stage-label b { color: var(--k10); font-weight: 400; }
 .stage-bottom { position: absolute; bottom: 16px; left: 16px; right: 16px; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: none; }
 .stage-bottom p { padding: 6px 14px; font-size: 12px; }
@@ -175,6 +175,7 @@
   .weather-stage { position: relative; top: auto; height: 300px; }
 }
 @media (max-width: 560px) {
+  body[data-lab] { --pad: 18px; }
   .effect-toggles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lab-heading h1 .lab-development-status { display: block; margin-top: 8px; }
   .stage-label, .stage-bottom { left: 12px; right: 12px; }

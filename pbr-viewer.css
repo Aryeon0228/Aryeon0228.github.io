@@ -13,7 +13,7 @@
 .stage-top > span, .stage-bottom > span, .stage-info, .stage-bottom button, .loading {
   border-radius: 999px; background: rgb(0 0 0 / .72); color: var(--k8); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
 }
-.stage-top > span { display: inline-block; padding: 0 12px; font: 12px/28px var(--f-mono); letter-spacing: .06em; white-space: pre-wrap; }
+.stage-top > span { display: inline-block; padding: 4px 12px; border-radius: 14px; font: 12px/20px var(--f-mono); letter-spacing: .06em; }
 .stage-top b { color: var(--k10); font-weight: 400; }
 .stage-info { position: absolute; bottom: 68px; left: 16px; display: flex; gap: 24px; padding: 10px 16px; border-radius: var(--lk-radius-m); pointer-events: none; }
 .stage-info > div { display: grid; gap: 2px; }
