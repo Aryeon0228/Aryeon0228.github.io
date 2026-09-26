@@ -875,14 +875,17 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   starGeometry.setAttribute('aPhase',new THREE.Float32BufferAttribute(starPhases,1));
   starGeometry.setAttribute('aBrightness',new THREE.Float32BufferAttribute(starBrightness,1));
   var starMaterial=new THREE.ShaderMaterial({
-    uniforms:{uTime:bodyUniforms.uTime,uAspect:{value:1},uDpr:{value:1},uDay:uDay},
+    uniforms:{uTime:bodyUniforms.uTime,uAspect:{value:1},uDpr:{value:1},uDay:uDay,uShift:{value:new THREE.Vector2()}},
     vertexShader:[
       'attribute float aSize; attribute float aPhase; attribute float aBrightness;',
-      'uniform float uTime; uniform float uAspect; uniform float uDpr;',
+      'uniform float uTime; uniform float uAspect; uniform float uDpr; uniform vec2 uShift;',
       'varying float vBrightness;',
       'void main(){',
+      // Dragging the planet slides the sky a little, nearer stars more than farther ones
+      // (parallax), wrapping round the frame so the field never runs out.
+      '  vec2 xy=mod(position.xy+uShift*(22.0/-position.z)+1.0,2.0)-1.0;',
       // View-aligned positions at different depths keep the sky stable on resize.
-      '  vec3 p=vec3(position.xy*vec2(uAspect,1.0)*(-position.z)*0.286745,position.z);',
+      '  vec3 p=vec3(xy*vec2(uAspect,1.0)*(-position.z)*0.286745,position.z);',
       '  gl_Position=projectionMatrix*vec4(p,1.0);',
       '  gl_PointSize=max(1.0,aSize*uDpr);',
       '  float pulse=pow(0.5+0.5*sin(uTime*(0.48+aPhase*0.065)+aPhase),4.0);',
@@ -1369,6 +1372,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var markerRay=new THREE.Ray(),markerPlanet=new THREE.Sphere(),markerHit=new THREE.Vector3();
 
   /* ---------- 별 ---------- */
+  var skyStars;
   var skyStarMaterial=new THREE.PointsMaterial({
     color:0xffffff, size:0.075, sizeAttenuation:true, transparent:true, opacity:0.38
   });
@@ -1384,7 +1388,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }
     var g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    scene.add(new THREE.Points(g,skyStarMaterial));
+    skyStars=new THREE.Points(g,skyStarMaterial);
+    scene.add(skyStars);
   })();
 
   /* ---------- 블룸 ----------
@@ -1445,9 +1450,45 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }'
   ].join('\n');
 
+  // Depth of field. A small depth pass stores each pixel's distance (the ring as its whole
+  // disc, so the gaps between strands blur with them); a half-resolution blurred copy of the
+  // scene is mixed in only beyond the planet, so the far side of the ring falls softly out
+  // of focus while the planet and the near side stay sharp. Stars keep no depth: they stay crisp.
+  var depthMat = new THREE.ShaderMaterial({
+    vertexShader:['varying float vZ;','void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }'].join('\n'),
+    fragmentShader:['precision highp float; varying float vZ;','void main(){ gl_FragColor = vec4(clamp((vZ - 2.0) / 14.0, 0.0, 1.0), 0.0, 1.0, 1.0); }'].join('\n'),
+    side:THREE.DoubleSide
+  });
+  var rtDepth = new THREE.WebGLRenderTarget(2, 2, RT);
+  var rtDofA = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
+  var rtDofB = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
+  // The instrument overlay (reticle lines and labels) is drawn solid black in this pass, so the
+  // pixels it covers carry no depth and stay sharp over the blurred far ring.
+  function isOverlay(object){
+    for(var o = object; o; o = o.parent) if(o === reticle || o === moonReticle) return true;
+    return false;
+  }
+  function renderDepth(){
+    var hidden = [], swapped = [], inked = [];
+    scene.traverse(function(object){
+      if(object.visible && (object.isLine || object.isSprite) && isOverlay(object)){
+        var m = object.material;
+        inked.push(m, m.color.getHex(), m.opacity, m.blending);
+        m.color.setHex(0x000000); m.opacity = 1; m.blending = THREE.NormalBlending;
+      }else if(object.visible && (object.isPoints || object.isLine || object.isSprite || object === atmo)){ object.visible = false; hidden.push(object); }
+      else if(object.isMesh){ swapped.push(object, object.material); object.material = depthMat; }
+    });
+    renderer.setRenderTarget(rtDepth);
+    renderer.render(scene, camera);
+    for(var i = 0; i < swapped.length; i += 2) swapped[i].material = swapped[i + 1];
+    for(var j = 0; j < inked.length; j += 4){ inked[j].color.setHex(inked[j + 1]); inked[j].opacity = inked[j + 2]; inked[j].blending = inked[j + 3]; }
+    hidden.forEach(function(object){ object.visible = true; });
+  }
+
   var compMat = new THREE.ShaderMaterial({
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
+      tDof:{value:null}, tDepth:{value:null}, uFocus:{value:new THREE.Vector2(.4, .6)},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
       tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
@@ -1456,6 +1497,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     fragmentShader:[
       'precision mediump float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
+      'uniform sampler2D tDof; uniform sampler2D tDepth; uniform vec2 uFocus;',
       'uniform sampler2D tX; uniform vec4 uLens;',
       'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
@@ -1463,7 +1505,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '  return (texture2D(t, vUv - e).rgb + texture2D(t, vUv + e).rgb + texture2D(t, vUv - f).rgb + texture2D(t, vUv + f).rgb) * .25; }',
       SUN_GLSL,
       'void main(){',
-      '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
+      // Beyond the focus distance (uFocus.x) the scene blends into its blurred copy, fully by uFocus.y.
+      '  vec4 depth = texture2D(tDepth, vUv);',
+      '  float coc = depth.b * smoothstep(uFocus.x, uFocus.y, depth.r);',
+      '  vec3 c = mix(texture2D(tScene, vUv).rgb, texture2D(tDof, vUv).rgb, coc * .85) + texture2D(tBloom, vUv).rgb * uStr;',
       // The sun shows only where nothing stands in front of it; its scattered rays are added on top.
       // The tent softens the half-resolution mask's stair-steps where the glow meets the limb,
       // and the grain the march leaves in the rays.
@@ -1618,6 +1663,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     turnAxis.set(dy/distance,dx/distance,0);
     turnStep.setFromAxisAngle(turnAxis,distance*Math.PI/dragDiameter);
     celestial.quaternion.premultiply(turnStep).normalize();
+    // Far away, the sky drifts the same way, as if the view were orbiting the planet.
+    var shift=starMaterial.uniforms.uShift.value, span=Math.max(1,canvas.clientWidth);
+    shift.x=(shift.x+dx/span*.16)%2; shift.y=(shift.y-dy/span*.16)%2;
+    if(skyStars){ skyStars.rotation.y+=dx/span*.05; skyStars.rotation.x+=dy/span*.05; }
   }
   function finishDrag(e){
     if(e && e.pointerId !== activePointer) return;
@@ -2199,6 +2248,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       rtA.setSize(bw, bh); rtB.setSize(bw, bh);
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
       rtX.setSize(pw, ph);
+      rtDepth.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
+      rtDofA.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1)); rtDofB.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       compMat.uniforms.uOccTexel.value.set(1 / rtOcc.width, 1 / rtOcc.height);
       nameMaskDirty = lettersDirty = true;
@@ -2272,6 +2323,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     renderer.setRenderTarget(rtScene);
     // autoClear already clears this target immediately before rendering.
     renderer.render(scene, camera);
+
+    // Depth of field: distance pass, then a half-resolution blur of the scene (two rounds).
+    renderDepth();
+    var dofX = 1.6 / rtDofA.width, dofY = 1.6 / rtDofA.height, bloomDir = blurMat.uniforms.uDir.value.clone();
+    blurMat.uniforms.tD.value = rtScene.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA);
+    blurMat.uniforms.tD.value = rtDofA.texture; blurMat.uniforms.uDir.value.set(0, dofY); drawPost(blurMat, rtDofB);
+    blurMat.uniforms.tD.value = rtDofB.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA);
+    blurMat.uniforms.tD.value = rtDofA.texture; blurMat.uniforms.uDir.value.set(0, dofY); drawPost(blurMat, rtDofB);
+    blurMat.uniforms.uDir.value.copy(bloomDir);
+    // Focus sits at the planet's centre; blur begins a little behind it and is full about three units further.
+    var focusZ = camera.position.distanceTo(rig.position);
+    compMat.uniforms.uFocus.value.set((focusZ + .35 * rig.scale.x - 2) / 14, (focusZ + 3.2 * rig.scale.x - 2) / 14);
+    compMat.uniforms.tDof.value = rtDofB.texture;
+    compMat.uniforms.tDepth.value = rtDepth.texture;
 
     // 밝은 부분만 뽑아 1/4 해상도로
     cutMat.uniforms.tD.value = rtScene.texture;
