@@ -1591,7 +1591,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     function update(){
       var amount = Number(el.value)/100;
       P[key] = planetBaseline[key] + (target - planetBaseline[key])*amount;
-      // Sun position wraps naturally through sine/cosine in the render loop.
+      // The sun's sweep wraps round once over the slider's range (see aimSun).
       lab.textContent = key === 'sun' && amount > 0 ? '+' + Math.round(amount*360) + '°' : el.value;
       el.setAttribute('aria-valuetext', amount === 0 ? '0, 기본 모습' : lab.textContent);
     }
@@ -1995,8 +1995,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   function letterGap(letter, x, y){
     return Math.hypot(Math.max(letter.x - x, 0, x - (letter.x + letter.w)), Math.max(letter.y - y, 0, y - (letter.y + letter.h)));
   }
-  // The first time ECLIPSE shows, the sun comes in from 8° further out and eases to its place
-  // over six seconds, its glow brightening along the edge first. Reduced motion, or touching
+  // When the page opens, the sun comes in from 8° further out and eases to its place over six
+  // seconds; in ECLIPSE its glow brightens along the edge first. Reduced motion, or touching
   // SUN AZIMUTH, skips it.
   var introStart = 0;
   document.getElementById('s-sun').addEventListener('input', function(){ introStart = -1; });
@@ -2007,7 +2007,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(progress >= 1) introStart = -1;
     return progress * progress * (3 - 2 * progress);
   }
-  function updateSun(dt){
+  // The one sun of every mode: ECLIPSE, X-RAY, OFF and the day theme all light the planet from
+  // it, so switching modes keeps the light where it is. Sets the planet's light and the sun's
+  // point on screen.
+  function aimSun(){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
     sunTarget.copy(rig.position).sub(camera.position).normalize();
     sunRight.crossVectors(sunTarget, sunUp).normalize();
@@ -2023,10 +2026,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var L = sweepLight(bodyUniforms.uLight.value, rest - (1 - introRise()) * .14 + turn * Math.PI * 2);
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
+  }
+  // ECLIPSE shows that sun: how much of it stands behind what we see, and the name it shades.
+  function updateSun(dt){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
     compMat.uniforms.uAspect.value = w / h;
     compMat.uniforms.uSunR.value = .22;
     compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
-    var amount = THREE.MathUtils.smoothstep(-L.z, -.1, .2);
+    var amount = THREE.MathUtils.smoothstep(-bodyUniforms.uLight.value.z, -.1, .2);
     shadeName(amount, dt);
     return amount;
   }
@@ -2220,10 +2227,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ringScatter.value=reduce ? 0 : ringScatter.value+(scatterTarget-ringScatter.value)*(1-Math.exp(-dt*(activePointer!==null ? 12 : 3.5)));
     if(scatterTarget===0 && ringScatter.value<0.002) ringScatter.value=0;
 
-    // 태양 방위각
-    var a = P.sun * Math.PI*2;
-    bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
-    // ECLIPSE lights the planet from its own sun, before anything is drawn.
+    // 태양 방위각: every mode lights the planet from the same sun, before anything is drawn.
+    aimSun();
     var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
     uFwd.value = eclipseAmount;
     if(!eclipseAmount){ if(compMat.uniforms.uExposure.value !== 1) resetCamera(); if(isDay) clearName(); }
