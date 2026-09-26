@@ -1131,8 +1131,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   });
 
   /* ---------- 고리 먼지 ----------
-     The ring is dust: half of the orbits above are streams of fine grains, so the open gaps keep
-     their places. Every stream is one straight line of grains along its orbit;
+     The ring is dust: some of the orbits above (chosen below) are streams of fine grains, so the
+     open gaps keep their places. Every stream is one straight line of grains along its orbit;
      the orbits that were fuller threads carry slightly larger grains. Grains orbit with the
      moons: a power law through both moons' radii and speeds, so each moon rides its own stream
      and the inner streams overtake the outer ones. Dragging still throws them off their orbits;
@@ -1153,7 +1153,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     return (moon ? 2 : 0) + (index < continuousStrandCount ? 1 : 0) + strands[index].y;
   }
   var strandKept = strands.map(function(){ return true; });
-  for(var merges = strands.length >> 1; merges > 0; merges--){
+  function dropClosest(){
     var order = strands.map(function(strand, index){ return index; })
       .filter(function(index){ return strandKept[index]; })
       .sort(function(a, b){ return strands[a].x - strands[b].x; });
@@ -1164,11 +1164,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var near = order[tightest-1], far = order[tightest];
     strandKept[strandRank(near) >= strandRank(far) ? far : near] = false;
   }
+  var halfKept = strands.length - (strands.length >> 1);
+  for(var merges = strands.length >> 1; merges > 0; merges--) dropClosest();
   var allGrains = 0, keptGrains = 0;
   strands.forEach(function(strand, index){
     allGrains += strandGrains(strand);
     if(strandKept[index]) keptGrains += strandGrains(strand);
   });
+  // A quarter of those rings then give way too, the closest first, and their grains go with them:
+  // the rings that stay keep their weight, and there are fewer of them (13 of the 17).
+  for(var drops = Math.round(halfKept / 4); drops > 0; drops--) dropClosest();
   var dustOrbits = [], dustKicks = [], dustLooks = [];
   strands.forEach(function(strand, index){
     if(!strandKept[index]) return;
