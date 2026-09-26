@@ -9,8 +9,17 @@ const NS='http://www.w3.org/2000/svg',AXIS=130,LENS_X=440,SENSOR_X=560,NEAR_X=37
 const xOf=d=>NEAR_X-(NEAR_X-FAR_X)*Math.min(1,Math.max(0,focusToScale(d)));
 function el(name,attrs,parent){const e=document.createElementNS(NS,name);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent?.append(e);return e;}
 
+// Labels keep one reading size (LABEL_PX on screen) whatever width the drawing is shown at.
+const LABEL_PX=14,VIEW_W=720;
+function keepLabelSize(svg){
+ const fit=()=>{const w=svg.getBoundingClientRect().width;if(w>0)svg.style.setProperty('--sv-type',(LABEL_PX*VIEW_W/w).toFixed(2)+'px');};
+ if(typeof ResizeObserver==='function')new ResizeObserver(fit).observe(svg);
+ fit();
+}
+
 export function createSideView(svg){
  svg.replaceChildren();
+ keepLabelSize(svg);
  const zone=el('rect',{class:'sv-zone',y:36,height:188},svg);
  const axis=el('g',{class:'sv-axis'},svg);
  el('line',{x1:FAR_X-10,x2:SENSOR_X+100,y1:AXIS,y2:AXIS},axis);
@@ -27,10 +36,10 @@ export function createSideView(svg){
  const marks=el('g',{},svg),discs=el('g',{},svg);
  const subjects=SUBJECTS.map((S,i)=>{
   const g=el('g',{class:'sv-subject'},marks);el('circle',{cx:xOf(S.distance),cy:AXIS,r:4.5,fill:SUBJECT_COLORS[S.id]},g);
-  el('text',{x:xOf(S.distance),y:AXIS+22+i*14,'text-anchor':'middle',fill:SUBJECT_COLORS[S.id]},g).textContent=`${S.name} ${formatLength(S.distance)}`;
+  el('text',{x:xOf(S.distance),y:AXIS+24+i*19,'text-anchor':'middle',fill:SUBJECT_COLORS[S.id]},g).textContent=`${S.name} ${formatLength(S.distance)}`;
   const dx=SENSOR_X+(i-1)*6;   // side by side on the sensor so a small disc is never hidden behind a larger one
   const disc=el('line',{class:'sv-disc',x1:dx,x2:dx,stroke:SUBJECT_COLORS[S.id]},discs);
-  const label=el('text',{class:'sv-disc-label',x:SENSOR_X+12,y:60+i*16,fill:SUBJECT_COLORS[S.id]},discs);
+  const label=el('text',{class:'sv-disc-label',x:SENSOR_X+12,y:58+i*20,fill:SUBJECT_COLORS[S.id]},discs);
   return {S,disc,label};
  });
  return function update(s,N){

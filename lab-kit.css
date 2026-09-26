@@ -1,0 +1,187 @@
+/* Lab kit: the look every lab shares, taken from Color Lab.
+   The frame stays in the 11-step gray wedge, so the only color on screen is the thing being
+   studied. One type scale (12 · 14 · 16 · 20 · 28), one radius family (pills, round buttons,
+   20px cards), and surfaces rather than nested borders carry the hierarchy.
+   Element defaults are wrapped in :where() so each lab's own stylesheet, loaded after this one,
+   can still adjust them; the lk- classes are the shared components. */
+
+body[data-lab] {
+  --k0: #000; --k1: #1a1a1a; --k2: #333; --k3: #4d4d4d; --k4: #666; --k5: #8f8f8f;
+  --k6: #a6a6a6; --k7: #bfbfbf; --k8: #d9d9d9; --k9: #ececec; --k10: #fff;
+  --lk-edge: rgb(255 255 255 / .1);
+  --lk-radius: 20px;
+  --lk-radius-m: 14px;
+  --lk-sticky: var(--lab-header-height, 52px);
+  --lk-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23a6a6a6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* ---------- title ---------- */
+body[data-lab] .lab-heading { padding: 28px 0 24px; gap: 6px 20px; }
+body[data-lab] .lab-heading .study-kicker { color: var(--k5); letter-spacing: .1em; }
+body[data-lab] .lab-heading .study-kicker a:hover { color: var(--k10); }
+body[data-lab] .lab-heading .study-kicker span { margin: 0 8px; color: var(--k4); }
+body[data-lab] .lab-heading h1 { font: 300 28px/1.2 var(--f-lat); letter-spacing: -.02em; }
+body[data-lab] .lab-heading p { max-width: 560px; color: var(--k6); font: 300 14px/1.6 var(--f-ko); }
+@media (max-width: 759px) {
+  body[data-lab] .lab-heading { padding: 20px 0 16px; }
+  body[data-lab] .lab-heading h1 { font-size: 24px; }
+}
+
+/* ---------- element defaults inside a lab ---------- */
+:where(body[data-lab] main) :where(h1, h2, h3, h4, p) { margin: 0; }
+:where(body[data-lab] main) :where(code, output, kbd, samp) { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+:where(body[data-lab] main) :where(button, a, input, select, summary, [tabindex]):focus-visible { outline: 2px solid var(--k10); outline-offset: 3px; }
+
+/* Selects: pills with a quiet chevron. */
+:where(body[data-lab] main) select {
+  -webkit-appearance: none; appearance: none; min-width: 0; min-height: 40px;
+  padding: 0 36px 0 16px; border: 0; border-radius: 999px;
+  background: var(--k2) var(--lk-chevron) no-repeat right 14px center / 12px;
+  color: var(--k9); font: 400 14px/1.2 var(--f-ko); cursor: pointer;
+}
+:where(body[data-lab] main) select:hover { background-color: var(--k3); }
+:where(body[data-lab] main) select option { background: var(--k1); color: var(--k9); }
+
+/* Sliders: a row of dots and a slim white bar. */
+:where(body[data-lab] main) input[type=range] {
+  -webkit-appearance: none; appearance: none; display: block; width: 100%; min-width: 0; height: 32px;
+  margin: 0; padding: 0; border: 0; background: transparent; color: var(--k9); cursor: ew-resize; accent-color: var(--k10);
+}
+:where(body[data-lab] main) input[type=range]:disabled { opacity: .4; cursor: default; }
+:where(body[data-lab] main) input[type=range]::-webkit-slider-runnable-track {
+  height: 32px; border: 0; border-radius: 0;
+  background: radial-gradient(circle, var(--k4) 0 1.5px, transparent 2px) 0 50% / 10px 100% repeat-x;
+}
+:where(body[data-lab] main) input[type=range]::-moz-range-track {
+  height: 32px; border: 0; border-radius: 0;
+  background: radial-gradient(circle, var(--k4) 0 1.5px, transparent 2px) 0 50% / 10px 100% repeat-x;
+}
+:where(body[data-lab] main) input[type=range]::-moz-range-progress { background: transparent; }
+:where(body[data-lab] main) input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 4px; height: 22px; margin-top: 5px;
+  border: 0; border-radius: 2px; background: var(--k10); box-shadow: 0 0 0 5px rgb(255 255 255 / .1);
+}
+:where(body[data-lab] main) input[type=range]::-moz-range-thumb {
+  width: 4px; height: 22px; border: 0; border-radius: 2px; background: var(--k10); box-shadow: 0 0 0 5px rgb(255 255 255 / .1);
+}
+:where(body[data-lab] main) input[type=range]:focus-visible { outline-offset: 2px; }
+
+/* Checkboxes and radios: native, in white. */
+:where(body[data-lab] main) :is(input[type=checkbox], input[type=radio]) { width: 18px; height: 18px; margin: 0; accent-color: var(--k10); cursor: pointer; }
+
+/* Text and number fields: sunken pills. */
+:where(body[data-lab] main) :is(input[type=text], input[type=number], input[type=search], input:not([type])) {
+  min-width: 0; height: 40px; padding: 0 16px; border: 0; border-radius: 999px;
+  background: var(--k0); color: var(--k9); font: 14px var(--f-mono);
+}
+
+/* Collapsible explanations: a chevron, not a triangle. */
+:where(body[data-lab] main) summary {
+  display: flex; align-items: center; gap: 10px; min-height: 40px;
+  color: var(--k6); font-size: 14px; list-style: none; cursor: pointer;
+}
+:where(body[data-lab] main) summary::-webkit-details-marker { display: none; }
+:where(body[data-lab] main) summary::before {
+  content: ""; flex-shrink: 0; width: 6px; height: 6px; margin: 0 2px;
+  border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg); transition: transform .15s;
+}
+:where(body[data-lab] main) details[open] > summary::before { transform: rotate(45deg); }
+:where(body[data-lab] main) summary:hover { color: var(--k10); }
+
+/* Tables: rows divided by one hairline, numbers in mono. */
+:where(body[data-lab] main) table { width: 100%; border-collapse: collapse; font-size: 14px; }
+:where(body[data-lab] main) caption { padding-bottom: 12px; color: var(--k5); font-size: 12px; text-align: left; }
+:where(body[data-lab] main) :is(th, td) { padding: 10px 12px 10px 0; border: 0; border-bottom: 1px solid var(--k2); text-align: left; vertical-align: top; }
+:where(body[data-lab] main) th { color: var(--k5); font-size: 12px; font-weight: 500; }
+:where(body[data-lab] main) td { color: var(--k8); }
+
+/* ---------- components ---------- */
+.lk-card { min-width: 0; padding: 20px; border: 0; border-radius: var(--lk-radius); background: var(--k1); }
+.lk-sunken { border: 0; border-radius: var(--lk-radius-m); background: var(--k0); }
+.lk-label { color: var(--k5); font: 500 12px/1.4 var(--f-ko); letter-spacing: .08em; text-transform: uppercase; }
+.lk-title { color: var(--k9); font: 500 16px/1.4 var(--f-ko); }
+.lk-note { color: var(--k5); font-size: 12px; line-height: 1.65; }
+.lk-divider { height: 1px; border: 0; background: var(--k2); }
+
+.lk-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 40px; padding: 0 18px; border: 0; border-radius: 999px;
+  background: var(--k2); color: var(--k9); font: 400 14px/1.2 var(--f-ko); white-space: nowrap; text-decoration: none;
+  transition: background-color .15s, color .15s;
+}
+.lk-btn:hover { background: var(--k3); color: var(--k10); }
+.lk-btn[aria-pressed=true], .lk-btn-primary { background: var(--k10); color: var(--k0); font-weight: 500; }
+.lk-btn[aria-pressed=true]:hover, .lk-btn-primary:hover { background: var(--k8); color: var(--k0); }
+.lk-btn-ghost { padding: 0 12px; background: transparent; color: var(--k6); }
+.lk-btn-ghost:hover { background: var(--k2); color: var(--k10); }
+.lk-btn:disabled { opacity: .4; cursor: default; }
+.lk-icon {
+  display: inline-grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; padding: 0;
+  border: 0; border-radius: 50%; background: var(--k2); color: var(--k8);
+}
+.lk-icon:hover { background: var(--k3); color: var(--k10); }
+
+/* Segmented choices: one look for every "pick one of these". On a card the well is black;
+   on the page it is the card gray. */
+.lk-seg {
+  display: inline-flex; flex-wrap: nowrap; gap: 2px; min-width: 0; max-width: 100%; padding: 3px;
+  overflow-x: auto; border: 0; border-radius: 999px; background: var(--lk-well, var(--k0)); scrollbar-width: none;
+}
+.lk-seg::-webkit-scrollbar { display: none; }
+.lk-seg > button, .lk-seg > a {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0;
+  min-height: 34px; padding: 0 14px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--k6); font: 400 14px/1.2 var(--f-ko); white-space: nowrap; text-decoration: none;
+}
+.lk-seg > button:hover, .lk-seg > a:hover { background: transparent; color: var(--k10); }
+.lk-seg > [aria-pressed=true], .lk-seg > [aria-selected=true], .lk-seg > [aria-current] { background: var(--k10); color: var(--k0); }
+.lk-seg > button:disabled { opacity: .4; cursor: default; }
+
+/* Page tabs: the same pills, a size up, on the card gray. */
+.lk-tabs {
+  display: flex; gap: 2px; min-width: 0; max-width: 100%; padding: 4px; overflow-x: auto;
+  border: 0; border-radius: 999px; background: var(--k1); scrollbar-width: none;
+}
+.lk-tabs::-webkit-scrollbar { display: none; }
+.lk-tabs > button, .lk-tabs > a {
+  display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 40px; padding: 0 22px;
+  border: 0; border-radius: 999px; background: transparent; color: var(--k6);
+  font: 400 14px/1.2 var(--f-ko); white-space: nowrap; text-decoration: none;
+}
+.lk-tabs > button:hover, .lk-tabs > a:hover { background: transparent; color: var(--k10); }
+.lk-tabs > [aria-selected=true], .lk-tabs > [aria-current] { background: var(--k10); color: var(--k0); font-weight: 500; }
+
+/* A slider in a pill: label, dots, value, read left to right. */
+.lk-range {
+  display: flex; align-items: center; gap: 14px; min-width: 0; min-height: 48px;
+  padding: 0 18px; border-radius: 999px; background: var(--lk-well, var(--k0)); color: var(--k6); font-size: 14px;
+}
+.lk-range > label, .lk-range > span { flex-shrink: 0; white-space: nowrap; }
+.lk-range input { flex: 1; }
+.lk-range output { flex-shrink: 0; min-width: 2ch; color: var(--k10); font-size: 16px; text-align: right; }
+
+/* Label above, value on the right, slider below: for narrow panels. */
+.lk-field { display: grid; gap: 2px; min-width: 0; }
+.lk-field > label, .lk-field > .lk-field-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  color: var(--k6); font-size: 14px;
+}
+.lk-field output { color: var(--k10); font: 14px var(--f-mono); font-variant-numeric: tabular-nums; }
+
+/* Read-outs: label on the left, number on the right, one hairline between rows. */
+.lk-readout { display: grid; margin: 0; }
+.lk-readout > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-height: 40px; padding: 8px 0; border-top: 1px solid var(--k2); }
+.lk-readout dt { color: var(--k5); font-size: 12px; }
+.lk-readout dd { margin: 0; color: var(--k9); font: 14px var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+/* A floating chip over an image or a canvas. */
+.lk-chip {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 12px;
+  border-radius: 999px; background: rgb(0 0 0 / .72); color: var(--k9); font: 12px var(--f-mono);
+  backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-lab] main *, body[data-lab] main *::before { transition: none !important; }
+}
