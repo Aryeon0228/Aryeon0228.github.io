@@ -963,7 +963,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       depthWrite: false
     })
   );
-  atmo.renderOrder = 2;   // 고리 위에 덮이도록
+  atmo.renderOrder = 2;   // 고리의 먼 쪽 위, 가까운 쪽 아래에 그린다
   celestial.add(atmo);
 
   /* ---------- 고리 ----------
@@ -1202,7 +1202,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     'attribute vec3 aKick; attribute vec4 aLook;',
     'uniform float uTime; uniform vec2 uSpin; uniform float uScatter; uniform float uLocal; uniform vec3 uGrab;',
     'uniform vec3 uLight; uniform float uPen; uniform float uPlanetRadius; uniform float uOpa; uniform float uProj; uniform float uPixel;',
-    'uniform float uFwd;',
+    'uniform float uFwd; uniform float uAtmo; uniform float uHalf;',
     'varying float vLum; varying float vAlpha; varying float vCover; varying float vSpark; varying float vSize; varying float vZ;',
     'varying vec3 vLight; varying float vBlock;',
     'void main(){',
@@ -1220,15 +1220,22 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // dimmer on the far side; the outer clusters fade out behind the planet.
     '  vec3 P = mv.xyz - (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;',
     '  vec3 L = normalize(uLight);',
-    '  float s0 = -dot(P, L), shadow = 1.0;',
-    '  if(s0 > 0.0) shadow = smoothstep(uPlanetRadius * (1.0 - uPen), uPlanetRadius * (1.0 + uPen), length(P + L * s0));',
+    '  float s0 = -dot(P, L), shadow = 1.0, bent = 0.0;',
+    '  if(s0 > 0.0){',
+    '    float axis = length(P + L * s0);',
+    '    shadow = smoothstep(uPlanetRadius * (1.0 - uPen), uPlanetRadius * (1.0 + uPen), axis);',
+    // Inside the shadow, light bent through the atmosphere still reaches the grains, as it reaches
+    // the Moon in a lunar eclipse: faint, and brighter toward the shadow's edge. So the ring stays
+    // visible where it crosses in front of the dark disc; with no atmosphere the shadow is black.
+    '    bent = (1.0 - shadow) * (0.45 + 0.55 * smoothstep(0.0, uPlanetRadius, axis)) * uAtmo;',
+    '  }',
     '  float toward = 0.45 + 0.55 * smoothstep(-0.8, 0.8, dot(normalize(P), L));',
     '  float near = mix(0.58, 1.0, smoothstep(-1.3, 1.3, P.z / uPlanetRadius));',
     '  float front = aLook.w > 0.5 ? mix(0.18, 1.0, smoothstep(-0.15, 1.10, P.z / uPlanetRadius)) : 1.0;',
     // ECLIPSE: grains near the line to the hidden sun scatter it forward (Henyey-Greenstein, g = .7)
     // and glow, unless the planet's shadow takes their light.
     '  float fwd = uFwd * shadow * 0.02 / pow(1.49 - 1.4 * dot(normalize(mv.xyz), L), 1.5);',
-    '  vLum = (0.018 + 0.982 * shadow) * toward * 0.90 + fwd;',
+    '  vLum = (0.018 + 0.982 * shadow) * toward * 0.90 + bent * 0.09 + fwd;',
     // The grain's true size on screen, at most six pixels; under two it keeps two and fades
     // instead, so a moving grain never flickers between one and four pixels.
     '  float px = 2.0 * aLook.x * length(modelViewMatrix[0].xyz) * uProj * uPixel / vZ;',
@@ -1241,6 +1248,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // The passes read these in the fragment shader, where uniforms shared with this one would clash in precision.
     '  vLight = L;',
     '  vBlock = vCover * min(1.0, uOpa * 2.0);',
+    // The planet's glow lies between the ring's far and near halves, so the ring is drawn in two:
+    // uHalf 1 keeps the grains beyond the point of the sight line nearest the planet's centre,
+    // -1 the grains before it, 0 all of them. Every orbit lies outside the glow's shell, so a grain
+    // on it is wholly in front of the glow or wholly behind it.
+    '  if(uHalf * dot(P, mv.xyz) < 0.0){ gl_Position = vec4(0.0, 0.0, 2.0, 1.0); gl_PointSize = 0.0; }',
     '}'
   ].join('\n');
   // The grain itself: flat below three pixels, a soft disc above; glints add the old plus-shaped rays.
@@ -1258,7 +1270,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       uniforms:{
         uTime:bodyUniforms.uTime, uSpin:ringSpin, uScatter:ringScatter, uLocal:ringLocal, uGrab:ringGrab,
         uLight:bodyUniforms.uLight, uPen:bodyUniforms.uPen, uPlanetRadius:ringPlanetRadius, uOpa:uRing, uDay:uDay,
-        uFwd:uFwd,
+        uFwd:uFwd, uAtmo:uDens, uHalf:{ value:options && options.half || 0 },
         uProj:dustProjection, uPixel:{ value:options && options.pixel || 1 }
       },
       vertexShader:DUST_VERT,
@@ -1274,15 +1286,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   }
   // Device pixels per world unit at unit depth; set on resize.
   var dustProjection = { value:1 };
-  var dustLook = dustMaterial([
+  var DUST_LOOK = [
     '  float shape = grainShape();',
     '  if(shape <= 0.0) discard;',
     '  if(uDay > 0.5) gl_FragColor = vec4(vec3(.115 + vLum * .40), min(1.0, vAlpha * 1.20) * shape);',
     '  else gl_FragColor = vec4(vec3(vLum + vSpark * .5), vAlpha * shape);'
-  ].join('\n'), { material:{ transparent:true, depthWrite:false, depthTest:true } });
-  var ringDust = new THREE.Points(dustGeometry, dustLook);
+  ].join('\n');
+  // The far half goes down before the planet's glow and the near half after it, so the ring
+  // passes behind the glow and in front of it, and cuts across the lit rim of an eclipse.
+  var ringDust = new THREE.Points(dustGeometry, dustMaterial(DUST_LOOK, { half:1, material:{ transparent:true, depthWrite:false, depthTest:true } }));
   ringDust.renderOrder = 1; ringDust.frustumCulled = false;
   ring.add(ringDust);
+  var ringDustNear = new THREE.Points(dustGeometry, dustMaterial(DUST_LOOK, { half:-1, material:{ transparent:true, depthWrite:false, depthTest:true } }));
+  ringDustNear.renderOrder = 2.5; ringDustNear.frustumCulled = false;
+  ring.add(ringDustNear);
 
   /* ---------- 간결한 관측 표시 ---------- */
   var reticle = new THREE.Group();
@@ -1574,7 +1591,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     function update(){
       var amount = Number(el.value)/100;
       P[key] = planetBaseline[key] + (target - planetBaseline[key])*amount;
-      // Sun position wraps naturally through sine/cosine in the render loop.
+      // The sun's sweep wraps round once over the slider's range (see aimSun).
       lab.textContent = key === 'sun' && amount > 0 ? '+' + Math.round(amount*360) + '°' : el.value;
       el.setAttribute('aria-valuetext', amount === 0 ? '0, 기본 모습' : lab.textContent);
     }
@@ -1718,14 +1735,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     Array.prototype.slice.call(node.childNodes).forEach(function(child){
       if(child.nodeType === 1){ splitLetters(child); return; }
       if(child.nodeType !== 3 || !child.textContent.trim()) return;
-      var run = document.createDocumentFragment(), from = node.classList.contains('ko') ? 143 : 255;
+      var run = document.createDocumentFragment(), ko = node.classList.contains('ko');
       Array.prototype.forEach.call(child.textContent, function(character){
         if(/\s/.test(character)){ run.appendChild(document.createTextNode(character)); return; }
         var letter = document.createElement('span');
         letter.textContent = character;
         letter.setAttribute('aria-hidden', 'true');
         run.appendChild(letter);
-        nameLetters.push({ el:letter, from:from, x:0, y:0, w:0, h:0, shadow:'', color:'' });
+        // Against the sun a letter dims only a little: white to a light gray, the Korean name's gray one step.
+        nameLetters.push({ el:letter, from:ko ? 143 : 255, to:ko ? 102 : 191, x:0, y:0, w:0, h:0, shadow:'', color:'' });
       });
       node.replaceChild(run, child);
     });
@@ -1978,8 +1996,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   function letterGap(letter, x, y){
     return Math.hypot(Math.max(letter.x - x, 0, x - (letter.x + letter.w)), Math.max(letter.y - y, 0, y - (letter.y + letter.h)));
   }
-  // The first time ECLIPSE shows, the sun comes in from 8° further out and eases to its place
-  // over six seconds, its glow brightening along the edge first. Reduced motion, or touching
+  // When the page opens, the sun comes in from 8° further out and eases to its place over six
+  // seconds; in ECLIPSE its glow brightens along the edge first. Reduced motion, or touching
   // SUN AZIMUTH, skips it.
   var introStart = 0;
   document.getElementById('s-sun').addEventListener('input', function(){ introStart = -1; });
@@ -1990,7 +2008,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(progress >= 1) introStart = -1;
     return progress * progress * (3 - 2 * progress);
   }
-  function updateSun(dt){
+  // The one sun of every mode: ECLIPSE, X-RAY, OFF and the day theme all light the planet from
+  // it, so switching modes keeps the light where it is. Sets the planet's light and the sun's
+  // point on screen.
+  function aimSun(){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
     sunTarget.copy(rig.position).sub(camera.position).normalize();
     sunRight.crossVectors(sunTarget, sunUp).normalize();
@@ -2006,10 +2027,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var L = sweepLight(bodyUniforms.uLight.value, rest - (1 - introRise()) * .14 + turn * Math.PI * 2);
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
+  }
+  // ECLIPSE shows that sun: how much of it stands behind what we see, and the name it shades.
+  function updateSun(dt){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
     compMat.uniforms.uAspect.value = w / h;
     compMat.uniforms.uSunR.value = .22;
     compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
-    var amount = THREE.MathUtils.smoothstep(-L.z, -.1, .2);
+    var amount = THREE.MathUtils.smoothstep(-bodyUniforms.uLight.value.z, -.1, .2);
     shadeName(amount, dt);
     return amount;
   }
@@ -2017,8 +2042,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // The name catches the same sun: a long shadow falls away from it and the facing edge
   // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
   // fades when the sun hides behind the planet or goes behind the viewer. Where the sun passes
-  // behind the name, the letters inside its glare eclipse it: they go dark, the light spills
-  // round their edges, the nearest most, and they turn white again as the sun moves on.
+  // behind the name, the letters inside its glare eclipse it: they dim to a light gray, the light
+  // spills round their edges, the nearest most, and they turn white again as the sun moves on.
   function shadeName(amount, dt){
     var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect();
     var home = planetOnScreen(), planetR = dragDiameter / 2.08;
@@ -2062,8 +2087,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           layers.push('0 0 1px rgba(255,255,255,' + (.9 * s).toFixed(2) + ')',
             '0 0 5px rgba(255,255,255,' + (.6 * s).toFixed(2) + ')',
             '0 0 16px rgba(255,255,255,' + (.35 * s).toFixed(2) + ')');
-          // White (the Korean name's #8f8f8f) darkens toward #1a1a1a.
-          var v = Math.round(letter.from + (26 - letter.from) * s);
+          // White dims toward #bfbfbf, the Korean name's #8f8f8f toward #666.
+          var v = Math.round(letter.from + (letter.to - letter.from) * s);
           color = 'rgb(' + v + ',' + v + ',' + v + ')';
         }
         var shadow = layers.concat(cast(s)).join(',');
@@ -2203,10 +2228,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ringScatter.value=reduce ? 0 : ringScatter.value+(scatterTarget-ringScatter.value)*(1-Math.exp(-dt*(activePointer!==null ? 12 : 3.5)));
     if(scatterTarget===0 && ringScatter.value<0.002) ringScatter.value=0;
 
-    // 태양 방위각
-    var a = P.sun * Math.PI*2;
-    bodyUniforms.uLight.value.set(Math.cos(a), 0.42, Math.sin(a)).normalize();
-    // ECLIPSE lights the planet from its own sun, before anything is drawn.
+    // 태양 방위각: every mode lights the planet from the same sun, before anything is drawn.
+    aimSun();
     var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
     uFwd.value = eclipseAmount;
     if(!eclipseAmount){ if(compMat.uniforms.uExposure.value !== 1) resetCamera(); if(isDay) clearName(); }
