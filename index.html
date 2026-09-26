@@ -146,27 +146,38 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 .hero-role{ color:var(--g2); max-width:40ch; margin:26px 0 0; font-size:15px; }
 .hero-role b{ color:var(--w); font-weight:500; }
 
-/* ---------- 파라미터 랙 ---------- */
-.rack{
-  position:absolute; z-index:3; right:var(--pad); bottom:30px;
-  width:246px; background:rgba(0,0,0,.78); border:1px solid var(--ln);
-  backdrop-filter:blur(6px);
+/* ---------- 조작 콘솔 ----------
+   빛과 대기 조절, 후처리 모드, 텔레메트리를 왼쪽 아래에 모아 행성을 가리지 않는다.
+   조절 슬라이더는 바 위에 겹쳐 열려서, 열고 닫아도 바와 텔레메트리는 움직이지 않는다. */
+.console{
+  position:absolute; z-index:3; left:var(--pad); right:var(--pad); bottom:24px;
+  display:flex; flex-wrap:wrap-reverse; align-items:flex-start; gap:10px 32px;
+  pointer-events:none;
 }
-.rack-h{ display:flex; justify-content:space-between; align-items:center; padding:11px 14px; border-bottom:1px solid var(--ln); }
-.rack-h{ cursor:pointer; list-style:none; min-height:44px; user-select:none; }
-.rack-h::-webkit-details-marker{ display:none; }
-.rack-h:focus-visible{ outline:1px solid #bdbdbd; outline-offset:5px; }
-.rack-h .lbl{ color:#aaa; font-size:12px; letter-spacing:.10em; }
-.rack-h::after{ content:'+'; color:#aaa; font-size:18px; line-height:1; }
-.rack[open] .rack-h::after{ content:'−'; }
-.rack:not([open]) .rack-h{ border-bottom:0; }
-.rack:not([open]){ width:178px; }
-.rack[open]{ max-height:calc(100% - 60px); overflow-y:auto; }
-.rack-b{ padding:16px 14px 18px; display:grid; gap:17px; }
-.rack-note{ margin:0; color:#aaa; font-size:12px; line-height:1.6; }
-.knob-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
-.knob-head em{ font-style:normal; color:var(--w); font-size:11.5px; font-family:var(--f-mono); font-weight:500; }
-.knob-head b{ color:var(--w); font-size:11.5px; font-weight:500; }
+.console > *{ pointer-events:auto; }
+.rack{ position:relative; max-width:100%; }
+/* Each box blurs what is behind it; a blurring parent would leave the popover nothing to blur. */
+.rack-bar,.rack-b{ background:rgba(0,0,0,.78); border:1px solid var(--ln); backdrop-filter:blur(6px); }
+.rack-bar{ display:flex; flex-wrap:wrap; align-items:center; padding:4px 0; }
+.rack-h{
+  display:flex; align-items:center; gap:10px; min-height:32px; padding:0 14px;
+  border:0; background:none; color:#a6a6a6; cursor:pointer; user-select:none;
+}
+.rack-h .lbl{ color:inherit; font:500 12px var(--f-ko); letter-spacing:.06em; }
+.rack-h::after{ content:'+'; font:300 18px/1 var(--f-mono); }
+.rack-h[aria-expanded="true"]::after{ content:'−'; }
+.rack-h:hover{ color:var(--w); }
+.rack-h:focus-visible{ outline:1px solid #bdbdbd; outline-offset:3px; }
+.rack-b{
+  position:absolute; left:0; bottom:100%; min-width:100%; margin-bottom:-1px;
+  display:grid; grid-template-columns:repeat(3,minmax(124px,1fr)); gap:0 12px;
+  padding:11px 12px 9px;
+}
+.rack-b[hidden]{ display:none; }
+/* Read with every slider; on screen, the scale under each slider says the same. */
+.rack-note{ position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.knob-head{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+.knob-head em,.knob-head b{ font:500 12px var(--f-mono); color:var(--w); }
 input[type=range]{
   -webkit-appearance:none; appearance:none; display:block;
   width:100%; height:22px; background:linear-gradient(var(--ln2),var(--ln2)) center/100% 1px no-repeat; outline:none; cursor:ew-resize;
@@ -177,14 +188,14 @@ input[type=range]::-webkit-slider-thumb{
 }
 input[type=range]::-moz-range-thumb{ width:9px; height:9px; background:var(--w); border:none; border-radius:0; cursor:ew-resize; }
 input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px; }
-.knob-scale{ display:flex; justify-content:space-between; margin-top:6px; font-family:var(--f-mono); font-size:9px; color:var(--g1); letter-spacing:.06em; }
+.knob-scale{ display:flex; justify-content:space-between; gap:8px; font-size:12px; line-height:1.4; color:var(--g2); }
 
-/* ---------- Post FX switch (prototype) ---------- */
+/* ---------- Post FX switch ---------- */
 .fx-switch{
-  position:absolute; z-index:3; left:var(--pad); bottom:calc(clamp(26px,4vw,40px) + 52px);
   display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+  padding:0 12px 0 14px; border-right:1px solid var(--ln);
 }
-.fx-switch .lbl{ margin-right:6px; }
+.fx-switch .lbl{ margin-right:6px; font-size:12px; letter-spacing:.12em; color:var(--g2); }
 .fx-switch button{
   min-height:32px; padding:4px 10px; border:1px solid var(--ln2); background:rgba(0,0,0,.6);
   color:#a6a6a6; font:500 12px var(--f-mono); letter-spacing:.06em; cursor:pointer;
@@ -203,20 +214,18 @@ html[data-theme="day"] .fx-switch{ display:none; }
 html[data-theme="day"] .xray-label{ display:none !important; }
 
 /* ---------- 텔레메트리 ---------- */
-.tele{
-  position:absolute; z-index:3; left:var(--pad); bottom:clamp(26px,4vw,40px);
-  display:flex; flex-wrap:wrap; gap:0 32px;
-}
+.tele{ display:flex; flex-wrap:wrap; gap:0 32px; }
 .tele div{ display:grid; gap:3px; }
 .tele b{ font-family:var(--f-mono); font-size:12.5px; font-weight:500; color:var(--w); font-variant-numeric:tabular-nums; }
 
+/* The renderer's name steps aside so the readout stays beside the console, even with X-RAY's passes. */
+@media(max-width:1200px){
+  .tele div:last-child{ display:none; }
+}
 @media(max-width:1040px){
-  .rack{ right:var(--pad); bottom:26px; max-width:300px; }
   .hero-role{ max-width:35ch; }
   .hero-name{ font-size:clamp(52px,9.6vw,96px); }
   .hero-inner{ align-items:flex-start; }
-  .tele{ position:static; margin-top:30px; }
-  .fx-switch{ position:static; margin-top:18px; }
   .hero{ min-height:680px; }
   .hero-veil{ background:linear-gradient(90deg,rgba(0,0,0,.70),transparent 64%); }
 }
@@ -227,25 +236,26 @@ html[data-theme="day"] .xray-label{ display:none !important; }
   .hero-role{ margin-top:20px; font-size:14px; max-width:30ch; }
   .hero-veil{ background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.42) 27%,transparent 43%); }
   .hero-fb::before{ left:56%; top:64%; width:310px; }
-  .tele{ position:absolute; left:var(--pad); bottom:85px; gap:18px; }
-  .tele div:last-child{ display:none; }
-  .rack[open]{ max-height:560px; }
-  .fx-switch{ position:absolute; left:var(--pad); right:var(--pad); bottom:134px; margin:0; }
+  .console{ bottom:20px; gap:10px 18px; }
+  .tele{ gap:18px; }
+  .rack{ width:100%; }
+  /* The toggle sits right under its sliders; the modes stay on the bottom row. */
+  .rack-bar{ flex-direction:column-reverse; align-items:stretch; padding:0 0 6px; }
+  .rack-h{ justify-content:space-between; border-bottom:1px solid var(--ln); }
+  .fx-switch{ flex-wrap:wrap-reverse; padding:6px 6px 0 14px; border-right:0; }
   .fx-layers{ margin-left:0; padding-left:0; border-left:0; }
+  /* Three short columns keep the open sliders below the planet. */
+  .rack-b{ width:100%; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 10px; padding:10px 10px 8px; }
+  .knob-head{ flex-direction:column; align-items:flex-start; gap:0; }
+  .knob-scale{ flex-wrap:wrap; column-gap:6px; }
+  .knob-scale span:last-child{ margin-left:auto; }
   .frame{ opacity:.18; }
 }
 
 /* Keep the small square handle, with a finger-sized native hit target. */
 @media(max-width:640px),(any-pointer:coarse){
-  .rack{ scroll-margin-bottom:16px; }
-  .rack[open]{
-    max-height:min(560px,calc(100vh - 104px));
-    max-height:min(560px,calc(100svh - 104px));
-  }
-  .rack-b{ gap:9px; }
-  .rack .knob-head{ margin-bottom:0; }
-  .rack .knob-scale{ margin-top:0; }
-  .rack input[type=range]{ height:44px; margin:0; }
+  .rack-h{ min-height:44px; }
+  .rack input[type=range]{ position:relative; z-index:1; height:44px; margin-block:-11px; }
   .rack input[type=range]::-webkit-slider-thumb{
     box-sizing:border-box; width:44px; height:44px;
     border:17px solid transparent; background-clip:content-box;
@@ -450,7 +460,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=5f99804c5004">
-<link rel="stylesheet" href="home-theme.css?v=d49568701a28">
+<link rel="stylesheet" href="home-theme.css?v=f199a4c40291">
 <link rel="stylesheet" href="home-lab.css?v=b58dd5668a61">
 <script src="home-theme.js?v=745a3d1937a4" defer></script>
 </head>
@@ -492,70 +502,53 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         게임 아트 <b>실무</b> · 빛과 표면의 <b>연구</b> · 다음 세대를 위한 <b>강의</b>.
         빛과 그림자 사이, 아직 드러나지 않은 가능성을 만듭니다.
       </p>
-
-      <div class="tele">
-        <div><span class="lbl">Rotation</span><b id="t-rot">0.0°</b></div>
-        <div><span class="lbl">Incidence</span><b id="t-inc">0.0°</b></div>
-        <div><span class="lbl">Render</span><b id="t-fps">60 fps</b></div>
-        <div><span class="lbl">Renderer</span><b id="t-eng">THREE r128</b></div>
-      </div>
-      <div class="fx-switch" role="group" aria-label="후처리 효과 실험">
-        <span class="lbl">Post FX</span>
-        <button type="button" data-fx="eclipse" aria-pressed="true">ECLIPSE</button>
-        <button type="button" data-fx="xray" aria-pressed="false">X-RAY</button>
-        <button type="button" data-fx="off" aria-pressed="false">OFF</button>
-        <span class="fx-layers" role="group" aria-label="돋보기로 볼 렌더 패스 (숫자 1–4)">
-          <button type="button" data-xray-layer aria-pressed="true">N·L</button>
-          <button type="button" data-xray-layer aria-pressed="false">NRM</button>
-          <button type="button" data-xray-layer aria-pressed="false">DEP</button>
-          <button type="button" data-xray-layer aria-pressed="false">WIRE</button>
-        </span>
-      </div>
     </div>
   </div>
 
-  <!-- 파라미터 랙 -->
-  <details class="rack">
-    <summary class="rack-h"><span class="lbl">빛과 대기 조절</span></summary>
-    <div class="rack-b">
-      <p class="rack-note" id="rack-note">0은 지금 맞춘 기본 모습입니다.<br>오른쪽으로 밀어 변화를 더해보세요.</p>
-      <div>
-        <div class="knob-head"><em>PENUMBRA</em><b id="v-pen" class="num">0</b></div>
-        <input type="range" id="s-pen" min="0" max="100" value="0" aria-describedby="rack-note scale-pen" aria-label="반그림자 폭">
-        <div class="knob-scale" id="scale-pen"><span>기본</span><span>넓게</span></div>
+  <!-- 조작 콘솔: 빛과 대기 조절 · 후처리 모드 · 텔레메트리 -->
+  <div class="console">
+    <div class="rack">
+      <div class="rack-bar">
+        <div class="fx-switch" role="group" aria-label="후처리 효과 실험">
+          <span class="lbl">Post FX</span>
+          <button type="button" data-fx="eclipse" aria-pressed="true">ECLIPSE</button>
+          <button type="button" data-fx="xray" aria-pressed="false">X-RAY</button>
+          <button type="button" data-fx="off" aria-pressed="false">OFF</button>
+          <span class="fx-layers" role="group" aria-label="돋보기로 볼 렌더 패스 (숫자 1–4)">
+            <button type="button" data-xray-layer aria-pressed="true">N·L</button>
+            <button type="button" data-xray-layer aria-pressed="false">NRM</button>
+            <button type="button" data-xray-layer aria-pressed="false">DEP</button>
+            <button type="button" data-xray-layer aria-pressed="false">WIRE</button>
+          </span>
+        </div>
+        <button type="button" class="rack-h" aria-expanded="false" aria-controls="rack-b"><span class="lbl">빛과 대기 조절</span></button>
       </div>
-      <div>
-        <div class="knob-head"><em>SUN AZIMUTH</em><b id="v-sun" class="num">0</b></div>
-        <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun" aria-label="태양 방위각">
-        <div class="knob-scale" id="scale-sun"><span>기본</span><span>한 바퀴 회전</span></div>
-      </div>
-      <div>
-        <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0</b></div>
-        <input type="range" id="s-atm" min="0" max="100" value="0" aria-describedby="rack-note scale-atm" aria-label="대기 밀도">
-        <div class="knob-scale" id="scale-atm"><span>기본</span><span>대기 줄이기</span></div>
-      </div>
-      <div>
-        <div class="knob-head"><em>TURBULENCE</em><b id="v-trb" class="num">0</b></div>
-        <input type="range" id="s-trb" min="0" max="100" value="0" aria-describedby="rack-note scale-trb" aria-label="대기 난류">
-        <div class="knob-scale" id="scale-trb"><span>기본</span><span>난류 더하기</span></div>
-      </div>
-      <div>
-        <div class="knob-head"><em>RING SYSTEM</em><b id="v-rng" class="num">0</b></div>
-        <input type="range" id="s-rng" min="0" max="100" value="0" aria-describedby="rack-note scale-rng" aria-label="고리 밀도">
-        <div class="knob-scale" id="scale-rng"><span>기본</span><span>고리 선명하게</span></div>
-      </div>
-      <div>
-        <div class="knob-head"><em>BANDING</em><b id="v-bnd" class="num">0</b></div>
-        <input type="range" id="s-bnd" min="0" max="100" value="0" aria-describedby="rack-note scale-bnd" aria-label="대기 띠 대비">
-        <div class="knob-scale" id="scale-bnd"><span>기본</span><span>대비 줄이기</span></div>
-      </div>
-      <div>
-        <div class="knob-head"><em>RETICLE</em><b id="v-ret" class="num">0</b></div>
-        <input type="range" id="s-ret" min="0" max="100" value="0" aria-describedby="rack-note scale-ret" aria-label="눈금테 밝기">
-        <div class="knob-scale" id="scale-ret"><span>기본</span><span>눈금 흐리게</span></div>
+      <div class="rack-b" id="rack-b" hidden>
+        <p class="rack-note" id="rack-note">0은 지금 맞춘 기본 모습입니다.<br>오른쪽으로 밀어 변화를 더해보세요.</p>
+        <div>
+          <div class="knob-head"><em>PENUMBRA</em><b id="v-pen" class="num">0</b></div>
+          <input type="range" id="s-pen" min="0" max="100" value="0" aria-describedby="rack-note scale-pen" aria-label="반그림자 폭">
+          <div class="knob-scale" id="scale-pen"><span>기본</span><span>넓게</span></div>
+        </div>
+        <div>
+          <div class="knob-head"><em>SUN AZIMUTH</em><b id="v-sun" class="num">0</b></div>
+          <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun" aria-label="태양 방위각">
+          <div class="knob-scale" id="scale-sun"><span>기본</span><span>한 바퀴 회전</span></div>
+        </div>
+        <div>
+          <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0</b></div>
+          <input type="range" id="s-atm" min="0" max="100" value="0" aria-describedby="rack-note scale-atm" aria-label="대기 밀도">
+          <div class="knob-scale" id="scale-atm"><span>기본</span><span>대기 줄이기</span></div>
+        </div>
       </div>
     </div>
-  </details>
+    <div class="tele">
+      <div><span class="lbl">Rotation</span><b id="t-rot">0.0°</b></div>
+      <div><span class="lbl">Incidence</span><b id="t-inc">0.0°</b></div>
+      <div><span class="lbl">Render</span><b id="t-fps">60 fps</b></div>
+      <div><span class="lbl">Renderer</span><b id="t-eng">THREE r128</b></div>
+    </div>
+  </div>
 </header>
 
 <main id="main-content" tabindex="-1"><span class="legacy-anchor" id="portfolio" aria-hidden="true"></span><section class="portfolio-section" id="work" tabindex="-1" aria-labelledby="work-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">01 / WORK</span><div><h2 id="work-title">Work</h2><p>직접 만든 게임을 소개합니다.</p></div></div><div class="work-grid"><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">01</span></div><figure class="game-preview"><img src="assets/work/colorzzle-preview.webp" width="960" height="444" loading="lazy" decoding="async" alt="무지개색 블록 위에 꽃과 나무가 피어난 Colorzzle의 스테이지 완료 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>Colorzzle</h3><div class="work-description"><p>색채 기반 모바일 퍼즐게임입니다. iOS, Android, Steam에서 플레이할 수 있습니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/colorzzle-%EC%BB%AC%EB%9F%AC%EC%A6%90/id1320446970" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.Colorzzle&amp;hl=ko&amp;pli=1" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a><a href="https://store.steampowered.com/app/818500/_/?l=koreana" target="_blank" rel="noopener noreferrer">Steam <span aria-hidden="true">↗</span></a></div></article><article class="work-card work-card--game"><div class="work-card-top"><span class="content-kicker">GAME</span><span class="work-index">02</span></div><figure class="game-preview"><img class="game-preview-rainbowtrees" src="assets/work/rainbowtrees-google.webp" width="1052" height="526" loading="lazy" decoding="async" alt="꽃밭과 동물, 무지개나무 성장 및 스킬 메뉴가 보이는 RainbowTrees 게임 화면"><span class="game-preview-hint" aria-hidden="true">마우스를 올려 미리보기 <span>↗</span></span></figure><h3>RainbowTrees</h3><div class="work-description"><p>탭으로 나무를 키우고 꽃과 동물을 모으는 힐링 방치형 게임입니다. 다양한 기후와 낮밤, 비와 눈으로 달라지는 풍경 속에서 나만의 작은 생태계를 가꿉니다.</p></div><div class="content-actions"><a href="https://apps.apple.com/kr/app/rainbowtrees/id6785186252?l" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a><a href="https://play.google.com/store/apps/details?id=com.DarongStudio.RainbowTree&amp;hl" target="_blank" rel="noopener noreferrer">Google Play <span aria-hidden="true">↗</span></a></div></article></div></div></section><span class="legacy-anchor" id="vibe" aria-hidden="true"></span><section class="portfolio-section" id="lab" tabindex="-1" aria-labelledby="lab-title"><div class="wrap"><div class="content-heading"><span class="content-kicker">02 / LAB</span><div><h2 id="lab-title">Lab</h2><p>직접 조작하며 살펴보는 실험과 제작을 돕는 도구들.</p></div></div><section class="lab-group" aria-labelledby="lab-group-color-light"><header class="lab-group-heading"><h3 id="lab-group-color-light">색과 빛</h3><p>색을 고르고, 빛과 초점이 만드는 차이를 비교합니다.</p></header><div class="work-grid"><article class="work-card"><div class="work-card-top"><span class="content-kicker">팔레트와 색 분석</span></div><h4 class="lab-card-title">Color Lab</h4><div class="work-description"><p>이미지에서 색을 고르고, 함께 쓸 배색과 명암 단계를 만듭니다.</p></div><div class="content-actions"><a aria-label="Color Lab 열기 (새 탭)" class="lab-launch" href="https://pixel-pow.com/" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a><a href="https://apps.apple.com/kr/app/pixel-pow/id6758751368" target="_blank" rel="noopener noreferrer">App Store <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">광량과 노출</span></div><h4 class="lab-card-title">Light Lab</h4><div class="work-description"><p>광량·거리·노출을 바꾸고, 창빛에 실내 조명을 더해 밝기를 비교합니다.</p></div><div class="content-actions"><a aria-label="Light Lab 열기 (새 탭)" class="lab-launch" href="https://studio-penumbra.com/lighting-lab.html" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a></div></article><article class="work-card"><div class="work-card-top"><span class="content-kicker">초점과 심도</span></div><h4 class="lab-card-title">Focus Lab</h4><div class="work-description"><p>초점을 옮기고 조리개를 바꾸며, 사진이 선명해지는 면과 흐림을 살펴봅니다.</p></div><div class="content-actions"><a aria-label="Focus Lab 열기 (새 탭)" class="lab-launch" href="https://studio-penumbra.com/focus-lab.html" target="_blank" rel="noopener noreferrer">Lab 열기 <span aria-hidden="true">↗</span></a></div></article></div></section>
@@ -613,18 +606,24 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   updateLocation();
 })();
 
-// Expanding the upward-opening touch panel must keep it below the sticky header.
+// The light and atmosphere sliders open above the console bar, which stays where it is.
+// On touch layouts the opened panel must stay below the sticky header.
 (function(){
   var rack=document.querySelector('.rack');
+  var toggle=rack.querySelector('.rack-h');
+  var sliders=document.getElementById('rack-b');
   var header=document.querySelector('.site-header');
   var touchLayout=window.matchMedia('(max-width:640px), (any-pointer:coarse)');
-  rack.addEventListener('toggle',function(){
-    if(!rack.open || !touchLayout.matches) return;
-    var bounds=rack.getBoundingClientRect();
-    var top=header.getBoundingClientRect().bottom+12;
-    if(bounds.top<top || bounds.bottom>window.innerHeight-16){
-      rack.scrollIntoView({block:'nearest',behavior:'auto'});
-    }
+  toggle.addEventListener('click',function(){
+    var open=toggle.getAttribute('aria-expanded')!=='true';
+    toggle.setAttribute('aria-expanded',String(open));
+    sliders.hidden=!open;
+    if(!open || !touchLayout.matches) return;
+    // The sliders sit outside the bar's box, so measure them and the bar separately.
+    var limit=header.getBoundingClientRect().bottom+12;
+    var top=sliders.getBoundingClientRect().top, bottom=rack.getBoundingClientRect().bottom;
+    var shift=top<limit ? top-limit : Math.min(Math.max(0,bottom-window.innerHeight+16),top-limit);
+    if(shift) window.scrollBy({top:shift,behavior:'auto'});
   });
 })();
 
@@ -775,7 +774,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   rig.add(celestial);
 
   /* ---------- 천체 ---------- */
-  var planetBaseline = { pen:0.01, sun:0.74, atmo:1, turb:0, ring:0.42, band:1, reticle:1 };
+  // Turbulence, banding and the ring's opacity stay as tuned; they barely show in the crescent,
+  // so the panel no longer offers them.
+  var planetBaseline = { pen:0.01, sun:0.74, atmo:1, turb:0, ring:0.42, band:1 };
   // 대기 밀도는 본체 · 대기 껍질 · 고리가 모두 같은 객체를 공유한다
   var uDens = { value: planetBaseline.atmo };
 
@@ -1312,7 +1313,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var line = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({
       color:0xffffff, transparent:true, opacity:opacity, depthTest:false, depthWrite:false
     }));
-    line.userData.opacity = opacity;
     (parent || reticle).add(line);
     return line;
   }
@@ -1326,7 +1326,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }));
     sprite.position.set(x,y,0.02);
     sprite.scale.set(width,width*96/512,1);
-    sprite.userData.opacity=opacity;
     context.font='30px monospace'; context.fillStyle='#ffffff';
     context.textAlign='center'; context.textBaseline='middle';
     context.fillText(text,256,48);
@@ -1603,10 +1602,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   bind('s-pen','v-pen','pen',0.60);
   bind('s-sun','v-sun','sun',planetBaseline.sun + 1);
   bind('s-atm','v-atm','atmo',0);
-  bind('s-trb','v-trb','turb',1);
-  bind('s-rng','v-rng','ring',1);
-  bind('s-bnd','v-bnd','band',0);
-  bind('s-ret','v-ret','reticle',0);
 
   var dragControl = document.getElementById('planet-drag');
   var activePointer = null, lastX = 0, lastY = 0, dragEnergy=0, dragMoved=false;
@@ -1683,7 +1678,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   }
 
   document.querySelector('.hero').addEventListener('pointerdown',function(e){
-    if(activePointer!==null || e.pointerType!=='mouse' || e.button!==0 || !ring.visible) return;
+    if(activePointer!==null || e.pointerType!=='mouse' || e.button!==0) return;
     if(e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary')) return;
     var bounds=canvas.getBoundingClientRect();
     ringPointer.set((e.clientX-bounds.left)/bounds.width*2-1,1-(e.clientY-bounds.top)/bounds.height*2);
@@ -2239,18 +2234,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       orbit.mesh.position.set(Math.cos(angle)*orbit.radius,Math.sin(angle)*orbit.radius,0.008);
     });
     bodyUniforms.uPen.value   = Math.max(P.pen, 0.012);
-    bodyUniforms.uTurb.value = P.turb;
-    bodyUniforms.uBand.value = P.band;
     uDens.value = P.atmo;
-    uRing.value = P.ring;
-    ring.visible = P.ring > 0.02;
 
     // A restrained tilt connects the display to the manipulated planetary system.
     reticle.quaternion.copy(reticleRest).slerp(celestial.quaternion,0.22);
-    reticle.traverse(function(o){
-      if(o.material) o.material.opacity = P.reticle * o.userData.opacity;
-    });
-    reticle.visible=P.reticle>0.04;
 
     orbitMoons[0].mesh.getWorldPosition(moonReticle.position);
     moonReticle.quaternion.copy(camera.quaternion);
@@ -2263,12 +2250,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       var planetRadius=ringPlanetRadius.value,penWidth=bodyUniforms.uPen.value;
       trackSunlight=THREE.MathUtils.smoothstep(axisDistance,planetRadius*(1-penWidth),planetRadius*(1+penWidth));
     }
-    moonMarker.material.opacity=0.20*P.reticle*trackSunlight;
+    moonMarker.material.opacity=0.20*trackSunlight;
     markerRay.set(camera.position,trackedAxis.copy(moonReticle.position).sub(camera.position).normalize());
     markerPlanet.set(rig.position,rig.scale.x);
     var markerOccluded=markerRay.intersectSphere(markerPlanet,markerHit)
       && markerHit.distanceTo(camera.position)<moonReticle.position.distanceTo(camera.position)-orbitMoons[0].size*rig.scale.x;
-    moonReticle.visible=ring.visible && P.reticle>0.04 && trackSunlight>0.01 && !markerOccluded;
+    moonReticle.visible=trackSunlight>0.01 && !markerOccluded;
 
     if(isDay){
       // Render directly: blooming a paper-white clear color would wash out the entire scene.
