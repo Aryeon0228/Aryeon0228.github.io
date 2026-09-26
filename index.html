@@ -1735,14 +1735,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     Array.prototype.slice.call(node.childNodes).forEach(function(child){
       if(child.nodeType === 1){ splitLetters(child); return; }
       if(child.nodeType !== 3 || !child.textContent.trim()) return;
-      var run = document.createDocumentFragment(), from = node.classList.contains('ko') ? 143 : 255;
+      var run = document.createDocumentFragment(), ko = node.classList.contains('ko');
       Array.prototype.forEach.call(child.textContent, function(character){
         if(/\s/.test(character)){ run.appendChild(document.createTextNode(character)); return; }
         var letter = document.createElement('span');
         letter.textContent = character;
         letter.setAttribute('aria-hidden', 'true');
         run.appendChild(letter);
-        nameLetters.push({ el:letter, from:from, x:0, y:0, w:0, h:0, shadow:'', color:'' });
+        // Against the sun a letter dims only a little: white to a light gray, the Korean name's gray one step.
+        nameLetters.push({ el:letter, from:ko ? 143 : 255, to:ko ? 102 : 191, x:0, y:0, w:0, h:0, shadow:'', color:'' });
       });
       node.replaceChild(run, child);
     });
@@ -2041,8 +2042,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // The name catches the same sun: a long shadow falls away from it and the facing edge
   // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
   // fades when the sun hides behind the planet or goes behind the viewer. Where the sun passes
-  // behind the name, the letters inside its glare eclipse it: they go dark, the light spills
-  // round their edges, the nearest most, and they turn white again as the sun moves on.
+  // behind the name, the letters inside its glare eclipse it: they dim to a light gray, the light
+  // spills round their edges, the nearest most, and they turn white again as the sun moves on.
   function shadeName(amount, dt){
     var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect();
     var home = planetOnScreen(), planetR = dragDiameter / 2.08;
@@ -2086,8 +2087,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           layers.push('0 0 1px rgba(255,255,255,' + (.9 * s).toFixed(2) + ')',
             '0 0 5px rgba(255,255,255,' + (.6 * s).toFixed(2) + ')',
             '0 0 16px rgba(255,255,255,' + (.35 * s).toFixed(2) + ')');
-          // White (the Korean name's #8f8f8f) darkens toward #1a1a1a.
-          var v = Math.round(letter.from + (26 - letter.from) * s);
+          // White dims toward #bfbfbf, the Korean name's #8f8f8f toward #666.
+          var v = Math.round(letter.from + (letter.to - letter.from) * s);
           color = 'rgb(' + v + ',' + v + ',' + v + ')';
         }
         var shadow = layers.concat(cast(s)).join(',');
