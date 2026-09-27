@@ -1508,7 +1508,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
       tDof:{value:null}, tDepth:{value:null}, uFocus:{value:new THREE.Vector2(.4, .6)},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
-      tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1},
+      tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
     },
     vertexShader: POST_VERT,
@@ -1517,7 +1517,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'uniform sampler2D tDof; uniform sampler2D tDepth; uniform vec2 uFocus;',
       'uniform sampler2D tX; uniform vec4 uLens;',
-      'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure;',
+      'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
       'vec3 tent(sampler2D t, vec2 texel){ vec2 e = texel * .5, f = vec2(e.x, -e.y);',
       '  return (texture2D(t, vUv - e).rgb + texture2D(t, vUv + e).rgb + texture2D(t, vUv - f).rgb + texture2D(t, vUv + f).rgb) * .25; }',
@@ -1532,7 +1532,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       // and the grain the march leaves in the rays.
       '  if(uEclipse > 0.0){',
       '    float open = tent(tOcc, uOccTexel).r;',
-      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + tent(tRays, uRaysTexel)) * uEclipse;',
+      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + tent(tRays, uRaysTexel) * uBacklit) * uEclipse;',
       // Lens flare: how much of the disc is uncovered, and how far inside the frame it is.
       '    vec2 o = vec2(uDisc / uAspect, uDisc) * .7;',
       '    float seen = (texture2D(tOcc, uSun).r + texture2D(tOcc, uSun + vec2(o.x, 0.0)).r + texture2D(tOcc, uSun - vec2(o.x, 0.0)).r',
@@ -2112,8 +2112,17 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
     var amount = THREE.MathUtils.smoothstep(-bodyUniforms.uLight.value.z, -.1, .2);
     shadeName(amount, dt);
+    // The backlit glow (the limb's forward scatter and the rays) waits for the planet: faint
+    // while the sun is still in open sky, it swells as the sun nears the limb and burns white
+    // once the sun is behind the disc.
+    var tanHalf = Math.tan(camera.fov * Math.PI / 360), sun = compMat.uniforms.uSun.value;
+    planetNdc.copy(rig.position).project(camera);
+    var reach = ringPlanetRadius.value / (camera.position.distanceTo(rig.position) * tanHalf * 2);
+    var gap = Math.hypot((sun.x - (planetNdc.x + 1) / 2) * w / h, sun.y - (planetNdc.y + 1) / 2) / reach;
+    compMat.uniforms.uBacklit.value = THREE.MathUtils.lerp(.15, 1.4, 1 - THREE.MathUtils.smoothstep(gap, .95, 1.8));
     return amount;
   }
+  var planetNdc = new THREE.Vector3();
 
   // The name catches the same sun: a long shadow falls away from it and the facing edge
   // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
@@ -2310,7 +2319,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     driftSun(dt);
     aimSun();
     var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
-    uFwd.value = eclipseAmount;
+    uFwd.value = eclipseAmount * compMat.uniforms.uBacklit.value;
     if(!eclipseAmount){ if(compMat.uniforms.uExposure.value !== 1) resetCamera(); if(isDay) clearName(); }
     bodyUniforms.uTime.value  = t;
     orbitMoons.forEach(function(orbit){
