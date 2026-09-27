@@ -1174,30 +1174,48 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     allGrains += strandGrains(strand);
     if(strandKept[index]) keptGrains += strandGrains(strand);
   });
-  // A quarter of those rings then give way too, the closest first, and their grains go with them:
-  // the rings that stay keep their weight, and there are fewer of them (13 of the 17).
-  for(var drops = Math.round(halfKept / 4); drops > 0; drops--) dropClosest();
+  // A quarter of those rings and three more then give way, the closest first, and their grains go with them:
+  // the rings that stay keep their weight, and there are fewer of them (10 of the 17).
+  for(var drops = Math.round(halfKept / 4) + 3; drops > 0; drops--) dropClosest();
   var dustOrbits = [], dustKicks = [], dustLooks = [];
+  // Real rings are uneven: most rings split into a bundle of fine lanes packed close together,
+  // while a few stay single with open space around them. Each ring keeps its own radius as one
+  // lane (so the moons still ride it); the others sit at small, uneven steps to either side.
+  var laneCounts = [1, 3, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1];
+  var keptOrder = 0;
   strands.forEach(function(strand, index){
     if(!strandKept[index]) return;
-    var span = RING_O - RING_I, radius = RING_I + strand.x * span;
+    var span = RING_O - RING_I, center = RING_I + strand.x * span;
     var fuller = strand.y * span * 0.25;
-    var count = Math.round(strandGrains(strand) * allGrains / keptGrains);
-    // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
-    var clump = dustRandom() * 0.45, phase = dustRandom() * Math.PI * 2;
-    var breaks = [1,4,7,10,13].indexOf(index) >= 0 ? [dustRandom(), dustRandom(), dustRandom()] : [];
-    for(var grain = 0; grain < count; grain++){
-      var turn = (grain + dustRandom()) / count;
-      if(breaks.some(function(at){ var d = Math.abs(turn - at); return Math.min(d, 1 - d) < 0.012; })) continue;
-      if(dustRandom() < clump * (0.5 + 0.5 * Math.sin(turn * Math.PI * 6 + phase))) continue;
-      // Most grains are fine; a few are boulders, a little larger and brighter, but never so large they break the line.
-      var boulder = Math.pow(dustRandom(), 3);
-      dustOrbits.push(turn * Math.PI * 2, radius + (dustRandom() + dustRandom() + dustRandom() - 1.5) * 0.0005, (dustRandom() - .5) * 0.0004);
-      // Dragging stirs most grains a little, so the streams blur; a few fly as far as the old dust did.
-      var fling = 0.12 + 0.88 * Math.pow(dustRandom(), 2.5);
-      dustKicks.push((dustRandom() - .5) * 0.60 * fling, (dustRandom() - .5) * 0.48 * fling, (dustRandom() - .5) * 0.42 * fling);
-      dustLooks.push(0.0022 + boulder * 0.0022 + fuller, 0.55 + dustRandom() * 0.3 + boulder * 0.15, dustRandom(), index >= continuousStrandCount ? 1 : 0);
+    var ringCount = Math.round(strandGrains(strand) * allGrains / keptGrains);
+    var lanes = orbitMoons.some(function(orbit){ return orbit.strand === index; }) ? 1 : laneCounts[keptOrder % laneCounts.length];
+    keptOrder++;
+    var offsets = [0], step = 0;
+    for(var lane = 1; lane < lanes; lane++){
+      step += 0.008 + Math.pow(dustRandom(), 2) * 0.07;
+      offsets.push(step);
     }
+    var shift = offsets[Math.floor(dustRandom() * lanes)];
+    offsets.forEach(function(offset){
+      var radius = center + offset - shift;
+      // Each lane is packed densely enough to read as a solid line rather than a trail of dots.
+      var count = Math.round(ringCount * (lanes > 1 ? 1.7 + 0.4 * dustRandom() : 2.1));
+      // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
+      var clump = dustRandom() * 0.12, phase = dustRandom() * Math.PI * 2;
+      var breaks = [1,4,7,10,13].indexOf(index) >= 0 ? [dustRandom(), dustRandom(), dustRandom()] : [];
+      for(var grain = 0; grain < count; grain++){
+        var turn = (grain + dustRandom()) / count;
+        if(breaks.some(function(at){ var d = Math.abs(turn - at); return Math.min(d, 1 - d) < 0.012; })) continue;
+        if(dustRandom() < clump * (0.5 + 0.5 * Math.sin(turn * Math.PI * 6 + phase))) continue;
+        // Most grains are fine; a few are boulders, a little larger and brighter, but never so large they break the line.
+        var boulder = Math.pow(dustRandom(), 3);
+        dustOrbits.push(turn * Math.PI * 2, radius + (dustRandom() + dustRandom() + dustRandom() - 1.5) * 0.0005, (dustRandom() - .5) * 0.0004);
+        // Dragging stirs most grains a little, so the streams blur; a few fly as far as the old dust did.
+        var fling = 0.12 + 0.88 * Math.pow(dustRandom(), 2.5);
+        dustKicks.push((dustRandom() - .5) * 0.60 * fling, (dustRandom() - .5) * 0.48 * fling, (dustRandom() - .5) * 0.42 * fling);
+        dustLooks.push(0.0022 + boulder * 0.0022 + fuller, 0.55 + dustRandom() * 0.3 + boulder * 0.15, dustRandom(), index >= continuousStrandCount ? 1 : 0);
+      }
+    });
   });
   // Only the rings that stay can be grabbed.
   strands = strands.filter(function(strand, index){ return strandKept[index]; });
@@ -2045,17 +2063,26 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   function letterGap(letter, x, y){
     return Math.hypot(Math.max(letter.x - x, 0, x - (letter.x + letter.w)), Math.max(letter.y - y, 0, y - (letter.y + letter.h)));
   }
-  // When the page opens, the sun comes in from 8° further out and eases to its place over six
-  // seconds; in ECLIPSE its glow brightens along the edge first. Reduced motion, or touching
-  // SUN AZIMUTH, skips it.
-  var introStart = 0;
-  document.getElementById('s-sun').addEventListener('input', function(){ introStart = -1; });
-  function introRise(){
-    if(introStart === 0) introStart = reduce ? -1 : performance.now();
-    if(introStart < 0) return 1;
-    var progress = Math.min(1, (performance.now() - introStart) / 6000);
-    if(progress >= 1) introStart = -1;
-    return progress * progress * (3 - 2 * progress);
+  // When the page opens, the sun comes in from 8° further out and keeps drifting slowly along
+  // its sweep: behind the name, into the planet's shadow and out past the limb with a flash,
+  // then round behind the viewer, faster while it is out of the frame, and back in from the
+  // left. The panel's SUN AZIMUTH follows it. Reduced motion, or touching SUN AZIMUTH, stops it.
+  var sunSlider = document.getElementById('s-sun'), sunLabel = document.getElementById('v-sun');
+  var sunDrifting = !reduce, sunDrift = 1 - .14 / (Math.PI * 2), sunPace = 1;
+  sunSlider.addEventListener('input', function(){ sunDrifting = false; });
+  function driftSun(dt){
+    if(!sunDrifting) return;
+    var at = compMat.uniforms.uSun.value, L = bodyUniforms.uLight.value;
+    var inFrame = L.z < -.05 && at.x > -.3 && at.x < 1.3;
+    sunPace += ((inFrame ? 1 : 7) - sunPace) * (1 - Math.exp(-dt * 1.5));
+    sunDrift = (sunDrift + dt * sunPace * .045 / (Math.PI * 2)) % 1;
+    P.sun = planetBaseline.sun + sunDrift;
+    var step = Math.round(sunDrift * 100) % 100;
+    if(Number(sunSlider.value) !== step){
+      sunSlider.value = step;
+      sunLabel.textContent = step > 0 ? '+' + Math.round(step * 3.6) + '°' : '0';
+      sunSlider.setAttribute('aria-valuetext', step === 0 ? '0, 기본 모습' : sunLabel.textContent);
+    }
   }
   // The one sun of every mode: ECLIPSE, X-RAY, OFF and the day theme all light the planet from
   // it, so switching modes keeps the light where it is. Sets the planet's light and the sun's
@@ -2073,7 +2100,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       return at.x <= edge && nameLetters.every(function(letter){ return letterGap(letter, at.x, at.y) >= reach; });
     }, w, h, tanHalf);
     var turn = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
-    var L = sweepLight(bodyUniforms.uLight.value, rest - (1 - introRise()) * .14 + turn * Math.PI * 2);
+    var L = sweepLight(bodyUniforms.uLight.value, rest + turn * Math.PI * 2);
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
   }
@@ -2280,6 +2307,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(scatterTarget===0 && ringScatter.value<0.002) ringScatter.value=0;
 
     // 태양 방위각: every mode lights the planet from the same sun, before anything is drawn.
+    driftSun(dt);
     aimSun();
     var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
     uFwd.value = eclipseAmount;
