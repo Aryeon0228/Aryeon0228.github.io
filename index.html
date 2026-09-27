@@ -1181,7 +1181,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // Real rings are uneven: most rings split into a bundle of fine lanes packed close together,
   // while a few stay single with open space around them. Each ring keeps its own radius as one
   // lane (so the moons still ride it); the others sit at small, uneven steps to either side.
-  var laneCounts = [1, 5, 2, 7, 1, 4, 3, 1, 6, 2, 5, 1, 3, 4, 1, 2, 6];
+  var laneCounts = [1, 3, 1, 4, 1, 2, 1, 1, 3, 1, 2, 1, 1, 2, 1, 1, 3];
   var keptOrder = 0;
   strands.forEach(function(strand, index){
     if(!strandKept[index]) return;
@@ -1192,16 +1192,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     keptOrder++;
     var offsets = [0], step = 0;
     for(var lane = 1; lane < lanes; lane++){
-      step += 0.014 + dustRandom() * 0.020;
+      step += 0.008 + Math.pow(dustRandom(), 2) * 0.07;
       offsets.push(step);
     }
     var shift = offsets[Math.floor(dustRandom() * lanes)];
     offsets.forEach(function(offset){
       var radius = center + offset - shift;
-      // A bundle holds more dust than a single lane, though each of its lanes is a little sparser.
-      var count = Math.round(ringCount * (lanes > 1 ? 0.70 + 0.25 * dustRandom() : 1));
+      // Each lane is packed densely enough to read as a solid line rather than a trail of dots.
+      var count = Math.round(ringCount * (lanes > 1 ? 1.7 + 0.4 * dustRandom() : 2.1));
       // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
-      var clump = dustRandom() * 0.45, phase = dustRandom() * Math.PI * 2;
+      var clump = dustRandom() * 0.12, phase = dustRandom() * Math.PI * 2;
       var breaks = [1,4,7,10,13].indexOf(index) >= 0 ? [dustRandom(), dustRandom(), dustRandom()] : [];
       for(var grain = 0; grain < count; grain++){
         var turn = (grain + dustRandom()) / count;
@@ -2063,17 +2063,26 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   function letterGap(letter, x, y){
     return Math.hypot(Math.max(letter.x - x, 0, x - (letter.x + letter.w)), Math.max(letter.y - y, 0, y - (letter.y + letter.h)));
   }
-  // When the page opens, the sun comes in from 8° further out and eases to its place over six
-  // seconds; in ECLIPSE its glow brightens along the edge first. Reduced motion, or touching
-  // SUN AZIMUTH, skips it.
-  var introStart = 0;
-  document.getElementById('s-sun').addEventListener('input', function(){ introStart = -1; });
-  function introRise(){
-    if(introStart === 0) introStart = reduce ? -1 : performance.now();
-    if(introStart < 0) return 1;
-    var progress = Math.min(1, (performance.now() - introStart) / 6000);
-    if(progress >= 1) introStart = -1;
-    return progress * progress * (3 - 2 * progress);
+  // When the page opens, the sun comes in from 8° further out and keeps drifting slowly along
+  // its sweep: behind the name, into the planet's shadow and out past the limb with a flash,
+  // then round behind the viewer, faster while it is out of the frame, and back in from the
+  // left. The panel's SUN AZIMUTH follows it. Reduced motion, or touching SUN AZIMUTH, stops it.
+  var sunSlider = document.getElementById('s-sun'), sunLabel = document.getElementById('v-sun');
+  var sunDrifting = !reduce, sunDrift = 1 - .14 / (Math.PI * 2), sunPace = 1;
+  sunSlider.addEventListener('input', function(){ sunDrifting = false; });
+  function driftSun(dt){
+    if(!sunDrifting) return;
+    var at = compMat.uniforms.uSun.value, L = bodyUniforms.uLight.value;
+    var inFrame = L.z < -.05 && at.x > -.3 && at.x < 1.3;
+    sunPace += ((inFrame ? 1 : 7) - sunPace) * (1 - Math.exp(-dt * 1.5));
+    sunDrift = (sunDrift + dt * sunPace * .045 / (Math.PI * 2)) % 1;
+    P.sun = planetBaseline.sun + sunDrift;
+    var step = Math.round(sunDrift * 100) % 100;
+    if(Number(sunSlider.value) !== step){
+      sunSlider.value = step;
+      sunLabel.textContent = step > 0 ? '+' + Math.round(step * 3.6) + '°' : '0';
+      sunSlider.setAttribute('aria-valuetext', step === 0 ? '0, 기본 모습' : sunLabel.textContent);
+    }
   }
   // The one sun of every mode: ECLIPSE, X-RAY, OFF and the day theme all light the planet from
   // it, so switching modes keeps the light where it is. Sets the planet's light and the sun's
@@ -2091,7 +2100,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       return at.x <= edge && nameLetters.every(function(letter){ return letterGap(letter, at.x, at.y) >= reach; });
     }, w, h, tanHalf);
     var turn = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
-    var L = sweepLight(bodyUniforms.uLight.value, rest - (1 - introRise()) * .14 + turn * Math.PI * 2);
+    var L = sweepLight(bodyUniforms.uLight.value, rest + turn * Math.PI * 2);
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
   }
@@ -2298,6 +2307,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(scatterTarget===0 && ringScatter.value<0.002) ringScatter.value=0;
 
     // 태양 방위각: every mode lights the planet from the same sun, before anything is drawn.
+    driftSun(dt);
     aimSun();
     var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
     uFwd.value = eclipseAmount;
