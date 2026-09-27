@@ -203,6 +203,7 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
 .fx-switch button:hover{ color:var(--w); }
 .fx-switch button[aria-pressed="true"]{ color:#000; background:var(--w); border-color:var(--w); }
 .fx-switch button:focus-visible{ outline:1px solid var(--w); outline-offset:3px; }
+.fx-switch .fx-dof{ margin-left:10px; }
 .fx-layers{ display:none; gap:4px; margin-left:10px; padding-left:12px; border-left:1px solid var(--ln2); }
 .hero[data-fx="xray"] .fx-layers{ display:flex; }
 .xray-label{
@@ -514,6 +515,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           <button type="button" data-fx="eclipse" aria-pressed="true">ECLIPSE</button>
           <button type="button" data-fx="xray" aria-pressed="false">X-RAY</button>
           <button type="button" data-fx="off" aria-pressed="false">OFF</button>
+          <button type="button" class="fx-dof" data-dof aria-pressed="true" aria-label="피사계 심도: 먼 고리 흐림">DOF</button>
           <span class="fx-layers" role="group" aria-label="돋보기로 볼 렌더 패스 (숫자 1–4)">
             <button type="button" data-xray-layer aria-pressed="true">N·L</button>
             <button type="button" data-xray-layer aria-pressed="false">NRM</button>
@@ -1468,7 +1470,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }'
   ].join('\n');
 
-  // Depth of field. A small depth pass stores each pixel's distance (the ring as its whole
+  // Depth of field. A full-resolution depth pass stores each pixel's distance (the ring as its whole
   // disc, so the gaps between strands blur with them); a half-resolution blurred copy of the
   // scene is mixed in only beyond the planet, so the far side of the ring falls softly out
   // of focus while the planet and the near side stay sharp. Stars keep no depth: they stay crisp.
@@ -1508,7 +1510,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
       tDof:{value:null}, tDepth:{value:null}, uFocus:{value:new THREE.Vector2(.4, .6)},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
-      tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1},
+      tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
     },
     vertexShader: POST_VERT,
@@ -1517,7 +1519,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'uniform sampler2D tDof; uniform sampler2D tDepth; uniform vec2 uFocus;',
       'uniform sampler2D tX; uniform vec4 uLens;',
-      'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure;',
+      'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
       'vec3 tent(sampler2D t, vec2 texel){ vec2 e = texel * .5, f = vec2(e.x, -e.y);',
       '  return (texture2D(t, vUv - e).rgb + texture2D(t, vUv + e).rgb + texture2D(t, vUv - f).rgb + texture2D(t, vUv + f).rgb) * .25; }',
@@ -1526,13 +1528,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       // Beyond the focus distance (uFocus.x) the scene blends into its blurred copy, fully by uFocus.y.
       '  vec4 depth = texture2D(tDepth, vUv);',
       '  float coc = depth.b * smoothstep(uFocus.x, uFocus.y, depth.r);',
-      '  vec3 c = mix(texture2D(tScene, vUv).rgb, texture2D(tDof, vUv).rgb, coc * .85) + texture2D(tBloom, vUv).rgb * uStr;',
+      '  vec3 c = mix(texture2D(tScene, vUv).rgb, texture2D(tDof, vUv).rgb, coc) + texture2D(tBloom, vUv).rgb * uStr;',
       // The sun shows only where nothing stands in front of it; its scattered rays are added on top.
       // The tent softens the half-resolution mask's stair-steps where the glow meets the limb,
       // and the grain the march leaves in the rays.
       '  if(uEclipse > 0.0){',
       '    float open = tent(tOcc, uOccTexel).r;',
-      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + tent(tRays, uRaysTexel)) * uEclipse;',
+      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + tent(tRays, uRaysTexel) * uBacklit) * uEclipse;',
       // Lens flare: how much of the disc is uncovered, and how far inside the frame it is.
       '    vec2 o = vec2(uDisc / uAspect, uDisc) * .7;',
       '    float seen = (texture2D(tOcc, uSun).r + texture2D(tOcc, uSun + vec2(o.x, 0.0)).r + texture2D(tOcc, uSun - vec2(o.x, 0.0)).r',
@@ -1540,10 +1542,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '    vec2 outside = max(max(-uSun, uSun - 1.0), 0.0);',
       '    float flare = seen * (1.0 - smoothstep(0.0, .12, max(outside.x, outside.y))) * uEclipse;',
       '    if(flare > 0.0){',
-      // A six-point diffraction star and a thin horizontal streak around the sun.
+      // A six-point diffraction star and a thin horizontal streak around the sun. The moment the
+      // sun breaks past the limb (uBurst, the diamond ring) the star throws long spikes with a
+      // finer set between them, the streak stretches across the frame, and a faint halo opens.
       '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d), a = atan(d.y, d.x);',
-      '      float star = pow(abs(cos(a * 3.0)), 80.0) * exp(-r / .09) * .55;',
-      '      float streak = exp(-abs(d.y) * 420.0) * exp(-abs(d.x) * 2.6) * .35;',
+      '      float star = pow(abs(cos(a * 3.0)), 80.0) * exp(-r / (.09 + .55 * uBurst)) * (.55 + 2.6 * uBurst);',
+      '      star += pow(abs(sin(a * 6.0)), 160.0) * exp(-r / (.05 + .28 * uBurst)) * 1.2 * uBurst;',
+      '      float streak = exp(-abs(d.y) * (420.0 - 220.0 * uBurst)) * exp(-abs(d.x) * (2.6 - 2.2 * uBurst)) * (.35 + 1.6 * uBurst);',
+      '      float burst = (exp(-r / .04) * 3.0 + exp(-r / .14) * .7 + exp(-r / .45) * .35) * uBurst;',
+      '      vec3 halo = exp(-abs(vec3(r) - vec3(.315, .3, .285)) * 110.0) * .22 * uBurst;',
       // Ghosts along the line from the sun through the frame centre. Six aperture blades make
       // them hexagons, and the lens coatings tint each one (teal, violet, amber, green, blue, rose);
       // ring ghosts split slightly by wavelength. The sun, star and streak stay white.
@@ -1559,13 +1566,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '          : fi < 4.0 ? vec3(.6,1.0,.55) : fi < 5.0 ? vec3(.55,.78,1.0) : vec3(1.0,.58,.76);',
       // Every ghost is a filled hexagon; a few carry a slightly brighter, wavelength-split rim.
       '        float fill = smoothstep(size, size * .82, hex);',
-      '        ghosts += fill * tint * (.04 + mod(fi, 2.0) * .03);',
+      '        ghosts += fill * tint * (.04 + mod(fi, 2.0) * .03) * (1.0 + 2.2 * uBurst);',
       '        if(mod(fi, 3.0) == 1.0){',
       '          vec3 edge = vec3(size * 1.02, size, size * .98);',
       '          ghosts += exp(-abs(vec3(hex) - edge) * 900.0) * tint * .04;',
       '        }',
       '      }',
-      '      c += (vec3(star + streak) + ghosts) * flare;',
+      '      c += (vec3(star + burst) + streak * mix(vec3(1.0), vec3(.78, .9, 1.0), uBurst) + ghosts + halo) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -1987,6 +1994,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     lensLabel.textContent = '0' + (xrayLayer + 1) + ' / ' + layer.name + '  ·  ' + layer.note;
   }
   fxButtons.forEach(function(button){ button.addEventListener('click', function(){ setFx(button.dataset.fx); }); });
+  // Depth of field has its own switch: it works under every mode.
+  var dofOn = true, dofButton = document.querySelector('[data-dof]');
+  dofButton.addEventListener('click', function(){
+    dofOn = !dofOn;
+    dofButton.setAttribute('aria-pressed', String(dofOn));
+  });
   layerButtons.forEach(function(button, i){ button.addEventListener('click', function(){ setLayer(i); }); });
   document.addEventListener('keydown', function(e){
     if(fxMode !== 'xray' || e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input,textarea,select')) return;
@@ -2112,8 +2125,19 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uDisc.value = Math.max(5, Math.min(w, h) * .009) / h;
     var amount = THREE.MathUtils.smoothstep(-bodyUniforms.uLight.value.z, -.1, .2);
     shadeName(amount, dt);
+    // The backlit glow (the limb's forward scatter and the rays) waits for the planet: faint
+    // while the sun is still in open sky, it swells as the sun nears the limb and burns white
+    // once the sun is behind the disc.
+    var tanHalf = Math.tan(camera.fov * Math.PI / 360), sun = compMat.uniforms.uSun.value;
+    planetNdc.copy(rig.position).project(camera);
+    var reach = ringPlanetRadius.value / (camera.position.distanceTo(rig.position) * tanHalf * 2);
+    var gap = Math.hypot((sun.x - (planetNdc.x + 1) / 2) * w / h, sun.y - (planetNdc.y + 1) / 2) / reach;
+    compMat.uniforms.uBacklit.value = THREE.MathUtils.lerp(.15, 1.4, 1 - THREE.MathUtils.smoothstep(gap, .95, 1.8));
+    // The diamond ring: the flare flares hardest while the sun is a sliver past the limb.
+    compMat.uniforms.uBurst.value = Math.exp(-Math.pow((gap - 1.1) / .22, 2));
     return amount;
   }
+  var planetNdc = new THREE.Vector3();
 
   // The name catches the same sun: a long shadow falls away from it and the facing edge
   // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
@@ -2275,7 +2299,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       rtA.setSize(bw, bh); rtB.setSize(bw, bh);
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
       rtX.setSize(pw, ph);
-      rtDepth.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
+      // Full resolution, so the thin overlay lines kept sharp stay whole.
+      rtDepth.setSize(pw, ph);
       rtDofA.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1)); rtDofB.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       compMat.uniforms.uOccTexel.value.set(1 / rtOcc.width, 1 / rtOcc.height);
@@ -2310,7 +2335,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     driftSun(dt);
     aimSun();
     var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
-    uFwd.value = eclipseAmount;
+    uFwd.value = eclipseAmount * compMat.uniforms.uBacklit.value;
     if(!eclipseAmount){ if(compMat.uniforms.uExposure.value !== 1) resetCamera(); if(isDay) clearName(); }
     bodyUniforms.uTime.value  = t;
     orbitMoons.forEach(function(orbit){
@@ -2352,17 +2377,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // autoClear already clears this target immediately before rendering.
     renderer.render(scene, camera);
 
-    // Depth of field: distance pass, then a half-resolution blur of the scene (two rounds).
-    renderDepth();
-    var dofX = 1.6 / rtDofA.width, dofY = 1.6 / rtDofA.height, bloomDir = blurMat.uniforms.uDir.value.clone();
-    blurMat.uniforms.tD.value = rtScene.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA);
-    blurMat.uniforms.tD.value = rtDofA.texture; blurMat.uniforms.uDir.value.set(0, dofY); drawPost(blurMat, rtDofB);
-    blurMat.uniforms.tD.value = rtDofB.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA);
-    blurMat.uniforms.tD.value = rtDofA.texture; blurMat.uniforms.uDir.value.set(0, dofY); drawPost(blurMat, rtDofB);
-    blurMat.uniforms.uDir.value.copy(bloomDir);
-    // Focus sits at the planet's centre; blur begins a little behind it and is full about three units further.
-    var focusZ = camera.position.distanceTo(rig.position);
-    compMat.uniforms.uFocus.value.set((focusZ + .35 * rig.scale.x - 2) / 14, (focusZ + 3.2 * rig.scale.x - 2) / 14);
+    // Depth of field: distance pass, then a half-resolution blur of the scene (three rounds).
+    if(dofOn){
+      renderDepth();
+      var dofX = 2.4 / rtDofA.width, dofY = 2.4 / rtDofA.height, bloomDir = blurMat.uniforms.uDir.value.clone();
+      blurMat.uniforms.tD.value = rtScene.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA);
+      for(var round = 0; round < 3; round++){
+        if(round){ blurMat.uniforms.tD.value = rtDofB.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA); }
+        blurMat.uniforms.tD.value = rtDofA.texture; blurMat.uniforms.uDir.value.set(0, dofY); drawPost(blurMat, rtDofB);
+      }
+      blurMat.uniforms.uDir.value.copy(bloomDir);
+      // Focus sits at the planet's front; blur begins just behind its centre and is full about two units further.
+      var focusZ = camera.position.distanceTo(rig.position);
+      compMat.uniforms.uFocus.value.set((focusZ + .1 * rig.scale.x - 2) / 14, (focusZ + 2.2 * rig.scale.x - 2) / 14);
+    }else compMat.uniforms.uFocus.value.set(2, 3);
     compMat.uniforms.tDof.value = rtDofB.texture;
     compMat.uniforms.tDepth.value = rtDepth.texture;
 
