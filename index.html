@@ -1178,26 +1178,44 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // the rings that stay keep their weight, and there are fewer of them (13 of the 17).
   for(var drops = Math.round(halfKept / 4); drops > 0; drops--) dropClosest();
   var dustOrbits = [], dustKicks = [], dustLooks = [];
+  // Real rings are uneven: most rings split into a bundle of fine lanes packed close together,
+  // while a few stay single with open space around them. Each ring keeps its own radius as one
+  // lane (so the moons still ride it); the others sit at small, uneven steps to either side.
+  var laneCounts = [1, 5, 2, 7, 1, 4, 3, 1, 6, 2, 5, 1, 3, 4, 1, 2, 6];
+  var keptOrder = 0;
   strands.forEach(function(strand, index){
     if(!strandKept[index]) return;
-    var span = RING_O - RING_I, radius = RING_I + strand.x * span;
+    var span = RING_O - RING_I, center = RING_I + strand.x * span;
     var fuller = strand.y * span * 0.25;
-    var count = Math.round(strandGrains(strand) * allGrains / keptGrains);
-    // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
-    var clump = dustRandom() * 0.45, phase = dustRandom() * Math.PI * 2;
-    var breaks = [1,4,7,10,13].indexOf(index) >= 0 ? [dustRandom(), dustRandom(), dustRandom()] : [];
-    for(var grain = 0; grain < count; grain++){
-      var turn = (grain + dustRandom()) / count;
-      if(breaks.some(function(at){ var d = Math.abs(turn - at); return Math.min(d, 1 - d) < 0.012; })) continue;
-      if(dustRandom() < clump * (0.5 + 0.5 * Math.sin(turn * Math.PI * 6 + phase))) continue;
-      // Most grains are fine; a few are boulders, a little larger and brighter, but never so large they break the line.
-      var boulder = Math.pow(dustRandom(), 3);
-      dustOrbits.push(turn * Math.PI * 2, radius + (dustRandom() + dustRandom() + dustRandom() - 1.5) * 0.0005, (dustRandom() - .5) * 0.0004);
-      // Dragging stirs most grains a little, so the streams blur; a few fly as far as the old dust did.
-      var fling = 0.12 + 0.88 * Math.pow(dustRandom(), 2.5);
-      dustKicks.push((dustRandom() - .5) * 0.60 * fling, (dustRandom() - .5) * 0.48 * fling, (dustRandom() - .5) * 0.42 * fling);
-      dustLooks.push(0.0022 + boulder * 0.0022 + fuller, 0.55 + dustRandom() * 0.3 + boulder * 0.15, dustRandom(), index >= continuousStrandCount ? 1 : 0);
+    var ringCount = Math.round(strandGrains(strand) * allGrains / keptGrains);
+    var lanes = orbitMoons.some(function(orbit){ return orbit.strand === index; }) ? 1 : laneCounts[keptOrder % laneCounts.length];
+    keptOrder++;
+    var offsets = [0], step = 0;
+    for(var lane = 1; lane < lanes; lane++){
+      step += 0.014 + dustRandom() * 0.020;
+      offsets.push(step);
     }
+    var shift = offsets[Math.floor(dustRandom() * lanes)];
+    offsets.forEach(function(offset){
+      var radius = center + offset - shift;
+      // A bundle holds more dust than a single lane, though each of its lanes is a little sparser.
+      var count = Math.round(ringCount * (lanes > 1 ? 0.70 + 0.25 * dustRandom() : 1));
+      // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
+      var clump = dustRandom() * 0.45, phase = dustRandom() * Math.PI * 2;
+      var breaks = [1,4,7,10,13].indexOf(index) >= 0 ? [dustRandom(), dustRandom(), dustRandom()] : [];
+      for(var grain = 0; grain < count; grain++){
+        var turn = (grain + dustRandom()) / count;
+        if(breaks.some(function(at){ var d = Math.abs(turn - at); return Math.min(d, 1 - d) < 0.012; })) continue;
+        if(dustRandom() < clump * (0.5 + 0.5 * Math.sin(turn * Math.PI * 6 + phase))) continue;
+        // Most grains are fine; a few are boulders, a little larger and brighter, but never so large they break the line.
+        var boulder = Math.pow(dustRandom(), 3);
+        dustOrbits.push(turn * Math.PI * 2, radius + (dustRandom() + dustRandom() + dustRandom() - 1.5) * 0.0005, (dustRandom() - .5) * 0.0004);
+        // Dragging stirs most grains a little, so the streams blur; a few fly as far as the old dust did.
+        var fling = 0.12 + 0.88 * Math.pow(dustRandom(), 2.5);
+        dustKicks.push((dustRandom() - .5) * 0.60 * fling, (dustRandom() - .5) * 0.48 * fling, (dustRandom() - .5) * 0.42 * fling);
+        dustLooks.push(0.0022 + boulder * 0.0022 + fuller, 0.55 + dustRandom() * 0.3 + boulder * 0.15, dustRandom(), index >= continuousStrandCount ? 1 : 0);
+      }
+    });
   });
   // Only the rings that stay can be grabbed.
   strands = strands.filter(function(strand, index){ return strandKept[index]; });
