@@ -1812,7 +1812,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         letter.setAttribute('aria-hidden', 'true');
         run.appendChild(letter);
         // Against the sun a letter dims only a little: white to a light gray, the Korean name's gray one step.
-        nameLetters.push({ el:letter, from:ko ? 143 : 255, to:ko ? 102 : 191, x:0, y:0, w:0, h:0, shadow:'', color:'' });
+        nameLetters.push({ el:letter, from:ko ? 143 : 255, to:ko ? 120 : 212, x:0, y:0, w:0, h:0, shadow:'', color:'' });
       });
       node.replaceChild(run, child);
     });
@@ -2160,7 +2160,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         layers.push((-ux * 1.2).toFixed(2) + 'px ' + (-uy * 1.2).toFixed(2) + 'px 2px rgba(255,255,255,' + (.55 * light).toFixed(3) + ')');
         for(var i = 1; i <= 14; i++){
           var d = i * 2.2 * reach;
-          layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.5 * light * (1 - silhouette) * (1 - i / 16)).toFixed(3) + ')');
+          layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.4 * light * (1 - silhouette) * (1 - i / 16)).toFixed(3) + ')');
         }
       }
       return layers;
@@ -2176,7 +2176,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           layers.push('0 0 1px rgba(255,255,255,' + (.9 * s).toFixed(2) + ')',
             '0 0 5px rgba(255,255,255,' + (.6 * s).toFixed(2) + ')',
             '0 0 16px rgba(255,255,255,' + (.35 * s).toFixed(2) + ')');
-          // White dims toward #bfbfbf, the Korean name's #8f8f8f toward #666.
+          // Keep the eclipse readable: white dims toward #d4d4d4, Korean gray toward #787878.
           var v = Math.round(letter.from + (letter.to - letter.from) * s);
           color = 'rgb(' + v + ',' + v + ',' + v + ')';
         }
