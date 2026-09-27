@@ -1,0 +1,32 @@
+.music-toggle {
+  position:fixed; z-index:31;
+  right:max(20px,env(safe-area-inset-right));
+  bottom:max(20px,env(safe-area-inset-bottom));
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-width:126px; min-height:44px; padding:10px 14px;
+  border:1px solid var(--ln2); border-radius:0;
+  background:rgb(8 8 8 / .88); color:var(--g2);
+  font:11px/1.2 var(--f-mono); letter-spacing:.05em;
+  cursor:pointer; transition:color .2s,border-color .2s,background .2s;
+}
+.music-toggle[hidden] { display:none; }
+.music-toggle:hover,.music-toggle[data-state="on"] { color:var(--w); border-color:var(--g1); }
+.music-toggle:focus-visible { outline:2px solid var(--w); outline-offset:4px; }
+.music-icon { display:flex; align-items:center; gap:3px; height:15px; }
+.music-icon i { display:block; width:2px; height:3px; background:currentColor; transition:height .3s; }
+.music-toggle[data-state="on"] .music-icon i { animation:music-breathe 2.4s ease-in-out infinite alternate; }
+.music-toggle[data-state="on"] .music-icon i:nth-child(2) { height:12px; animation-delay:-.8s; }
+.music-toggle[data-state="on"] .music-icon i:nth-child(3) { height:8px; animation-delay:-1.6s; }
+@keyframes music-breathe { from { transform:scaleY(.45); } to { transform:scaleY(1); } }
+.music-status { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+html[data-theme="day"] .music-toggle { background:rgb(250 250 248 / .94); color:var(--g2); }
+html[data-theme="day"] .music-toggle:hover,html[data-theme="day"] .music-toggle[data-state="on"] { color:var(--w); }
+@media(max-width:600px) {
+  /* Keep clear of the stacked lighting controls along the bottom of the hero. */
+  .music-toggle { right:max(12px,env(safe-area-inset-right)); top:82px; bottom:auto; min-width:112px; padding:10px 12px; }
+  body:has(.site-header.menu-open) .music-toggle { visibility:hidden; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .music-toggle,.music-icon i { transition:none; }
+  .music-toggle[data-state="on"] .music-icon i { animation:none; }
+}

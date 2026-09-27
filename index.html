@@ -203,7 +203,6 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
 .fx-switch button:hover{ color:var(--w); }
 .fx-switch button[aria-pressed="true"]{ color:#000; background:var(--w); border-color:var(--w); }
 .fx-switch button:focus-visible{ outline:1px solid var(--w); outline-offset:3px; }
-.fx-switch .fx-dof{ margin-left:10px; }
 .fx-layers{ display:none; gap:4px; margin-left:10px; padding-left:12px; border-left:1px solid var(--ln2); }
 .hero[data-fx="xray"] .fx-layers{ display:flex; }
 .xray-label{
@@ -464,6 +463,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <link rel="stylesheet" href="home-theme.css?v=f199a4c40291">
 <link rel="stylesheet" href="home-lab.css?v=b58dd5668a61">
 <script src="home-theme.js?v=745a3d1937a4" defer></script>
+<link rel="stylesheet" href="home-music.css?v=4a80bd54ae90">
 </head>
 <body>
 
@@ -515,7 +515,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           <button type="button" data-fx="eclipse" aria-pressed="true">ECLIPSE</button>
           <button type="button" data-fx="xray" aria-pressed="false">X-RAY</button>
           <button type="button" data-fx="off" aria-pressed="false">OFF</button>
-          <button type="button" class="fx-dof" data-dof aria-pressed="true" aria-label="피사계 심도: 먼 고리 흐림">DOF</button>
           <span class="fx-layers" role="group" aria-label="돋보기로 볼 렌더 패스 (숫자 1–4)">
             <button type="button" data-xray-layer aria-pressed="true">N·L</button>
             <button type="button" data-xray-layer aria-pressed="false">NRM</button>
@@ -867,21 +866,48 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   for(var starIndex=0;starIndex<190;starIndex++){
     starPositions.push(starRandom()*2-1,starRandom()*2-1,-(22+starRandom()*48));
     var prominence=starRandom();
-    starSizes.push(0.8+Math.pow(prominence,3)*1.25);
+    starSizes.push(0.95+Math.pow(prominence,3)*1.25);
     starPhases.push(starRandom()*Math.PI*2);
-    starBrightness.push(0.045+Math.pow(prominence,2)*0.32);
+    starBrightness.push(0.075+Math.pow(prominence,2)*0.45);
   }
   var starGeometry=new THREE.BufferGeometry();
   starGeometry.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));
   starGeometry.setAttribute('aSize',new THREE.Float32BufferAttribute(starSizes,1));
   starGeometry.setAttribute('aPhase',new THREE.Float32BufferAttribute(starPhases,1));
   starGeometry.setAttribute('aBrightness',new THREE.Float32BufferAttribute(starBrightness,1));
+  // Keep a small, crisp core in CSS pixels. Only a few stars bloom into a tiny
+  // diffraction cross, on separate slow cycles; the shared clock freezes with reduced motion.
+  var STAR_APPEARANCE = [
+    '  float seed=fract(sin(aPhase*31.71)*43758.5453);',
+    '  float cycle=fract(uTime/(24.0+seed*19.0)+aPhase*0.15915494);',
+    '  vGlint=step(0.87,seed)*smoothstep(0.91,0.955,cycle)*(1.0-smoothstep(0.955,1.0,cycle));',
+    '  float pulse=0.88+0.12*sin(uTime*(0.21+aPhase*0.018)+aPhase);',
+    '  vBrightness=aBrightness*pulse*(1.0+vGlint*0.7);',
+    '  vRadius=starSize*0.42;',
+    '  vFootprint=max(2.4,starSize+1.4)+vGlint*4.0;',
+    '  gl_PointSize=vFootprint*uDpr;'
+  ].join('\n');
+  var STAR_FRAG = [
+    'precision highp float; uniform float uDay; uniform float uDpr;',
+    'varying float vBrightness; varying float vGlint; varying float vRadius; varying float vFootprint;',
+    'void main(){',
+    '  vec2 p=(gl_PointCoord-0.5)*vFootprint;',
+    '  float aa=0.4/max(uDpr,1.0);',
+    '  float core=1.0-smoothstep(max(0.0,vRadius-aa),vRadius+aa,length(p));',
+    '  vec2 q=abs(p);',
+    '  float horizontal=(1.0-smoothstep(0.10,0.10+aa,q.y))*(1.0-smoothstep(0.35,2.4,q.x));',
+    '  float vertical=(1.0-smoothstep(0.10,0.10+aa,q.x))*(1.0-smoothstep(0.35,2.4,q.y));',
+    '  float light=max(core,max(horizontal,vertical)*vGlint*0.72);',
+    '  vec3 ink=mix(vec3(0.88,0.92,1.0),vec3(0.22,0.25,0.29),uDay);',
+    '  gl_FragColor=vec4(ink,light*vBrightness*mix(1.0,0.62,uDay));',
+    '}'
+  ].join('\n');
   var starMaterial=new THREE.ShaderMaterial({
     uniforms:{uTime:bodyUniforms.uTime,uAspect:{value:1},uDpr:{value:1},uDay:uDay,uShift:{value:new THREE.Vector2()}},
     vertexShader:[
       'attribute float aSize; attribute float aPhase; attribute float aBrightness;',
       'uniform float uTime; uniform float uAspect; uniform float uDpr; uniform vec2 uShift;',
-      'varying float vBrightness;',
+      'varying float vBrightness; varying float vGlint; varying float vRadius; varying float vFootprint;',
       'void main(){',
       // Dragging the planet slides the sky a little, nearer stars more than farther ones
       // (parallax), wrapping round the frame so the field never runs out.
@@ -889,21 +915,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       // View-aligned positions at different depths keep the sky stable on resize.
       '  vec3 p=vec3(xy*vec2(uAspect,1.0)*(-position.z)*0.286745,position.z);',
       '  gl_Position=projectionMatrix*vec4(p,1.0);',
-      '  gl_PointSize=max(1.0,aSize*uDpr);',
-      '  float pulse=pow(0.5+0.5*sin(uTime*(0.48+aPhase*0.065)+aPhase),4.0);',
-      '  float twinkle=mix(0.83+0.17*pulse,0.42+0.58*pulse,step(1.2,aSize));',
-      '  vBrightness=aBrightness*twinkle;',
+      '  float starSize=aSize;',
+      STAR_APPEARANCE,
       '}'
     ].join('\n'),
-    fragmentShader:[
-      'precision mediump float; uniform float uDay; varying float vBrightness;',
-      'void main(){',
-      '  vec2 p=gl_PointCoord-0.5;',
-      '  float core=exp(-dot(p,p)*13.0)*(1.0-smoothstep(0.35,0.5,length(p)));',
-      '  vec3 ink=mix(vec3(0.88,0.92,1.0),vec3(0.22,0.25,0.29),uDay);',
-      '  gl_FragColor=vec4(ink,core*vBrightness*mix(1.0,0.72,uDay));',
-      '}'
-    ].join('\n'),
+    fragmentShader:STAR_FRAG,
     transparent:true,depthTest:true,depthWrite:false,blending:THREE.AdditiveBlending
   });
   var distantStars=new THREE.Points(starGeometry,starMaterial);
@@ -1393,21 +1409,42 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   /* ---------- 별 ---------- */
   var skyStars;
-  var skyStarMaterial=new THREE.PointsMaterial({
-    color:0xffffff, size:0.075, sizeAttenuation:true, transparent:true, opacity:0.38
+  var skyStarMaterial=new THREE.ShaderMaterial({
+    uniforms:{uTime:bodyUniforms.uTime,uDpr:starMaterial.uniforms.uDpr,uDay:uDay},
+    vertexShader:[
+      'attribute float aSize; attribute float aPhase; attribute float aBrightness;',
+      'uniform float uTime; uniform float uDpr;',
+      'varying float vBrightness; varying float vGlint; varying float vRadius; varying float vFootprint;',
+      'void main(){',
+      '  vec4 mv=modelViewMatrix*vec4(position,1.0);',
+      '  gl_Position=projectionMatrix*mv;',
+      '  float starSize=aSize*clamp(34.0/max(-mv.z,1.0),0.75,1.3);',
+      STAR_APPEARANCE,
+      '}'
+    ].join('\n'),
+    fragmentShader:STAR_FRAG,
+    transparent:true,depthTest:true,depthWrite:false,blending:THREE.AdditiveBlending
   });
   (function(){
-    var N = 520, pos = new Float32Array(N*3), i, r, th, ph;
+    var N = 520, pos = new Float32Array(N*3), sizes = new Float32Array(N),
+      phases = new Float32Array(N), brightness = new Float32Array(N), i, r, th, ph;
     for(i=0;i<N;i++){
-      r = 26 + Math.random()*22;
-      th = Math.random()*Math.PI*2;
-      ph = Math.acos(2*Math.random()-1);
+      r = 26 + starRandom()*22;
+      th = starRandom()*Math.PI*2;
+      ph = Math.acos(2*starRandom()-1);
       pos[i*3]   = r*Math.sin(ph)*Math.cos(th);
       pos[i*3+1] = r*Math.sin(ph)*Math.sin(th);
       pos[i*3+2] = r*Math.cos(ph);
+      var prominence=starRandom();
+      sizes[i] = 0.85+prominence*0.65;
+      phases[i] = starRandom()*Math.PI*2;
+      brightness[i] = 0.12+prominence*0.28;
     }
     var g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    g.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
+    g.setAttribute('aBrightness', new THREE.BufferAttribute(brightness, 1));
     skyStars=new THREE.Points(g,skyStarMaterial);
     scene.add(skyStars);
   })();
@@ -1470,45 +1507,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }'
   ].join('\n');
 
-  // Depth of field. A full-resolution depth pass stores each pixel's distance (the ring as its whole
-  // disc, so the gaps between strands blur with them); a half-resolution blurred copy of the
-  // scene is mixed in only beyond the planet, so the far side of the ring falls softly out
-  // of focus while the planet and the near side stay sharp. Stars keep no depth: they stay crisp.
-  var depthMat = new THREE.ShaderMaterial({
-    vertexShader:['varying float vZ;','void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }'].join('\n'),
-    fragmentShader:['precision highp float; varying float vZ;','void main(){ gl_FragColor = vec4(clamp((vZ - 2.0) / 14.0, 0.0, 1.0), 0.0, 1.0, 1.0); }'].join('\n'),
-    side:THREE.DoubleSide
-  });
-  var rtDepth = new THREE.WebGLRenderTarget(2, 2, RT);
-  var rtDofA = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
-  var rtDofB = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
-  // The instrument overlay (reticle lines and labels) is drawn solid black in this pass, so the
-  // pixels it covers carry no depth and stay sharp over the blurred far ring.
-  function isOverlay(object){
-    for(var o = object; o; o = o.parent) if(o === reticle || o === moonReticle) return true;
-    return false;
-  }
-  function renderDepth(){
-    var hidden = [], swapped = [], inked = [];
-    scene.traverse(function(object){
-      if(object.visible && (object.isLine || object.isSprite) && isOverlay(object)){
-        var m = object.material;
-        inked.push(m, m.color.getHex(), m.opacity, m.blending);
-        m.color.setHex(0x000000); m.opacity = 1; m.blending = THREE.NormalBlending;
-      }else if(object.visible && (object.isPoints || object.isLine || object.isSprite || object === atmo)){ object.visible = false; hidden.push(object); }
-      else if(object.isMesh){ swapped.push(object, object.material); object.material = depthMat; }
-    });
-    renderer.setRenderTarget(rtDepth);
-    renderer.render(scene, camera);
-    for(var i = 0; i < swapped.length; i += 2) swapped[i].material = swapped[i + 1];
-    for(var j = 0; j < inked.length; j += 4){ inked[j].color.setHex(inked[j + 1]); inked[j].opacity = inked[j + 2]; inked[j].blending = inked[j + 3]; }
-    hidden.forEach(function(object){ object.visible = true; });
-  }
-
   var compMat = new THREE.ShaderMaterial({
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
-      tDof:{value:null}, tDepth:{value:null}, uFocus:{value:new THREE.Vector2(.4, .6)},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
       tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
@@ -1517,7 +1518,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     fragmentShader:[
       'precision mediump float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
-      'uniform sampler2D tDof; uniform sampler2D tDepth; uniform vec2 uFocus;',
       'uniform sampler2D tX; uniform vec4 uLens;',
       'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
@@ -1525,10 +1525,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '  return (texture2D(t, vUv - e).rgb + texture2D(t, vUv + e).rgb + texture2D(t, vUv - f).rgb + texture2D(t, vUv + f).rgb) * .25; }',
       SUN_GLSL,
       'void main(){',
-      // Beyond the focus distance (uFocus.x) the scene blends into its blurred copy, fully by uFocus.y.
-      '  vec4 depth = texture2D(tDepth, vUv);',
-      '  float coc = depth.b * smoothstep(uFocus.x, uFocus.y, depth.r);',
-      '  vec3 c = mix(texture2D(tScene, vUv).rgb, texture2D(tDof, vUv).rgb, coc) + texture2D(tBloom, vUv).rgb * uStr;',
+      '  vec3 c = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uStr;',
       // The sun shows only where nothing stands in front of it; its scattered rays are added on top.
       // The tent softens the half-resolution mask's stair-steps where the glow meets the limb,
       // and the grain the march leaves in the rays.
@@ -1643,15 +1640,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     uDay.value=isDay ? 1 : 0;
     renderer.setClearColor(isDay ? 0xf3f3f1 : 0x000000,1);
     // Light ink over paper needs normal alpha; Night retains its original additive glow.
-    [starMaterial,atmo.material].forEach(function(material){
+    [starMaterial,skyStarMaterial,atmo.material].forEach(function(material){
       material.blending=isDay ? THREE.NormalBlending : THREE.AdditiveBlending;
     });
     reticle.traverse(function(object){
       if(object.material && object.material.color) object.material.color.setHex(isDay ? 0x39414b : 0xffffff);
     });
     moonMarker.material.color.setHex(isDay ? 0x39414b : 0xffffff);
-    skyStarMaterial.color.setHex(isDay ? 0x56606b : 0xffffff);
-    skyStarMaterial.opacity=isDay ? 0.18 : 0.38;
   }
   window.addEventListener('penumbra-theme-change',applySceneTheme);
   applySceneTheme();
@@ -1994,12 +1989,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     lensLabel.textContent = '0' + (xrayLayer + 1) + ' / ' + layer.name + '  ·  ' + layer.note;
   }
   fxButtons.forEach(function(button){ button.addEventListener('click', function(){ setFx(button.dataset.fx); }); });
-  // Depth of field has its own switch: it works under every mode.
-  var dofOn = true, dofButton = document.querySelector('[data-dof]');
-  dofButton.addEventListener('click', function(){
-    dofOn = !dofOn;
-    dofButton.setAttribute('aria-pressed', String(dofOn));
-  });
   layerButtons.forEach(function(button, i){ button.addEventListener('click', function(){ setLayer(i); }); });
   document.addEventListener('keydown', function(e){
     if(fxMode !== 'xray' || e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input,textarea,select')) return;
@@ -2084,11 +2073,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var sunDrifting = !reduce, sunDrift = 1 - .14 / (Math.PI * 2), sunPace = 1;
   sunSlider.addEventListener('input', function(){ sunDrifting = false; });
   function driftSun(dt){
-    if(!sunDrifting) return;
+    if(reduce || !sunDrifting) return;
     var at = compMat.uniforms.uSun.value, L = bodyUniforms.uLight.value;
     var inFrame = L.z < -.05 && at.x > -.3 && at.x < 1.3;
-    sunPace += ((inFrame ? 1 : 7) - sunPace) * (1 - Math.exp(-dt * 1.5));
-    sunDrift = (sunDrift + dt * sunPace * .045 / (Math.PI * 2)) % 1;
+    sunPace += ((inFrame ? 1 : 2.5) - sunPace) * (1 - Math.exp(-dt * 1.5));
+    sunDrift = (sunDrift + dt * sunPace * .012 / (Math.PI * 2)) % 1;
     P.sun = planetBaseline.sun + sunDrift;
     var step = Math.round(sunDrift * 100) % 100;
     if(Number(sunSlider.value) !== step){
@@ -2299,9 +2288,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       rtA.setSize(bw, bh); rtB.setSize(bw, bh);
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
       rtX.setSize(pw, ph);
-      // Full resolution, so the thin overlay lines kept sharp stay whole.
-      rtDepth.setSize(pw, ph);
-      rtDofA.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1)); rtDofB.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       compMat.uniforms.uOccTexel.value.set(1 / rtOcc.width, 1 / rtOcc.height);
       nameMaskDirty = lettersDirty = true;
@@ -2377,23 +2363,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // autoClear already clears this target immediately before rendering.
     renderer.render(scene, camera);
 
-    // Depth of field: distance pass, then a half-resolution blur of the scene (three rounds).
-    if(dofOn){
-      renderDepth();
-      var dofX = 2.4 / rtDofA.width, dofY = 2.4 / rtDofA.height, bloomDir = blurMat.uniforms.uDir.value.clone();
-      blurMat.uniforms.tD.value = rtScene.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA);
-      for(var round = 0; round < 3; round++){
-        if(round){ blurMat.uniforms.tD.value = rtDofB.texture; blurMat.uniforms.uDir.value.set(dofX, 0); drawPost(blurMat, rtDofA); }
-        blurMat.uniforms.tD.value = rtDofA.texture; blurMat.uniforms.uDir.value.set(0, dofY); drawPost(blurMat, rtDofB);
-      }
-      blurMat.uniforms.uDir.value.copy(bloomDir);
-      // Focus sits at the planet's front; blur begins just behind its centre and is full about two units further.
-      var focusZ = camera.position.distanceTo(rig.position);
-      compMat.uniforms.uFocus.value.set((focusZ + .1 * rig.scale.x - 2) / 14, (focusZ + 2.2 * rig.scale.x - 2) / 14);
-    }else compMat.uniforms.uFocus.value.set(2, 3);
-    compMat.uniforms.tDof.value = rtDofB.texture;
-    compMat.uniforms.tDepth.value = rtDepth.texture;
-
     // 밝은 부분만 뽑아 1/4 해상도로
     cutMat.uniforms.tD.value = rtScene.texture;
     drawPost(cutMat, rtA);
@@ -2453,5 +2422,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </script>
 <script type="module" src="home-tactile.js?v=947ae4288708"></script>
 <script type="module" src="home-meteors.js?v=bde91b774490"></script>
+<audio id="home-music" data-src="assets/audio/penumbra-orbit-first-light.mp3?v=507adfdeabec" preload="none" loop></audio>
+<button type="button" id="music-toggle" class="music-toggle" aria-label="배경음악 켜기" aria-pressed="false" aria-describedby="music-status" hidden>
+  <span class="music-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span data-music-label>Music Off</span>
+</button>
+<span id="music-status" class="music-status" role="status" aria-live="polite"></span>
+<script type="module" src="home-music.js?v=2c7313e7dbc3"></script>
 </body>
 </html>
