@@ -189,6 +189,7 @@ input[type=range]::-webkit-slider-thumb{
 input[type=range]::-moz-range-thumb{ width:9px; height:9px; background:var(--w); border:none; border-radius:0; cursor:ew-resize; }
 input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px; }
 .knob-scale{ display:flex; justify-content:space-between; gap:8px; font-size:12px; line-height:1.4; color:var(--g2); }
+.knob-hint{ margin:5px 0 0; font-size:11px; line-height:1.4; color:var(--g2); }
 
 /* ---------- Post FX switch ---------- */
 .fx-switch{
@@ -533,8 +534,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         </div>
         <div>
           <div class="knob-head"><em>SUN AZIMUTH</em><b id="v-sun" class="num">0</b></div>
-          <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun" aria-label="태양 방위각">
+          <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun sun-hint" aria-label="태양 방위각">
           <div class="knob-scale" id="scale-sun"><span>기본</span><span>한 바퀴 회전</span></div>
+          <p class="knob-hint" id="sun-hint">조절 후 천천히 이어집니다.</p>
         </div>
         <div>
           <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0</b></div>
@@ -1503,22 +1505,40 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var SUN_GLSL = [
     'uniform vec2 uSun; uniform float uSunR; uniform float uAspect; uniform float uDisc;',
     'float sunDist(vec2 uv){ vec2 d = uv - uSun; d.x *= uAspect; return length(d); }',
-    'float sunDisc(vec2 uv){ float r = sunDist(uv); return smoothstep(uDisc, uDisc*.55, r)*4.0 + exp(-r/(uDisc*3.5))*.9; }',
-    'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }'
+    'float sunDisc(vec2 uv){ float r = sunDist(uv); return (1.0-smoothstep(uDisc*.55, uDisc, r))*4.0 + exp(-r/(uDisc*2.2))*.7; }',
+    'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }',
+    // Direction-space noise closes around the circle without a seam or equally spaced spokes.
+    'float lightHash(vec2 p){ vec3 q=fract(vec3(p.xyx)*.1031); q+=dot(q,q.yzx+33.33); return fract((q.x+q.y)*q.z); }',
+    'float lightNoise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);',
+    '  return mix(mix(lightHash(i),lightHash(i+vec2(1.,0.)),f.x),mix(lightHash(i+vec2(0.,1.)),lightHash(i+1.),f.x),f.y); }',
+    'float lightBundle(vec2 dir){ return pow(smoothstep(.24,.82,lightNoise(dir*1.65+vec2(8.3,2.8))),1.7); }'
   ].join('\n');
 
+  // 한 렌즈에 고정된 불규칙한 결: 각도·두께·길이·밝기가 각각 다르며 매 프레임 재추첨하지 않는다.
+  var flarePattern = [
+    [-2.92,.018,.10,.10], [-2.51,.006,.30,.22], [-2.43,.024,.16,.13],
+    [-1.90,.009,.07,.10], [-1.08,.016,.18,.14], [-.72,.004,.29,.24],
+    [-.20,.028,.09,.07], [.13,.011,.22,.18], [.39,.004,.38,.27],
+    [.48,.020,.15,.12], [.96,.032,.09,.10], [1.14,.008,.25,.22],
+    [1.84,.016,.32,.10], [2.42,.006,.08,.12]
+  ];
   var compMat = new THREE.ShaderMaterial({
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
       tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0},
-      uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012}
+      uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012},
+      uPlanet:{value:new THREE.Vector3(.5,.5,.2)}, uTotality:{value:0},
+      uFlareRays:{value:flarePattern.map(function(p){ return new THREE.Vector4(Math.cos(p[0]),Math.sin(p[0]),p[1],p[2]); })},
+      uFlareGain:{value:flarePattern.map(function(p){ return p[3]; })}
     },
     vertexShader: POST_VERT,
     fragmentShader:[
-      'precision mediump float;',
+      'precision highp float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'uniform sampler2D tX; uniform vec4 uLens;',
+      'uniform vec3 uPlanet; uniform float uTotality;',
+      'uniform vec4 uFlareRays[14]; uniform float uFlareGain[14];',
       'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
       'vec3 tent(sampler2D t, vec2 texel){ vec2 e = texel * .5, f = vec2(e.x, -e.y);',
@@ -1532,44 +1552,64 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '  if(uEclipse > 0.0){',
       '    float open = tent(tOcc, uOccTexel).r;',
       '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + tent(tRays, uRaysTexel) * uBacklit) * uEclipse;',
+      // A soft, uneven corona remains visible at totality, outside the opaque silhouette.
+      '    vec2 pd=vUv-uPlanet.xy; pd.x*=uAspect; float pr=length(pd); vec2 pn=pd/max(pr,.0001);',
+      '    float limb=pr-uPlanet.z, tufts=lightBundle(pn);',
+      '    float corona=exp(-max(limb,0.0)/mix(.013,.065,tufts))*(.045+.16*tufts);',
+      '    corona*=smoothstep(-.002,.008,limb)*open*uTotality*uEclipse;',
+      '    c+=vec3(corona);',
       // Lens flare: how much of the disc is uncovered, and how far inside the frame it is.
       '    vec2 o = vec2(uDisc / uAspect, uDisc) * .7;',
-      '    float seen = (texture2D(tOcc, uSun).r + texture2D(tOcc, uSun + vec2(o.x, 0.0)).r + texture2D(tOcc, uSun - vec2(o.x, 0.0)).r',
-      '      + texture2D(tOcc, uSun + vec2(0.0, o.y)).r + texture2D(tOcc, uSun - vec2(0.0, o.y)).r) / 5.0;',
+      // Nine bilinear samples cover the solar disc continuously without another render pass.
+      '    vec2 diagonal=o*.7071;',
+      '    float seen=(texture2D(tOcc,uSun).r*2.0+texture2D(tOcc,uSun+vec2(o.x,0.)).r+texture2D(tOcc,uSun-vec2(o.x,0.)).r',
+      '      +texture2D(tOcc,uSun+vec2(0.,o.y)).r+texture2D(tOcc,uSun-vec2(0.,o.y)).r',
+      '      +texture2D(tOcc,uSun+diagonal).r+texture2D(tOcc,uSun-diagonal).r',
+      '      +texture2D(tOcc,uSun+vec2(diagonal.x,-diagonal.y)).r+texture2D(tOcc,uSun+vec2(-diagonal.x,diagonal.y)).r)/10.0;',
       '    vec2 outside = max(max(-uSun, uSun - 1.0), 0.0);',
       '    float flare = seen * (1.0 - smoothstep(0.0, .12, max(outside.x, outside.y))) * uEclipse;',
       '    if(flare > 0.0){',
-      // A six-point diffraction star and a thin horizontal streak around the sun. The moment the
-      // sun breaks past the limb (uBurst, the diamond ring) the star throws long spikes with a
-      // finer set between them, the streak stretches across the frame, and a faint halo opens.
-      '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d), a = atan(d.y, d.x);',
-      '      float star = pow(abs(cos(a * 3.0)), 80.0) * exp(-r / (.09 + .55 * uBurst)) * (.55 + 2.6 * uBurst);',
-      '      star += pow(abs(sin(a * 6.0)), 160.0) * exp(-r / (.05 + .28 * uBurst)) * 1.2 * uBurst;',
-      '      float streak = exp(-abs(d.y) * (420.0 - 220.0 * uBurst)) * exp(-abs(d.x) * (2.6 - 2.2 * uBurst)) * (.35 + 1.6 * uBurst);',
-      '      float burst = (exp(-r / .04) * 3.0 + exp(-r / .14) * .7 + exp(-r / .45) * .35) * uBurst;',
-      '      vec3 halo = exp(-abs(vec3(r) - vec3(.315, .3, .285)) * 110.0) * .22 * uBurst;',
-      // Ghosts along the line from the sun through the frame centre. Six aperture blades make
-      // them hexagons, and the lens coatings tint each one (teal, violet, amber, green, blue, rose);
-      // ring ghosts split slightly by wavelength. The sun, star and streak stay white.
+      // Unequal bundles have their own width and reach. Fine threads sit inside the wider glow.
+      '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d); vec2 dir=d/max(r,.0001);',
+      '      float bundle=lightBundle(dir);',
+      '      float rayReach=mix(.04,.27,lightNoise(dir*4.7+vec2(21.8,9.3)));',
+      '      float star=.06*bundle*exp(-r/rayReach)*(.18+uBurst);',
+      '      for(int i=0;i<14;i++){',
+      '        vec4 ray=uFlareRays[i]; float along=dot(d,ray.xy), across=dot(d,vec2(-ray.y,ray.x));',
+      '        float width=.0007+r*ray.z;',
+      '        star+=exp(-across*across/(width*width)-max(along,0.0)/ray.w)',
+      '          *smoothstep(-.002,.012,along)*uFlareGain[i]*(.10+uBurst);',
+      '      }',
+      '      float streak=exp(-abs(d.y)*620.0)*exp(-abs(d.x)*5.0)*(.08+.20*uBurst);',
+      '      vec2 slash=vec2(dot(d,vec2(.91,.415)),dot(d,vec2(-.415,.91)));',
+      '      streak+=exp(-abs(slash.y)*430.0)*exp(-abs(slash.x)*mix(12.,5.,smoothstep(-.02,.10,slash.x)))*.17*uBurst;',
+      // The post-composited sun never enters tBloom: build its local bloom here at three scales.
+      // This adds light without blurring the planet, rings, distant stars or text.
+      '      vec2 glow=d/vec2(1.12,.94); float g2=dot(glow,glow);',
+      '      float burst=exp(-g2/.0010)*(1.3+3.2*uBurst);',
+      '      burst+=exp(-g2/.0055)*(.10+.75*uBurst)+exp(-g2/.020)*.12*uBurst;',
+      // Stable lens imperfections: unequal spacing, scale and softness along the optical axis.
+      // Some are soft discs, others broken aperture rims; only the faint fringes carry colour.
       '      vec2 axis = vec2(.5) - uSun; vec3 ghosts = vec3(0.0);',
       '      for(int i = 0; i < 6; i++){',
       '        float fi = float(i);',
-      '        float t = .35 + fi * .33 + mod(fi, 2.0) * .12;',
-      '        float size = .018 + mod(fi * 7.0, 5.0) * .016;',
+      '        float seed=lightHash(vec2(fi+4.0,17.3)), seed2=lightHash(vec2(fi+1.0,8.9));',
+      '        float t=.24+seed*1.72, size=.009+.080*seed2*seed2;',
       '        vec2 g = vUv - (uSun + axis * t * 2.0); g.x *= uAspect;',
       '        g = mat2(.966, -.259, .259, .966) * g;',
-      '        vec2 q = abs(g); float hex = max(q.x * .866 + q.y * .5, q.y);',
+      '        g.x*=1.0+seed*.35;',
+      '        vec2 q = abs(g); float hex = mix(length(g),max(q.x * .866 + q.y * .5, q.y),seed*.65);',
       '        vec3 tint = fi < 1.0 ? vec3(.5,1.0,.88) : fi < 2.0 ? vec3(.82,.55,1.0) : fi < 3.0 ? vec3(1.0,.74,.4)',
       '          : fi < 4.0 ? vec3(.6,1.0,.55) : fi < 5.0 ? vec3(.55,.78,1.0) : vec3(1.0,.58,.76);',
-      // Every ghost is a filled hexagon; a few carry a slightly brighter, wavelength-split rim.
-      '        float fill = smoothstep(size, size * .82, hex);',
-      '        ghosts += fill * tint * (.04 + mod(fi, 2.0) * .03) * (1.0 + 2.2 * uBurst);',
+      '        float fill=exp(-pow(hex/max(size,.001),2.0)*2.2);',
+      '        ghosts+=fill*tint*(.014+.065*seed)*(1.0+1.8*uBurst);',
       '        if(mod(fi, 3.0) == 1.0){',
-      '          vec3 edge = vec3(size * 1.02, size, size * .98);',
-      '          ghosts += exp(-abs(vec3(hex) - edge) * 900.0) * tint * .04;',
+      '          vec3 edge=vec3(size*1.035,size,size*.975);',
+      '          float arc=smoothstep(-.25,.8,dot(g/max(length(g),.0001),vec2(.7,-.714)));',
+      '          ghosts+=exp(-abs(vec3(hex)-edge)*420.0)*tint*.045*arc*uBurst;',
       '        }',
       '      }',
-      '      c += (vec3(star + burst) + streak * mix(vec3(1.0), vec3(.78, .9, 1.0), uBurst) + ghosts + halo) * flare;',
+      '      c += (vec3(star + burst + streak) + ghosts*.55) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -1599,12 +1639,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       defines:{ SAMPLES:samples },
       vertexShader: POST_VERT,
       fragmentShader:[
-        'precision mediump float;',
+        'precision highp float;',
         'uniform sampler2D tOcc; varying vec2 vUv;',
         SUN_GLSL,
         'void main(){',
         // March toward the sun for at most one screen length; beyond the frame the sky is open.
-        '  vec2 toSun = uSun - vUv; float reach = min(1.0, 1.0 / length(toSun));',
+        '  vec2 toSun = uSun - vUv; float reach = min(1.0, 1.0 / max(length(toSun),.0001));',
         '  vec2 stride = toSun * reach / float(SAMPLES);',
         '  highp vec2 pixel = gl_FragCoord.xy;',
         '  float offset = fract(52.9829189 * fract(dot(pixel, vec2(.06711056, .00583715))));',
@@ -1621,7 +1661,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         // to the sun and the sky away from it black, while the light leaking past the limb and
         // between the grains reads as streaks.
         '  float v = sum * 56.0 / float(SAMPLES) / 32.0;',
-        '  gl_FragColor = vec4(vec3(v * v * .5), 1.0);',
+        '  vec2 d=vUv-uSun; d.x*=uAspect; vec2 dir=d/max(length(d),.0001);',
+        '  float bundle=lightBundle(dir);',
+        '  float envelope=exp(-length(d)/mix(.055,.26,bundle));',
+        '  gl_FragColor = vec4(vec3(v * v * .24 * (.12+bundle) * envelope), 1.0);',
         '}'
       ].join('\n')
     });
@@ -2068,16 +2111,61 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // When the page opens, the sun comes in from 8° further out and keeps drifting slowly along
   // its sweep: behind the name, into the planet's shadow and out past the limb with a flash,
   // then round behind the viewer, faster while it is out of the frame, and back in from the
-  // left. The panel's SUN AZIMUTH follows it. Reduced motion, or touching SUN AZIMUTH, stops it.
+  // left. Manual control pauses the sweep, then eases back in from the selected position.
+  // Reduced motion always takes precedence over automatic movement.
   var sunSlider = document.getElementById('s-sun'), sunLabel = document.getElementById('v-sun');
-  var sunDrifting = !reduce, sunDrift = 1 - .14 / (Math.PI * 2), sunPace = 1;
-  sunSlider.addEventListener('input', function(){ sunDrifting = false; });
+  var sunDrift = 1 - .14 / (Math.PI * 2), sunPace = 1, sunMotion = 1;
+  var sunPointer = null, sunKeyHeld = false, sunResumeAt = 0;
+  function holdSun(){ sunMotion = 0; sunResumeAt = performance.now() + 2000; }
+  function releaseSunPointer(e){
+    if(sunPointer === null || (e && e.pointerId !== undefined && e.pointerId !== sunPointer)) return;
+    sunPointer = null;
+    holdSun();
+  }
+  function releaseSunControl(){
+    if(sunPointer === null && !sunKeyHeld) return;
+    sunPointer = null; sunKeyHeld = false;
+    holdSun();
+  }
+  sunSlider.addEventListener('pointerdown', function(e){
+    if(e.button !== 0 || sunPointer !== null) return;
+    sunPointer = e.pointerId;
+    holdSun();
+  });
+  sunSlider.addEventListener('input', function(){
+    // bind() has already updated P.sun. Adopt it so resuming never jumps to the old orbit.
+    sunDrift = ((P.sun - planetBaseline.sun) % 1 + 1) % 1;
+    holdSun();
+  });
+  function isSunKey(e){ return /^(ArrowLeft|ArrowRight|ArrowUp|ArrowDown|PageUp|PageDown|Home|End)$/.test(e.key); }
+  sunSlider.addEventListener('keydown', function(e){
+    if(!isSunKey(e) || e.altKey || e.ctrlKey || e.metaKey) return;
+    sunKeyHeld = true;
+    holdSun();
+  });
+  sunSlider.addEventListener('keyup', function(e){
+    if(!isSunKey(e) || !sunKeyHeld) return;
+    sunKeyHeld = false;
+    holdSun();
+  });
+  window.addEventListener('pointerup', releaseSunPointer);
+  window.addEventListener('pointercancel', releaseSunPointer);
+  sunSlider.addEventListener('lostpointercapture', releaseSunPointer);
+  sunSlider.addEventListener('blur', releaseSunControl);
+  window.addEventListener('blur', releaseSunControl);
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) releaseSunControl(); });
+  document.querySelector('.rack-h').addEventListener('click', function(){
+    if(!document.getElementById('rack-b').hidden) return;
+    sunPointer = null; sunKeyHeld = false;
+    sunResumeAt = performance.now();
+  });
   function driftSun(dt){
-    if(reduce || !sunDrifting) return;
+    if(reduce || sunPointer !== null || sunKeyHeld || performance.now() < sunResumeAt) return;
+    sunMotion = ease(sunMotion, 1, dt, 1.8);
     var at = compMat.uniforms.uSun.value, L = bodyUniforms.uLight.value;
     var inFrame = L.z < -.05 && at.x > -.3 && at.x < 1.3;
     sunPace += ((inFrame ? 1 : 2.5) - sunPace) * (1 - Math.exp(-dt * 1.5));
-    sunDrift = (sunDrift + dt * sunPace * .012 / (Math.PI * 2)) % 1;
+    sunDrift = (sunDrift + dt * sunPace * sunMotion * .012 / (Math.PI * 2)) % 1;
     P.sun = planetBaseline.sun + sunDrift;
     var step = Math.round(sunDrift * 100) % 100;
     if(Number(sunSlider.value) !== step){
@@ -2121,6 +2209,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     planetNdc.copy(rig.position).project(camera);
     var reach = ringPlanetRadius.value / (camera.position.distanceTo(rig.position) * tanHalf * 2);
     var gap = Math.hypot((sun.x - (planetNdc.x + 1) / 2) * w / h, sun.y - (planetNdc.y + 1) / 2) / reach;
+    compMat.uniforms.uPlanet.value.set((planetNdc.x + 1) / 2, (planetNdc.y + 1) / 2, reach);
+    compMat.uniforms.uTotality.value = 1 - THREE.MathUtils.smoothstep(gap, .8, 1.35);
     compMat.uniforms.uBacklit.value = THREE.MathUtils.lerp(.15, 1.4, 1 - THREE.MathUtils.smoothstep(gap, .95, 1.8));
     // The diamond ring: the flare flares hardest while the sun is a sliver past the limb.
     compMat.uniforms.uBurst.value = Math.exp(-Math.pow((gap - 1.1) / .22, 2));
@@ -2237,7 +2327,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   try{
     var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     reduce = mq.matches;
-    if(mq.addEventListener) mq.addEventListener('change', function(e){ reduce = e.matches; });
+    document.getElementById('sun-hint').hidden = reduce;
+    if(mq.addEventListener) mq.addEventListener('change', function(e){
+      reduce = e.matches;
+      document.getElementById('sun-hint').hidden = reduce;
+    });
   }catch(e){}
 
   var visible = true;
