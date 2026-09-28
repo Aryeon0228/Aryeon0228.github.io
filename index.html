@@ -1080,7 +1080,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // Expand the spacing without multiplying the physical strand thickness.
   strands.forEach(function(strand){ strand.y *= 0.67/(RING_O-RING_I); });
 
-  var ringScatter={value:0}, ringGrab={value:new THREE.Vector3()}, ringLocal={value:0};
+  // Four small brush footprints: xy is a point in the ring plane, z the radius, w the pressure.
+  // Shared by every dust pass so displaced grains keep their shadows and occlusion aligned.
+  var ringBrushes={value:Array.from({length:4},function(){ return new THREE.Vector4(0,0,.12,0); })};
   var ringPlanetRadius={ value:1.0 };
   // The ring's plane is never drawn; the dust below is the ring. The plane stays to catch the
   // pointer (raycasting ignores visibility), and to carry the dust and the moons.
@@ -1158,8 +1160,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      open gaps keep their places. Every stream is one straight line of grains along its orbit;
      the orbits that were fuller threads carry slightly larger grains. Grains orbit with the
      moons: a power law through both moons' radii and speeds, so each moon rides its own stream
-     and the inner streams overtake the outer ones. Dragging still throws them off their orbits;
-     they come back to where the orbit has carried their place. */
+     and the inner streams overtake the outer ones. A fingertip-sized hover parts only nearby
+     grains; released grains settle back into the orbit that has carried their place. */
   var dustSeed = 40531;
   function dustRandom(){
     dustSeed = (Math.imul(dustSeed,1664525) + 1013904223) >>> 0;
@@ -1197,7 +1199,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // A quarter of those rings and three more then give way, the closest first, and their grains go with them:
   // the rings that stay keep their weight, and there are fewer of them (10 of the 17).
   for(var drops = Math.round(halfKept / 4) + 3; drops > 0; drops--) dropClosest();
-  var dustOrbits = [], dustKicks = [], dustLooks = [];
+  var dustOrbits = [], dustKicks = [], dustLooks = [], dustLaneRadii = [];
   // Real rings are uneven: most rings split into a bundle of fine lanes packed close together,
   // while a few stay single with open space around them. Each ring keeps its own radius as one
   // lane (so the moons still ride it); the others sit at small, uneven steps to either side.
@@ -1218,6 +1220,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var shift = offsets[Math.floor(dustRandom() * lanes)];
     offsets.forEach(function(offset){
       var radius = center + offset - shift;
+      dustLaneRadii.push(radius);
       // Each lane is packed densely enough to read as a solid line rather than a trail of dots.
       var count = Math.round(ringCount * (lanes > 1 ? 1.7 + 0.4 * dustRandom() : 2.1));
       // Loose clumps along each stream; the threads that used to carry moving breaks keep three open arcs.
@@ -1230,7 +1233,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         // Most grains are fine; a few are boulders, a little larger and brighter, but never so large they break the line.
         var boulder = Math.pow(dustRandom(), 3);
         dustOrbits.push(turn * Math.PI * 2, radius + (dustRandom() + dustRandom() + dustRandom() - 1.5) * 0.0005, (dustRandom() - .5) * 0.0004);
-        // Dragging stirs most grains a little, so the streams blur; a few fly as far as the old dust did.
+        // Each grain keeps its own small, unequal response; no new random direction each frame.
         var fling = 0.12 + 0.88 * Math.pow(dustRandom(), 2.5);
         dustKicks.push((dustRandom() - .5) * 0.60 * fling, (dustRandom() - .5) * 0.48 * fling, (dustRandom() - .5) * 0.42 * fling);
         dustLooks.push(0.0022 + boulder * 0.0022 + fuller, 0.55 + dustRandom() * 0.3 + boulder * 0.15, dustRandom(), index >= continuousStrandCount ? 1 : 0);
@@ -1247,7 +1250,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   var DUST_VERT = [
     'attribute vec3 aKick; attribute vec4 aLook;',
-    'uniform float uTime; uniform vec2 uSpin; uniform float uScatter; uniform float uLocal; uniform vec3 uGrab;',
+    'uniform float uTime; uniform vec2 uSpin; uniform vec4 uBrush[4];',
     'uniform vec3 uLight; uniform float uPen; uniform float uPlanetRadius; uniform float uOpa; uniform float uProj; uniform float uPixel;',
     'uniform float uFwd; uniform float uAtmo; uniform float uHalf;',
     'varying float vLum; varying float vAlpha; varying float vCover; varying float vSpark; varying float vSize; varying float vZ;',
@@ -1256,10 +1259,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     '  float a = position.x + uTime * uSpin.x * pow(position.y, -uSpin.y);',
     '  vec2 dir = vec2(cos(a), sin(a));',
     '  vec3 p = vec3(dir * position.y, position.z);',
-    // Thrown out along and across the orbit, most near the grabbed point.
-    '  vec2 grab = p.xy - uGrab.xy;',
-    '  float scatter = uScatter * mix(1.0, exp(-dot(grab, grab) * 0.65), uLocal);',
-    '  p += vec3(dir * aKick.x + vec2(-dir.y, dir.x) * aKick.y, aKick.z) * scatter;',
+    // A compact footprint has exactly zero influence outside its radius. Stable grain offsets
+    // and a gentle outward parting make this feel like sand, without swelling the entire orbit.
+    '  vec3 displacement = vec3(0.0); float pressure = 0.0;',
+    '  for(int i=0;i<4;i++){',
+    '    if(uBrush[i].w>0.001){',
+    '      vec2 away = p.xy-uBrush[i].xy;',
+    '      float footprint = max(0.0,1.0-dot(away,away)/(uBrush[i].z*uBrush[i].z));',
+    '      float influence = footprint*footprint*uBrush[i].w;',
+    '      vec2 part = away/max(length(away),0.012)*(0.008+aLook.z*0.009);',
+    '      displacement += vec3((dir*aKick.x+vec2(-dir.y,dir.x)*aKick.y)*0.12+part,aKick.z*0.13)*influence;',
+    '      pressure += influence;',
+    '    }',
+    '  }',
+    '  p += displacement/max(1.0,pressure);',
     '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
     '  gl_Position = projectionMatrix * mv;',
     '  vZ = -mv.z;',
@@ -1287,8 +1300,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // instead, so a moving grain never flickers between one and four pixels.
     '  float px = 2.0 * aLook.x * length(modelViewMatrix[0].xyz) * uProj * uPixel / vZ;',
     '  vCover = min(1.0, px * px / 4.0);',
-    // One grain in seventy glints while they are thrown.
-    '  vSpark = step(0.985, aLook.z) * pow(max(0.0, sin(uTime * 2.1 + aLook.z * 83.0)), 8.0) * smoothstep(0.01, 0.32, scatter);',
+    // Hover changes the grains' position only: no extra glitter or point-size burst.
+    '  vSpark = 0.0;',
     '  vSize = clamp(px, 2.0, 6.0 * uPixel);',
     '  gl_PointSize = vSize * (1.0 + vSpark * 2.6);',
     '  vAlpha = min(1.0, min(1.0, uOpa * 2.0) * near * front * aLook.y * vCover * (1.0 + fwd));',
@@ -1315,7 +1328,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   function dustMaterial(fragment, options){
     return new THREE.ShaderMaterial(Object.assign({
       uniforms:{
-        uTime:bodyUniforms.uTime, uSpin:ringSpin, uScatter:ringScatter, uLocal:ringLocal, uGrab:ringGrab,
+        uTime:bodyUniforms.uTime, uSpin:ringSpin, uBrush:ringBrushes,
         uLight:bodyUniforms.uLight, uPen:bodyUniforms.uPen, uPlanetRadius:ringPlanetRadius, uOpa:uRing, uDay:uDay,
         uFwd:uFwd, uAtmo:uDens, uHalf:{ value:options && options.half || 0 },
         uProj:dustProjection, uPixel:{ value:options && options.pixel || 1 }
@@ -1504,7 +1517,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var SUN_GLSL = [
     'uniform vec2 uSun; uniform float uSunR; uniform float uAspect; uniform float uDisc;',
     'float sunDist(vec2 uv){ vec2 d = uv - uSun; d.x *= uAspect; return length(d); }',
-    'float sunDisc(vec2 uv){ float r = sunDist(uv); return (1.0-smoothstep(uDisc*.55, uDisc, r))*4.0 + exp(-r/(uDisc*2.2))*.7; }',
+    'float sunDisc(vec2 uv){ float r = sunDist(uv); return (1.0-smoothstep(uDisc*.55, uDisc, r))*4.0 + exp(-r/(uDisc*1.4))*.035; }',
     'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }',
     // Direction-space noise closes around the circle without a seam or equally spaced spokes.
     'float lightHash(vec2 p){ vec3 q=fract(vec3(p.xyx)*.1031); q+=dot(q,q.yzx+33.33); return fract((q.x+q.y)*q.z); }',
@@ -1525,7 +1538,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
       tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
-      tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0},
+      tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0}, uFlash:{value:0},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012},
       uPlanet:{value:new THREE.Vector3(.5,.5,.2)}, uTotality:{value:0},
       uFlareRays:{value:flarePattern.map(function(p){ return new THREE.Vector4(Math.cos(p[0]),Math.sin(p[0]),p[1],p[2]); })},
@@ -1538,7 +1551,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'uniform sampler2D tX; uniform vec4 uLens;',
       'uniform vec3 uPlanet; uniform float uTotality;',
       'uniform vec4 uFlareRays[14]; uniform float uFlareGain[14];',
-      'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst;',
+      'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst; uniform float uFlash;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
       'vec3 tent(sampler2D t, vec2 texel){ vec2 e = texel * .5, f = vec2(e.x, -e.y);',
       '  return (texture2D(t, vUv - e).rgb + texture2D(t, vUv + e).rgb + texture2D(t, vUv - f).rgb + texture2D(t, vUv + f).rgb) * .25; }',
@@ -1558,7 +1571,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '    corona*=smoothstep(-.002,.008,limb)*open*uTotality*uEclipse;',
       '    c+=vec3(corona);',
       // Lens flare: how much of the disc is uncovered, and how far inside the frame it is.
-      '    vec2 o = vec2(uDisc / uAspect, uDisc) * .7;',
+      '    vec2 o = vec2(uDisc / uAspect, uDisc) * .92;',
       // Nine bilinear samples cover the solar disc continuously without another render pass.
       '    vec2 diagonal=o*.7071;',
       '    float seen=(texture2D(tOcc,uSun).r*2.0+texture2D(tOcc,uSun+vec2(o.x,0.)).r+texture2D(tOcc,uSun-vec2(o.x,0.)).r',
@@ -1566,7 +1579,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      +texture2D(tOcc,uSun+diagonal).r+texture2D(tOcc,uSun-diagonal).r',
       '      +texture2D(tOcc,uSun+vec2(diagonal.x,-diagonal.y)).r+texture2D(tOcc,uSun+vec2(-diagonal.x,diagonal.y)).r)/10.0;',
       '    vec2 outside = max(max(-uSun, uSun - 1.0), 0.0);',
-      '    float flare = seen * (1.0 - smoothstep(0.0, .12, max(outside.x, outside.y))) * uEclipse;',
+      // A last sliver can still flare brightly; the lens goes dark once the disc is covered.
+      '    float flare = mix(seen,smoothstep(0.0,.28,seen),uFlash) * (1.0 - smoothstep(0.0, .12, max(outside.x, outside.y))) * uEclipse;',
       '    if(flare > 0.0){',
       // Unequal bundles have their own width and reach. Fine threads sit inside the wider glow.
       '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d); vec2 dir=d/max(r,.0001);',
@@ -1577,19 +1591,19 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '        vec4 ray=uFlareRays[i]; float along=dot(d,ray.xy), across=dot(d,vec2(-ray.y,ray.x));',
       '        float width=.0007+r*ray.z;',
       '        star+=exp(-across*across/(width*width)-max(along,0.0)/ray.w)',
-      '          *smoothstep(-.002,.012,along)*uFlareGain[i]*(.08+.58*uBurst);',
+      '          *smoothstep(-.002,.012,along)*uFlareGain[i]*(.50+.20*uBurst+.75*uFlash);',
       '      }',
-      '      float streak=exp(-abs(d.y)*700.0)*exp(-abs(d.x)*2.4)*(.06+.30*uBurst);',
-      '      streak+=exp(-d.y*d.y/.000035-abs(d.x)*3.2)*.10*uBurst;',
+      '      float streak=exp(-abs(d.y)*900.0)*exp(-abs(d.x)*1.45)*(.035+.14*uBurst+1.65*uFlash);',
+      '      streak+=exp(-d.y*d.y/.000035-abs(d.x)*2.0)*(.04*uBurst+.25*uFlash);',
       '      vec2 slash=vec2(dot(d,vec2(.91,.415)),dot(d,vec2(-.415,.91)));',
       '      streak+=exp(-abs(slash.y)*430.0)*exp(-abs(slash.x)*mix(12.,5.,smoothstep(-.02,.10,slash.x)))*.065*uBurst;',
       // The post-composited sun never enters tBloom. An exposure veil expands around the
       // white core as it clears the limb, gently lowering local contrast without a scene blur.
       '      vec2 glow=d/vec2(1.16,.96); float g2=dot(glow,glow);',
       '      float breath=uBurst*uBurst*(3.0-2.0*uBurst);',
-      '      float burst=exp(-g2/.0016)*(1.3+3.6*breath);',
-      '      burst+=exp(-g2/.014)*(.055+1.05*breath);',
-      '      burst+=exp(-g2/.070)*.34*breath+exp(-g2/.23)*.065*breath;',
+      '      float burst=exp(-g2/.000035)*1.6+exp(-g2/.0016)*(.012+.90*breath+3.8*uFlash);',
+      '      burst+=exp(-g2/.014)*(.80*breath+1.50*uFlash);',
+      '      burst+=exp(-g2/.070)*(.18*breath+.32*uFlash)+exp(-g2/.23)*(.025*breath+.075*uFlash);',
       // A broad, incomplete lens halo: one soft arc, off-centre and unequal in brightness.
       // Its radius grows slightly with the bloom, while the lens texture itself stays fixed.
       '      vec2 haloD=d+vec2(.035,-.022); float haloR=length(haloD);',
@@ -1598,6 +1612,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      haloArc*=.30+.70*lightNoise(haloN*2.1+vec2(6.3,11.7));',
       '      float haloBand=(haloR-mix(.29,.37,breath))/.016;',
       '      float halo=exp(-haloBand*haloBand)*.065*haloArc*breath;',
+      // Brief spectral separation across the broad lens arc and the horizontal flare.
+      '      vec3 spectralBand=(vec3(haloR)-vec3(.378,.368,.357))/.008;',
+      '      vec3 prism=exp(-spectralBand*spectralBand)*(.10+.70*haloArc)*uFlash*.42;',
+      '      prism+=vec3(.18,.48,1.0)*exp(-d.y*d.y/.000008-abs(d.x)*1.25)*uFlash*.22;',
       // Stable lens imperfections: unequal spacing, scale and softness along the optical axis.
       // Some are soft discs, others broken aperture rims; only the faint fringes carry colour.
       '      vec2 axis = vec2(.5) - uSun; vec3 ghosts = vec3(0.0);',
@@ -1611,16 +1629,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '        vec2 q = abs(g); float hex = mix(length(g),max(q.x * .866 + q.y * .5, q.y),seed*.65);',
       '        vec3 tint = fi < 1.0 ? vec3(.5,1.0,.88) : fi < 2.0 ? vec3(.82,.55,1.0) : fi < 3.0 ? vec3(1.0,.74,.4)',
       '          : fi < 4.0 ? vec3(.6,1.0,.55) : fi < 5.0 ? vec3(.55,.78,1.0) : vec3(1.0,.58,.76);',
-      '        tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.12);',
+      '        tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.10+.90*uFlash);',
       '        float fill=exp(-pow(hex/max(size,.001),2.0)*2.2);',
-      '        ghosts+=fill*tint*(.014+.065*seed)*(1.0+1.8*uBurst);',
+      '        ghosts+=fill*tint*(.014+.065*seed)*(.6+.8*uBurst+4.0*uFlash);',
       '        if(mod(fi, 3.0) == 1.0){',
-      '          vec3 edge=vec3(size*1.035,size,size*.975);',
+      '          vec3 edge=vec3(size*1.11,size,size*.90);',
       '          float arc=smoothstep(-.25,.8,dot(g/max(length(g),.0001),vec2(.7,-.714)));',
-      '          ghosts+=exp(-abs(vec3(hex)-edge)*420.0)*tint*.045*arc*uBurst;',
+      '          ghosts+=exp(-abs(vec3(hex)-edge)*420.0)*tint*arc*(.02*uBurst+.24*uFlash);',
       '        }',
       '      }',
-      '      c += (vec3(star + burst + streak + halo) + ghosts*.40) * flare;',
+      '      c += (vec3(star + burst + streak + halo) + ghosts*(.30+.70*uFlash) + prism) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -1728,7 +1746,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   bind('s-atm','v-atm','atmo',0);
 
   var dragControl = document.getElementById('planet-drag');
-  var activePointer = null, lastX = 0, lastY = 0, dragEnergy=0, dragMoved=false;
+  var activePointer = null, lastX = 0, lastY = 0;
   var turnAxis = new THREE.Vector3(), turnStep = new THREE.Quaternion();
   var dragDiameter = 400;
   function turnPlanet(dx,dy){
@@ -1751,32 +1769,31 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       dragControl.releasePointerCapture(pointerId);
     }
   }
-  function beginPlanetDrag(e,localPoint){
+  function beginPlanetDrag(e){
     if(activePointer !== null || !e.isPrimary || e.button !== 0) return;
-    activePointer=e.pointerId; lastX=e.clientX; lastY=e.clientY; dragMoved=false;
-    ringLocal.value=localPoint ? 1 : 0;
-    if(localPoint) ringGrab.value.copy(localPoint);
+    activePointer=e.pointerId; lastX=e.clientX; lastY=e.clientY;
+    releaseRingBrush();
     dragControl.setPointerCapture(e.pointerId);
     dragControl.focus({preventScroll:true});
     dragControl.classList.add('is-dragging');
     e.preventDefault();
   }
-  dragControl.addEventListener('pointerdown',function(e){ beginPlanetDrag(e,null); });
+  dragControl.addEventListener('pointerdown',beginPlanetDrag);
   var ringRay=new THREE.Raycaster(),ringPointer=new THREE.Vector2();
-  // Keep the forgiving area in CSS pixels, even when an orbit is nearly edge-on.
-  // This runs only on pointer-down, not on every frame or pointer movement.
+  // Keep hit tolerance in CSS pixels, even when an orbit is nearly edge-on. Hover checks
+  // these sparse orbit segments at most 24 times a second; particles are never raycast.
   var ringHitSlop=12,ringHitSegments=128;
   var hitPrev=new THREE.Vector3(),hitNext=new THREE.Vector3();
   var hitLocal=new THREE.Vector3(),hitWorld=new THREE.Vector3(),hitDirection=new THREE.Vector3();
   var hitPlanetCenter=new THREE.Vector3(),hitPlanetScale=new THREE.Vector3(),hitOcclusion=new THREE.Vector3();
   var hitPlanet=new THREE.Sphere(),hitRay=new THREE.Ray();
-  function nearestVisibleOrbit(clientX,clientY,bounds){
+  function nearestVisibleOrbit(clientX,clientY,bounds,slop){
     var px=clientX-bounds.left,py=clientY-bounds.top;
-    var bestDistance=ringHitSlop*ringHitSlop,bestPoint=null;
+    var hitSlop=slop===undefined ? ringHitSlop : slop;
+    var bestDistance=hitSlop*hitSlop,bestPoint=null;
     body.getWorldPosition(hitPlanetCenter); body.getWorldScale(hitPlanetScale);
     hitPlanet.set(hitPlanetCenter,hitPlanetScale.x);
-    strands.forEach(function(strand){
-      var radius=RING_I+strand.x*(RING_O-RING_I);
+    dustLaneRadii.forEach(function(radius){
       hitPrev.set(radius,0,0).applyMatrix4(ring.matrixWorld).project(camera);
       for(var segment=1;segment<=ringHitSegments;segment++){
         var angle=segment/ringHitSegments*Math.PI*2;
@@ -1805,6 +1822,79 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     return bestPoint;
   }
 
+  // A held brush eases into the stream; previous touches travel with the local orbit and
+  // critically damp back to zero. Four independent slots keep a short trail while sweeping.
+  var ringHoverMedia=window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
+  var ringHover={inside:false,x:0,y:0,nextCheck:0}, ringBrushActive=-1;
+  var ringBrushVelocity=[0,0,0,0];
+  var ringHoverHero=document.querySelector('.hero');
+  function releaseRingBrush(){
+    ringHover.inside=false; ringBrushActive=-1;
+  }
+  function clearRingBrush(){
+    releaseRingBrush();
+    ringBrushes.value.forEach(function(brush,index){ brush.w=0; ringBrushVelocity[index]=0; });
+  }
+  function moveRingBrush(e){
+    if(e.pointerType!=='mouse' || !ringHoverMedia.matches || reduce || document.hidden || activePointer!==null
+      || (e.target!==dragControl && e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary'))){
+      releaseRingBrush(); return;
+    }
+    ringHover.inside=true; ringHover.x=e.clientX; ringHover.y=e.clientY;
+  }
+  function touchRingBrush(point,radius){
+    var current=ringBrushActive>=0 ? ringBrushes.value[ringBrushActive] : null;
+    if(current && Math.hypot(current.x-point.x,current.y-point.y)>radius*.85){
+      ringBrushActive=-1; current=null;
+    }
+    if(!current){
+      var weakest=0;
+      for(var index=1;index<4;index++) if(ringBrushes.value[index].w<ringBrushes.value[weakest].w) weakest=index;
+      // A fast sweep can leave four settling touches; wait for one to fade rather than teleport it.
+      if(ringBrushes.value[weakest].w>.035) return;
+      ringBrushActive=weakest; current=ringBrushes.value[weakest];
+      current.set(point.x,point.y,radius,0); ringBrushVelocity[weakest]=0;
+    }else{
+      current.x=point.x; current.y=point.y; current.z=radius;
+    }
+  }
+  function stepRingBrush(dt,now){
+    if(reduce || !ringHoverMedia.matches || document.hidden){ clearRingBrush(); return; }
+    if(ringHover.inside && activePointer===null && now>=ringHover.nextCheck){
+      ringHover.nextCheck=now+1000/24;
+      var bounds=canvas.getBoundingClientRect();
+      scene.updateMatrixWorld(true);
+      var point=nearestVisibleOrbit(ringHover.x,ringHover.y,bounds,5);
+      if(point) touchRingBrush(point,Math.max(.08,Math.min(.20,18*2.08/dragDiameter)));
+      else ringBrushActive=-1;
+    }
+    ringBrushes.value.forEach(function(brush,index){
+      var held=index===ringBrushActive && ringHover.inside && activePointer===null;
+      if(!held && brush.w<.001 && Math.abs(ringBrushVelocity[index])<.005){
+        brush.w=0; ringBrushVelocity[index]=0; return;
+      }
+      // A closed-form critically damped spring gives the same smooth response at 30 or 120 Hz.
+      var target=held ? 1 : 0, frequency=held ? 11 : 7;
+      var offset=brush.w-target, velocity=ringBrushVelocity[index], decay=Math.exp(-frequency*dt);
+      var impulse=velocity+frequency*offset;
+      brush.w=Math.max(0,Math.min(1,target+(offset+impulse*dt)*decay));
+      ringBrushVelocity[index]=(velocity-frequency*impulse*dt)*decay;
+      if(!held){
+        var radius=Math.max(.1,Math.hypot(brush.x,brush.y));
+        var turn=dt*ringSpin.value.x*Math.pow(radius,-ringSpin.value.y),c=Math.cos(turn),s=Math.sin(turn);
+        var x=brush.x; brush.x=x*c-brush.y*s; brush.y=x*s+brush.y*c;
+      }
+    });
+  }
+  ringHoverHero.addEventListener('pointerenter',moveRingBrush,{passive:true});
+  ringHoverHero.addEventListener('pointermove',moveRingBrush,{passive:true});
+  ringHoverHero.addEventListener('pointerleave',releaseRingBrush,{passive:true});
+  ringHoverHero.addEventListener('pointercancel',releaseRingBrush,{passive:true});
+  window.addEventListener('blur',clearRingBrush);
+  window.addEventListener('scroll',clearRingBrush,{passive:true});
+  document.addEventListener('visibilitychange',function(){ if(document.hidden){ clearRingBrush(); finishDrag(); } });
+  if(ringHoverMedia.addEventListener) ringHoverMedia.addEventListener('change',clearRingBrush);
+
   document.querySelector('.hero').addEventListener('pointerdown',function(e){
     if(activePointer!==null || e.pointerType!=='mouse' || e.button!==0) return;
     if(e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary')) return;
@@ -1819,16 +1909,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       var bodyHits=ringRay.intersectObject(body,false);
       var occluded=bodyHits.length && bodyHits[0].distance<hits[0].distance;
       if(!occluded && strands.some(function(strand){ return Math.abs(strand.x-radius)<Math.max(0.025,strand.y*4); })){
-        beginPlanetDrag(e,local); return;
+        beginPlanetDrag(e); return;
       }
     }
     var nearby=nearestVisibleOrbit(e.clientX,e.clientY,bounds);
-    if(nearby) beginPlanetDrag(e,nearby);
+    if(nearby) beginPlanetDrag(e);
   });
   dragControl.addEventListener('pointermove',function(e){
     if(e.pointerId !== activePointer) return;
-    var dx=e.clientX-lastX,dy=e.clientY-lastY,distance=Math.hypot(dx,dy);
-    if(distance>0.5){ dragMoved=true; dragEnergy=Math.min(1,dragEnergy+distance*0.025); }
+    var dx=e.clientX-lastX,dy=e.clientY-lastY;
     turnPlanet(dx,dy);
     lastX=e.clientX; lastY=e.clientY;
   });
@@ -1840,6 +1929,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var delta={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
     if(!delta) return;
     e.preventDefault();
+    releaseRingBrush();
     var step=dragDiameter*(e.shiftKey ? 5 : 1)/180;
     turnPlanet(delta[0]*step,delta[1]*step);
   });
@@ -2223,8 +2313,17 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uPlanet.value.set((planetNdc.x + 1) / 2, (planetNdc.y + 1) / 2, reach);
     compMat.uniforms.uTotality.value = 1 - THREE.MathUtils.smoothstep(gap, .8, 1.35);
     compMat.uniforms.uBacklit.value = THREE.MathUtils.lerp(.15, 1.4, 1 - THREE.MathUtils.smoothstep(gap, .95, 1.8));
-    // A wider spatial envelope gives the white bloom time to swell and settle at each limb.
-    compMat.uniforms.uBurst.value = Math.exp(-Math.pow((gap - 1.14) / .34, 2));
+    // Measure contact against the actual sphere's angular silhouette, not its approximate
+    // projected radius. Zero is centre-on-limb; one unit is the sun's small angular radius.
+    var distance = camera.position.distanceTo(rig.position);
+    var planetAngle = Math.asin(Math.min(.99, ringPlanetRadius.value / distance));
+    var separation = Math.acos(THREE.MathUtils.clamp(sunTarget.dot(bodyUniforms.uLight.value), -1, 1));
+    var projection = 1 + Math.pow((sun.x - .5) * 2 * tanHalf * camera.aspect, 2) + Math.pow((sun.y - .5) * 2 * tanHalf, 2);
+    var sunAngle = Math.max(.0001, compMat.uniforms.uDisc.value * 2 * tanHalf / projection);
+    var contact = (separation - planetAngle) / sunAngle;
+    compMat.uniforms.uBurst.value = 1 - THREE.MathUtils.smoothstep(contact, 1.0, 12.0);
+    // A single optical flash at contact, not a repeating time-based strobe.
+    compMat.uniforms.uFlash.value = Math.exp(-Math.pow((contact + .45) / .72, 2));
     return amount;
   }
   var planetNdc = new THREE.Vector3();
@@ -2417,10 +2516,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
     var t = reduce ? frozen : (now - t0)/1000;
     var interval=now-lastFrame, dt=Math.min(interval/1000,0.05); lastFrame=now;
-    dragEnergy*=Math.exp(-dt*3);
-    var scatterTarget=activePointer!==null && dragMoved ? 0.72+dragEnergy*0.28 : 0;
-    ringScatter.value=reduce ? 0 : ringScatter.value+(scatterTarget-ringScatter.value)*(1-Math.exp(-dt*(activePointer!==null ? 12 : 3.5)));
-    if(scatterTarget===0 && ringScatter.value<0.002) ringScatter.value=0;
+    stepRingBrush(dt,now);
 
     // 태양 방위각: every mode lights the planet from the same sun, before anything is drawn.
     driftSun(dt);
