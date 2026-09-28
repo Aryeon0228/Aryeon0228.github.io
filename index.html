@@ -1618,8 +1618,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      vec3 spectralBand=(vec3(haloR)-vec3(.378,.368,.357))/.008;',
       '      vec3 prism=exp(-spectralBand*spectralBand)*(.10+.70*haloArc)*uFlash*.42;',
       '      prism+=vec3(.18,.48,1.0)*exp(-d.y*d.y/.000008-abs(d.x)*1.25)*uFlash*.22;',
-      // Unequal aperture ghosts unfold along the lens axis. Individual slow glints and turns
-      // share the reduced-motion-aware scene clock; the sun itself never strobes.
+      // Filled, translucent aperture ghosts unfold along the lens axis. Unequal defocus rounds
+      // some into bokeh; their soft faces carry the light, with no outlined polygon rims.
+      // Individual glints and turns share the reduced-motion-aware scene clock.
       '      vec2 axis=vec2(.5)-uSun; axis.x*=uAspect; float axisLength=length(axis);',
       '      vec2 lensDir=axisLength>.0001 ? axis/axisLength : vec2(-.8,-.6);',
       '      float unfold=pow(uBurst,.65), lensSpan=max(axisLength,.14)*mix(.55,1.45,unfold);',
@@ -1638,12 +1639,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '          : fi < 4.0 ? vec3(.48,.70,1.0) : fi < 5.0 ? vec3(.60,.46,1.0) : vec3(1.0,.52,.74);',
       '        tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.10+.90*uFlash);',
       '        float glint=.28+.72*pow(.5+.5*sin(uFlareTime*(6.0+seed*4.0)+seed2*19.0),2.0);',
-      '        float fill=1.0-smoothstep(size*.65,size,hex);',
-      '        ghosts+=fill*tint*(.008+.025*seed)*(.35+.7*uBurst+3.2*uFlash*glint);',
-      '        vec3 edge=vec3(size*1.08,size,size*.93);',
-      '        float rimWidth=.0015+size*.055;',
-      '        vec3 rim=(vec3(hex)-edge)/rimWidth;',
-      '        ghosts+=exp(-rim*rim)*tint*(.12+.88*glint)*(.025*uBurst+.52*uFlash);',
+      '        float aperture=mix(hex,length(g),smoothstep(.25,.85,seed));',
+      '        float radius=aperture/max(size,.001);',
+      '        float fill=1.0-smoothstep(mix(.38,.72,seed2),1.10,radius);',
+      '        float core=exp(-dot(g,g)/max(size*size,.000001)*3.5);',
+      '        float haze=exp(-radius*radius*2.4)*.14;',
+      '        vec3 face=mix(tint,vec3(1.0),core*.30);',
+      '        ghosts+=(fill+haze)*face*(.024+.016*seed)*(.25+.60*uBurst+12.0*uFlash*(.35+.65*glint));',
       '      }',
       '      c += (vec3(star + burst + halo) + streakTint*streak + ghosts*(.30+.70*uFlash) + prism) * flare;',
       '    }',
