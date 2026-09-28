@@ -1517,7 +1517,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var SUN_GLSL = [
     'uniform vec2 uSun; uniform float uSunR; uniform float uAspect; uniform float uDisc;',
     'float sunDist(vec2 uv){ vec2 d = uv - uSun; d.x *= uAspect; return length(d); }',
-    'float sunDisc(vec2 uv){ float r = sunDist(uv); return (1.0-smoothstep(uDisc*.55, uDisc, r))*4.0 + exp(-r/(uDisc*1.4))*.035; }',
+    'float sunDisc(vec2 uv){ float r = sunDist(uv); return (1.0-smoothstep(uDisc*.55, uDisc, r))*4.0 + exp(-r/(uDisc*1.8))*.22; }',
     'float sunLight(vec2 uv){ return exp(-sunDist(uv) / uSunR); }',
     // Direction-space noise closes around the circle without a seam or equally spaced spokes.
     'float lightHash(vec2 p){ vec3 q=fract(vec3(p.xyx)*.1031); q+=dot(q,q.yzx+33.33); return fract((q.x+q.y)*q.z); }',
@@ -1541,6 +1541,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0}, uFlash:{value:0},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012},
       uPlanet:{value:new THREE.Vector3(.5,.5,.2)}, uTotality:{value:0},
+      uFlareTime:bodyUniforms.uTime,
       uFlareRays:{value:flarePattern.map(function(p){ return new THREE.Vector4(Math.cos(p[0]),Math.sin(p[0]),p[1],p[2]); })},
       uFlareGain:{value:flarePattern.map(function(p){ return p[3]; })}
     },
@@ -1549,7 +1550,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'precision highp float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'uniform sampler2D tX; uniform vec4 uLens;',
-      'uniform vec3 uPlanet; uniform float uTotality;',
+      'uniform vec3 uPlanet; uniform float uTotality; uniform float uFlareTime;',
       'uniform vec4 uFlareRays[14]; uniform float uFlareGain[14];',
       'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst; uniform float uFlash;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
@@ -1595,14 +1596,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      }',
       '      float streak=exp(-abs(d.y)*900.0)*exp(-abs(d.x)*1.45)*(.035+.14*uBurst+1.65*uFlash);',
       '      streak+=exp(-d.y*d.y/.000035-abs(d.x)*2.0)*(.04*uBurst+.25*uFlash);',
+      '      vec3 streakTint=mix(vec3(.32,.64,1.0),vec3(.72,.42,1.0),smoothstep(-.25,.30,d.x));',
       '      vec2 slash=vec2(dot(d,vec2(.91,.415)),dot(d,vec2(-.415,.91)));',
       '      streak+=exp(-abs(slash.y)*430.0)*exp(-abs(slash.x)*mix(12.,5.,smoothstep(-.02,.10,slash.x)))*.065*uBurst;',
       // The post-composited sun never enters tBloom. An exposure veil expands around the
       // white core as it clears the limb, gently lowering local contrast without a scene blur.
       '      vec2 glow=d/vec2(1.16,.96); float g2=dot(glow,glow);',
       '      float breath=uBurst*uBurst*(3.0-2.0*uBurst);',
-      '      float burst=exp(-g2/.000035)*1.6+exp(-g2/.0016)*(.012+.90*breath+3.8*uFlash);',
-      '      burst+=exp(-g2/.014)*(.80*breath+1.50*uFlash);',
+      '      float burst=exp(-g2/.000035)*1.6+exp(-g2/.0016)*(.46+.90*breath+3.8*uFlash);',
+      '      burst+=exp(-g2/.014)*(.055+.80*breath+1.50*uFlash);',
       '      burst+=exp(-g2/.070)*(.18*breath+.32*uFlash)+exp(-g2/.23)*(.025*breath+.075*uFlash);',
       // A broad, incomplete lens halo: one soft arc, off-centre and unequal in brightness.
       // Its radius grows slightly with the bloom, while the lens texture itself stays fixed.
@@ -1616,29 +1618,34 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      vec3 spectralBand=(vec3(haloR)-vec3(.378,.368,.357))/.008;',
       '      vec3 prism=exp(-spectralBand*spectralBand)*(.10+.70*haloArc)*uFlash*.42;',
       '      prism+=vec3(.18,.48,1.0)*exp(-d.y*d.y/.000008-abs(d.x)*1.25)*uFlash*.22;',
-      // Stable lens imperfections: unequal spacing, scale and softness along the optical axis.
-      // Some are soft discs, others broken aperture rims; only the faint fringes carry colour.
-      '      vec2 axis = vec2(.5) - uSun; vec3 ghosts = vec3(0.0);',
+      // Unequal aperture ghosts unfold along the lens axis. Individual slow glints and turns
+      // share the reduced-motion-aware scene clock; the sun itself never strobes.
+      '      vec2 axis=vec2(.5)-uSun; axis.x*=uAspect; float axisLength=length(axis);',
+      '      vec2 lensDir=axisLength>.0001 ? axis/axisLength : vec2(-.8,-.6);',
+      '      float unfold=pow(uBurst,.65), lensSpan=max(axisLength,.14)*mix(.55,1.45,unfold);',
+      '      vec3 ghosts=vec3(0.0);',
       '      for(int i = 0; i < 6; i++){',
       '        float fi = float(i);',
       '        float seed=lightHash(vec2(fi+4.0,17.3)), seed2=lightHash(vec2(fi+1.0,8.9));',
-      '        float t=.24+seed*1.72, size=.009+.080*seed2*seed2;',
-      '        vec2 g = vUv - (uSun + axis * t * 2.0); g.x *= uAspect;',
-      '        g = mat2(.966, -.259, .259, .966) * g;',
-      '        g.x*=1.0+seed*.35;',
-      '        vec2 q = abs(g); float hex = mix(length(g),max(q.x * .866 + q.y * .5, q.y),seed*.65);',
-      '        vec3 tint = fi < 1.0 ? vec3(.5,1.0,.88) : fi < 2.0 ? vec3(.82,.55,1.0) : fi < 3.0 ? vec3(1.0,.74,.4)',
-      '          : fi < 4.0 ? vec3(.6,1.0,.55) : fi < 5.0 ? vec3(.55,.78,1.0) : vec3(1.0,.58,.76);',
+      '        float t=.24+seed*1.72, size=(.014+.062*seed2*seed2)*mix(.55,1.35,unfold);',
+      '        vec2 g=d-lensDir*lensSpan*t*2.0;',
+      '        g-=vec2(-lensDir.y,lensDir.x)*(seed2-.5)*.045*unfold;',
+      '        float angle=seed2*6.283+(seed-.5)*unfold*1.8+.24*sin(uFlareTime*(.42+seed*.35)+fi*1.9);',
+      '        float ca=cos(angle),sa=sin(angle); g=mat2(ca,-sa,sa,ca)*g;',
+      '        g.x*=1.0+seed*.20;',
+      '        vec2 q=abs(g); float hex=max(q.x*.8660254+q.y*.5,q.y);',
+      '        vec3 tint = fi < 1.0 ? vec3(.38,.88,1.0) : fi < 2.0 ? vec3(.78,.44,1.0) : fi < 3.0 ? vec3(1.0,.72,.46)',
+      '          : fi < 4.0 ? vec3(.48,.70,1.0) : fi < 5.0 ? vec3(.60,.46,1.0) : vec3(1.0,.52,.74);',
       '        tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.10+.90*uFlash);',
-      '        float fill=exp(-pow(hex/max(size,.001),2.0)*2.2);',
-      '        ghosts+=fill*tint*(.014+.065*seed)*(.6+.8*uBurst+4.0*uFlash);',
-      '        if(mod(fi, 3.0) == 1.0){',
-      '          vec3 edge=vec3(size*1.11,size,size*.90);',
-      '          float arc=smoothstep(-.25,.8,dot(g/max(length(g),.0001),vec2(.7,-.714)));',
-      '          ghosts+=exp(-abs(vec3(hex)-edge)*420.0)*tint*arc*(.02*uBurst+.24*uFlash);',
-      '        }',
+      '        float glint=.28+.72*pow(.5+.5*sin(uFlareTime*(6.0+seed*4.0)+seed2*19.0),2.0);',
+      '        float fill=1.0-smoothstep(size*.65,size,hex);',
+      '        ghosts+=fill*tint*(.008+.025*seed)*(.35+.7*uBurst+3.2*uFlash*glint);',
+      '        vec3 edge=vec3(size*1.08,size,size*.93);',
+      '        float rimWidth=.0015+size*.055;',
+      '        vec3 rim=(vec3(hex)-edge)/rimWidth;',
+      '        ghosts+=exp(-rim*rim)*tint*(.12+.88*glint)*(.025*uBurst+.52*uFlash);',
       '      }',
-      '      c += (vec3(star + burst + streak + halo) + ghosts*(.30+.70*uFlash) + prism) * flare;',
+      '      c += (vec3(star + burst + halo) + streakTint*streak + ghosts*(.30+.70*uFlash) + prism) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -2295,6 +2302,22 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var back = Math.max(-L.z, .02);
     compMat.uniforms.uSun.value.set(.5 + L.x / back / (tanHalf * camera.aspect) / 2, .5 + L.y / back / tanHalf / 2);
   }
+  // The text's dark DOM veil sits above WebGL. Let the source pierce it locally, otherwise
+  // even a white shader pixel becomes a grey dot. Rounded pixels avoid needless mask paints.
+  var sunVeil=document.querySelector('.hero-veil'), sunVeilMask='';
+  function updateSunVeil(amount,contact){
+    var mask='', sun=compMat.uniforms.uSun.value;
+    var opening=amount*THREE.MathUtils.smoothstep(contact,-1,-.45);
+    if(opening>.005 && sun.x>-.2 && sun.x<1.2 && sun.y>-.2 && sun.y<1.2){
+      var x=Math.round(sun.x*canvas.clientWidth), y=Math.round((1-sun.y)*canvas.clientHeight);
+      var radius=Math.round(Math.max(90,Math.min(150,canvas.clientHeight*.19)));
+      mask='radial-gradient(circle at '+x+'px '+y+'px,rgba(0,0,0,'+(1-opening).toFixed(2)+') 24px,#000 '+radius+'px)';
+    }
+    if(mask===sunVeilMask) return;
+    sunVeilMask=mask;
+    sunVeil.style.maskImage=mask;
+    sunVeil.style.webkitMaskImage=mask;
+  }
   // ECLIPSE shows that sun: how much of it stands behind what we see, and the name it shades.
   function updateSun(dt){
     var w = canvas.clientWidth, h = canvas.clientHeight;
@@ -2324,6 +2347,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uBurst.value = 1 - THREE.MathUtils.smoothstep(contact, 1.0, 12.0);
     // A single optical flash at contact, not a repeating time-based strobe.
     compMat.uniforms.uFlash.value = Math.exp(-Math.pow((contact + .45) / .72, 2));
+    updateSunVeil(amount,contact);
     return amount;
   }
   var planetNdc = new THREE.Vector3();
@@ -2523,7 +2547,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     aimSun();
     var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
     uFwd.value = eclipseAmount * compMat.uniforms.uBacklit.value;
-    if(!eclipseAmount){ if(compMat.uniforms.uExposure.value !== 1) resetCamera(); if(isDay) clearName(); }
+    if(!eclipseAmount){ updateSunVeil(0,0); if(compMat.uniforms.uExposure.value !== 1) resetCamera(); if(isDay) clearName(); }
     bodyUniforms.uTime.value  = t;
     orbitMoons.forEach(function(orbit){
       var angle=orbit.phase+t*orbit.speed;
