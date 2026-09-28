@@ -1606,17 +1606,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      float burst=exp(-g2/.000035)*1.6+exp(-g2/.0016)*(.46+.90*breath+3.8*uFlash);',
       '      burst+=exp(-g2/.014)*(.055+.80*breath+1.50*uFlash);',
       '      burst+=exp(-g2/.070)*(.18*breath+.32*uFlash)+exp(-g2/.23)*(.025*breath+.075*uFlash);',
-      // A broad, incomplete lens halo: one soft arc, off-centre and unequal in brightness.
-      // Its radius grows slightly with the bloom, while the lens texture itself stays fixed.
+      // Three unequal lens fragments with real dark gaps, rather than a complete rainbow ring.
+      // Stable direction-space texture varies their brightness, thickness and curvature.
       '      vec2 haloD=d+vec2(.035,-.022); float haloR=length(haloD);',
       '      vec2 haloN=haloD/max(haloR,.0001);',
-      '      float haloArc=smoothstep(-.55,.65,dot(haloN,vec2(-.62,.785)));',
-      '      haloArc*=.30+.70*lightNoise(haloN*2.1+vec2(6.3,11.7));',
+      '      float haloArc=smoothstep(.82,.97,dot(haloN,vec2(-.62,.785)));',
+      '      haloArc+=smoothstep(.86,.98,dot(haloN,vec2(-.92,-.392)))*.62;',
+      '      haloArc+=smoothstep(.91,.988,dot(haloN,vec2(.18,-.984)))*.40;',
+      '      float haloGrain=lightNoise(haloN*5.3+vec2(6.3,11.7));',
+      '      haloArc*=.35+.65*haloGrain;',
       '      float haloBand=(haloR-mix(.29,.37,breath))/.016;',
       '      float halo=exp(-haloBand*haloBand)*.065*haloArc*breath;',
       // Brief spectral separation across the broad lens arc and the horizontal flare.
-      '      vec3 spectralBand=(vec3(haloR)-vec3(.378,.368,.357))/.008;',
-      '      vec3 prism=exp(-spectralBand*spectralBand)*(.10+.70*haloArc)*uFlash*.42;',
+      '      vec3 spectralBand=(vec3(haloR-(haloGrain-.5)*.004)-vec3(.378,.368,.357))/mix(.0045,.011,haloGrain);',
+      '      vec3 prism=exp(-spectralBand*spectralBand)*haloArc*uFlash*.48;',
       '      prism+=vec3(.18,.48,1.0)*exp(-d.y*d.y/.000008-abs(d.x)*1.25)*uFlash*.22;',
       // Filled, translucent aperture ghosts unfold along the lens axis. Unequal defocus rounds
       // some into bokeh; their soft faces carry the light, with no outlined polygon rims.
