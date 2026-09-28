@@ -12,7 +12,7 @@ export function setupMusic(audio, button, status, page = document) {
     if (label) label.textContent = text;
     const action = state === 'on' ? '배경음악 끄기' : state === 'loading' ? '음악 불러오기 취소' : state === 'error' ? '배경음악 다시 시도' : '배경음악 켜기';
     button.setAttribute('aria-label', action);
-    button.title = `Orbit · First Light — ${action}`;
+    button.title = `Orbit · Horizon — ${action}`;
   }
 
   function stopFade() { cancelAnimationFrame(fade); fade = 0; }

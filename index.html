@@ -1499,9 +1499,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ].join('\n')
   });
 
-  // The sun of the eclipse effect is far away: a tiny, very bright disc (uDisc, in screen
-  // heights) inside a glow about a fifth of the screen wide (uSunR), kept close so the sky away
-  // from it stays black. It may sit on screen, behind the planet, or far outside.
+  // A tiny distant disc with a restrained everyday glow. At the limb, a separate wide
+  // lens bloom opens around it; the underlying planet, rings and star field stay sharp.
   var SUN_GLSL = [
     'uniform vec2 uSun; uniform float uSunR; uniform float uAspect; uniform float uDisc;',
     'float sunDist(vec2 uv){ vec2 d = uv - uSun; d.x *= uAspect; return length(d); }',
@@ -1573,21 +1572,32 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d); vec2 dir=d/max(r,.0001);',
       '      float bundle=lightBundle(dir);',
       '      float rayReach=mix(.04,.27,lightNoise(dir*4.7+vec2(21.8,9.3)));',
-      '      float star=.06*bundle*exp(-r/rayReach)*(.18+uBurst);',
+      '      float star=.035*bundle*exp(-r/rayReach)*(.18+uBurst);',
       '      for(int i=0;i<14;i++){',
       '        vec4 ray=uFlareRays[i]; float along=dot(d,ray.xy), across=dot(d,vec2(-ray.y,ray.x));',
       '        float width=.0007+r*ray.z;',
       '        star+=exp(-across*across/(width*width)-max(along,0.0)/ray.w)',
-      '          *smoothstep(-.002,.012,along)*uFlareGain[i]*(.10+uBurst);',
+      '          *smoothstep(-.002,.012,along)*uFlareGain[i]*(.08+.58*uBurst);',
       '      }',
-      '      float streak=exp(-abs(d.y)*620.0)*exp(-abs(d.x)*5.0)*(.08+.20*uBurst);',
+      '      float streak=exp(-abs(d.y)*700.0)*exp(-abs(d.x)*2.4)*(.06+.30*uBurst);',
+      '      streak+=exp(-d.y*d.y/.000035-abs(d.x)*3.2)*.10*uBurst;',
       '      vec2 slash=vec2(dot(d,vec2(.91,.415)),dot(d,vec2(-.415,.91)));',
-      '      streak+=exp(-abs(slash.y)*430.0)*exp(-abs(slash.x)*mix(12.,5.,smoothstep(-.02,.10,slash.x)))*.17*uBurst;',
-      // The post-composited sun never enters tBloom: build its local bloom here at three scales.
-      // This adds light without blurring the planet, rings, distant stars or text.
-      '      vec2 glow=d/vec2(1.12,.94); float g2=dot(glow,glow);',
-      '      float burst=exp(-g2/.0010)*(1.3+3.2*uBurst);',
-      '      burst+=exp(-g2/.0055)*(.10+.75*uBurst)+exp(-g2/.020)*.12*uBurst;',
+      '      streak+=exp(-abs(slash.y)*430.0)*exp(-abs(slash.x)*mix(12.,5.,smoothstep(-.02,.10,slash.x)))*.065*uBurst;',
+      // The post-composited sun never enters tBloom. An exposure veil expands around the
+      // white core as it clears the limb, gently lowering local contrast without a scene blur.
+      '      vec2 glow=d/vec2(1.16,.96); float g2=dot(glow,glow);',
+      '      float breath=uBurst*uBurst*(3.0-2.0*uBurst);',
+      '      float burst=exp(-g2/.0016)*(1.3+3.6*breath);',
+      '      burst+=exp(-g2/.014)*(.055+1.05*breath);',
+      '      burst+=exp(-g2/.070)*.34*breath+exp(-g2/.23)*.065*breath;',
+      // A broad, incomplete lens halo: one soft arc, off-centre and unequal in brightness.
+      // Its radius grows slightly with the bloom, while the lens texture itself stays fixed.
+      '      vec2 haloD=d+vec2(.035,-.022); float haloR=length(haloD);',
+      '      vec2 haloN=haloD/max(haloR,.0001);',
+      '      float haloArc=smoothstep(-.55,.65,dot(haloN,vec2(-.62,.785)));',
+      '      haloArc*=.30+.70*lightNoise(haloN*2.1+vec2(6.3,11.7));',
+      '      float haloBand=(haloR-mix(.29,.37,breath))/.016;',
+      '      float halo=exp(-haloBand*haloBand)*.065*haloArc*breath;',
       // Stable lens imperfections: unequal spacing, scale and softness along the optical axis.
       // Some are soft discs, others broken aperture rims; only the faint fringes carry colour.
       '      vec2 axis = vec2(.5) - uSun; vec3 ghosts = vec3(0.0);',
@@ -1601,6 +1611,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '        vec2 q = abs(g); float hex = mix(length(g),max(q.x * .866 + q.y * .5, q.y),seed*.65);',
       '        vec3 tint = fi < 1.0 ? vec3(.5,1.0,.88) : fi < 2.0 ? vec3(.82,.55,1.0) : fi < 3.0 ? vec3(1.0,.74,.4)',
       '          : fi < 4.0 ? vec3(.6,1.0,.55) : fi < 5.0 ? vec3(.55,.78,1.0) : vec3(1.0,.58,.76);',
+      '        tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.12);',
       '        float fill=exp(-pow(hex/max(size,.001),2.0)*2.2);',
       '        ghosts+=fill*tint*(.014+.065*seed)*(1.0+1.8*uBurst);',
       '        if(mod(fi, 3.0) == 1.0){',
@@ -1609,7 +1620,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '          ghosts+=exp(-abs(vec3(hex)-edge)*420.0)*tint*.045*arc*uBurst;',
       '        }',
       '      }',
-      '      c += (vec3(star + burst + streak) + ghosts*.55) * flare;',
+      '      c += (vec3(star + burst + streak + halo) + ghosts*.40) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -2212,8 +2223,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     compMat.uniforms.uPlanet.value.set((planetNdc.x + 1) / 2, (planetNdc.y + 1) / 2, reach);
     compMat.uniforms.uTotality.value = 1 - THREE.MathUtils.smoothstep(gap, .8, 1.35);
     compMat.uniforms.uBacklit.value = THREE.MathUtils.lerp(.15, 1.4, 1 - THREE.MathUtils.smoothstep(gap, .95, 1.8));
-    // The diamond ring: the flare flares hardest while the sun is a sliver past the limb.
-    compMat.uniforms.uBurst.value = Math.exp(-Math.pow((gap - 1.1) / .22, 2));
+    // A wider spatial envelope gives the white bloom time to swell and settle at each limb.
+    compMat.uniforms.uBurst.value = Math.exp(-Math.pow((gap - 1.14) / .34, 2));
     return amount;
   }
   var planetNdc = new THREE.Vector3();
@@ -2516,12 +2527,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </script>
 <script type="module" src="home-tactile.js?v=947ae4288708"></script>
 <script type="module" src="home-meteors.js?v=bde91b774490"></script>
-<audio id="home-music" data-src="assets/audio/penumbra-orbit-first-light.mp3?v=507adfdeabec" preload="none" loop></audio>
+<audio id="home-music" data-src="assets/audio/penumbra-orbit-horizon.mp3?v=448eaa0adf0c" preload="none" loop></audio>
 <button type="button" id="music-toggle" class="music-toggle" aria-label="배경음악 켜기" aria-pressed="false" aria-describedby="music-status" hidden>
   <span class="music-icon" aria-hidden="true"><i></i><i></i><i></i></span>
   <span data-music-label>Music Off</span>
 </button>
 <span id="music-status" class="music-status" role="status" aria-live="polite"></span>
-<script type="module" src="home-music.js?v=2c7313e7dbc3"></script>
+<script type="module" src="home-music.js?v=0bcc97d75c86"></script>
 </body>
 </html>
