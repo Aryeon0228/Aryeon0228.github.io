@@ -1609,12 +1609,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      vec3 streak = line * (vec3(.72, .86, 1.0) * .6 + beadTint * pow(lightNoise(vec2(d.x * 38.0, 4.2)), 5.0) * 2.4);',
       // A soft fan of broad cyan beams, and a faint arc that breaks and splits by wavelength.
       '      float fan = pow(lightNoise(dir * 3.1 + vec2(3.7, 5.3)), 3.0) * exp(-r / .32) * .26;',
-      '      vec2 hd = d + vec2(.03, -.02); float hr = length(hd); vec2 hn = hd / max(hr, .0001);',
-      // A spectral circle broken at irregular places, strongest on the upper left.
-      '      float arc = smoothstep(.42, .88, lightNoise(hn * 2.2 + 2.0)) * (.45 + .55 * smoothstep(-.6, .9, dot(hn, vec2(-.6, .8))));',
-      '      arc *= .5 + .5 * lightNoise(hn * 7.0 + 11.0);',
-      '      vec3 band = (vec3(hr) - vec3(.338, .325, .312)) / .010;',
-      '      vec3 halo = exp(-band * band) * arc * (.11 + .10 * uFlash);',
+      // As in a photograph: one faint, wide arc on the far side of the sun, toward the frame's
+      // centre, its colours split only a little and mostly washed out.
+      '      vec2 toCentre = vec2(.5) - uSun; toCentre.x *= uAspect; toCentre /= max(length(toCentre), .0001);',
+      '      float arc = smoothstep(.5, .95, dot(dir, toCentre)) * (.7 + .3 * lightNoise(dir * 3.0 + 2.0));',
+      '      vec3 band = exp(-pow((vec3(r) - vec3(.395, .38, .365)) / .032, vec3(2.0)));',
+      '      vec3 halo = mix(vec3(dot(band, vec3(.3333))), band, .45) * arc * (.035 + .05 * uFlash);',
       // Ghosts along the axis from the sun through the frame centre.
       '      vec2 axis = vec2(.5) - uSun; axis.x *= uAspect; float axisLength = length(axis);',
       '      vec2 lensDir = axisLength > .0001 ? axis / axisLength : vec2(-.8, -.6);',
