@@ -2361,10 +2361,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   }
   var planetNdc = new THREE.Vector3();
 
-  // The name catches the same sun: a long shadow falls away from it and the facing edge
-  // brightens. The light is parallel (the sun is far), so the shadow keeps its length; it
-  // fades when the sun hides behind the planet or goes behind the viewer. Where the sun passes
-  // behind the name, the letters inside its glare eclipse it: they dim to a light gray, the light
+  // The name casts no shadow. Where the sun passes behind the name, the letters inside its
+  // glare eclipse it: they dim to a light gray, the light
   // spills round their edges, the nearest most, and they turn white again as the sun moves on.
   function shadeName(amount, dt){
     var canvasBox = canvas.getBoundingClientRect(), nameBox = heroName.getBoundingClientRect();
@@ -2376,33 +2374,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var gapX = Math.max(nx - sx, 0, sx - (nx + nameBox.width)), gapY = Math.max(ny - sy, 0, sy - (ny + nameBox.height));
     var behind = 1 - THREE.MathUtils.smoothstep(Math.hypot(gapX, gapY), 0, 150);
     var inFrame = sx > -40 && sy > -40 && sx < canvasBox.width + 40 && sy < canvasBox.height + 40 ? 1 : 0;
-    var dx = nx + nameBox.width / 2 - sx, dy = ny + nameBox.height / 2 - sy;
-    var length = Math.hypot(dx, dy) || 1, ux = dx / length, uy = dy / length;
-    // Straight behind the name the shadow falls toward the viewer, so it shortens.
-    var reach = Math.min(1, length / 260);
     if(lettersDirty) measureLetters();
     var glare = sunGlare(canvasBox.height), strongest = 0;
     nameLetters.forEach(function(letter){
       letter.silhouette = Math.round(light * inFrame * (1 - THREE.MathUtils.smoothstep(letterGap(letter, sx, sy), glare * .3, glare * 1.15)) * 100) / 100;
       strongest = Math.max(strongest, letter.silhouette);
     });
-    // The lit edge and the long shadow; a silhouetted letter's shadow falls toward the viewer and goes.
-    function cast(silhouette){
-      var layers = [];
-      if(light > .02){
-        layers.push((-ux * 1.2).toFixed(2) + 'px ' + (-uy * 1.2).toFixed(2) + 'px 2px rgba(255,255,255,' + (.55 * light).toFixed(3) + ')');
-        for(var i = 1; i <= 14; i++){
-          var d = i * 2.2 * reach;
-          layers.push((ux * d).toFixed(1) + 'px ' + (uy * d).toFixed(1) + 'px ' + (1 + i * .6).toFixed(1) + 'px rgba(0,0,0,' + (.4 * light * (1 - silhouette) * (1 - i / 16)).toFixed(3) + ')');
-        }
-      }
-      return layers;
-    }
-    if(strongest <= 0){
-      setNameShadow(cast(0).join(','));
-      unshadeLetters();
-    }else{
-      setNameShadow('');
+    // Only letters in the sun's glare glow round their edges.
+    setNameShadow('');
+    if(strongest <= 0) unshadeLetters();
+    else{
       nameLetters.forEach(function(letter){
         var s = letter.silhouette, layers = [], color = '';
         if(s > 0){
@@ -2413,7 +2394,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           var v = Math.round(letter.from + (letter.to - letter.from) * s);
           color = 'rgb(' + v + ',' + v + ',' + v + ')';
         }
-        var shadow = layers.concat(cast(s)).join(',');
+        var shadow = layers.join(',');
         if(shadow !== letter.shadow){ letter.el.style.textShadow = shadow; letter.shadow = shadow; }
         if(color !== letter.color){ letter.el.style.color = color; letter.color = color; }
       });
@@ -2452,13 +2433,18 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     cam.glare = backlight;
     cam.age += dt;
     var hunting = cam.hunt * Math.exp(-cam.age * 1.6) * (.55 + .45 * Math.cos(cam.age * 13));
-    applyCamera((hunting * 8 + backlight * .7).toFixed(1));
+    applyCamera((hunting * 14 + backlight * 3).toFixed(1));
   }
   function applyCamera(blur){
     compMat.uniforms.uExposure.value = cam.exposure;
     // The name follows the exposure only halfway, so it stays readable.
     var nameExposure = 1 - (1 - cam.exposure) * .5;
-    var filter = (blur === '0.0' ? '' : 'blur(' + blur + 'px) ') + (Math.abs(nameExposure - 1) > .005 ? 'brightness(' + nameExposure.toFixed(3) + ')' : '');
+    // Out of focus the letters spread like bokeh: a soft blur with their own light bleeding out
+    // round them, a tight white bloom and a wide cool one.
+    var b = Number(blur), bloom = Math.min(.75, b / 9);
+    var filter = (b === 0 ? '' : 'blur(' + blur + 'px) drop-shadow(0 0 ' + (b * 1.4).toFixed(1) + 'px rgba(255,255,255,' + bloom.toFixed(2) + '))'
+      + ' drop-shadow(0 0 ' + (b * 4).toFixed(1) + 'px rgba(190,215,255,' + (bloom * .45).toFixed(2) + ')) ')
+      + (Math.abs(nameExposure - 1) > .005 ? 'brightness(' + nameExposure.toFixed(3) + ')' : '');
     if(filter !== nameBlur){ heroName.style.filter = filter; nameBlur = filter; }
   }
   function resetCamera(){
