@@ -1083,6 +1083,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // Four small brush footprints: xy is a point in the ring plane, z the radius, w the pressure.
   // Shared by every dust pass so displaced grains keep their shadows and occlusion aligned.
   var ringBrushes={value:Array.from({length:4},function(){ return new THREE.Vector4(0,0,.12,0); })};
+  // A click on a ring throws its grains off their orbits round the point it caught (uGrab).
+  var ringScatter={value:0}, ringGrab={value:new THREE.Vector3()}, ringHeld=false;
   var ringPlanetRadius={ value:1.0 };
   // The ring's plane is never drawn; the dust below is the ring. The plane stays to catch the
   // pointer (raycasting ignores visibility), and to carry the dust and the moons.
@@ -1160,8 +1162,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      open gaps keep their places. Every stream is one straight line of grains along its orbit;
      the orbits that were fuller threads carry slightly larger grains. Grains orbit with the
      moons: a power law through both moons' radii and speeds, so each moon rides its own stream
-     and the inner streams overtake the outer ones. A fingertip-sized hover parts only nearby
-     grains; released grains settle back into the orbit that has carried their place. */
+     and the inner streams overtake the outer ones. A hand-sized hover parts nearby grains and a
+     click flings them wide; released grains settle back into the orbit that has carried their place. */
   var dustSeed = 40531;
   function dustRandom(){
     dustSeed = (Math.imul(dustSeed,1664525) + 1013904223) >>> 0;
@@ -1250,7 +1252,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 
   var DUST_VERT = [
     'attribute vec3 aKick; attribute vec4 aLook;',
-    'uniform float uTime; uniform vec2 uSpin; uniform vec4 uBrush[4];',
+    'uniform float uTime; uniform vec2 uSpin; uniform vec4 uBrush[4]; uniform float uScatter; uniform vec3 uGrab;',
     'uniform vec3 uLight; uniform float uPen; uniform float uPlanetRadius; uniform float uOpa; uniform float uProj; uniform float uPixel;',
     'uniform float uFwd; uniform float uAtmo; uniform float uHalf;',
     'varying float vLum; varying float vAlpha; varying float vCover; varying float vSpark; varying float vSize; varying float vZ;',
@@ -1267,12 +1269,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     '      vec2 away = p.xy-uBrush[i].xy;',
     '      float footprint = max(0.0,1.0-dot(away,away)/(uBrush[i].z*uBrush[i].z));',
     '      float influence = footprint*footprint*uBrush[i].w;',
-    '      vec2 part = away/max(length(away),0.012)*(0.008+aLook.z*0.009);',
-    '      displacement += vec3((dir*aKick.x+vec2(-dir.y,dir.x)*aKick.y)*0.12+part,aKick.z*0.13)*influence;',
+    '      vec2 part = away/max(length(away),0.012)*(0.02+aLook.z*0.025);',
+    '      displacement += vec3((dir*aKick.x+vec2(-dir.y,dir.x)*aKick.y)*0.24+part,aKick.z*0.22)*influence;',
     '      pressure += influence;',
     '    }',
     '  }',
     '  p += displacement/max(1.0,pressure);',
+    // A click flings the grains near the caught point along and across their orbits.
+    '  vec2 grab = p.xy - uGrab.xy;',
+    '  p += vec3(dir * aKick.x + vec2(-dir.y, dir.x) * aKick.y, aKick.z) * uScatter * 1.4 * exp(-dot(grab, grab) * 0.65);',
     '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
     '  gl_Position = projectionMatrix * mv;',
     '  vZ = -mv.z;',
@@ -1328,7 +1333,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   function dustMaterial(fragment, options){
     return new THREE.ShaderMaterial(Object.assign({
       uniforms:{
-        uTime:bodyUniforms.uTime, uSpin:ringSpin, uBrush:ringBrushes,
+        uTime:bodyUniforms.uTime, uSpin:ringSpin, uBrush:ringBrushes, uScatter:ringScatter, uGrab:ringGrab,
         uLight:bodyUniforms.uLight, uPen:bodyUniforms.uPen, uPlanetRadius:ringPlanetRadius, uOpa:uRing, uDay:uDay,
         uFwd:uFwd, uAtmo:uDens, uHalf:{ value:options && options.half || 0 },
         uProj:dustProjection, uPixel:{ value:options && options.pixel || 1 }
@@ -1604,33 +1609,45 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      vec3 streak = line * (vec3(.72, .86, 1.0) * .6 + beadTint * pow(lightNoise(vec2(d.x * 38.0, 4.2)), 5.0) * 2.4);',
       // A soft fan of broad cyan beams, and a faint arc that breaks and splits by wavelength.
       '      float fan = pow(lightNoise(dir * 3.1 + vec2(3.7, 5.3)), 3.0) * exp(-r / .32) * .26;',
-      '      vec2 hd = d + vec2(.03, -.02); float hr = length(hd); vec2 hn = hd / max(hr, .0001);',
-      '      float arc = smoothstep(.45, .95, dot(hn, vec2(-.6, .8))) * (.3 + .7 * lightNoise(hn * 4.0 + 2.0));',
-      '      vec3 band = (vec3(hr) - vec3(.335, .325, .315)) / .009;',
-      '      vec3 halo = exp(-band * band) * arc * .04;',
+      // As in a photograph: one faint, wide arc on the far side of the sun, toward the frame's
+      // centre, its colours split only a little and mostly washed out.
+      '      vec2 toCentre = vec2(.5) - uSun; toCentre.x *= uAspect; toCentre /= max(length(toCentre), .0001);',
+      '      float arc = smoothstep(.5, .95, dot(dir, toCentre)) * (.7 + .3 * lightNoise(dir * 3.0 + 2.0));',
+      '      vec3 band = exp(-pow((vec3(r) - vec3(.395, .38, .365)) / .032, vec3(2.0)));',
+      '      vec3 halo = mix(vec3(dot(band, vec3(.3333))), band, .45) * arc * (.035 + .05 * uFlash);',
       // Ghosts along the axis from the sun through the frame centre.
       '      vec2 axis = vec2(.5) - uSun; axis.x *= uAspect; float axisLength = length(axis);',
       '      vec2 lensDir = axisLength > .0001 ? axis / axisLength : vec2(-.8, -.6);',
+      // Camera ghosts. Close to the sun, small round dots in blue, pink and warm white, each with a
+      // smaller white-hot centre; further along the axis, flat bokeh faces, hexagons and circles.
       '      vec3 ghosts = vec3(0.0);',
-      '      for(int i = 0; i < 7; i++){',
+      '      float span = max(axisLength, .15) * 2.0;',
+      '      vec2 across = vec2(-lensDir.y, lensDir.x);',
+      '      for(int i = 0; i < 5; i++){',
       '        float fi = float(i);',
       '        float s1 = lightHash(vec2(fi + 4.0, 17.3)), s2 = lightHash(vec2(fi + 1.0, 8.9));',
-      '        float size = .012 + .05 * s2 * s2;',
-      '        vec2 g = d - lensDir * max(axisLength, .15) * (.18 + fi * .26 + s1 * .12) * 2.0;',
-      '        g -= vec2(-lensDir.y, lensDir.x) * (s2 - .5) * .05;',
-      '        float facing = smoothstep(-.4, .9, dot(normalize(g + 1e-5), -lensDir));',
-      '        float ang = s1 * 6.283 + .15 * sin(uFlareTime * (.3 + s1 * .3) + fi);',
-      '        g = mat2(cos(ang), -sin(ang), sin(ang), cos(ang)) * g;',
-      '        vec2 gn = g / size; float gr = length(gn);',
-      '        vec3 tint = fi < 1.0 ? vec3(.55, .9, 1.0) : fi < 2.0 ? vec3(1.0, .55, .75) : fi < 3.0 ? vec3(.7, .85, 1.0)',
-      '          : fi < 4.0 ? vec3(1.0, .75, .5) : fi < 5.0 ? vec3(.6, .95, .9) : fi < 6.0 ? vec3(.95, .6, .9) : vec3(.75, .8, 1.0);',
-      '        if(mod(fi, 2.0) < 1.0){',
-      '          float edge = .75 + .5 * lightNoise(normalize(gn + 1e-5) * 2.2 + fi * 3.1);',
-      '          vec3 e = (vec3(gr) - edge * vec3(1.05, 1.0, .95)) / .1;',
-      '          ghosts += (exp(-e * e) * (.25 + .75 * facing) + (1.0 - smoothstep(edge * .6, edge, gr)) * .12) * tint;',
-      '        }else ghosts += (1.0 - smoothstep(.65, 1.0, gr)) * tint * .2;',
+      '        vec2 g = d - lensDir * span * (.06 + fi * .06 + s1 * .03) - across * (s2 - .5) * .02;',
+      '        float size = .006 + .010 * s2, gd = length(g) / size;',
+      '        vec3 tint = fi < 1.0 ? vec3(.45, .75, 1.0) : fi < 2.0 ? vec3(1.0, .55, .8) : fi < 3.0 ? vec3(.9, .95, 1.0)',
+      '          : fi < 4.0 ? vec3(.4, .6, 1.0) : vec3(1.0, .8, .55);',
+      '        ghosts += (exp(-gd * gd * 1.4) * 1.6 + exp(-gd * .9) * .15) * tint + vec3(exp(-gd * gd * 9.0) * 2.4);',
       '      }',
-      '      vec3 lens = vec3(glow) + rays * .9 + spike * .8 + streak + vec3(.45, .75, 1.0) * fan + halo;',
+      '      for(int i = 0; i < 5; i++){',
+      '        float fi = float(i);',
+      '        float s1 = lightHash(vec2(fi + 9.0, 3.7)), s2 = lightHash(vec2(fi + 2.0, 21.4));',
+      '        vec2 g = d - lensDir * span * (.42 + fi * .2 + s1 * .1) - across * (s2 - .5) * .06;',
+      '        float size = .025 + .045 * s2;',
+      '        float ang = s1 * 6.283 + .1 * sin(uFlareTime * (.3 + s1 * .3) + fi);',
+      '        g = mat2(cos(ang), -sin(ang), sin(ang), cos(ang)) * g / size;',
+      '        float shape = mod(fi, 2.0) < 1.0 ? max(abs(g.x) * .8660254 + abs(g.y) * .5, abs(g.y)) : length(g);',
+      '        vec3 tint = fi < 1.0 ? vec3(.55, .85, 1.0) : fi < 2.0 ? vec3(.85, .6, 1.0) : fi < 3.0 ? vec3(1.0, .75, .5)',
+      '          : fi < 4.0 ? vec3(.6, 1.0, .85) : vec3(1.0, .6, .75);',
+      '        ghosts += ((1.0 - smoothstep(.86, 1.0, shape)) * .40 + smoothstep(.7, .98, shape) * (1.0 - smoothstep(.98, 1.04, shape)) * .15) * tint;',
+      '      }',
+      // At the flash a wide white bloom opens round the sun.
+      '      float bloom = (exp(-r / .05) * 1.5 + exp(-r / .15) * .45) * uFlash;',
+
+      '      vec3 lens = vec3(glow + bloom) + rays * .9 + spike * .8 + streak + vec3(.45, .75, 1.0) * fan + halo;',
       '      c += (vec3(core) + lens * k + ghosts * .12 * (.25 + .5 * uBurst + 1.6 * uFlash)) * flare;',
       '    }',
       '  }',
@@ -1753,8 +1770,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     shift.x=(shift.x+dx/span*.16)%2; shift.y=(shift.y-dy/span*.16)%2;
     if(skyStars){ skyStars.rotation.y+=dx/span*.05; skyStars.rotation.x+=dy/span*.05; }
   }
+  function flingRing(point){
+    if(reduce) return;
+    ringGrab.value.copy(point); ringHeld=true;
+    ringScatter.value=Math.max(ringScatter.value,.85);
+  }
   function finishDrag(e){
     if(e && e.pointerId !== activePointer) return;
+    ringHeld=false;
     var pointerId = activePointer;
     activePointer = null;
     dragControl.classList.remove('is-dragging');
@@ -1858,7 +1881,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       var bounds=canvas.getBoundingClientRect();
       scene.updateMatrixWorld(true);
       var point=nearestVisibleOrbit(ringHover.x,ringHover.y,bounds,5);
-      if(point) touchRingBrush(point,Math.max(.08,Math.min(.20,18*2.08/dragDiameter)));
+      if(point) touchRingBrush(point,Math.max(.24,Math.min(.60,54*2.08/dragDiameter)));
       else ringBrushActive=-1;
     }
     ringBrushes.value.forEach(function(brush,index){
@@ -1902,11 +1925,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       var bodyHits=ringRay.intersectObject(body,false);
       var occluded=bodyHits.length && bodyHits[0].distance<hits[0].distance;
       if(!occluded && strands.some(function(strand){ return Math.abs(strand.x-radius)<Math.max(0.025,strand.y*4); })){
-        beginPlanetDrag(e); return;
+        beginPlanetDrag(e); flingRing(local); return;
       }
     }
     var nearby=nearestVisibleOrbit(e.clientX,e.clientY,bounds);
-    if(nearby) beginPlanetDrag(e);
+    if(nearby){ beginPlanetDrag(e); flingRing(nearby); }
   });
   dragControl.addEventListener('pointermove',function(e){
     if(e.pointerId !== activePointer) return;
@@ -2527,6 +2550,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var t = reduce ? frozen : (now - t0)/1000;
     var interval=now-lastFrame, dt=Math.min(interval/1000,0.05); lastFrame=now;
     stepRingBrush(dt,now);
+    // Held, the thrown grains stay out; let go, they drift back into their orbits.
+    ringScatter.value+=((ringHeld ? 1 : 0)-ringScatter.value)*(1-Math.exp(-dt*(ringHeld ? 10 : 2.2)));
+    if(!ringHeld && ringScatter.value<.002) ringScatter.value=0;
 
     // 태양 방위각: every mode lights the planet from the same sun, before anything is drawn.
     driftSun(dt);
