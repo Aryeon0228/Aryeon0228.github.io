@@ -30,12 +30,12 @@ function harness() {
   };
 }
 
-test('hover gently parts one small patch, then lets it follow the orbit and settle', () => {
+test('hover parts one wide patch, then lets it follow the orbit and settle', () => {
   const h = harness(); h.move(); h.advance(.05);
   assert.ok(h.brushes[0].w > 0 && h.brushes[0].w < .2, 'no sudden first-frame kick');
   h.advance(.7);
   assert.ok(h.brushes[0].w > .98);
-  assert.ok(h.brushes[0].z >= .08 && h.brushes[0].z <= .20);
+  assert.ok(h.brushes[0].z >= .24 && h.brushes[0].z <= .60, 'about three times the old fingertip reach');
   assert.equal(h.brushes.filter(b => b.w > 0).length, 1);
   const radius = Math.hypot(h.brushes[0].x, h.brushes[0].y);
   h.hero.dispatchEvent(new Event('pointerleave')); h.advance(.2);
