@@ -1526,14 +1526,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     'float lightBundle(vec2 dir){ return pow(smoothstep(.24,.82,lightNoise(dir*1.65+vec2(8.3,2.8))),1.7); }'
   ].join('\n');
 
-  // 한 렌즈에 고정된 불규칙한 결: 각도·두께·길이·밝기가 각각 다르며 매 프레임 재추첨하지 않는다.
-  var flarePattern = [
-    [-2.92,.018,.10,.10], [-2.51,.006,.30,.22], [-2.43,.024,.16,.13],
-    [-1.90,.009,.07,.10], [-1.08,.016,.18,.14], [-.72,.004,.29,.24],
-    [-.20,.028,.09,.07], [.13,.011,.22,.18], [.39,.004,.38,.27],
-    [.48,.020,.15,.12], [.96,.032,.09,.10], [1.14,.008,.25,.22],
-    [1.84,.016,.32,.10], [2.42,.006,.08,.12]
-  ];
   var compMat = new THREE.ShaderMaterial({
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
@@ -1541,9 +1533,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0}, uFlash:{value:0},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012},
       uPlanet:{value:new THREE.Vector3(.5,.5,.2)}, uTotality:{value:0},
-      uFlareTime:bodyUniforms.uTime,
-      uFlareRays:{value:flarePattern.map(function(p){ return new THREE.Vector4(Math.cos(p[0]),Math.sin(p[0]),p[1],p[2]); })},
-      uFlareGain:{value:flarePattern.map(function(p){ return p[3]; })}
+      uFlareTime:bodyUniforms.uTime
     },
     vertexShader: POST_VERT,
     fragmentShader:[
@@ -1551,7 +1541,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
       'uniform sampler2D tX; uniform vec4 uLens;',
       'uniform vec3 uPlanet; uniform float uTotality; uniform float uFlareTime;',
-      'uniform vec4 uFlareRays[14]; uniform float uFlareGain[14];',
       'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst; uniform float uFlash;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
       'vec3 tent(sampler2D t, vec2 texel){ vec2 e = texel * .5, f = vec2(e.x, -e.y);',
@@ -1583,74 +1572,66 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       // A last sliver can still flare brightly; the lens goes dark once the disc is covered.
       '    float flare = mix(seen,smoothstep(0.0,.28,seen),uFlash) * (1.0 - smoothstep(0.0, .12, max(outside.x, outside.y))) * uEclipse;',
       '    if(flare > 0.0){',
-      // Unequal bundles have their own width and reach. Fine threads sit inside the wider glow.
-      '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d); vec2 dir=d/max(r,.0001);',
-      '      float bundle=lightBundle(dir);',
-      '      float rayReach=mix(.04,.27,lightNoise(dir*4.7+vec2(21.8,9.3)));',
-      '      float star=.035*bundle*exp(-r/rayReach)*(.18+uBurst);',
-      '      for(int i=0;i<14;i++){',
-      '        vec4 ray=uFlareRays[i]; float along=dot(d,ray.xy), across=dot(d,vec2(-ray.y,ray.x));',
-      '        float width=.0007+r*ray.z;',
-      '        star+=exp(-across*across/(width*width)-max(along,0.0)/ray.w)',
-      '          *smoothstep(-.002,.012,along)*uFlareGain[i]*(.50+.20*uBurst+.75*uFlash);',
+      // The flare follows a real lens: a small white-hot core, dozens of fine rays of unequal
+      // length, two long spikes split by colour at their edges, an anamorphic line strung with
+      // coloured beads, a soft cyan fan, a faint broken arc, and ghosts along the lens axis:
+      // crystal shards lit on the side facing the sun, and soft discs. k is how hard it flares:
+      // a little in open sky, more near the limb, most at the flash.
+      '      vec2 d = vUv - uSun; d.x *= uAspect; float r = length(d); vec2 dir = d / max(r, .0001);',
+      '      float k = .20 + .35 * uBurst + 1.0 * uFlash;',
+      '      float core = exp(-r / .0045) * 2.4;',
+      '      float glow = exp(-r / .012) * 1.1 + exp(-r / .04) * .35 + exp(-r / .12) * .08;',
+      // Rays: one per angular cell, each with its own offset, thinness, reach and strength.
+      '      vec3 rays = vec3(0.0);',
+      '      float cells = 72.0, fa = (atan(d.y, d.x) / 6.2831853 + .5) * cells;',
+      '      for(int j = -1; j <= 1; j++){',
+      '        float id = mod(floor(fa) + float(j), cells);',
+      '        float h1 = lightHash(vec2(id, 3.1)), h2 = lightHash(vec2(id, 7.7)), h3 = lightHash(vec2(id, 12.9)), h4 = lightHash(vec2(id, 19.3));',
+      '        float off = fa - (id + .5 + (h1 - .5) * .8); off -= cells * floor(off / cells + .5);',
+      '        float across = off * 6.2831853 / cells * r, w = .0007 + .003 * h2 * h2 + r * .006;',
+      '        float ray = exp(-across * across / (w * w)) * exp(-r / mix(.03, .42, pow(h3, 2.2))) * (.12 + .6 * h4 * h4);',
+      '        rays += ray * mix(vec3(1.0), vec3(.5, .8, 1.0), smoothstep(0.0, .12, r));',
       '      }',
-      '      float streak=exp(-abs(d.y)*900.0)*exp(-abs(d.x)*1.45)*(.035+.14*uBurst+1.65*uFlash);',
-      '      streak+=exp(-d.y*d.y/.000035-abs(d.x)*2.0)*(.04*uBurst+.25*uFlash);',
-      '      vec3 streakTint=mix(vec3(.32,.64,1.0),vec3(.72,.42,1.0),smoothstep(-.25,.30,d.x));',
-      '      vec2 slash=vec2(dot(d,vec2(.91,.415)),dot(d,vec2(-.415,.91)));',
-      '      streak+=exp(-abs(slash.y)*430.0)*exp(-abs(slash.x)*mix(12.,5.,smoothstep(-.02,.10,slash.x)))*.065*uBurst;',
-      // The post-composited sun never enters tBloom. An exposure veil expands around the
-      // white core as it clears the limb, gently lowering local contrast without a scene blur.
-      '      vec2 glow=d/vec2(1.16,.96); float g2=dot(glow,glow);',
-      '      float breath=uBurst*uBurst*(3.0-2.0*uBurst);',
-      '      float burst=exp(-g2/.000035)*1.6+exp(-g2/.0016)*(.46+.90*breath+3.8*uFlash);',
-      '      burst+=exp(-g2/.014)*(.055+.80*breath+1.50*uFlash);',
-      '      burst+=exp(-g2/.070)*(.18*breath+.32*uFlash)+exp(-g2/.23)*(.025*breath+.075*uFlash);',
-      // Three unequal lens fragments with real dark gaps, rather than a complete rainbow ring.
-      // Stable direction-space texture varies their brightness, thickness and curvature.
-      '      vec2 haloD=d+vec2(.035,-.022); float haloR=length(haloD);',
-      '      vec2 haloN=haloD/max(haloR,.0001);',
-      '      float haloArc=smoothstep(.82,.97,dot(haloN,vec2(-.62,.785)));',
-      '      haloArc+=smoothstep(.86,.98,dot(haloN,vec2(-.92,-.392)))*.62;',
-      '      haloArc+=smoothstep(.91,.988,dot(haloN,vec2(.18,-.984)))*.40;',
-      '      float haloGrain=lightNoise(haloN*5.3+vec2(6.3,11.7));',
-      '      haloArc*=.35+.65*haloGrain;',
-      '      float haloBand=(haloR-mix(.29,.37,breath))/.016;',
-      '      float halo=exp(-haloBand*haloBand)*.065*haloArc*breath;',
-      // Brief spectral separation across the broad lens arc and the horizontal flare.
-      '      vec3 spectralBand=(vec3(haloR-(haloGrain-.5)*.004)-vec3(.378,.368,.357))/mix(.0045,.011,haloGrain);',
-      '      vec3 prism=exp(-spectralBand*spectralBand)*haloArc*uFlash*.48;',
-      '      prism+=vec3(.18,.48,1.0)*exp(-d.y*d.y/.000008-abs(d.x)*1.25)*uFlash*.22;',
-      // Filled, translucent aperture ghosts unfold along the lens axis. Unequal defocus rounds
-      // some into bokeh; their soft faces carry the light, with no outlined polygon rims.
-      // Individual glints and turns share the reduced-motion-aware scene clock.
-      '      vec2 axis=vec2(.5)-uSun; axis.x*=uAspect; float axisLength=length(axis);',
-      '      vec2 lensDir=axisLength>.0001 ? axis/axisLength : vec2(-.8,-.6);',
-      '      float unfold=pow(uBurst,.65), lensSpan=max(axisLength,.14)*mix(.55,1.45,unfold);',
-      '      vec3 ghosts=vec3(0.0);',
-      '      for(int i = 0; i < 6; i++){',
+      // Two long spikes on one line through the sun, white at the heart and split red and blue at the edges.
+      '      vec2 sd = vec2(.36, .933);',
+      '      float sAlong = dot(d, sd), sw = .0009 + abs(sAlong) * .004;',
+      '      vec3 sAcross = (vec3(dot(d, vec2(-sd.y, sd.x))) + vec3(.0018, 0.0, -.0018)) / sw;',
+      '      vec3 spike = exp(-sAcross * sAcross) * exp(-max(sAlong, 0.0) / .62 - max(-sAlong, 0.0) / .45) * vec3(.8, .92, 1.0);',
+      // The anamorphic line, strung with warm and cool beads.
+      '      float lineW = .0011 + abs(d.x) * .0012, cell = floor(d.x * 38.0);',
+      '      float line = exp(-d.y * d.y / (lineW * lineW)) * exp(-abs(d.x) / .9);',
+      '      vec3 beadTint = mix(vec3(1.0, .38, .16), vec3(.35, .85, 1.0), step(.55, lightHash(vec2(cell, 9.1))));',
+      '      vec3 streak = line * (vec3(.72, .86, 1.0) * .6 + beadTint * pow(lightNoise(vec2(d.x * 38.0, 4.2)), 5.0) * 2.4);',
+      // A soft fan of broad cyan beams, and a faint arc that breaks and splits by wavelength.
+      '      float fan = pow(lightNoise(dir * 3.1 + vec2(3.7, 5.3)), 3.0) * exp(-r / .32) * .26;',
+      '      vec2 hd = d + vec2(.03, -.02); float hr = length(hd); vec2 hn = hd / max(hr, .0001);',
+      '      float arc = smoothstep(.45, .95, dot(hn, vec2(-.6, .8))) * (.3 + .7 * lightNoise(hn * 4.0 + 2.0));',
+      '      vec3 band = (vec3(hr) - vec3(.335, .325, .315)) / .009;',
+      '      vec3 halo = exp(-band * band) * arc * .04;',
+      // Ghosts along the axis from the sun through the frame centre.
+      '      vec2 axis = vec2(.5) - uSun; axis.x *= uAspect; float axisLength = length(axis);',
+      '      vec2 lensDir = axisLength > .0001 ? axis / axisLength : vec2(-.8, -.6);',
+      '      vec3 ghosts = vec3(0.0);',
+      '      for(int i = 0; i < 7; i++){',
       '        float fi = float(i);',
-      '        float seed=lightHash(vec2(fi+4.0,17.3)), seed2=lightHash(vec2(fi+1.0,8.9));',
-      '        float t=.24+seed*1.72, size=(.014+.062*seed2*seed2)*mix(.55,1.35,unfold);',
-      '        vec2 g=d-lensDir*lensSpan*t*2.0;',
-      '        g-=vec2(-lensDir.y,lensDir.x)*(seed2-.5)*.045*unfold;',
-      '        float angle=seed2*6.283+(seed-.5)*unfold*1.8+.24*sin(uFlareTime*(.42+seed*.35)+fi*1.9);',
-      '        float ca=cos(angle),sa=sin(angle); g=mat2(ca,-sa,sa,ca)*g;',
-      '        g.x*=1.0+seed*.20;',
-      '        vec2 q=abs(g); float hex=max(q.x*.8660254+q.y*.5,q.y);',
-      '        vec3 tint = fi < 1.0 ? vec3(.38,.88,1.0) : fi < 2.0 ? vec3(.78,.44,1.0) : fi < 3.0 ? vec3(1.0,.72,.46)',
-      '          : fi < 4.0 ? vec3(.48,.70,1.0) : fi < 5.0 ? vec3(.60,.46,1.0) : vec3(1.0,.52,.74);',
-      '        tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.10+.90*uFlash);',
-      '        float glint=.28+.72*pow(.5+.5*sin(uFlareTime*(6.0+seed*4.0)+seed2*19.0),2.0);',
-      '        float aperture=mix(hex,length(g),smoothstep(.25,.85,seed));',
-      '        float radius=aperture/max(size,.001);',
-      '        float fill=1.0-smoothstep(mix(.38,.72,seed2),1.10,radius);',
-      '        float core=exp(-dot(g,g)/max(size*size,.000001)*3.5);',
-      '        float haze=exp(-radius*radius*2.4)*.14;',
-      '        vec3 face=mix(tint,vec3(1.0),core*.30);',
-      '        ghosts+=(fill+haze)*face*(.024+.016*seed)*(.25+.60*uBurst+12.0*uFlash*(.35+.65*glint));',
+      '        float s1 = lightHash(vec2(fi + 4.0, 17.3)), s2 = lightHash(vec2(fi + 1.0, 8.9));',
+      '        float size = .012 + .05 * s2 * s2;',
+      '        vec2 g = d - lensDir * max(axisLength, .15) * (.18 + fi * .26 + s1 * .12) * 2.0;',
+      '        g -= vec2(-lensDir.y, lensDir.x) * (s2 - .5) * .05;',
+      '        float facing = smoothstep(-.4, .9, dot(normalize(g + 1e-5), -lensDir));',
+      '        float ang = s1 * 6.283 + .15 * sin(uFlareTime * (.3 + s1 * .3) + fi);',
+      '        g = mat2(cos(ang), -sin(ang), sin(ang), cos(ang)) * g;',
+      '        vec2 gn = g / size; float gr = length(gn);',
+      '        vec3 tint = fi < 1.0 ? vec3(.55, .9, 1.0) : fi < 2.0 ? vec3(1.0, .55, .75) : fi < 3.0 ? vec3(.7, .85, 1.0)',
+      '          : fi < 4.0 ? vec3(1.0, .75, .5) : fi < 5.0 ? vec3(.6, .95, .9) : fi < 6.0 ? vec3(.95, .6, .9) : vec3(.75, .8, 1.0);',
+      '        if(mod(fi, 2.0) < 1.0){',
+      '          float edge = .75 + .5 * lightNoise(normalize(gn + 1e-5) * 2.2 + fi * 3.1);',
+      '          vec3 e = (vec3(gr) - edge * vec3(1.05, 1.0, .95)) / .1;',
+      '          ghosts += (exp(-e * e) * (.25 + .75 * facing) + (1.0 - smoothstep(edge * .6, edge, gr)) * .12) * tint;',
+      '        }else ghosts += (1.0 - smoothstep(.65, 1.0, gr)) * tint * .2;',
       '      }',
-      '      c += (vec3(star + burst + halo) + streakTint*streak + ghosts*(.30+.70*uFlash) + prism) * flare;',
+      '      vec3 lens = vec3(glow) + rays * .9 + spike * .8 + streak + vec3(.45, .75, 1.0) * fan + halo;',
+      '      c += (vec3(core) + lens * k + ghosts * .12 * (.25 + .5 * uBurst + 1.6 * uFlash)) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -2351,7 +2332,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var contact = (separation - planetAngle) / sunAngle;
     compMat.uniforms.uBurst.value = 1 - THREE.MathUtils.smoothstep(contact, 1.0, 12.0);
     // A single optical flash at contact, not a repeating time-based strobe.
-    compMat.uniforms.uFlash.value = Math.exp(-Math.pow((contact + .45) / .72, 2));
+    compMat.uniforms.uFlash.value = Math.exp(-Math.pow((contact + .2) / 1.3, 2));
     updateSunVeil(amount,contact);
     return amount;
   }
