@@ -13,7 +13,7 @@ function harness() {
   doc.hidden = false; doc.querySelector = () => hero; media.matches = true; win.matchMedia = () => media;
   const brushes = Array.from({length:4}, () => new THREE.Vector4(0, 0, .12, 0));
   let hit = new THREE.Vector3(2, 0, 0), hitChecks = 0, now = 0;
-  const state = {document:doc, window:win, reduce:false, activePointer:null, dragControl:{},
+  const state = {document:doc, window:win, reduce:false, ringVisible:true, activePointer:null, dragControl:{},
     ringBrushes:{value:brushes}, ringSpin:{value:new THREE.Vector2(.2, 1.5)}, dragDiameter:260,
     canvas:{getBoundingClientRect:() => ({left:0, top:0, width:1280, height:760})},
     scene:{updateMatrixWorld() {}}, finishDrag() {}, nearestVisibleOrbit:() => { hitChecks++; return hit; }};
@@ -53,12 +53,13 @@ test('a separated second touch does not move the previous settling patch across 
   h.hit(null); h.advance(2); assert.ok(h.brushes.every(b => b.w === 0));
 });
 
-test('coarse pointers, controls, dragging and reduced motion cannot trigger hovering', () => {
-  for (const condition of ['touch', 'coarse', 'control', 'drag', 'reduce']) {
+test('hidden rings, coarse pointers, controls, dragging and reduced motion cannot trigger hovering', () => {
+  for (const condition of ['hidden ring', 'touch', 'coarse', 'control', 'drag', 'reduce']) {
     const h = harness();
     if (condition === 'coarse') h.media.matches = false;
     if (condition === 'drag') h.state.activePointer = 3;
     if (condition === 'reduce') h.state.reduce = true;
+    if (condition === 'hidden ring') h.state.ringVisible = false;
     h.move({pointerType:condition === 'touch' ? 'touch' : 'mouse', excluded:condition === 'control'});
     h.advance(1); assert.ok(h.brushes.every(b => b.w === 0), condition);
   }
@@ -87,7 +88,7 @@ test('hit testing rejects the ring behind the planet and empty gaps while accept
   camera.position.z = 8; camera.updateMatrixWorld();
   const ring = new THREE.Object3D(), body = new THREE.Object3D();
   ring.rotation.x = 1.22; ring.updateMatrixWorld(); body.updateMatrixWorld();
-  const state = {THREE, camera, ring, body, dustLaneRadii:[2]};
+  const state = {THREE, camera, ring, body, ringVisible:true, dustLaneRadii:[2]};
   vm.createContext(state); vm.runInContext(hitSource, state);
   const bounds = {left:0, top:0, width:1280, height:760};
   function screenPoint(angle) {
@@ -97,4 +98,6 @@ test('hit testing rejects the ring behind the planet and empty gaps while accept
   assert.ok(state.nearestVisibleOrbit(...screenPoint(Math.PI/2), bounds, 5), 'front-facing ring remains brushable over the planet');
   assert.equal(state.nearestVisibleOrbit(...screenPoint(-Math.PI/2), bounds, 5), null, 'far side cannot be touched through the planet');
   assert.equal(state.nearestVisibleOrbit(50, 50, bounds, 5), null, 'empty background stays still');
+  state.ringVisible = false;
+  assert.equal(state.nearestVisibleOrbit(...screenPoint(Math.PI/2), bounds, 5), null, 'hidden rings have no hit area');
 });

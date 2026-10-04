@@ -190,6 +190,14 @@ input[type=range]::-moz-range-thumb{ width:9px; height:9px; background:var(--w);
 input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px; }
 .knob-scale{ display:flex; justify-content:space-between; gap:8px; font-size:12px; line-height:1.4; color:var(--g2); }
 .knob-hint{ margin:5px 0 0; font-size:11px; line-height:1.4; color:var(--g2); }
+.ring-setting{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:10px; padding-top:8px; border-top:1px solid var(--ln); color:var(--w); font:12px var(--f-ko); }
+.ring-toggle{ display:flex; align-items:center; gap:9px; min-height:44px; padding:0 10px; border:1px solid var(--ln2); background:transparent; color:var(--w); font:12px var(--f-ko); cursor:pointer; }
+.ring-toggle:hover{ background:var(--ln); }
+.ring-toggle:disabled{ opacity:.4; cursor:default; }
+.ring-toggle-track{ position:relative; width:28px; height:16px; border:1px solid var(--g2); border-radius:10px; }
+.ring-toggle-track::before{ content:''; position:absolute; top:3px; left:3px; width:8px; height:8px; border-radius:50%; background:var(--g2); }
+.ring-toggle[aria-checked="true"] .ring-toggle-track{ border-color:var(--w); }
+.ring-toggle[aria-checked="true"] .ring-toggle-track::before{ transform:translateX(12px); background:var(--w); }
 
 /* ---------- Post FX switch ---------- */
 .fx-switch{
@@ -542,6 +550,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0</b></div>
           <input type="range" id="s-atm" min="0" max="100" value="0" aria-describedby="rack-note scale-atm" aria-label="대기 밀도">
           <div class="knob-scale" id="scale-atm"><span>기본</span><span>대기 줄이기</span></div>
+        </div>
+        <div class="ring-setting">
+          <span id="ring-label">고리 표시</span>
+          <button type="button" id="ring-toggle" class="ring-toggle" role="switch" aria-checked="true" aria-labelledby="ring-label" disabled>
+            <span class="ring-toggle-track" aria-hidden="true"></span><span id="ring-state" aria-hidden="true">켜짐</span>
+          </button>
         </div>
       </div>
     </div>
@@ -994,6 +1008,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      행성이 고리 위에 그림자를 드리운다. 그 그림자의 흐린 가장자리 역시 반그림자이므로
      PENUMBRA 슬라이더가 표면과 고리를 동시에 지배한다 — 같은 현상이니 같은 값이어야 한다. */
   var uRing = { value: planetBaseline.ring };
+  var ringVisible = true;
   var RING_I = 1.25, RING_O = 4.80;
 
   // Fixed-seed irregular spacing: distinct orbits, with real empty gaps.
@@ -1804,6 +1819,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var hitPlanetCenter=new THREE.Vector3(),hitPlanetScale=new THREE.Vector3(),hitOcclusion=new THREE.Vector3();
   var hitPlanet=new THREE.Sphere(),hitRay=new THREE.Ray();
   function nearestVisibleOrbit(clientX,clientY,bounds,slop){
+    if(!ringVisible) return null;
     var px=clientX-bounds.left,py=clientY-bounds.top;
     var hitSlop=slop===undefined ? ringHitSlop : slop;
     var bestDistance=hitSlop*hitSlop,bestPoint=null;
@@ -1852,7 +1868,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ringBrushes.value.forEach(function(brush,index){ brush.w=0; ringBrushVelocity[index]=0; });
   }
   function moveRingBrush(e){
-    if(e.pointerType!=='mouse' || !ringHoverMedia.matches || reduce || document.hidden || activePointer!==null
+    if(!ringVisible || e.pointerType!=='mouse' || !ringHoverMedia.matches || reduce || document.hidden || activePointer!==null
       || (e.target!==dragControl && e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary'))){
       releaseRingBrush(); return;
     }
@@ -1875,7 +1891,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }
   }
   function stepRingBrush(dt,now){
-    if(reduce || !ringHoverMedia.matches || document.hidden){ clearRingBrush(); return; }
+    if(!ringVisible || reduce || !ringHoverMedia.matches || document.hidden){ clearRingBrush(); return; }
     if(ringHover.inside && activePointer===null && now>=ringHover.nextCheck){
       ringHover.nextCheck=now+1000/24;
       var bounds=canvas.getBoundingClientRect();
@@ -1912,7 +1928,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   if(ringHoverMedia.addEventListener) ringHoverMedia.addEventListener('change',clearRingBrush);
 
   document.querySelector('.hero').addEventListener('pointerdown',function(e){
-    if(activePointer!==null || e.pointerType!=='mouse' || e.button!==0) return;
+    if(!ringVisible || activePointer!==null || e.pointerType!=='mouse' || e.button!==0) return;
     if(e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary')) return;
     var bounds=canvas.getBoundingClientRect();
     ringPointer.set((e.clientX-bounds.left)/bounds.width*2-1,1-(e.clientY-bounds.top)/bounds.height*2);
@@ -1949,6 +1965,29 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var step=dragDiameter*(e.shiftKey ? 5 : 1)/180;
     turnPlanet(delta[0]*step,delta[1]*step);
   });
+
+  // Hide only the grains, keeping moons and the planet's rotation available. Their visibility
+  // is shared by the normal scene, eclipse occlusion and X-Ray passes.
+  var ringToggle=document.getElementById('ring-toggle'), ringState=document.getElementById('ring-state');
+  var ringSceneDescription=canvas.getAttribute('aria-label');
+  function updateRingDescription(){
+    canvas.setAttribute('aria-label',ringVisible ? ringSceneDescription : '고리 없는 행성과 그 주위를 공전하는 작은 위성, 먼 별들이 보입니다.');
+  }
+  function setRingVisible(show){
+    ringVisible=show;
+    ringDust.visible=ringDustNear.visible=show;
+    if(!show){ clearRingBrush(); ringHeld=false; ringScatter.value=0; }
+    ringToggle.setAttribute('aria-checked',String(show));
+    ringState.textContent=show ? '켜짐' : '꺼짐';
+    dragControl.setAttribute('aria-label',show ? '행성과 고리 회전' : '행성 회전');
+    updateRingDescription();
+  }
+  window.addEventListener('penumbra-theme-change',function(){
+    ringSceneDescription=canvas.getAttribute('aria-label');
+    updateRingDescription();
+  });
+  ringToggle.addEventListener('click',function(){ setRingVisible(!ringVisible); });
+  ringToggle.disabled=false;
 
   /* ---------- Post FX prototypes ----------
      Two optional effects, chosen with the Post FX switch (or ?fx=xray / ?fx=eclipse):
