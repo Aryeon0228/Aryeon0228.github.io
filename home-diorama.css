@@ -1,0 +1,34 @@
+/* Lab › 바이브코딩 연구: a live WebGL piece that starts from a still and runs in place on
+   request. It spans the Lab grid and, holding a live scene, does not tilt with the other cards. */
+#lab .diorama-card{grid-column:1 / -1;display:grid;grid-template-columns:1fr;gap:20px}
+#lab .diorama-card>.work-card-top{margin-bottom:0}
+.diorama-card .game-preview.diorama-stage{aspect-ratio:16 / 9;margin:0}
+.diorama-stage img{object-fit:cover}
+.diorama-body{display:flex;flex-direction:column;min-width:0;container-type:inline-size}
+#lab .diorama-body .content-actions{margin-top:auto}
+/* COPY_GUIDELINES: where both sentences fit a line each, break between them (two lines either
+   way); on narrower columns the first would wrap too, so they flow as normal text */
+@container (min-width:250px){.diorama-body .copy-sentence{display:inline-block}}
+
+/* the still invites a click; once running, the scene takes the frame */
+.diorama-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:0 22px;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.62);color:#fff;font:500 12px/1 var(--f-mono);letter-spacing:.08em;cursor:pointer;transition:background-color .2s,border-color .2s}
+.diorama-play:hover,.diorama-play:focus-visible{background:rgba(0,0,0,.85);border-color:#fff}
+.diorama-play:focus-visible,.diorama-close:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.diorama-play span{font-size:10px}
+.diorama-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#efe7d8}
+.diorama-close{position:absolute;top:10px;right:10px;z-index:1;min-height:32px;padding:0 12px;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.82);color:#111;font:500 11px/1 var(--f-mono);letter-spacing:.06em;cursor:pointer}
+.diorama-close:hover{background:#fff}
+.diorama-stage.is-live img,.diorama-stage.is-live .diorama-play{display:none}
+.diorama-stage.is-live{border-color:#555}
+
+@media(min-width:980px){
+  #lab .diorama-card{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);align-items:stretch;column-gap:32px}
+  #lab .diorama-card>.work-card-top{grid-column:1 / -1}
+}
+
+html[data-theme="day"] .diorama-play{border-color:rgba(0,0,0,.4);background:rgba(250,250,248,.82);color:#111}
+html[data-theme="day"] .diorama-play:hover,html[data-theme="day"] .diorama-play:focus-visible{background:#fff;border-color:#111}
+html[data-theme="day"] .diorama-play:focus-visible{outline-color:#111}
+html[data-theme="day"] .diorama-stage.is-live{border-color:#92978d}
+
+@media(prefers-reduced-motion:reduce){.diorama-play{transition:none}}
