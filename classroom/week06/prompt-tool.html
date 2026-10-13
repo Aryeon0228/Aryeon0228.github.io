@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>미니어처 섬 · 한영 3D 프롬프트 작업실</title>
+  <style>
+    :root{--paper:#f4f1e9;--card:#fffef9;--ink:#203b32;--muted:#596b62;--line:#ccd5ca;--accent:#285b47;--pale:#e7eddf;--amber:#ad6925}*{box-sizing:border-box}html{scroll-padding-top:155px}body{margin:0;background:var(--paper);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.6}button,input,select,textarea{font:inherit}button,select,summary{cursor:pointer}button{min-height:44px;padding:10px 17px;background:var(--accent);border:1px solid var(--accent);border-radius:10px;color:white;font-weight:700}button.secondary{background:var(--card);border-color:var(--line);color:var(--ink)}button:hover{filter:brightness(.96)}:focus-visible{outline:3px solid var(--amber);outline-offset:3px}input,select{accent-color:var(--accent)}a{color:var(--accent)}.wrap{max-width:1480px;margin:auto;padding:34px 32px 28px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:23px}h1{font-size:36px;line-height:1.25;letter-spacing:-.04em;margin:8px 0 9px}h2{font-size:22px;line-height:1.35;letter-spacing:-.025em;margin:5px 0 8px}h3{font-size:17px;margin:0;letter-spacing:-.02em}p{margin:0}.sub{font-size:15px;color:var(--muted)}.badge{font-size:12px;white-space:nowrap;border:1px solid var(--line);padding:8px 14px;border-radius:99px;font-weight:700}.workflow{display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 0;margin-bottom:24px;font-size:13px;color:var(--muted)}.workflow b{margin-right:7px;color:var(--accent)}.layout{display:grid;grid-template-columns:306px minmax(0,1fr);gap:24px;align-items:start}.sidebar{min-width:0}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:22px}.small{font-size:12px;color:var(--muted);line-height:1.7}.form-group{margin:22px 0 0;padding:20px 0 0;border:0;border-top:1px solid var(--line);min-width:0}.form-group legend{font-weight:800;font-size:13px;padding:0 6px 0 0;color:var(--accent);letter-spacing:.02em}.field{margin-bottom:16px}.field:last-child{margin-bottom:0}.field label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}.field select{width:100%;min-height:45px;background:white;color:var(--ink);padding:9px 30px 9px 10px;border:1px solid #abbcaf;border-radius:8px}.field-help{font-size:12px;line-height:1.55;color:var(--muted);margin-top:5px}.reset{width:100%;margin-top:20px}.reference{margin-top:16px}.check-row{display:flex;align-items:center;gap:9px;min-height:44px;font-size:14px;font-weight:700}.check-row input{width:18px;height:18px;flex-shrink:0}.image-wrap{margin:12px 0;border:1px solid var(--line);border-radius:10px;background:#f2eee4;overflow:hidden;aspect-ratio:1;display:grid;place-items:center}.image-wrap img{display:block;width:100%;height:100%;object-fit:contain}.image-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}.upload{display:block;position:relative;border:1px solid var(--line);background:white;padding:10px;min-height:44px;border-radius:9px;text-align:center;font-size:13px;font-weight:700;cursor:pointer}.upload:focus-within{outline:3px solid var(--amber);outline-offset:3px}.upload input{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}.file-status{font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin:8px 0}.output{min-width:0}.output-toolbar{position:sticky;top:0;z-index:2;background:var(--paper);padding:14px 0 13px;border-bottom:1px solid var(--line);margin:-14px 0 18px}.toolbar-top{display:flex;justify-content:space-between;align-items:center;gap:18px}.actions{display:flex;flex-wrap:wrap;gap:8px}.actions button{font-size:13px}.status{min-height:21px;margin-top:9px;color:var(--muted);font-size:12px}.intro-note{background:var(--pale);border-radius:11px;padding:13px 16px;font-size:13px;line-height:1.65;margin-bottom:16px}.current{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 18px}.tag{border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:11px;background:var(--card);color:var(--muted)}.parallel-card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:16px;overflow:hidden;scroll-margin-top:160px}.section-heading{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:15px 20px}.section-number{font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}.parallel{display:grid;grid-template-columns:1fr 1fr}.language{padding:19px 20px 21px;min-width:0}.language.ko{border-left:1px solid var(--line);background:#fafbf6}.language-label{font-size:11px;letter-spacing:.06em;color:var(--muted);font-weight:800;margin-bottom:10px}.prompt-text{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:14px;line-height:1.78;margin:0}.language.en .prompt-text{font-size:14px;line-height:1.7}.raw{margin-top:20px}.raw summary{font-size:14px;font-weight:700;min-height:44px;line-height:44px}.raw label{display:block;font-size:13px;font-weight:700;margin-top:18px;margin-bottom:7px}.raw textarea{display:block;width:100%;min-height:350px;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:15px;background:white;color:var(--ink);font-family:inherit;font-size:14px;line-height:1.65}.glossary{margin-top:16px}.glossary summary{min-height:44px;line-height:44px;font-weight:700;font-size:14px}.glossary dl{font-size:13px}.glossary dt{font-weight:700;margin-top:12px}.glossary dd{margin:3px 0;color:var(--muted)}.footer{display:flex;gap:24px;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px;margin-top:28px;color:var(--muted);font-size:12px}.mobile-result{display:none}.mobile-result a{flex:1;color:white;text-decoration:none;padding:12px 8px}.mobile-result a+a{border-left:1px solid #ffffff44}.skip-link{position:absolute;left:16px;top:-100px;z-index:5;padding:12px;background:white}.skip-link:focus{top:12px}[hidden]{display:none!important}@media(max-width:1100px){.wrap{padding:28px 22px}.layout{grid-template-columns:276px minmax(0,1fr);gap:18px}.card{padding:19px}.toolbar-top{display:block}.actions{margin-top:10px}.parallel{grid-template-columns:1fr}.language.ko{border-left:0;border-top:1px dashed var(--line)}.language{padding:16px 19px}.output-toolbar{position:static}}@media(max-width:730px){body{padding-bottom:66px}.mobile-result{display:flex;position:fixed;bottom:12px;left:16px;right:16px;z-index:4;background:var(--accent);color:white;text-align:center;border-radius:12px;padding:0;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 4px 18px #203b3225}.wrap{padding:22px 16px}.layout{grid-template-columns:1fr}header{display:block}h1{font-size:29px}.badge{display:inline-block;margin-top:14px}.workflow{gap:8px 17px;font-size:12px}.form-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{margin:0}.reference .image-wrap{max-width:250px}.reference-layout{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;align-items:center}.reference .image-wrap{margin:12px 0}.footer{display:block}.footer p+p{margin-top:8px}.output-toolbar{margin-top:0}.language-label{margin-bottom:7px}}@media(max-width:410px){.form-fields,.reference-layout{grid-template-columns:1fr}.reference .image-wrap{max-width:100%;aspect-ratio:1.5}.reference .image-wrap img{object-fit:contain}.actions button{flex:1 1 auto}.card{padding:17px}}
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#output-title">프롬프트 결과로 이동</a>
+<main class="wrap">
+  <header><div><div class="eyebrow">Miniature Island · Prompt Studio</div><h1>미니어처 섬, 3D로 만들기</h1><p class="sub">한글로 조건을 고르고, 영어 요청문과 한글 뜻을 함께 확인하기</p></div><span class="badge">3D 웹 장면 구현용</span></header>
+  <div class="workflow"><span><b>01</b>한글 옵션 선택</span><span><b>02</b>두 언어로 내용 확인</span><span><b>03</b>영문을 코딩 AI에 붙여넣기</span></div>
+  <div class="layout">
+    <aside class="sidebar" aria-labelledby="settings-title">
+      <section class="card"><div class="eyebrow">01 · Scene settings</div><h2 id="settings-title">어떤 섬을 만들까?</h2><p class="small">옵션을 바꾸면 두 언어가 함께 갱신돼요.<br>처음 설정은 새 수업 프롬프트 기준 · AO 포함.</p><form id="cube-form"><div id="fields"></div><button type="reset" class="secondary reset">원본 설정으로 초기화</button></form></section>
+      <section class="card reference" aria-labelledby="reference-title"><h3 id="reference-title">참고 이미지</h3><label class="check-row"><input type="checkbox" id="use-reference" checked>참고 이미지와 함께 요청하기</label><div class="reference-layout"><div class="image-wrap"><img id="preview-image" alt="수업용 등대 섬 참고 이미지" hidden><p id="image-empty" class="image-empty">참고 이미지를 골라<br>함께 살펴보기</p></div><div><label class="upload">내 이미지 선택<input type="file" id="image-input" accept="image/png,image/jpeg,image/webp" aria-label="참고 이미지 파일 선택"></label><p id="image-status" class="file-status" role="status"></p><p class="small">PNG · JPG · WebP / 최대 10 MB<br>이 화면에서만 미리 보기.<br>코딩 AI에는 직접 첨부하기.</p></div></div></section>
+      <details class="card glossary"><summary>낯선 용어 살펴보기</summary><dl><dt>절차적 생성</dt><dd>완성된 모델 파일을 불러오는 대신 코드와 규칙으로 형태 만들기.</dd><dt>높이 필드</dt><dd>수면의 각 위치에 높이 값을 두고, 그 변화로 파도와 파문 표현하기.</dd><dt>코스틱</dt><dd>굴절된 빛이 모여 바닥에 만드는 밝은 무늬.</dd><dt>인스턴싱</dt><dd>같은 도형을 여러 위치에 효율적으로 반복 배치하기.</dd><dt>Ambient Occlusion · AO</dt><dd>틈과 서로 맞닿는 부분에 음영을 더해 물체의 깊이감과 접촉감을 살리는 효과. <a href="https://react-postprocessing.docs.pmnd.rs/effects/ssao" target="_blank" rel="noopener noreferrer">관련 공식 문서</a></dd><dt>피사계 심도</dt><dd>초점이 맞는 깊이의 범위. 주변 흐림으로 미니어처 느낌 강조.</dd><dt>블룸 · 비네트</dt><dd>밝은 부분의 은은한 빛 번짐 · 화면 가장자리의 어두워짐.</dd><dt>fps</dt><dd>1초에 표시하는 화면 수. 프롬프트의 수치는 목표이며 완성 후 직접 측정.</dd></dl></details>
+    </aside>
+    <section class="output" aria-labelledby="output-title">
+      <div class="output-toolbar"><div class="toolbar-top"><div><div class="eyebrow">02 · Read & copy</div><h2 id="output-title" tabindex="-1">영어 요청문과 한글 뜻</h2></div><div class="actions"><button id="copy-en" type="button">영어 전체 복사</button><button id="copy-ko" type="button" class="secondary">한글 전체 복사</button><button id="download" type="button" class="secondary">한영 TXT 저장</button></div></div><p id="output-status" class="status" role="status" aria-live="polite">원본 설정으로 준비했어요. 항목별 뜻을 확인한 뒤 영어를 복사하세요.</p></div>
+      <p class="intro-note">이 요청문은 코딩 AI에게 <strong>움직이는 3D 웹 장면</strong>을 만들도록 전달할 내용이에요. 이 도구에서는 문장을 조합하고, 실제 구현과 실행은 코딩 AI에서 이어가요.</p>
+      <div id="selection-summary" class="current" aria-label="현재 선택한 조건"></div>
+      <div id="sections"></div>
+      <details id="raw-prompts" class="card raw"><summary>전체 문장 펼치기 · 직접 선택해서 복사</summary><p class="small">두 언어는 같은 선택 항목을 기준으로 작성돼요. 세부 문장은 복사한 뒤 AI 입력창에서 수정할 수 있어요.</p><label for="prompt-output">영어 전체 요청문</label><textarea id="prompt-output" readonly lang="en" spellcheck="false"></textarea><label for="korean-output">한글 전체 뜻</label><textarea id="korean-output" readonly spellcheck="false"></textarea></details>
+    </section>
+  </div>
+  <footer class="footer"><p>한글 선택값 + 공통 요구사항 → 영어 요청문과 한글 뜻</p><p>새로고침하면 원본 설정으로 돌아감 · 필요한 문장은 TXT로 저장</p></footer>
+  <noscript><p>이 도구는 브라우저의 JavaScript 실행이 필요해요.</p></noscript>
+</main>
+<nav class="mobile-result" aria-label="도구 구역 이동"><a href="#settings-title">옵션 바꾸기 ↑</a><a href="#output-title">영어·한글 보기 ↓</a></nav>
+<script>
+const CUBE_PROMPT = (() => {
+  const fields = [
+    {
+      id: 'terrain', label: '섬 지형', group: '섬과 바다', default: 'cliffBeach',
+      help: '섬의 실루엣과 해안 형태를 선택해요.',
+      options: [
+        { value: 'cliffBeach', label: '가파른 절벽과 곡선 해변' },
+        { value: 'rocky', label: '바위 능선이 있는 섬' },
+        { value: 'atoll', label: '얕은 석호를 감싼 환초' }
+      ]
+    },
+    {
+      id: 'waterColor', label: '바다 색상', group: '섬과 바다', default: 'turquoise',
+      help: '얕은 물에서 깊은 물로 이어지는 색을 정해요.',
+      options: [
+        { value: 'turquoise', label: '청록색 바다' },
+        { value: 'blue', label: '푸른 바다' },
+        { value: 'emerald', label: '에메랄드빛 바다' }
+      ]
+    },
+    {
+      id: 'vegetation', label: '식생', group: '섬과 바다', default: 'lush',
+      help: '지형 위 식물의 밀도를 선택해요.',
+      options: [
+        { value: 'lush', label: '풍성한 식생' },
+        { value: 'sparse', label: '드문드문 있는 식생' },
+        { value: 'none', label: '식생 없음' }
+      ]
+    },
+    {
+      id: 'motion', label: '큐브 움직임', group: '움직임', default: 'jelly',
+      help: '블록 전체의 반응이에요. 수면의 파문은 별도로 선택해요.',
+      options: [
+        { value: 'jelly', label: '젤리처럼 탄성 있게 반응' },
+        { value: 'tilt', label: '형태를 유지하며 살짝 기울기' },
+        { value: 'still', label: '블록 움직임 없음' }
+      ]
+    },
+    {
+      id: 'ripple', label: '마우스 파문', group: '움직임', default: 'on',
+      help: '마우스가 만든 파문을 켜거나 꺼요. 잔잔한 기본 파도는 유지해요.',
+      options: [
+        { value: 'on', label: '마우스 파문 사용' },
+        { value: 'off', label: '마우스 파문 끄기' }
+      ]
+    },
+    {
+      id: 'background', label: '배경', group: '화면 연출', default: 'ivory',
+      help: '섬 바깥의 배경 색조를 정해요.',
+      options: [
+        { value: 'ivory', label: '아이보리 배경' },
+        { value: 'slate', label: '짙은 슬레이트 배경' },
+        { value: 'sky', label: '밝은 하늘색 배경' }
+      ]
+    },
+    {
+      id: 'ao', label: '공간 음영 (AO)', group: '화면 연출', default: 'on',
+      help: '틈과 서로 맞닿는 부분에 음영을 더해 깊이감을 살려요.',
+      options: [
+        { value: 'on', label: 'AO 사용' },
+        { value: 'off', label: 'AO 끄기' }
+      ]
+    },
+    {
+      id: 'dof', label: '피사계 심도', group: '화면 연출', default: 'on',
+      help: '초점 앞뒤를 흐리게 하는 효과예요.',
+      options: [
+        { value: 'on', label: '피사계 심도 사용' },
+        { value: 'off', label: '피사계 심도 끄기' }
+      ]
+    },
+    {
+      id: 'bloom', label: '빛 번짐', group: '화면 연출', default: 'on',
+      help: '밝은 부분의 은은한 번짐을 선택해요.',
+      options: [
+        { value: 'on', label: '은은한 빛 번짐 사용' },
+        { value: 'off', label: '빛 번짐 끄기' }
+      ]
+    },
+    {
+      id: 'vignette', label: '가장자리 어둡게', group: '화면 연출', default: 'on',
+      help: '화면 가장자리를 살짝 어둡게 하는 비네팅 효과예요.',
+      options: [
+        { value: 'on', label: '은은한 비네팅 사용' },
+        { value: 'off', label: '비네팅 끄기' }
+      ]
+    }
+  ];
+
+  const terrainText = {
+    cliffBeach: {
+      en: 'Place a noise-generated island in one corner of the water block. Give it steep cliffs and a curved sandy beach.',
+      ko: '물 블록의 한쪽 모서리에 노이즈로 생성한 섬을 배치해줘. 가파른 절벽과 곡선을 이루는 모래 해변을 만들어줘.'
+    },
+    rocky: {
+      en: 'Place a noise-generated rocky island in one corner of the water block. Give it rugged rock ridges, steep coastal faces, and small sandy pockets between the rocks.',
+      ko: '물 블록의 한쪽 모서리에 노이즈로 생성한 바위섬을 배치해줘. 거친 바위 능선과 가파른 해안면을 만들고 바위 사이에는 작은 모래 구역을 두어줘.'
+    },
+    atoll: {
+      en: 'Create a low, ring-shaped island using noise, enclosing a shallow lagoon within the water block. Use curved sandy shores and leave the surrounding clear sea visible.',
+      ko: '노이즈를 이용해 물 블록 안의 얕은 석호를 감싸는 낮은 고리 형태의 섬을 만들어줘. 곡선 모래 해안을 만들고 주변의 맑은 바다가 보이게 해줘.'
+    }
+  };
+
+  const waterText = {
+    turquoise: {
+      en: 'Use a green-blue palette, blending pale turquoise in the shallows into deeper teal in deeper water.',
+      ko: '녹색과 파란색이 섞인 팔레트를 사용하고, 얕은 곳의 밝은 청록색에서 깊은 곳의 짙은 청록색으로 이어지게 해줘.'
+    },
+    blue: {
+      en: 'Use a blue palette, blending pale blue in the shallows into deep ocean blue in deeper water.',
+      ko: '푸른색 팔레트를 사용하고, 얕은 곳의 밝은 파란색에서 깊은 곳의 짙은 바다색으로 이어지게 해줘.'
+    },
+    emerald: {
+      en: 'Use an emerald-green palette, blending pale mint in the shallows into deep emerald in deeper water.',
+      ko: '에메랄드빛 녹색 팔레트를 사용하고, 얕은 곳의 밝은 민트색에서 깊은 곳의 짙은 에메랄드색으로 이어지게 해줘.'
+    }
+  };
+
+  const vegetationText = {
+    lush: {
+      en: 'Add lush vegetation on gently sloping terrain using instanced simple geometric shapes.',
+      ko: '경사가 완만한 지형에 단순 도형을 인스턴싱 방식으로 반복 배치해 풍성한 식생을 만들어줘.'
+    },
+    sparse: {
+      en: 'Add sparse vegetation on gently sloping terrain using instanced simple geometric shapes, leaving most of the terrain visible.',
+      ko: '경사가 완만한 지형에 단순 도형을 인스턴싱 방식으로 드문드문 배치해 식생을 만들고, 지형이 대부분 드러나게 해줘.'
+    },
+    none: {
+      en: 'Do not add vegetation. Keep the land, rock, and sand surfaces visible.',
+      ko: '식생은 추가하지 말고 땅, 바위, 모래 표면이 드러나게 해줘.'
+    }
+  };
+
+  const motionText = {
+    jelly: {
+      en: 'Make the whole scene, including the water block and island, respond to the mouse with spring-driven displacement and jelly-like deformation. The upper part should wobble more than the lower part, so the base feels more stable. Keep this whole-block motion separate from the water-surface height-field simulation.',
+      ko: '물 블록과 섬을 포함한 장면 전체가 마우스에 반응해 스프링 기반으로 움직이고 젤리처럼 탄성 있게 변형되게 해줘. 윗부분이 아랫부분보다 더 크게 흔들려 바닥 쪽은 상대적으로 안정적으로 느껴지게 해줘. 이 블록 전체의 움직임은 수면의 높이장 시뮬레이션과 분리해줘.'
+    },
+    tilt: {
+      en: 'Let the whole block and island tilt gently in response to the mouse position while preserving its shape. Keep the block as a rigid form: do not apply elastic deformation. Keep this whole-block tilt separate from the water-surface height-field simulation.',
+      ko: '블록과 섬의 형태를 유지한 채 마우스 위치에 따라 전체가 부드럽게 조금 기울어지게 해줘. 블록은 단단한 형태로 유지하고 탄성 변형은 적용하지 마. 이 블록 전체의 기울기는 수면의 높이장 시뮬레이션과 분리해줘.'
+    },
+    still: {
+      en: 'Keep the whole block and island fixed. Do not apply mouse-driven displacement, tilting, or elastic deformation to them. The water surface should still animate according to the water-surface requirements.',
+      ko: '블록 전체와 섬은 고정해줘. 마우스에 따른 위치 이동, 기울기, 탄성 변형은 적용하지 마. 수면은 별도로 지정한 수면 요구사항에 따라 계속 움직이게 해줘.'
+    }
+  };
+
+  const backgroundText = {
+    ivory: { en: 'Use an ivory, cream-toned background.', ko: '아이보리 계열의 크림색 배경을 사용해줘.' },
+    slate: { en: 'Use a dark slate-colored background.', ko: '짙은 슬레이트색 배경을 사용해줘.' },
+    sky: { en: 'Use a light sky-blue background.', ko: '밝은 하늘색 배경을 사용해줘.' }
+  };
+
+  function normalize(values) {
+    const input = values && typeof values === 'object' ? values : {};
+    return Object.fromEntries(fields.map(field => [
+      field.id,
+      field.options.some(option => option.value === input[field.id]) ? input[field.id] : field.default
+    ]));
+  }
+
+  function section(id, titleKo, titleEn, ko, en) {
+    return { id, titleKo, titleEn, ko, en };
+  }
+
+  function build(values = {}, options = {}) {
+    const value = normalize(values);
+    const useReference = options && options.useReference === true;
+    const water = waterText[value.waterColor];
+    const terrain = terrainText[value.terrain];
+    const vegetation = vegetationText[value.vegetation];
+    const motion = motionText[value.motion];
+    const background = backgroundText[value.background];
+    const landscape = {
+      cliffBeach: { en: 'cliffs, a beach, and clear seawater', ko: '절벽과 해변, 맑은 바닷물이' },
+      rocky: { en: 'rock ridges, small sandy shores, and clear seawater', ko: '바위 능선과 작은 모래 해안, 맑은 바닷물이' },
+      atoll: { en: 'a ring-shaped island, a shallow lagoon, and clear seawater', ko: '고리 형태의 섬과 얕은 석호, 맑은 바닷물이' }
+    }[value.terrain];
+
+    const introEn = [
+      `Create an interactive website with the theme “Miniature Island”. Render a miniature with ${landscape.en} inside a rounded, transparent water block.`,
+      useReference
+        ? 'Use the attached image as a visual reference for the composition and the miniature island inside the water block, while following the selected requirements below.'
+        : 'Develop the composition from the written requirements below; no reference image is attached.',
+      'Implement this as an interactive 3D web scene.'
+    ].join(' ');
+    const introKo = [
+      `“미니어처 섬”을 주제로 한 인터랙티브 웹사이트를 만들어줘. 모서리가 둥글고 투명한 물 블록 안에 ${landscape.ko} 있는 미니어처를 표현해줘.`,
+      useReference
+        ? '첨부 이미지는 구도와 물 블록 안의 미니어처 섬을 위한 시각적 참고로 사용하되, 아래에서 선택한 요구사항을 따라줘.'
+        : '참고 이미지는 첨부하지 않았으므로 아래의 글로 된 요구사항을 바탕으로 구도를 구성해줘.',
+      '상호작용하는 3D 웹 장면으로 구현해줘.'
+    ].join(' ');
+
+    const surfaceEn = [
+      'Implement the upper water surface with a GPU height-field simulation, computing changes in surface height.',
+      value.ripple === 'on'
+        ? 'Mouse interaction should create ripples, and gentle natural waves should continue when there is no input.'
+        : 'Disable mouse-generated ripples. Keep gentle natural waves running independently of mouse input.',
+      'Include reflections, a blend of shallow- and deep-water colors based on depth, and foam along the shoreline.'
+    ].join(' ');
+    const surfaceKo = [
+      '윗면 수면은 GPU 높이장 시뮬레이션으로 구현하고 수면 높이의 변화를 계산해줘.',
+      value.ripple === 'on'
+        ? '마우스 조작으로 파문이 생기고, 입력이 없을 때도 잔잔한 자연스러운 파도가 이어지게 해줘.'
+        : '마우스로 발생하는 파문은 끄고, 마우스 입력과 관계없이 잔잔한 자연스러운 파도는 유지해줘.',
+      '반사, 깊이에 따른 얕은 물과 깊은 물의 색 혼합, 해안선을 따라 생기는 거품을 포함해줘.'
+    ].join(' ');
+
+    const presentationEn = [
+      background.en,
+      'Use a long-focal-length camera looking down from above, with a refined product-photography composition.',
+      value.ao === 'on' ? 'Apply Ambient Occlusion (AO) to emphasize crevices and the areas where objects meet the ground.' : 'Do not apply Ambient Occlusion (AO).',
+      value.dof === 'on' ? 'Enable depth of field to emphasize the miniature appearance.' : 'Disable depth of field and keep the scene in focus.',
+      value.bloom === 'on' ? 'Add subtle bloom.' : 'Do not apply bloom.',
+      value.vignette === 'on' ? 'Add a subtle vignette.' : 'Do not apply a vignette.'
+    ].join(' ');
+    const presentationKo = [
+      background.ko,
+      '위에서 내려다보는 장초점 카메라와 정돈된 제품 촬영 느낌의 구도를 사용해줘.',
+      value.ao === 'on' ? 'Ambient Occlusion(AO)을 적용해 틈과 물체가 바닥과 맞닿는 부분의 깊이감을 강조해줘.' : 'Ambient Occlusion(AO)은 적용하지 마.',
+      value.dof === 'on' ? '피사계 심도 효과를 적용해 미니어처 느낌을 강조해줘.' : '피사계 심도 효과는 끄고 장면의 초점을 선명하게 유지해줘.',
+      value.bloom === 'on' ? '은은한 빛 번짐을 추가해줘.' : '빛 번짐은 적용하지 마.',
+      value.vignette === 'on' ? '은은한 비네팅을 추가해줘.' : '비네팅은 적용하지 마.'
+    ].join(' ');
+
+    const controls = [
+      { en: 'water color', ko: '물 색상' },
+      { en: 'wave height', ko: '파고' }
+    ];
+    if (value.ripple === 'on') controls.push({ en: 'ripple strength', ko: '마우스 파문 강도' });
+    controls.push({ en: 'sun angle', ko: '태양 각도' }, { en: 'tide level', ko: '조수 수위' });
+    if (value.motion === 'jelly') controls.push({ en: 'jelly stiffness', ko: '젤리 변형의 부드러움·단단함' });
+    if (value.dof === 'on') controls.push({ en: 'depth of field', ko: '피사계 심도' });
+
+    return [
+      section('intro', '만들 장면', 'Scene', introKo, introEn),
+      section('stack', '기술 구성', 'Technology stack',
+        'three, Vite + React + TypeScript, @react-three/fiber v9, @react-three/drei, @react-three/postprocessing를 사용하고, 매개변수 조절 패널은 Leva(leva 패키지)로 만들어줘. 모든 3D 요소는 코드로 절차적으로 생성하고 모델 파일은 임의로 불러오지 마. 환경 조명은 drei의 Environment 컴포넌트에서 제공하는 프리셋을 사용해줘. R3F와 drei의 공식 권장 구현 방식을 따라줘.',
+        'Use three, Vite + React + TypeScript, @react-three/fiber v9, @react-three/drei, and @react-three/postprocessing. Build the parameter control panel with Leva (the leva package). Generate all 3D elements procedurally in code. Do not arbitrarily load model files. Use a preset from drei’s Environment component for environment lighting. Follow official R3F and drei best practices.'),
+      section('waterBlock', '투명한 물 블록', 'Transparent water block',
+        `모서리가 둥글고 투명한 레진 느낌의 블록을 만들고 MeshTransmissionMaterial을 사용해줘. 별도의 단단한 용기 안에 물을 넣는 형태가 아니라 블록 자체가 바닷물을 표현하게 해줘. ${water.ko}`,
+        `Create a rounded, transparent, resin-like block using MeshTransmissionMaterial. The block itself should represent seawater, rather than a separate solid container filled with water. ${water.en}`),
+      section('seabed', '해저와 바위', 'Seabed and rocks',
+        '모래 해저를 만들고, 빛이 굴절·집중되어 생기는 무늬인 코스틱을 표현해줘. 물속 바위와 수면 위로 일부 드러나는 바위를 배치해줘.',
+        'Create a sandy seabed with caustic light patterns caused by refracted light concentrating on the bottom. Add underwater rocks and rocks that partially emerge above the surface.'),
+      section('waterSurface', '수면', 'Water surface', surfaceKo, surfaceEn),
+      section('island', '섬 지형과 식생', 'Island terrain and vegetation',
+        `${terrain.ko} 높이와 경사에 따라 지형의 색을 달리해 해변, 땅, 바위가 구분되게 해줘. ${vegetation.ko}`,
+        `${terrain.en} Color the terrain according to elevation and slope so that beach, land, and rock surfaces are distinguishable. ${vegetation.en}`),
+      section('motion', '블록 움직임', 'Block motion', motion.ko, motion.en),
+      section('presentation', '화면 연출', 'Presentation', presentationKo, presentationEn),
+      section('controls', 'Leva 조절 패널', 'Leva controls',
+        `Leva 패널에서 다음 항목을 실시간으로 조절할 수 있게 해줘: ${controls.map(control => control.ko).join(', ')}. 비활성화한 효과의 조절 항목은 패널에 넣지 마.`,
+        `Provide real-time Leva controls for: ${controls.map(control => control.en).join(', ')}. Do not include controls for effects that are disabled.`),
+      section('requirements', '성능과 구현 순서', 'Performance and implementation',
+        '데스크톱 60fps, 모바일 30fps 이상을 목표로 하고, 성능이 부족하면 품질을 자동으로 낮추게 해줘. 컴포넌트는 역할에 따라 분리하고 높이장 시뮬레이션은 독립적인 훅으로 구성해줘. 우선 전체 장면과 상호작용이 작동하도록 완성한 다음 재질과 시각적 표현을 다듬어줘.',
+        'Target 60fps on desktop and at least 30fps on mobile, automatically reducing quality when performance is insufficient. Separate components by responsibility and put the height-field simulation in its own hook. First make the complete scene and interactions work, then refine materials and visual appearance.')
+    ];
+  }
+
+  function fullPrompt(sections, lang = 'en') {
+    const language = lang === 'ko' ? 'ko' : 'en';
+    const titleKey = language === 'ko' ? 'titleKo' : 'titleEn';
+    return sections.map((item, index) => `${index + 1}. ${item[titleKey]}\n${item[language]}`).join('\n\n');
+  }
+
+  return { fields, build, fullPrompt };
+})();
+
+</script>
+<script>
+'use strict';
+// 수업 수정 지점: 위 CUBE_PROMPT의 한글/영문 표현을 함께 고치면 의미를 맞출 수 있어요.
+const form=document.getElementById('cube-form');
+const status=document.getElementById('output-status');
+const english=document.getElementById('prompt-output');
+const korean=document.getElementById('korean-output');
+const reference=document.getElementById('use-reference');
+const fieldContainer=document.getElementById('fields');
+let currentSections=[];
+const groups=new Map();
+for(const field of CUBE_PROMPT.fields){
+  if(!groups.has(field.group)){
+    const set=document.createElement('fieldset');set.className='form-group';
+    const legend=document.createElement('legend');legend.textContent=field.group;set.append(legend);
+    const fields=document.createElement('div');fields.className='form-fields';set.append(fields);fieldContainer.append(set);groups.set(field.group,fields);
+  }
+  const wrap=document.createElement('div');wrap.className='field';
+  const label=document.createElement('label');label.htmlFor=field.id;label.textContent=field.label;
+  const select=document.createElement('select');select.id=field.id;select.name=field.id;select.setAttribute('aria-describedby',field.id+'-help');
+  for(const option of field.options){const node=document.createElement('option');node.value=option.value;node.textContent=option.label;node.defaultSelected=option.value===field.default;select.append(node);}
+  const help=document.createElement('p');help.className='field-help';help.id=field.id+'-help';help.textContent=field.help;
+  wrap.append(label,select,help);groups.get(field.group).append(wrap);
+}
+function readValues(){return Object.fromEntries(CUBE_PROMPT.fields.map(field=>[field.id,form.elements[field.id].value]));}
+function fullText(lang){return currentSections.map((s,index)=>`${String(index+1).padStart(2,'0')}. ${lang==='en'?s.titleEn:s.titleKo}\n${s[lang]}`).join('\n\n');}
+function render(announce=true){
+  const values=readValues();currentSections=CUBE_PROMPT.build(values,{useReference:reference.checked});
+  const fragment=document.createDocumentFragment();
+  currentSections.forEach((section,index)=>{
+    const card=document.createElement('article');card.className='parallel-card';card.id='section-'+section.id;
+    const heading=document.createElement('div');heading.className='section-heading';
+    const number=document.createElement('span');number.className='section-number';number.textContent=String(index+1).padStart(2,'0');
+    const title=document.createElement('h3');title.textContent=section.titleKo;heading.append(number,title);card.append(heading);
+    const pair=document.createElement('div');pair.className='parallel';
+    for(const lang of ['en','ko']){
+      const column=document.createElement('div');column.className='language '+lang;column.lang=lang;
+      const label=document.createElement('p');label.className='language-label';label.textContent=lang==='en'?'ENGLISH · AI에 입력할 내용':'한국어 · 같은 내용의 뜻';
+      const text=document.createElement('p');text.className='prompt-text';text.textContent=section[lang];column.append(label,text);pair.append(column);
+    }
+    card.append(pair);fragment.append(card);
+  });
+  document.getElementById('sections').replaceChildren(fragment);
+  english.value=fullText('en');korean.value=fullText('ko');
+  const tags=CUBE_PROMPT.fields.map(field=>{const el=document.createElement('span');el.className='tag';el.textContent=field.options.find(o=>o.value===values[field.id]).label;return el;});
+  document.getElementById('selection-summary').replaceChildren(...tags);
+  if(announce)status.textContent='선택한 조건을 영어와 한글에 함께 반영했어요.';
+}
+form.addEventListener('submit',e=>e.preventDefault());
+form.addEventListener('change',()=>render());
+form.addEventListener('reset',e=>{
+  e.preventDefault();for(const field of CUBE_PROMPT.fields)form.elements[field.id].value=field.default;
+  reference.checked=true;render(false);status.textContent='원본 프롬프트 설정으로 돌아왔어요. 선택한 참고 이미지는 유지돼요.';
+});
+reference.addEventListener('change',()=>render());
+async function copy(lang){
+  const source=lang==='en'?english:korean;
+  try{
+    if(!navigator.clipboard?.writeText)throw new Error('No clipboard');
+    await navigator.clipboard.writeText(source.value);
+    status.textContent=lang==='en'?'영어 전체 복사 완료. 코딩 AI에 붙여넣고, 참고 이미지를 사용할 때는 함께 첨부하세요.':'한글 전체 뜻을 복사했어요.';
+  }catch{
+    document.getElementById('raw-prompts').open=true;source.focus();source.select();
+    status.textContent='자동 복사가 제한되어 전체 문장을 선택했어요. Ctrl+C 또는 ⌘C로 직접 복사하세요.';
+  }
+}
+document.getElementById('copy-en').addEventListener('click',()=>copy('en'));
+document.getElementById('copy-ko').addEventListener('click',()=>copy('ko'));
+document.getElementById('download').addEventListener('click',()=>{
+  const options=CUBE_PROMPT.fields.map(field=>`${field.label}: ${field.options.find(o=>o.value===form.elements[field.id].value).label}`).join('\n');
+  const body=`미니어처 섬 · 3D 구현 프롬프트\n\n선택한 조건\n${options}\n참고 이미지 요청: ${reference.checked?'사용':'사용 안 함'}\n\n=== ENGLISH ===\n\n${english.value}\n\n=== 한국어 ===\n\n${korean.value}\n`;
+  const url=URL.createObjectURL(new Blob(['\uFEFF'+body],{type:'text/plain;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='miniature-island-3d-prompt-en-ko.txt';a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='영어·한글과 선택한 조건의 TXT 저장을 요청했어요.';
+});
+const imageInput=document.getElementById('image-input');
+const preview=document.getElementById('preview-image');
+const empty=document.getElementById('image-empty');
+const imageStatus=document.getElementById('image-status');
+let imageVersion=0;
+function showImage(src,alt){preview.src=src;preview.alt=alt;preview.hidden=false;empty.hidden=true;}
+function loadExample(){
+  const version=++imageVersion;const sample=new Image();
+  sample.onload=()=>{if(version===imageVersion){showImage('lighthouse-b.png','수업용 등대 섬 참고 이미지 · 실제 3D 미리보기가 아님');imageStatus.textContent='수업용 정지 이미지 · 내 이미지로 교체 가능';}};
+  sample.onerror=()=>{if(version===imageVersion){preview.hidden=true;empty.hidden=false;imageStatus.textContent='참고 이미지 파일이 없어도 요청문 작성 가능';}};
+  sample.src='lighthouse-b.png';
+}
+imageInput.addEventListener('change',()=>{
+  const version=++imageVersion;const file=imageInput.files[0];if(!file)return;
+  if(!['image/png','image/jpeg','image/webp'].includes(file.type)){imageStatus.textContent='PNG, JPG, WebP 파일을 선택해 주세요.';imageInput.value='';return;}
+  if(file.size>10*1024*1024){imageStatus.textContent='10 MB 이하의 이미지를 선택해 주세요.';imageInput.value='';return;}
+  const reader=new FileReader();
+  reader.onload=()=>{if(version!==imageVersion)return;const candidate=new Image();
+    candidate.onload=()=>{if(version!==imageVersion)return;showImage(String(reader.result),'내가 선택한 참고 이미지');imageStatus.textContent=file.name+' · 이 기기에서만 표시';reference.checked=true;render();};
+    candidate.onerror=()=>{if(version===imageVersion){imageStatus.textContent='이미지를 읽지 못했어요. 다른 파일을 선택해 주세요.';imageInput.value='';}};
+    candidate.src=String(reader.result);
+  };
+  reader.onerror=()=>{if(version===imageVersion)imageStatus.textContent='파일을 읽지 못했어요. 다시 선택해 주세요.';};reader.readAsDataURL(file);
+});
+render(false);loadExample();
+</script>
+</body>
+</html>
