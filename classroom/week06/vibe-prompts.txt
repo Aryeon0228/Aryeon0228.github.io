@@ -1,0 +1,140 @@
+﻿바이브코딩 · 학생용 복사 프롬프트
+PPT 페이지 순서
+
+영어는 코딩 AI에 입력할 요청문, 한글은 같은 내용의 뜻.
+[대괄호]를 자기 조건으로 바꾸고, 실제 프로젝트와 참고 자료를 함께 전달하기.
+전체 목표 프롬프트와 단계별 실행 요청을 구분하기. 생성 결과는 브라우저에서 직접 확인하기.
+
+
+==================================================
+05쪽 · AI 요청 1 · 내 장면 크리틱
+==================================================
+영어 · 복사해서 입력
+Review my attached 3D island screenshot and relevant code. Actions I tried: [mouse movement / changing settings]. What I observed: [visible behavior]. Intended experience: [shape, information, or response to communicate more clearly]. Suggest up to three improvements to composition, graphics, or interaction feedback. Separate observed facts from hypotheses. Do not infer GPU implementation or performance from an image alone. If you cannot inspect the materials, say so. I will select one improvement before defining the changes.
+
+한글 · 같은 요청의 뜻
+첨부한 내 3D 섬 화면과 관련 코드를 살펴봐줘.
+직접 해본 조작: [마우스 이동 / 설정 변경]
+관찰한 현상: [무엇이 어떻게 보였는지]
+원하는 경험: [더 잘 전달할 형태·정보·반응]
+화면 구성, 그래픽, 조작 피드백에서 개선 후보를 최대 3개 제안해줘. 확인한 사실과 원인 가설을 구분하고, 화면만으로 GPU 구현이나 성능을 단정하지 마. 자료를 읽지 못했다면 그 사실을 알려줘. 내가 하나를 고른 뒤 수정 범위를 정할게.
+
+
+==================================================
+08쪽 · 원본 설정 · 3D 구현 전체 프롬프트
+==================================================
+영어 · 복사해서 입력
+1. Scene
+Create an interactive website with the theme “Miniature Island”. Render a miniature with cliffs, a beach, and clear seawater inside a rounded, transparent water block. Use the attached image as a visual reference for the composition and the miniature island inside the water block, while following the selected requirements below. Implement this as an interactive 3D web scene.
+
+2. Technology stack
+Use three, Vite + React + TypeScript, @react-three/fiber v9, @react-three/drei, and @react-three/postprocessing. Build the parameter control panel with Leva (the leva package). Generate all 3D elements procedurally in code. Do not arbitrarily load model files. Use a preset from drei’s Environment component for environment lighting. Follow official R3F and drei best practices.
+
+3. Transparent water block
+Create a rounded, transparent, resin-like block using MeshTransmissionMaterial. The block itself should represent seawater, rather than a separate solid container filled with water. Use a green-blue palette, blending pale turquoise in the shallows into deeper teal in deeper water.
+
+4. Seabed and rocks
+Create a sandy seabed with caustic light patterns caused by refracted light concentrating on the bottom. Add underwater rocks and rocks that partially emerge above the surface.
+
+5. Water surface
+Implement the upper water surface with a GPU height-field simulation, computing changes in surface height. Mouse interaction should create ripples, and gentle natural waves should continue when there is no input. Include reflections, a blend of shallow- and deep-water colors based on depth, and foam along the shoreline.
+
+6. Island terrain and vegetation
+Place a noise-generated island in one corner of the water block. Give it steep cliffs and a curved sandy beach. Color the terrain according to elevation and slope so that beach, land, and rock surfaces are distinguishable. Add lush vegetation on gently sloping terrain using instanced simple geometric shapes.
+
+7. Block motion
+Make the whole scene, including the water block and island, respond to the mouse with spring-driven displacement and jelly-like deformation. The upper part should wobble more than the lower part, so the base feels more stable. Keep this whole-block motion separate from the water-surface height-field simulation.
+
+8. Presentation
+Use an ivory, cream-toned background. Use a long-focal-length camera looking down from above, with a refined product-photography composition. Apply Ambient Occlusion (AO) to emphasize crevices and the areas where objects meet the ground. Enable depth of field to emphasize the miniature appearance. Add subtle bloom. Add a subtle vignette.
+
+9. Leva controls
+Provide real-time Leva controls for: water color, wave height, ripple strength, sun angle, tide level, jelly stiffness, depth of field. Do not include controls for effects that are disabled.
+
+10. Performance and implementation
+Target 60fps on desktop and at least 30fps on mobile, automatically reducing quality when performance is insufficient. Separate components by responsibility and put the height-field simulation in its own hook. First make the complete scene and interactions work, then refine materials and visual appearance.
+
+한글 · 같은 요청의 뜻
+1. 만들 장면
+“미니어처 섬”을 주제로 한 인터랙티브 웹사이트를 만들어줘. 모서리가 둥글고 투명한 물 블록 안에 절벽과 해변, 맑은 바닷물이 있는 미니어처를 표현해줘. 첨부 이미지는 구도와 물 블록 안의 미니어처 섬을 위한 시각적 참고로 사용하되, 아래에서 선택한 요구사항을 따라줘. 상호작용하는 3D 웹 장면으로 구현해줘.
+
+2. 기술 구성
+three, Vite + React + TypeScript, @react-three/fiber v9, @react-three/drei, @react-three/postprocessing를 사용하고, 매개변수 조절 패널은 Leva(leva 패키지)로 만들어줘. 모든 3D 요소는 코드로 절차적으로 생성하고 모델 파일은 임의로 불러오지 마. 환경 조명은 drei의 Environment 컴포넌트에서 제공하는 프리셋을 사용해줘. R3F와 drei의 공식 권장 구현 방식을 따라줘.
+
+3. 투명한 물 블록
+모서리가 둥글고 투명한 레진 느낌의 블록을 만들고 MeshTransmissionMaterial을 사용해줘. 별도의 단단한 용기 안에 물을 넣는 형태가 아니라 블록 자체가 바닷물을 표현하게 해줘. 녹색과 파란색이 섞인 팔레트를 사용하고, 얕은 곳의 밝은 청록색에서 깊은 곳의 짙은 청록색으로 이어지게 해줘.
+
+4. 해저와 바위
+모래 해저를 만들고, 빛이 굴절·집중되어 생기는 무늬인 코스틱을 표현해줘. 물속 바위와 수면 위로 일부 드러나는 바위를 배치해줘.
+
+5. 수면
+윗면 수면은 GPU 높이장 시뮬레이션으로 구현하고 수면 높이의 변화를 계산해줘. 마우스 조작으로 파문이 생기고, 입력이 없을 때도 잔잔한 자연스러운 파도가 이어지게 해줘. 반사, 깊이에 따른 얕은 물과 깊은 물의 색 혼합, 해안선을 따라 생기는 거품을 포함해줘.
+
+6. 섬 지형과 식생
+물 블록의 한쪽 모서리에 노이즈로 생성한 섬을 배치해줘. 가파른 절벽과 곡선을 이루는 모래 해변을 만들어줘. 높이와 경사에 따라 지형의 색을 달리해 해변, 땅, 바위가 구분되게 해줘. 경사가 완만한 지형에 단순 도형을 인스턴싱 방식으로 반복 배치해 풍성한 식생을 만들어줘.
+
+7. 블록 움직임
+물 블록과 섬을 포함한 장면 전체가 마우스에 반응해 스프링 기반으로 움직이고 젤리처럼 탄성 있게 변형되게 해줘. 윗부분이 아랫부분보다 더 크게 흔들려 바닥 쪽은 상대적으로 안정적으로 느껴지게 해줘. 이 블록 전체의 움직임은 수면의 높이장 시뮬레이션과 분리해줘.
+
+8. 화면 연출
+아이보리 계열의 크림색 배경을 사용해줘. 위에서 내려다보는 장초점 카메라와 정돈된 제품 촬영 느낌의 구도를 사용해줘. Ambient Occlusion(AO)을 적용해 틈과 물체가 바닥과 맞닿는 부분의 깊이감을 강조해줘. 피사계 심도 효과를 적용해 미니어처 느낌을 강조해줘. 은은한 빛 번짐을 추가해줘. 은은한 비네팅을 추가해줘.
+
+9. Leva 조절 패널
+Leva 패널에서 다음 항목을 실시간으로 조절할 수 있게 해줘: 물 색상, 파고, 마우스 파문 강도, 태양 각도, 조수 수위, 젤리 변형의 부드러움·단단함, 피사계 심도. 비활성화한 효과의 조절 항목은 패널에 넣지 마.
+
+10. 성능과 구현 순서
+데스크톱 60fps, 모바일 30fps 이상을 목표로 하고, 성능이 부족하면 품질을 자동으로 낮추게 해줘. 컴포넌트는 역할에 따라 분리하고 높이장 시뮬레이션은 독립적인 훅으로 구성해줘. 우선 전체 장면과 상호작용이 작동하도록 완성한 다음 재질과 시각적 표현을 다듬어줘.
+
+
+==================================================
+09쪽 · AI 요청 2 · 코드 구조 읽기
+==================================================
+영어 · 복사해서 입력
+Explain the structure of the attached bilingual 3D prompt tool without editing it yet. Identify the actual functions and variables connecting Korean option labels, internal values, English/Korean mappings, conditional Leva requirements, rendering, copying, and TXT download. Trace what changes in both languages and in the Leva section when [no block motion] is selected. Distinguish visible information from facts confirmed in code. If you cannot read the file, request the materials you need.
+
+한글 · 같은 요청의 뜻
+첨부한 한영 3D 프롬프트 도구의 구조를 설명해줘. 아직 코드는 수정하지 마.
+한글 선택 항목, 내부 선택값, 영어·한글 문장 매핑, 관련 Leva 조건, 화면 갱신, 복사·TXT 저장이 어디에서 연결되는지 실제 함수·변수 이름으로 알려줘.
+[블록 움직임 없음]을 선택했을 때 두 언어의 움직임 설명과 Leva 항목이 어떻게 달라지는지 추적해줘. 화면에 보이는 정보와 코드에서 확인한 사실을 구분하고, 파일을 읽지 못했다면 필요한 자료를 요청해줘.
+
+
+==================================================
+12쪽 · AI 요청 3 · 개선 한 가지
+==================================================
+영어 · 복사해서 입력
+Improve one aspect of a copy of the attached tool. Observation: [which choice or action was unclear and how]. Intent: [what users should understand or do more easily]. Change: [one help text, option wording, or result presentation issue]. Preserve the bilingual correspondence, other option meanings, copying, and TXT download. First inspect existing functionality and identify the change location. Modify only that part and explain how to compare before and after. If mapped wording changes, update both languages consistently. Do not claim verification without running it.
+
+한글 · 같은 요청의 뜻
+첨부한 예제 도구 사본에서 한 가지만 개선해줘.
+관찰: [어떤 선택·조작에서 무엇이 불분명했는지]
+의도: [사용자가 무엇을 더 쉽게 이해하거나 할 수 있어야 하는지]
+변경: [도움말 / 선택 항목의 표현 / 결과 표시 중 한 가지]
+유지: 기존 한영 대응, 다른 선택의 의미, 복사·TXT 저장.
+먼저 이미 있는 기능과 수정할 위치를 확인해줘. 해당 부분만 수정하고 변경 전후를 비교할 순서를 알려줘. 번역 문장을 바꾸면 영어와 한글을 함께 맞춰줘. 실행하지 않았다면 검증 완료라고 말하지 마.
+
+
+==================================================
+18쪽 · AI 요청 4 · 의미 연동 확장
+==================================================
+영어 · 복사해서 입력
+Extend one option in the attached bilingual prompt tool. New choice: [vegetation → shrubs only]. Meaning in both languages: [place low shrubs only and exclude trees]. Affected sections: [vegetation text and related Leva requirements only if needed]. Preserve the technology stack, water behavior, and existing meanings of other choices. Explain the data and conditional branches to change first. Add both language versions and remove contradictory instructions. Propose tests for defaults, the new choice, no vegetation, and reset. Do not claim that the 3D scene already implements the choice.
+
+한글 · 같은 요청의 뜻
+첨부한 한영 프롬프트 도구에 선택 하나를 확장하고 싶어.
+새 선택: [식생 → 관목만]
+영어·한글 의미: [낮은 관목만 배치하고 나무는 제외]
+영향받을 곳: [식생 본문 / 필요한 경우 관련 Leva 요구]
+유지: 기술 구성, 수면, 다른 선택의 기존 의미.
+먼저 변경할 데이터와 조건 분기를 설명해줘. 영어·한글을 함께 추가하고 반대 지시가 남지 않게 해줘. 기본값·새 선택·식생 없음·초기화를 비교할 테스트를 제안해줘. 3D 장면에 실제로 구현됐다는 판정은 하지 마.
+
+
+==================================================
+20쪽 · AI 요청 5 · 검증 보조
+==================================================
+영어 · 복사해서 입력
+Help test the attached revision. The change is [one improvement]. Create a table of expected English, Korean, and Leva requirements for defaults, the changed choice, related effects turned off, and reset. Include copying, TXT download, keyboard operation, and a narrow viewport. Look for contradictory instructions remaining together. Distinguish tests actually executed from conclusions based only on reading code; mark unexecuted checks as unverified. Do not describe prompt-output validation as validation of the actual 3D implementation.
+
+한글 · 같은 요청의 뜻
+첨부한 수정본의 테스트를 도와줘. 변경 내용은 [한 가지 개선]이야.
+기본값, 변경한 선택, 관련 기능 끄기, 원본 초기화에서 영어·한글·Leva 조건의 예상 결과를 표로 정리해줘. 복사·TXT 저장·키보드·좁은 화면도 포함해줘.
+상반된 지시가 함께 남는 경우를 찾아줘. 실제 실행한 테스트와 코드만 읽어 판단한 항목을 구분하고, 실행하지 못한 항목은 미확인으로 표시해줘. 도구의 문장 검증을 실제 3D 구현 검증이라고 부르지 마.

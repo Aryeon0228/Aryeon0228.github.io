@@ -1,0 +1,69 @@
+﻿미니어처 섬 · 전체 목표 프롬프트
+최신 도구의 기본값, 참고 이미지 사용 기준
+
+모든 기능을 한 수업 안에 완성하는 과제가 아님. 기본 실행 요청을 이어 붙여 오늘의 범위를 지정하기.
+참고 이미지는 코딩 AI 대화에 직접 첨부하기. 첨부하지 않으면 예제 도구의 참고 이미지 사용을 끄고 다시 복사하기.
+
+ENGLISH
+
+1. Scene
+Create an interactive website with the theme “Miniature Island”. Render a miniature with cliffs, a beach, and clear seawater inside a rounded, transparent water block. Use the attached image as a visual reference for the composition and the miniature island inside the water block, while following the selected requirements below. Implement this as an interactive 3D web scene.
+
+2. Technology stack
+Use three, Vite + React + TypeScript, @react-three/fiber v9, @react-three/drei, and @react-three/postprocessing. Build the parameter control panel with Leva (the leva package). Generate all 3D elements procedurally in code. Do not arbitrarily load model files. Use a preset from drei’s Environment component for environment lighting. Follow official R3F and drei best practices.
+
+3. Transparent water block
+Create a rounded, transparent, resin-like block using MeshTransmissionMaterial. The block itself should represent seawater, rather than a separate solid container filled with water. Use a green-blue palette, blending pale turquoise in the shallows into deeper teal in deeper water.
+
+4. Seabed and rocks
+Create a sandy seabed with caustic light patterns caused by refracted light concentrating on the bottom. Add underwater rocks and rocks that partially emerge above the surface.
+
+5. Water surface
+Implement the upper water surface with a GPU height-field simulation, computing changes in surface height. Mouse interaction should create ripples, and gentle natural waves should continue when there is no input. Include reflections, a blend of shallow- and deep-water colors based on depth, and foam along the shoreline.
+
+6. Island terrain and vegetation
+Place a noise-generated island in one corner of the water block. Give it steep cliffs and a curved sandy beach. Color the terrain according to elevation and slope so that beach, land, and rock surfaces are distinguishable. Add lush vegetation on gently sloping terrain using instanced simple geometric shapes.
+
+7. Block motion
+Make the whole scene, including the water block and island, respond to the mouse with spring-driven displacement and jelly-like deformation. The upper part should wobble more than the lower part, so the base feels more stable. Keep this whole-block motion separate from the water-surface height-field simulation.
+
+8. Presentation
+Use an ivory, cream-toned background. Use a long-focal-length camera looking down from above, with a refined product-photography composition. Apply Ambient Occlusion (AO) to emphasize crevices and the areas where objects meet the ground. Enable depth of field to emphasize the miniature appearance. Add subtle bloom. Add a subtle vignette.
+
+9. Leva controls
+Provide real-time Leva controls for: water color, wave height, ripple strength, sun angle, tide level, jelly stiffness, depth of field. Do not include controls for effects that are disabled.
+
+10. Performance and implementation
+Target 60fps on desktop and at least 30fps on mobile, automatically reducing quality when performance is insufficient. Separate components by responsibility and put the height-field simulation in its own hook. First make the complete scene and interactions work, then refine materials and visual appearance.
+
+한국어 뜻
+
+1. 만들 장면
+“미니어처 섬”을 주제로 한 인터랙티브 웹사이트를 만들어줘. 모서리가 둥글고 투명한 물 블록 안에 절벽과 해변, 맑은 바닷물이 있는 미니어처를 표현해줘. 첨부 이미지는 구도와 물 블록 안의 미니어처 섬을 위한 시각적 참고로 사용하되, 아래에서 선택한 요구사항을 따라줘. 상호작용하는 3D 웹 장면으로 구현해줘.
+
+2. 기술 구성
+three, Vite + React + TypeScript, @react-three/fiber v9, @react-three/drei, @react-three/postprocessing를 사용하고, 매개변수 조절 패널은 Leva(leva 패키지)로 만들어줘. 모든 3D 요소는 코드로 절차적으로 생성하고 모델 파일은 임의로 불러오지 마. 환경 조명은 drei의 Environment 컴포넌트에서 제공하는 프리셋을 사용해줘. R3F와 drei의 공식 권장 구현 방식을 따라줘.
+
+3. 투명한 물 블록
+모서리가 둥글고 투명한 레진 느낌의 블록을 만들고 MeshTransmissionMaterial을 사용해줘. 별도의 단단한 용기 안에 물을 넣는 형태가 아니라 블록 자체가 바닷물을 표현하게 해줘. 녹색과 파란색이 섞인 팔레트를 사용하고, 얕은 곳의 밝은 청록색에서 깊은 곳의 짙은 청록색으로 이어지게 해줘.
+
+4. 해저와 바위
+모래 해저를 만들고, 빛이 굴절·집중되어 생기는 무늬인 코스틱을 표현해줘. 물속 바위와 수면 위로 일부 드러나는 바위를 배치해줘.
+
+5. 수면
+윗면 수면은 GPU 높이장 시뮬레이션으로 구현하고 수면 높이의 변화를 계산해줘. 마우스 조작으로 파문이 생기고, 입력이 없을 때도 잔잔한 자연스러운 파도가 이어지게 해줘. 반사, 깊이에 따른 얕은 물과 깊은 물의 색 혼합, 해안선을 따라 생기는 거품을 포함해줘.
+
+6. 섬 지형과 식생
+물 블록의 한쪽 모서리에 노이즈로 생성한 섬을 배치해줘. 가파른 절벽과 곡선을 이루는 모래 해변을 만들어줘. 높이와 경사에 따라 지형의 색을 달리해 해변, 땅, 바위가 구분되게 해줘. 경사가 완만한 지형에 단순 도형을 인스턴싱 방식으로 반복 배치해 풍성한 식생을 만들어줘.
+
+7. 블록 움직임
+물 블록과 섬을 포함한 장면 전체가 마우스에 반응해 스프링 기반으로 움직이고 젤리처럼 탄성 있게 변형되게 해줘. 윗부분이 아랫부분보다 더 크게 흔들려 바닥 쪽은 상대적으로 안정적으로 느껴지게 해줘. 이 블록 전체의 움직임은 수면의 높이장 시뮬레이션과 분리해줘.
+
+8. 화면 연출
+아이보리 계열의 크림색 배경을 사용해줘. 위에서 내려다보는 장초점 카메라와 정돈된 제품 촬영 느낌의 구도를 사용해줘. Ambient Occlusion(AO)을 적용해 틈과 물체가 바닥과 맞닿는 부분의 깊이감을 강조해줘. 피사계 심도 효과를 적용해 미니어처 느낌을 강조해줘. 은은한 빛 번짐을 추가해줘. 은은한 비네팅을 추가해줘.
+
+9. Leva 조절 패널
+Leva 패널에서 다음 항목을 실시간으로 조절할 수 있게 해줘: 물 색상, 파고, 마우스 파문 강도, 태양 각도, 조수 수위, 젤리 변형의 부드러움·단단함, 피사계 심도. 비활성화한 효과의 조절 항목은 패널에 넣지 마.
+
+10. 성능과 구현 순서
+데스크톱 60fps, 모바일 30fps 이상을 목표로 하고, 성능이 부족하면 품질을 자동으로 낮추게 해줘. 컴포넌트는 역할에 따라 분리하고 높이장 시뮬레이션은 독립적인 훅으로 구성해줘. 우선 전체 장면과 상호작용이 작동하도록 완성한 다음 재질과 시각적 표현을 다듬어줘.
