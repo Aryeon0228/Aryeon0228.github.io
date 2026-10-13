@@ -4656,9 +4656,11 @@ ${eG}
     float c = caustics(cp, uTime);
     // converging ripples focus extra light
     float focus = clamp(-(hx + hz - 2.0 * h0) * 400.0 * uRipple, -0.5, 1.5);
-    float att = exp(-max(depth, 0.0) * 1.25);
-    // light arriving from above: faces turned away get less
-    float facing = clamp(vUnderUp * 0.6 + 0.4, 0.0, 1.0);
+    // fades with depth, but the deep floor keeps a strong, readable pattern
+    float att = exp(-max(depth, 0.0) * 0.7) * (1.0 + 0.7 * smoothstep(0.12, 0.45, depth));
+    // light arriving from above: steep faces get less, and the block's vertical cut faces none
+    // (projected onto a wall the pattern would only smear into streaks)
+    float facing = smoothstep(0.04, 0.35, vUnderUp);
     vec3 light = vec3(1.0, 0.98, 0.9) * (c * (1.0 + focus) + focus * 0.25) * att;
 
     // light absorption with depth: sand → turquoise → deep teal
