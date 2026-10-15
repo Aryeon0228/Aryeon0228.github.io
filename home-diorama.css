@@ -32,3 +32,13 @@ html[data-theme="day"] .diorama-play:focus-visible{outline-color:#111}
 html[data-theme="day"] .diorama-stage.is-live{border-color:#92978d}
 
 @media(prefers-reduced-motion:reduce){.diorama-play{transition:none}}
+
+/* Cupcake Zombie: a portrait phone game, so the stage stands upright beside its copy */
+.cupcake-card .game-preview.cupcake-stage{aspect-ratio:9 / 16;width:100%;max-width:360px;justify-self:center;background:#e9dfcf}
+.cupcake-stage img{object-fit:cover;object-position:50% 0}
+.cupcake-stage iframe{background:#e9dfcf}
+#lab .cupcake-card .cupcake-note{margin-top:14px;font-size:12px;opacity:.7}
+@media(min-width:720px){
+  #lab .cupcake-card{grid-template-columns:minmax(0,320px) minmax(0,1fr);align-items:start;column-gap:32px}
+  #lab .cupcake-card>.work-card-top{grid-column:1 / -1}
+}
