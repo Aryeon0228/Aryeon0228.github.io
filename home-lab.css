@@ -97,11 +97,11 @@ html[data-theme="day"] #lab .lab-card-status { color: #72539f; }
   .prompt-tool-open { grid-column: 3; grid-row: 1; }
 }
 
-/* Small, always-visible utilities sit below the interactive labs. */
+/* Downloadable tools lead the Lab, set off from the interactive labs below. */
 .lab-scripts {
-  margin-top: 40px;
-  padding-top: 24px;
-  border-top: 1px solid var(--ln);
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--ln);
 }
 .lab-scripts-heading {
   display: flex;
