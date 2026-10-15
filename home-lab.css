@@ -70,6 +70,33 @@ html[data-theme="day"] #lab .lab-card-status { color: #72539f; }
 }
 #lab .content-actions a span { color: inherit; }
 
+/* Direct access to prompt tools and related examples. */
+#prompt-lab { scroll-margin-top: 90px; }
+.prompt-tool-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ln); }
+.prompt-tool-list li + li { border-top: 1px solid var(--ln); }
+.prompt-tool-link {
+  display: grid;
+  grid-template-columns: 28px minmax(220px, 1fr) minmax(0, 2fr) auto;
+  align-items: baseline;
+  gap: 8px 20px;
+  min-height: 72px;
+  padding: 20px 4px;
+  color: var(--w);
+}
+.prompt-tool-number { color: var(--g2); font: 400 11px/1.7 var(--f-mono); }
+.prompt-tool-name { font: 400 14px/1.7 var(--f-ko); word-break: keep-all; }
+.prompt-tool-description { color: var(--g2); font: 400 12px/1.75 var(--f-ko); word-break: keep-all; overflow-wrap: anywhere; }
+.prompt-tool-open { white-space: nowrap; font: 400 12px/1.7 var(--f-ko); }
+.prompt-tool-link:hover .prompt-tool-name { text-decoration: underline; text-underline-offset: 4px; }
+.prompt-tool-link:focus-visible { outline: 2px solid var(--w); outline-offset: -2px; }
+@media (max-width: 800px) {
+  .prompt-tool-link { grid-template-columns: 24px minmax(0, 1fr) auto; gap: 4px 12px; padding-block: 18px; }
+  .prompt-tool-number { grid-column: 1; grid-row: 1; }
+  .prompt-tool-name { grid-column: 2; grid-row: 1; }
+  .prompt-tool-description { grid-column: 2; grid-row: 2; }
+  .prompt-tool-open { grid-column: 3; grid-row: 1; }
+}
+
 /* Small, always-visible utilities sit below the interactive labs. */
 .lab-scripts {
   margin-top: 40px;
