@@ -39,6 +39,7 @@
 html, body { height: 100%; }
 body {
   margin: 0;
+  word-break: keep-all; overflow-wrap: anywhere; text-wrap: pretty; /* Korean breaks between words, never inside one */
   background-color: var(--cloth);
   background-image: linear-gradient(90deg, var(--cloth-stripe) 50%, transparent 50%), linear-gradient(var(--cloth-stripe) 50%, transparent 50%);
   background-size: 44px 44px;
@@ -125,8 +126,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .bar-title .name { font-family: var(--f-display); font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .scroll { flex: 1; overflow-y: auto; padding: 0 16px calc(24px + var(--sab)); -webkit-overflow-scrolling: touch; }
 .chapter { background: var(--paper); border: 2px solid var(--ink); border-radius: var(--r-card); box-shadow: 3px 4px 0 var(--ink); padding: 14px; margin-bottom: 16px; }
-.chap-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
-.chap-head h3 { margin: 0; flex: 1; font-family: var(--f-display); font-weight: 400; font-size: 20px; }
+.chap-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 10px; }
+.chap-head .small { margin-left: auto; white-space: nowrap; }
+.chap-head h3 { margin: 0; flex: 0 1 auto; white-space: nowrap; font-family: var(--f-display); font-weight: 400; font-size: 20px; }
 .stage-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px 8px; }
 .stage-btn {
   aspect-ratio: 1; width: 100%; border: 2px solid var(--ink); border-radius: 50% 46% 52% 44% / 46% 50% 44% 52%;
@@ -157,7 +159,8 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 .board-wrap { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; padding: 4px 10px; }
 #board { display: block; touch-action: manipulation; border-radius: 12px; max-width: 100%; }
 #board:focus-visible { outline: 3px dashed var(--mold-deep); outline-offset: 4px; }
-.hintline { min-height: 40px; padding: 6px 18px; font-size: 13px; color: var(--ink-soft); text-align: center; line-height: 1.4; }
+.sent { display: inline-block; }
+.hintline { text-wrap: balance; min-height: 40px; padding: 6px 18px; font-size: 13px; color: var(--ink-soft); text-align: center; line-height: 1.4; }
 .hintline b { font-family: var(--f-display); font-weight: 400; color: var(--ink); margin-right: 6px; }
 .hud {
   background: var(--paper); border-top: 2px solid var(--ink);
@@ -168,7 +171,8 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 .pips svg { width: 32px; height: 32px; display: block; }
 .pips svg.used { opacity: .25; filter: grayscale(1); }
 .starline { display: flex; align-items: center; gap: 6px; }
-.starline .st { font-family: var(--f-display); font-size: 20px; letter-spacing: 1px; line-height: 1; }
+#starText { text-wrap: balance; }
+.starline .st { white-space: nowrap; flex-shrink: 0; font-family: var(--f-display); font-size: 20px; letter-spacing: 1px; line-height: 1; }
 .hud-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 .cta { position: absolute; left: 16px; right: 16px; top: -58px; min-height: 50px; font-size: 18px; animation: popin .25s cubic-bezier(.3, 1.6, .5, 1); }
 
@@ -189,6 +193,7 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 .sheet-card .row { display: flex; gap: 10px; flex-wrap: wrap; }
 .sheet-card .row .btn { flex: 1 1 40%; }
 .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sheet-head .btn { white-space: nowrap; flex-shrink: 0; }
 .center { text-align: center; justify-items: center; }
 .win h2 { color: var(--mold-deep); }
 .lose h2 { color: var(--cherry); }
@@ -698,11 +703,18 @@ function t(key, vars) {
   let s = (STR[LANG] && STR[LANG][key]) ?? STR.ko[key] ?? key;
   if (Array.isArray(s)) return s;
   if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
-  return s;
+  return glue(s);
+}
+// keep short counted phrases on one line ("한 번", "별 3개", "3 stars")
+function glue(s) {
+  if (typeof s !== 'string') return s;
+  return s.replace(/(한|두|세|네|다섯) (번|개|칸|턴|명|판)/g, '$1\u00a0$2')
+    .replace(/(별|포자|손님) (\d)/g, '$1\u00a0$2')
+    .replace(/(\d+) ([A-Za-z가-힣])/g, '$1\u00a0$2');
 }
 const plural = n => (LANG === 'en' && n !== 1 ? 's' : '');
 // localized field of a level / chapter / intro object: name → name_en when English
-function tl(obj, field) { return (LANG !== 'ko' && obj && obj[field + '_' + LANG]) || (obj && obj[field]) || ''; }
+function tl(obj, field) { return glue((LANG !== 'ko' && obj && obj[field + '_' + LANG]) || (obj && obj[field]) || ''); }
 const typeName = key => tl(TYPES[key], 'name');
 function detectLang() {
   try { const l = (navigator.language || 'en').toLowerCase(); return l.startsWith('ko') ? 'ko' : 'en'; } catch (e) { return 'ko'; }
@@ -1791,13 +1803,13 @@ async function showResult(kind, stars) {
     if (mode === 'daily') {
       $('resEyebrow').textContent = t('res.dailyClear');
       $('resTitle').textContent = save.streak.count > 1 ? t('res.streak', { n: save.streak.count }) : t('res.wiped');
-      $('resMsg').textContent = t('res.tomorrow');
+      setText($('resMsg'), t('res.tomorrow'));
       mk(t('res.home'), 'go', () => showScreen('title'));
       mk(t('res.retry'), '', () => loadLevel(def, { intro: false }));
     } else {
       $('resEyebrow').textContent = t('res.stageClear', { n: li + 1 });
       $('resTitle').textContent = li === LEVELS.length - 1 ? t('res.bakery') : t('res.wiped');
-      $('resMsg').textContent = stars === 3 ? t('res.msg3', { n: total }) : boosted ? t('res.msgBoost') : usedHint ? t('res.msgHint') : t('res.msgUndo', { n: total });
+      setText($('resMsg'), stars === 3 ? t('res.msg3', { n: total }) : boosted ? t('res.msgBoost') : usedHint ? t('res.msgHint') : t('res.msgUndo', { n: total }));
       if (li < LEVELS.length - 1) mk(t('res.next'), 'go', async () => { await maybeInterstitial(); startStage(li + 1); });
       else mk(t('res.list'), 'go', () => showScreen('map'));
       mk(t('res.retry'), '', () => loadLevel(def, { intro: false }));
@@ -1810,11 +1822,11 @@ async function showResult(kind, stars) {
       const k = state.customers.find(c => c.turn === state.turn && state.cells[c.r * state.W + c.c] && !state.cells[c.r * state.W + c.c].inf);
       const cell = k && state.cells[k.r * state.W + k.c];
       $('resTitle').textContent = t('res.lost');
-      $('resMsg').textContent = t('res.lostMsg', { name: cell ? typeName(cell.t) : 'cupcake' });
+      setText($('resMsg'), t('res.lostMsg', { name: cell ? typeName(cell.t) : 'cupcake' }));
       mk(t('res.undo'), 'go', undo);
     } else {
       $('resTitle').textContent = t('res.out');
-      $('resMsg').textContent = t('res.outMsg', { n: fresh, s: plural(fresh) });
+      setText($('resMsg'), t('res.outMsg', { n: fresh, s: plural(fresh) }));
       mk(t('res.undo'), 'go', undo);
       mk(`${AD_ICON} ${t('res.boost')}`, '', onBoost);
     }
@@ -1838,7 +1850,7 @@ function showIntro() {
   introOpen = true;
   $('introTag').textContent = tl(it, 'tag') || t('intro.new');
   $('introTitle').textContent = tl(it, 'title');
-  $('introText').textContent = tl(it, 'text');
+  setText($('introText'), tl(it, 'text'));
   const art = $('introArt'); art.innerHTML = '';
   if (it.kind === 'type') {
     const im = document.createElement('img'); im.src = ASSETS[TYPES[it.t].key]; im.alt = ''; art.appendChild(im);
@@ -1920,6 +1932,10 @@ function renderLegend() {
   if (hasDefl(def.grid)) extra('defl', t('leg.defl'), t('rule.defl'), before(l => hasDefl(l.grid)), g => drawSpatula(g, 40, 40, 74, '/'));
   if ((def.customers || []).length) extra('cust', t('leg.cust'), t('rule.cust'), before(l => (l.customers || []).length), g => { drawHand(g, 36, 30, 24, false); drawTag(g, 58, 58, 13, 1, 0); });
 }
+// Wrap each sentence so a line breaks between sentences rather than inside one when it can
+const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const sents = h => String(h).split(/(?<=[.!?])\s+(?=[^\s])/).map(p => `<span class="sent">${p}</span>`).join(' ');
+function setText(el, text) { el.innerHTML = sents(esc(text)); }
 function updateHint() {
   const i = hover >= 0 ? hover : selected >= 0 ? selected : (cursorShown ? cursor : -1);
   const el = $('hintLine');
@@ -1930,12 +1946,12 @@ function updateHint() {
     if (!c.inf && c.t === 'b') s += c.lid > 0 ? t('hint.lidOn') : t('hint.lidOff');
     const k = state.customers.find(k => !k.done && k.r * state.W + k.c === i);
     if (k && !c.inf) { const n = k.turn - state.turn; s += t('hint.cust', { n, s: plural(n) }); }
-    el.innerHTML = `<b>${c.inf ? t('hint.spoiled') : ''}${tl(ty, 'name')}</b> ${s}`;
-  } else if (i >= 0 && state.tiles[i]) el.innerHTML = `<b>${t('hint.spatula')}</b> ${t('rule.defl')}`;
-  else if (busy) el.innerHTML = t('hint.busy');
+    el.innerHTML = sents(`<b>${c.inf ? t('hint.spoiled') : ''}${tl(ty, 'name')}</b> ${s}`);
+  } else if (i >= 0 && state.tiles[i]) el.innerHTML = sents(`<b>${t('hint.spatula')}</b> ${t('rule.defl')}`);
+  else if (busy) el.innerHTML = sents(t('hint.busy'));
   else if (result) el.innerHTML = '';
-  else if (hintCell >= 0) el.innerHTML = t('hint.hint');
-  else el.innerHTML = t('hint.default', { n: state.spores });
+  else if (hintCell >= 0) el.innerHTML = sents(t('hint.hint'));
+  else el.innerHTML = sents(t('hint.default', { n: state.spores }));
 }
 
 // ---------- input ----------
