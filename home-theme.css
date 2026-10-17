@@ -15,11 +15,12 @@ html[data-theme="night"] { color-scheme:dark; }
 .wordmark { order:0; }
 .site-links { order:1; margin-left:auto; gap:clamp(14px,1.5vw,22px); }
 .theme-switch { order:2; display:flex; flex-shrink:0; gap:2px; padding:2px; border:1px solid var(--ln2); }
+html[data-theme-lock] .theme-switch { display:none; }
 .theme-switch button { min-height:40px; min-width:44px; padding:6px 8px; border:0; background:transparent; color:var(--g2); font:11px/1.3 var(--f-mono); cursor:pointer; }
 .theme-switch button[aria-pressed="true"] { background:var(--w); color:var(--k0); }
 .theme-switch button:hover { box-shadow:inset 0 0 0 1px var(--ln2); }
 .theme-switch button:focus-visible { outline:2px solid var(--w); outline-offset:4px; }
-.menu-toggle { order:3; }
+.menu-toggle { order:3; margin-left:auto; }
 html[data-theme="day"] .site-header { background:rgb(243 243 241 / .94); }
 html[data-theme="day"] .wordmark small,
 html[data-theme="day"] .site-links>a,

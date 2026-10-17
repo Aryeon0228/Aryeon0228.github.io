@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="night" data-theme-lock="night">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
-(function(){var theme;try{theme=localStorage.getItem('penumbra-theme');}catch(e){}if(theme!=='day'&&theme!=='night')theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'night':'day';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme==='day'?'light':'dark';})();
+(function(){var root=document.documentElement;var theme=root.dataset.themeLock;try{if(!theme)theme=localStorage.getItem('penumbra-theme');}catch(e){}if(theme!=='day'&&theme!=='night')theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'night':'day';root.dataset.theme=theme;root.style.colorScheme=theme==='day'?'light':'dark';})();
 </script>
 
 <title>김소연 | Studio Penumbra</title>
@@ -470,9 +470,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=5f99804c5004">
-<link rel="stylesheet" href="home-theme.css?v=f199a4c40291">
+<link rel="stylesheet" href="home-theme.css?v=0db7a846444b">
 <link rel="stylesheet" href="home-lab.css?v=2e6818ef6f80">
-<script src="home-theme.js?v=745a3d1937a4" defer></script>
+<script src="home-theme.js?v=618ba80fa029" defer></script>
 <style>
 /* The teaching materials link has its own page; keep it outside section tracking. */
 .site-nav.wrap{max-width:1400px}
