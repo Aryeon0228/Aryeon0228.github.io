@@ -3,6 +3,9 @@
    wedge; colour lives in the render and the material swatches. */
 
 .material-workspace { --height: clamp(560px, calc(100svh - 160px), 900px); display: grid; grid-template-columns: minmax(0, 1fr) 372px; align-items: start; gap: 16px; }
+.material-guide-trigger { display:inline-flex; align-items:center; justify-content:center; gap:12px; min-height:40px; padding:8px 16px; border:1px solid var(--k3); border-radius:999px; background:var(--k1); color:var(--k9); font:400 14px/1.5 var(--f-ko); white-space:nowrap; }
+.material-guide-trigger:hover { background:var(--k2); border-color:var(--k5); }
+.material-guide-trigger span { display:grid; place-items:center; width:20px; height:20px; border:1px solid var(--k5); border-radius:50%; font:12px var(--f-mono); }
 
 /* ---------- specimen ---------- */
 .specimen-column { display: flex; flex-direction: column; min-width: 0; height: var(--height); padding: 12px; border-radius: var(--lk-radius); background: var(--k1); }
@@ -121,6 +124,28 @@ body[data-lab] dialog :focus-visible { outline: 2px solid var(--k10); outline-of
 .dialog-heading button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--k2); color: var(--k8); font: 400 14px var(--f-ko); }
 .dialog-heading button:hover { background: var(--k3); color: var(--k10); }
 dialog > p { color: var(--k6); font-size: 14px; line-height: 1.8; }
+.guide-intro { margin:0 0 20px; }
+.concept-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:12px; }
+.concept-card { min-width:0; padding:24px; border-radius:var(--lk-radius-m); background:var(--k0); }
+.concept-card h3 { margin:0 0 8px; color:var(--k10); font:500 24px/1.2 var(--f-mono); }
+.concept-expansion { margin:0; color:var(--k8); font:14px/1.65 var(--f-lat); overflow-wrap:anywhere; }
+.concept-translation { margin:4px 0 20px; color:var(--k6); font:14px/1.6 var(--f-ko); }
+.concept-summary { margin:0; color:var(--k9); font:400 16px/1.8 var(--f-ko); word-break:keep-all; overflow-wrap:anywhere; }
+.concept-summary > span { display:block; margin-bottom:6px; color:var(--k5); font:12px/1.6 var(--f-ko); }
+.concept-detail { margin-top:20px; border-top:1px solid var(--k2); }
+.concept-detail summary { min-height:44px; padding:12px 0 0; color:var(--k8); font:400 14px/1.6 var(--f-ko); cursor:pointer; }
+.concept-detail summary:hover { color:var(--k10); }
+.concept-detail p { margin:16px 0 0; color:var(--k7); font:14px/1.85 var(--f-ko); word-break:keep-all; overflow-wrap:anywhere; }
+.concept-detail .concept-try { padding:16px; border-radius:10px; background:var(--k1); color:var(--k8); }
+.concept-try strong { display:block; margin-bottom:4px; color:var(--k9); font-weight:500; }
+.concept-relation { margin:20px 0 28px; padding:0 4px 20px; border-bottom:1px solid var(--k2); }
+.concept-relation h3, .guide-section-title { margin:0 0 10px; color:var(--k9); font:500 16px/1.5 var(--f-ko); }
+.concept-relation p { margin:0; color:var(--k6); font:14px/1.8 var(--f-ko); }
+.concept-relation strong { color:var(--k8); font-weight:400; }
+.guide-section-title { margin-bottom:16px; }
+.guide-sources { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:24px; padding-top:20px; border-top:1px solid var(--k2); font:12px/1.8 var(--f-ko); }
+.guide-sources span { flex-basis:100%; color:var(--k5); }
+.guide-sources a { color:var(--k7); text-underline-offset:4px; }
 .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .guide-grid article { padding: 20px; border-radius: var(--lk-radius-m); background: var(--k0); }
 .guide-grid article > span { color: var(--k5); font: 12px var(--f-mono); letter-spacing: .06em; }
@@ -169,6 +194,8 @@ dialog > p { color: var(--k6); font-size: 14px; line-height: 1.8; }
   .under-stage > span { display: block; margin-top: 8px; text-align: left; }
   .preset-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .guide-grid { grid-template-columns: 1fr; }
+  .concept-grid { grid-template-columns:1fr; }
+  .concept-card { padding:20px; }
   body[data-lab] dialog { padding: 20px; }
 }
 @media (max-width: 400px) {

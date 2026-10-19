@@ -191,7 +191,9 @@ $('resetModel').addEventListener('click',()=>{
  $('specimenName').textContent=preset?preset.name.toUpperCase():'CUSTOM';
  status('기본 구로 돌아왔습니다. 재질 설정과 노멀맵은 유지됩니다.');
 });
-$('openReference').addEventListener('click',()=>$('referencePanel').showModal());$('openGuide').addEventListener('click',()=>$('infoModal').showModal());document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>$(button.dataset.close).close()));for(const dialog of document.querySelectorAll('dialog'))dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
+$('openReference').addEventListener('click',()=>$('referencePanel').showModal());
+document.querySelectorAll('[data-open-guide]').forEach(button=>button.addEventListener('click',()=>{const guide=$('infoModal');guide.showModal();guide.scrollTop=0;}));
+document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>$(button.dataset.close).close()));for(const dialog of document.querySelectorAll('dialog'))dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)dirty=true;});
 window.addEventListener('pagehide',event=>{if(event.persisted)return;disposed=true;cancelAnimationFrame(frame);controls?.dispose();composer?.dispose();renderer?.dispose();for(const target of envTargets)target.dispose();});
 try{init();}catch(error){console.error('PBR initialization:',error);$('renderError').hidden=false;status('그래픽 미리보기를 시작하지 못했습니다.');}
