@@ -151,18 +151,20 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
   padding: 10px 16px calc(12px + var(--sab)); display: grid; gap: 8px; position: relative;
 }
 .hud-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.pips { display: flex; gap: 4px; align-items: center; min-height: 34px; flex-shrink: 0; }
-.pips svg { width: 32px; height: 32px; display: block; }
-.pips .mold { width: 44px; height: auto; margin: -8px 2px -4px -4px; transform-origin: 50% 100%; }
+.pips { display: flex; gap: 7px; align-items: center; min-height: 38px; flex-shrink: 0; }
+.pips .mold { width: 44px; height: auto; display: block; margin: -4px 0 -2px -4px; transform-origin: 50% 100%; }
+.spore-readout { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; white-space: nowrap; }
+.spore-label { font-size: 11px; font-weight: 700; color: var(--ink-soft); line-height: 1.2; }
+.spore-value { display: flex; align-items: baseline; gap: 3px; color: var(--mold-deep); line-height: 1; }
+.spore-count { min-width: 1ch; font-family: var(--f-display); font-size: 26px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.spore-unit { font-size: 12px; font-weight: 700; }
+.pips.empty .spore-value { color: var(--ink); }
 .pips .mold.puff { animation: puff .5s cubic-bezier(.3, 1.6, .5, 1); }
 @keyframes puff { 0% { transform: scale(1, 1); } 30% { transform: scale(1.18, .8); } 60% { transform: scale(.9, 1.12) translateY(-6px); } 100% { transform: scale(1, 1); } }
-.pips svg.used { opacity: .25; filter: grayscale(1); }
-.pips img.pip { width: 34px; height: auto; display: block; }
-.pips img.pip.used { opacity: .25; filter: grayscale(1); }
 .starline { display: flex; align-items: center; gap: 6px; min-width: 0; }
 #starText { text-wrap: balance; }
 .starline .st { white-space: nowrap; flex-shrink: 0; font-family: var(--f-display); font-size: 20px; letter-spacing: 1px; line-height: 1; }
-@media (max-width: 360px) { .starline { flex-direction: column; align-items: flex-end; gap: 3px; } #starText { text-align: right; font-size: 10px; } .pips img.pip, .pips svg { width: 28px; } .pips .mold { width: 38px; } }
+@media (max-width: 360px) { .starline { flex-direction: column; align-items: flex-end; gap: 3px; } #starText { text-align: right; font-size: 10px; } .pips .mold { width: 38px; } }
 .hud-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
 /* ---- sheets ---- */
@@ -415,7 +417,13 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
     <div class="hintline" id="hintLine" aria-live="polite"></div>
     <div class="hud">
       <div class="hud-row">
-        <div class="pips" id="pips"></div>
+        <div class="pips" id="pips">
+          <img class="mold" id="moldImg" alt="" hidden>
+          <div class="spore-readout" role="status" aria-live="polite" aria-atomic="true">
+            <span class="spore-label" id="sporeLabel">남은 포자</span>
+            <span class="spore-value"><strong class="spore-count" id="sporeCount">0</strong><span class="spore-unit" id="sporeUnit">개</span></span>
+          </div>
+        </div>
         <div class="starline"><span class="st" id="starNow"></span><span class="small" id="starText"></span></div>
       </div>
       <div class="small" id="custInfo"></div>
@@ -779,7 +787,8 @@ ko: {
   'play.undo': '되돌리기', 'play.retry': '다시', 'play.hint': '힌트',
   'play.stageLabel': '{ch}장 · STAGE {n}', 'play.daily': '오늘의 퍼즐',
   'hud.customers': '손님 {n}명 대기', 'hud.stars3': '되돌리기 없이 깨면 별 3개', 'hud.starsNow': '지금 깨면 별 {n}개',
-  'hint.default': '누르거나 쓸어서 골라요. 고른 컵케익을 한 번 더 누르면 발사. <b>남은 포자 {n}</b>',
+  'hud.spores': '남은 포자', 'hud.sporeUnit': '개',
+  'hint.default': '누르거나 쓸어서 골라요. 고른 컵케익을 한 번 더 누르면 발사.',
   'hint.confirm': '이 컵케익을 한 번 더 누르면 포자 발사',
   'hint.busy': '<b>퍼지는 중…</b>', 'hint.hint': '<b>힌트</b> 노란 화살표가 가리키는 컵케익에 쏘세요.',
   'hint.spoiled': '상한 ', 'hint.sealedInf': '비닐 안에서 상했어요. 포자가 밖으로 못 나가요.', 'hint.inf': '이미 곰팡이투성이예요.',
@@ -854,7 +863,8 @@ en: {
   'play.undo': 'Undo', 'play.retry': 'Retry', 'play.hint': 'Hint',
   'play.stageLabel': 'CH. {ch} · STAGE {n}', 'play.daily': 'Daily Puzzle',
   'hud.customers': '{n} customer{s} waiting', 'hud.stars3': 'Clear without undo for 3 stars', 'hud.starsNow': '{n} star{s} if you clear now',
-  'hint.default': 'Tap or slide to choose. Tap the chosen cupcake again to fling. <b>Spores left: {n}</b>',
+  'hud.spores': 'Spores left', 'hud.sporeUnit': '',
+  'hint.default': 'Tap or slide to choose. Tap the chosen cupcake again to fling.',
   'hint.confirm': 'Tap this cupcake again to fling a spore',
   'hint.busy': '<b>Spreading…</b>', 'hint.hint': '<b>Hint</b> Fling at the cupcake under the yellow arrow.',
   'hint.spoiled': 'Spoiled ', 'hint.sealedInf': 'Spoiled inside the wrap. The spores can\'t get out.', 'hint.inf': 'Already covered in mold.',
@@ -2682,7 +2692,14 @@ function drawIntroArt(c, kind) {
 
 // ---------- HUD ----------
 function renderHUD() {
-  $('pips').innerHTML = (ASSETS.mold_player ? `<img class="mold" id="moldImg" src="${ASSETS.mold_player}" alt="">` : '') + Array.from({ length: Math.max(def.spores, state.spores) }, (_, i) => sporeSVG(i >= state.spores)).join('');
+  const mold = $('moldImg');
+  if (ASSETS.mold_player && !mold.hasAttribute('src')) mold.src = ASSETS.mold_player;
+  mold.hidden = !ASSETS.mold_player;
+  // Keep the live region stable: announce a change in stock, not each HUD refresh.
+  for (const [id, text] of [['sporeLabel', t('hud.spores')], ['sporeCount', String(state.spores)], ['sporeUnit', t('hud.sporeUnit')]]) {
+    if ($(id).textContent !== text) $(id).textContent = text;
+  }
+  $('pips').classList.toggle('empty', state.spores === 0);
   const pending = state.customers.filter(c => !c.done && c.turn > state.turn);
   $('custInfo').textContent = pending.length ? t('hud.customers', { n: pending.length, s: plural(pending.length) }) : '';
   const st = currentStars();
@@ -2758,7 +2775,7 @@ function updateHint() {
   else if (busy) el.innerHTML = sents(t('hint.busy'));
   else if (result) el.innerHTML = '';
   else if (hintCell >= 0) el.innerHTML = sents(t('hint.hint'));
-  else el.innerHTML = sents(t('hint.default', { n: state.spores }));
+  else el.innerHTML = sents(t('hint.default'));
 }
 
 // ---------- input ----------
