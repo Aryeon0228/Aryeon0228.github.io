@@ -1916,8 +1916,8 @@ function drawProjectiles(sc) {
       const x = tx + (reduceMotion ? 0 : Math.sin(p * Math.PI) * S * 0.035);
       const y = reduceMotion ? ty : sy + (ty - sy) * pose.fall - S * pose.lift;
       if (reduceMotion && age < f.dur) continue;
-      // The large parent owns the whole drop. Babies are only outward flights.
-      const key = IMG.mold_drop ? 'mold_drop' : 'mold_player', m = META[key];
+      // Keep the parent's usual smiling mouth throughout the drop and squash.
+      const key = 'mold_player', m = META[key];
       if (m && IMG[key]) {
         const squash = reduceMotion ? 0 : pose.squash;
         const size = S * .82 / m.w;
