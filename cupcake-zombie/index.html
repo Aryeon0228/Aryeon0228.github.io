@@ -137,6 +137,7 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 #scr-play.has-bg > .bar { background: rgba(255, 249, 242, 0.55); backdrop-filter: blur(3px); }
 #scr-play.has-bg > .hud { background: rgba(255, 249, 242, 0.84); backdrop-filter: blur(4px); }
 #scr-play.has-bg > .hintline { margin: 0 14px 4px; background: rgba(255, 249, 242, 0.7); border-radius: 12px; backdrop-filter: blur(3px); }
+#scr-play.has-bg > .hintline:empty { background: transparent; backdrop-filter: none; }
 .board-wrap { flex: 1 1 0; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; padding: 4px 10px; }
 #board { display: block; touch-action: none; border-radius: 12px; max-width: 100%; user-select: none; -webkit-user-select: none; }
 #board:focus-visible { outline: 3px dashed var(--mold-deep); outline-offset: 4px; }
@@ -166,8 +167,13 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 .starline .st { white-space: nowrap; flex-shrink: 0; font-family: var(--f-display); font-size: 20px; letter-spacing: 1px; line-height: 1; }
 @media (max-width: 360px) { .starline { flex-direction: column; align-items: flex-end; gap: 3px; } #starText { text-align: right; font-size: 10px; } .pips .mold { width: 38px; } }
 .hud-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.hud-btn { display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+.hud-btn .bi { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+#hintBtn .bi { color: #c8901c; }
+@media (max-width: 360px) { .hud-btn { gap: 4px; font-size: 14px; } .hud-btn .bi { width: 17px; height: 17px; } }
 
 /* ---- sheets ---- */
+[hidden] { display: none !important; }
 .sheet { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; justify-content: center; background: rgba(74, 46, 39, .35); opacity: 0; transition: opacity .2s ease; }
 .sheet.open { opacity: 1; }
 .sheet.modal { align-items: center; padding: 16px; }
@@ -428,9 +434,9 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
       </div>
       <div class="small" id="custInfo"></div>
       <div class="hud-btns">
-        <button class="btn" id="undoBtn" data-i18n="play.undo">되돌리기</button>
-        <button class="btn" id="resetBtn" data-i18n="play.retry">다시</button>
-        <button class="btn" id="hintBtn">힌트</button>
+        <button class="btn hud-btn" id="undoBtn"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 11.5 9 16"/><path d="M4.5 11.5H14a5 5 0 0 1 0 10h-3"/></svg><span data-i18n="play.undo">한 수 무르기</span></button>
+        <button class="btn hud-btn" id="resetBtn"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.4-5.5"/><path d="M17.8 2.8v4.4h-4.4"/></svg><span data-i18n="play.retry">처음부터</span></button>
+        <button class="btn hud-btn" id="hintBtn"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg><span id="hintLabel">힌트</span></button>
       </div>
     </div>
   </section>
@@ -784,9 +790,9 @@ ko: {
   'map.ariaStage': '스테이지 {n} {name}', 'map.ariaStars': ', 별 {n}개', 'map.ariaLocked': ', 잠김',
   'aria.home': '처음으로', 'aria.back': '뒤로', 'aria.help': '이 진열대의 규칙',
   'aria.board': '머핀 틀 게임판. 방향키로 칸을 고르고 Enter로 포자를 날려요.',
-  'play.undo': '되돌리기', 'play.retry': '다시', 'play.hint': '힌트',
+  'play.undo': '한 수 무르기', 'play.retry': '처음부터', 'play.hint': '힌트',
   'play.stageLabel': '{ch}장 · STAGE {n}', 'play.daily': '오늘의 퍼즐',
-  'hud.customers': '손님 {n}명 대기', 'hud.stars3': '되돌리기 없이 깨면 별 3개', 'hud.starsNow': '지금 깨면 별 {n}개',
+  'hud.customers': '손님 {n}명 대기', 'hud.stars3': '무르기 없이 깨면 별 3개', 'hud.starsNow': '지금 깨면 별 {n}개',
   'hud.spores': '남은 포자', 'hud.sporeUnit': '개',
   'hint.default': '누르거나 쓸어서 골라요. 고른 컵케익을 한 번 더 누르면 발사.',
   'hint.confirm': '이 컵케익을 한 번 더 누르면 포자 발사',
@@ -815,15 +821,15 @@ ko: {
   'fx.lid': '뚜껑 퐁!', 'fx.sealed': '갇혔다!', 'fx.chain': '연쇄 {n}!', 'fx.boost': '포자 +1!',
   'res.dailyClear': '오늘의 퍼즐 클리어', 'res.streak': '{n}일 연속!', 'res.wiped': '진열대 전멸!', 'res.tomorrow': '내일 새 진열대가 나와요.',
   'res.home': '처음으로', 'res.retry': '다시 하기', 'res.stageClear': 'STAGE {n} 클리어', 'res.bakery': '빵집 전체가 상했어요!',
-  'res.msg3': '되돌리기 없이 컵케익 {n}개를 전부 상하게 했어요.',
-  'res.msgBoost': '포자를 더 받아서 깼어요. 되돌리기 없이 깨면 별 3개!',
+  'res.msg3': '무르기 없이 컵케익 {n}개를 전부 상하게 했어요.',
+  'res.msgBoost': '포자를 더 받아서 깼어요. 무르기 없이 깨면 별 3개!',
   'res.msgHint': '힌트로 깼어요. 힌트 없이 깨면 별 3개!',
-  'res.msgUndo': '컵케익 {n}개를 전부 상하게 했어요. 되돌리기 없이 깨면 별 3개!',
+  'res.msgUndo': '컵케익 {n}개를 전부 상하게 했어요. 무르기 없이 깨면 별 3개!',
   'res.next': '다음 스테이지', 'res.list': '스테이지 목록', 'res.stage': 'STAGE {n}',
   'res.lost': '손님이 사 갔어요!', 'res.lostMsg': '신선한 {name} 하나가 팔려 나갔어요. 손님이 오기 전에 상하게 만들어야 해요.',
   'res.out': '포자가 떨어졌어요', 'res.outMsg': '신선한 컵케익 {n}개가 살아남았어요. 걔네 중 하나가 출발점일지도?',
-  'res.undo': '되돌리기', 'res.boost': '포자 +1', 'res.hintN': '힌트 보기 ({n})', 'res.hintAd': '힌트 보기', 'res.view': '결과 닫고 진열대 보기',
-  'toast.marked': '표시된 컵케익에 쏘세요', 'toast.unsolvable': '지금 상태로는 못 깨요. 되돌리기부터!',
+  'res.undo': '한 수 무르기', 'res.boost': '포자 +1', 'res.hintN': '힌트 보기 ({n})', 'res.hintAd': '힌트 보기', 'res.view': '결과 닫고 진열대 보기',
+  'toast.marked': '표시된 컵케익에 쏘세요', 'toast.unsolvable': '지금 상태로는 못 깨요. 무르기부터!',
   'toast.noAds': '광고가 제거됐어요. 고마워요!', 'toast.restored': '구매를 복원했어요', 'toast.noRestore': '복원할 구매가 없어요',
   'set.title': '설정', 'set.close': '닫기', 'set.sound': '소리', 'set.haptic': '진동', 'set.lang': '언어 / Language',
   'set.hints': '힌트 {n}개 보유', 'set.noAds': '광고 제거 · {price}', 'set.noAdsDone': '광고 제거됨', 'set.restore': '구매 복원',
@@ -860,7 +866,7 @@ en: {
   'map.ariaStage': 'Stage {n} {name}', 'map.ariaStars': ', {n} stars', 'map.ariaLocked': ', locked',
   'aria.home': 'Home', 'aria.back': 'Back', 'aria.help': 'Rules for this shelf',
   'aria.board': 'Muffin tin board. Use the arrow keys to pick a cell and Enter to fling a spore.',
-  'play.undo': 'Undo', 'play.retry': 'Retry', 'play.hint': 'Hint',
+  'play.undo': 'Undo', 'play.retry': 'Restart', 'play.hint': 'Hint',
   'play.stageLabel': 'CH. {ch} · STAGE {n}', 'play.daily': 'Daily Puzzle',
   'hud.customers': '{n} customer{s} waiting', 'hud.stars3': 'Clear without undo for 3 stars', 'hud.starsNow': '{n} star{s} if you clear now',
   'hud.spores': 'Spores left', 'hud.sporeUnit': '',
@@ -1279,7 +1285,7 @@ function syncSound() {
   if (save.sound) g.setTargetAtTime(0.7, AC.currentTime, 0.01); else g.setValueAtTime(0, AC.currentTime); // muting is immediate
 }
 function buttonSound() { return playUISound('button'); }
-function cupcakeSound(index) { return playUISound('meow', [1, 1.04, .97, 1.02, .99][index % 5]); }
+function cupcakeSound() { return playUISound('meow'); }
 async function playUISound(key, pitch = 1) {
   const a = audio(); if (!a) return;
   const version = ++soundVersions[key];
@@ -1587,6 +1593,7 @@ function applyHit(h) {
   if (h.direct) {
     if (!reduceMotion) sporeDust(x, sporeContactY(h.idx), 7, 0.55);
     tone(360, 0.085, 'sine', 0.065, 0.55); noise(0.045, 650, 0.07);
+    cupcakeSound(); // the cupcake you shot squeaks once; chain hits keep the rising melody
   }
   if (h.torn) { v.wrap = false; wrapShreds(h.idx); tone(900, 0.08, 'square', 0.03, 0.4); }
   if (h.kind === 'pending') {
@@ -2704,9 +2711,10 @@ function renderHUD() {
   $('custInfo').textContent = pending.length ? t('hud.customers', { n: pending.length, s: plural(pending.length) }) : '';
   const st = currentStars();
   $('starNow').innerHTML = starsHTML(st);
-  $('starText').textContent = mistakes === 0 && !usedHint && !boosted ? t('hud.stars3') : t('hud.starsNow', { n: st, s: plural(st) });
+  // the star rule is explained once, on the very first stage; afterwards the stars speak for themselves
+  $('starText').textContent = tutorialStage() ? (mistakes === 0 && !usedHint && !boosted ? t('hud.stars3') : t('hud.starsNow', { n: st, s: plural(st) })) : '';
   $('undoBtn').disabled = busy || !undoStack.length;
-  $('hintBtn').innerHTML = save.hints > 0 ? `${t('play.hint')} <span class="k">${save.hints}</span>` : `${t('play.hint')} ${AD_ICON}`;
+  $('hintLabel').innerHTML = save.hints > 0 ? `${t('play.hint')} <span class="k">${save.hints}</span>` : `${t('play.hint')} ${AD_ICON}`;
   const ch = mode === 'stage' ? CHAPTERS.find(c => li >= c.from && li <= c.to) : null;
   $('stageLabel').textContent = mode === 'daily' ? localeDate(new Date()) : t('play.stageLabel', { ch: ch ? ch.no : '', n: li + 1 });
   $('stageName').textContent = levelName(def);
@@ -2759,6 +2767,7 @@ function renderLegend() {
 const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 const sents = h => String(h).split(/(?<=[.!?])\s+(?=[^\s])/).map(p => `<span class="sent">${p}</span>`).join(' ');
 function setText(el, text) { el.innerHTML = sents(esc(text)); }
+function tutorialStage() { return mode === 'stage' && li === 0; }
 function updateHint() {
   const i = hover >= 0 ? hover : selected >= 0 ? selected : (cursorShown ? cursor : -1);
   const el = $('hintLine');
@@ -2775,7 +2784,7 @@ function updateHint() {
   else if (busy) el.innerHTML = sents(t('hint.busy'));
   else if (result) el.innerHTML = '';
   else if (hintCell >= 0) el.innerHTML = sents(t('hint.hint'));
-  else el.innerHTML = sents(t('hint.default'));
+  else el.innerHTML = tutorialStage() ? sents(t('hint.default')) : '';
 }
 
 // ---------- input ----------
