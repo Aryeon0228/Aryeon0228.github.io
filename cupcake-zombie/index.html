@@ -135,7 +135,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .stage-btn .cloche { position: absolute; left: 50%; bottom: 0; width: 84%; height: 92%; transform: translateX(-50%); border-radius: 30px 30px 6px 6px / 34px 34px 4px 4px; background: linear-gradient(100deg, rgba(255, 255, 255, 0.55), rgba(220, 235, 245, 0.18) 45%, rgba(255, 255, 255, 0.42)); border: 1.5px solid rgba(74, 46, 39, 0.55); box-shadow: inset 2px 0 3px rgba(255, 255, 255, 0.7), inset -2px -2px 3px rgba(120, 140, 160, 0.25); }
 .stage-btn .cloche::before { content: ''; position: absolute; left: 50%; top: -7px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #d8b58a; border: 1.5px solid rgba(74, 46, 39, 0.6); }
 .stage-btn .cloche::after { content: ''; position: absolute; left: 9px; top: 9px; width: 7px; height: 26px; border-radius: 6px; background: rgba(255, 255, 255, 0.75); transform: rotate(8deg); }
-@media (prefers-reduced-motion: reduce) { .stage-btn .spore { animation: none; } }
+html.reduce-motion .stage-btn .spore { animation: none; }
 .st i, .starline i, .bigstars span { font-style: normal; }
 i.on { color: var(--star); -webkit-text-stroke: 1px var(--ink); }
 i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
@@ -239,10 +239,11 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 @keyframes reward-flip { 0% { transform: perspective(500px) rotateY(-100deg) scale(.86); opacity: 0; } 55% { transform: perspective(500px) rotateY(12deg) scale(1.03); opacity: 1; } 100% { transform: none; opacity: 1; } }
 .reward-card small { animation: reward-pop .4s .5s cubic-bezier(.3, 1.8, .5, 1) both; }
 @keyframes reward-pop { 0% { transform: scale(.4); opacity: 0; } 100% { transform: none; opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .reward-card, .reward-card small { animation: none; } }
+html.reduce-motion .reward-card, html.reduce-motion .reward-card small { animation: none; }
 .bigstars span:nth-child(2).on { animation-delay: .15s; }
 .bigstars span:nth-child(3).on { animation-delay: .3s; }
 .setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+#setMotionNote { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
 .switch { appearance: none; width: 50px; height: 30px; border-radius: 15px; background: var(--paper-edge); border: 2px solid var(--ink); position: relative; cursor: pointer; margin: 0; }
 .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); transition: transform .15s; }
 .switch:checked { background: var(--mold); }
@@ -281,7 +282,7 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 @keyframes fadein { from { opacity: 0 } }
 @keyframes popin { from { transform: scale(.85); opacity: 0 } }
 @keyframes starpop { from { transform: scale(0) rotate(-40deg); } }
-@media (prefers-reduced-motion: reduce) { .overlay, .card, .bigstars span.on, .pips .mold { animation: none; } .btn, .sheet, .sheet-card { transition: none; } }
+html.reduce-motion .overlay, html.reduce-motion .card, html.reduce-motion .bigstars span.on, html.reduce-motion .pips .mold { animation: none; } html.reduce-motion .btn, html.reduce-motion .sheet, html.reduce-motion .sheet-card { transition: none; }
 @media (max-height: 700px) {
   .hintline { font-size: 12px; }
   .logo-big p { font-size: 12px; }
@@ -399,12 +400,10 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 .reward-card img { width:32px; height:42px; object-fit:contain; }
 .reward-card small { display:block; font-size:11px; color:var(--mold-deep); margin-top:3px; }
 @media(max-height:700px) { .collector-card { height:390px; } .card-picture img { max-height:132px; } .card-name { font-size:21px; padding:5px 3px; } .card-rule { font-size:12px; min-height:54px; padding:8px 2px 6px; } .card-dialog-head { margin-bottom:8px; } .card-dialog { max-width:330px; } }
-@media(prefers-reduced-motion:reduce) {
-  .card-tilt { --sparkle:0; }
-  .btn, .stage-btn, .collection-tile, .segbtn, .card-tilt, .card-rotator { transition:none!important; }
-  .btn:not(:disabled):hover, .stage-btn:hover, .collection-tile:hover, .segbtn:hover { transform:none; }
-  .btn.ui-pressed:not(:disabled), .stage-btn.ui-pressed, .collection-tile.ui-pressed, .segbtn.ui-pressed { transform:translate(2px,2px); }
-}
+html.reduce-motion .card-tilt { --sparkle:0; }
+html.reduce-motion :is(.btn, .stage-btn, .collection-tile, .segbtn, .card-tilt, .card-rotator) { transition:none!important; }
+html.reduce-motion :is(.btn:not(:disabled):hover, .stage-btn:hover, .collection-tile:hover, .segbtn:hover) { transform:none; }
+html.reduce-motion :is(.btn.ui-pressed:not(:disabled), .stage-btn.ui-pressed, .collection-tile.ui-pressed, .segbtn.ui-pressed) { transform:translate(2px,2px); }
 
 </style>
 
@@ -424,7 +423,7 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
         <div class="title-secondary"><button class="btn" id="dailyBtn">오늘의 퍼즐</button><button class="btn" id="collectionBtn" data-i18n="collection.title">컵케익 도감</button></div>
         <div class="row-mini"><span class="small" id="streak"></span><button class="btn small" id="settingsBtn" data-i18n="title.settings">설정</button></div>
       </div>
-      <div class="foot" data-i18n="title.foot">빌드 2026.10.22 11:48 · 8257c78</div>
+      <div class="foot" data-i18n="title.foot">빌드 2026.10.22 12:10 · 01caf1c</div>
     </div>
   </section>
 
@@ -511,12 +510,13 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
     <div class="setting"><span data-i18n="set.lang">언어 / Language</span><div class="seg"><button class="segbtn" data-lang="ko">한국어</button><button class="segbtn" data-lang="en">English</button></div></div>
     <label class="setting"><span data-i18n="set.sound">소리</span><input type="checkbox" class="switch" id="setSound"></label>
     <label class="setting"><span data-i18n="set.haptic">진동</span><input type="checkbox" class="switch" id="setHaptic"></label>
+    <label class="setting"><span><span data-i18n="set.motion">애니메이션</span><small class="small" id="setMotionNote" hidden></small></span><input type="checkbox" class="switch" id="setMotion"></label>
     <div class="setting"><span class="small" id="hintCount"></span></div>
     <button class="btn go" id="noAdsBtn">광고 제거</button>
     <button class="btn" id="restoreBtn" data-i18n="set.restore">구매 복원</button>
     <button class="btn quiet" id="resetBtn2" data-i18n="set.reset">진행 기록 지우기</button>
     <div class="confirm" id="resetConfirm" hidden><span data-i18n="set.resetConfirm">별과 진행 기록이 전부 지워져요. 정말 지울까요?</span><div class="row"><button class="btn" id="resetYes" data-i18n="set.resetYes">지우기</button><button class="btn" id="resetNo" data-i18n="set.resetNo">취소</button></div></div>
-    <p class="small" data-i18n="set.credits">그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 11:48 · 8257c78</p>
+    <p class="small" data-i18n="set.credits">그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 12:10 · 01caf1c</p>
   </div>
 </div>
 
@@ -824,7 +824,7 @@ ko: {
   'title.tagline': '내가 곰팡이가 되어 진열대를 상하게 만드는 퍼즐',
   'title.play': '시작하기', 'title.continue': '이어서 하기 · {n}',
   'title.map': '스테이지 고르기', 'title.daily': '오늘의 퍼즐', 'title.dailyDone': '완료',
-  'title.settings': '설정', 'title.streak': '{n}일 연속', 'title.foot': '빌드 2026.10.22 11:48 · 8257c78',
+  'title.settings': '설정', 'title.streak': '{n}일 연속', 'title.foot': '빌드 2026.10.22 12:10 · 01caf1c',
   'map.title': '스테이지', 'map.chapter': '{n}장', 'map.locked': '앞 스테이지를 먼저 깨면 열려요',
   'map.navigation': '스테이지 탐색', 'map.jump': '장 바로가기',
   'map.ariaStage': '스테이지 {n} {name}', 'map.ariaStars': ', 별 {n}개', 'map.ariaLocked': ', 잠김',
@@ -874,10 +874,10 @@ ko: {
   'res.undo': '한 수 무르기', 'res.boost': '포자 +1', 'res.hintN': '힌트 보기 ({n})', 'res.hintAd': '힌트 보기', 'res.view': '결과 닫고 진열대 보기',
   'toast.marked': '표시된 컵케익에 쏘세요', 'toast.unsolvable': '지금 상태로는 못 깨요. 무르기부터!',
   'toast.noAds': '광고가 제거됐어요. 고마워요!', 'toast.restored': '구매를 복원했어요', 'toast.noRestore': '복원할 구매가 없어요',
-  'set.title': '설정', 'set.close': '닫기', 'set.sound': '소리', 'set.haptic': '진동', 'set.lang': '언어 / Language',
+  'set.title': '설정', 'set.close': '닫기', 'set.sound': '소리', 'set.haptic': '진동', 'set.motion': '애니메이션', 'set.motionOs': '이 기기는 움직임 줄이기가 켜져 있어요', 'toast.motion': '이 기기는 움직임 줄이기가 켜져 있어요. 설정에서 애니메이션을 켤 수 있어요.', 'set.lang': '언어 / Language',
   'set.hints': '힌트 {n}개 보유', 'set.noAds': '광고 제거 · {price}', 'set.noAdsDone': '광고 제거됨', 'set.restore': '구매 복원',
   'set.reset': '진행 기록 지우기', 'set.resetConfirm': '별과 진행 기록이 전부 지워져요. 정말 지울까요?', 'set.resetYes': '지우기', 'set.resetNo': '취소',
-  'set.credits': '그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 11:48 · 8257c78',
+  'set.credits': '그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 12:10 · 01caf1c',
   'ad.hint': '광고 보고 힌트 +1', 'ad.spore': '광고 보고 포자 +1', 'ad.title': '광고',
   'ad.sub': '테스트 빌드라 진짜 광고 대신 이 화면이 떠요. 앱에서는 여기서 광고가 나와요.',
   'ad.wait': '{n}초…', 'ad.claim': '보상 받기', 'ad.close': '닫기', 'ad.skip': '그만 보기',
@@ -904,7 +904,7 @@ en: {
   'title.tagline': "You're the mold. Spoil the whole shelf.",
   'title.play': 'Play', 'title.continue': 'Continue · {n}',
   'title.map': 'Select Stage', 'title.daily': 'Daily Puzzle', 'title.dailyDone': 'Done',
-  'title.settings': 'Settings', 'title.streak': '{n}-day streak', 'title.foot': 'build 2026.10.22 11:48 · 8257c78',
+  'title.settings': 'Settings', 'title.streak': '{n}-day streak', 'title.foot': 'build 2026.10.22 12:10 · 01caf1c',
   'map.title': 'Stages', 'map.chapter': 'CHAPTER {n}', 'map.locked': 'Clear the previous stage to unlock',
   'map.navigation': 'Stage navigation', 'map.jump': 'Jump to chapter',
   'map.ariaStage': 'Stage {n} {name}', 'map.ariaStars': ', {n} stars', 'map.ariaLocked': ', locked',
@@ -954,10 +954,10 @@ en: {
   'res.undo': 'Undo', 'res.boost': '+1 spore', 'res.hintN': 'Show hint ({n})', 'res.hintAd': 'Show hint', 'res.view': 'Close results and view board',
   'toast.marked': 'Fling at the marked cupcake', 'toast.unsolvable': 'Can\'t be solved from here. Undo first!',
   'toast.noAds': 'Ads removed. Thank you!', 'toast.restored': 'Purchase restored', 'toast.noRestore': 'No purchase to restore',
-  'set.title': 'Settings', 'set.close': 'Close', 'set.sound': 'Sound', 'set.haptic': 'Haptics', 'set.lang': 'Language / 언어',
+  'set.title': 'Settings', 'set.close': 'Close', 'set.sound': 'Sound', 'set.haptic': 'Haptics', 'set.motion': 'Animations', 'set.motionOs': 'This device has reduce-motion turned on', 'toast.motion': 'This device has reduce-motion on. You can turn animations back on in Settings.', 'set.lang': 'Language / 언어',
   'set.hints': 'Hints: {n}', 'set.noAds': 'Remove ads · {price}', 'set.noAdsDone': 'Ads removed', 'set.restore': 'Restore purchase',
   'set.reset': 'Reset progress', 'set.resetConfirm': 'All stars and progress will be erased. Really reset?', 'set.resetYes': 'Reset', 'set.resetNo': 'Cancel',
-  'set.credits': 'Art & design: Studio Penumbra · Code: Fable · build 2026.10.22 11:48 · 8257c78',
+  'set.credits': 'Art & design: Studio Penumbra · Code: Fable · build 2026.10.22 12:10 · 01caf1c',
   'ad.hint': 'Watch an ad: +1 hint', 'ad.spore': 'Watch an ad: +1 spore', 'ad.title': 'Ad',
   'ad.sub': 'This is a test build, so this screen stands in for a real ad. In the app, an ad plays here.',
   'ad.wait': '{n}s…', 'ad.claim': 'Claim reward', 'ad.close': 'Close', 'ad.skip': 'Skip',
@@ -1016,7 +1016,7 @@ const boardWrap = $('boardWrap');
 const STORE_KEY = 'cupcake-zombie-v3';
 function loadSave() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; } }
 function writeSave(o) { try { localStorage.setItem(STORE_KEY, JSON.stringify(o)); } catch (e) {} }
-const save = Object.assign({ stars: {}, daily: {}, streak: { last: '', count: 0 }, hints: 3, noAds: false, sound: true, haptics: true, seen: [], clears: 0, adClears: 0, level: 0 }, loadSave());
+const save = Object.assign({ stars: {}, daily: {}, streak: { last: '', count: 0 }, hints: 3, noAds: false, sound: true, haptics: true, motion: 'auto', motionNoticed: false, seen: [], clears: 0, adClears: 0, level: 0 }, loadSave());
 
 // ---------- game state ----------
 let li = 0, def = null, state = null, undoStack = [];
@@ -1029,7 +1029,14 @@ let particles = [], projs = [], timeline = [], texts = [];
 let arm = null;
 let S = 64, padX = 20, padTop = 40, padBot = 20, CW = 300, CH = 300, DPR = 1;
 let now = performance.now();
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Motion: 'auto' follows the OS "reduce motion" flag (often switched on by IT on shared PCs), the player can override it in Settings.
+const osReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let reduceMotion = osReduceMotion;
+function syncMotion() {
+  reduceMotion = save.motion === 'on' ? false : save.motion === 'off' ? true : osReduceMotion;
+  document.documentElement.classList.toggle('reduce-motion', reduceMotion);
+}
+syncMotion();
 
 // ---------- board geometry ----------
 function layout() {
@@ -2463,7 +2470,7 @@ function showScreen(name) {
 function openSheet(id) { const el = $(id); el.hidden = false; requestAnimationFrame(() => el.classList.add('open')); }
 function closeSheet(id) { const el = $(id); el.classList.remove('open'); setTimeout(() => { if (!el.classList.contains('open')) el.hidden = true; }, 220); }
 let toastTimer = 0;
-function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.classList.remove('on'); setTimeout(() => t.hidden = true, 250); }, 1800); }
+function toast(msg, ms = 1800) { const t = $('toast'); t.textContent = msg; t.hidden = false; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.classList.remove('on'); setTimeout(() => t.hidden = true, 250); }, ms); }
 
 // ---------- progress ----------
 const starsOf = i => save.stars[i] || 0;
@@ -2567,6 +2574,8 @@ $('mapBack').onclick = () => showScreen('title');
 // ---------- settings ----------
 function openSettings() {
   $('setSound').checked = save.sound; $('setHaptic').checked = save.haptics;
+  $('setMotion').checked = !reduceMotion;
+  const note = $('setMotionNote'); note.hidden = !osReduceMotion; note.textContent = osReduceMotion ? t('set.motionOs') : '';
   $('noAdsBtn').textContent = save.noAds ? t('set.noAdsDone') : t('set.noAds', { price: Store.price });
   $('noAdsBtn').disabled = save.noAds;
   $('hintCount').textContent = t('set.hints', { n: save.hints });
@@ -2576,6 +2585,7 @@ function openSettings() {
 }
 $('setSound').onchange = e => { save.sound = e.target.checked; syncSound(); writeSave(save); if (save.sound) buttonSound(); };
 $('setHaptic').onchange = e => { save.haptics = e.target.checked; writeSave(save); haptic('medium'); };
+$('setMotion').onchange = e => { save.motion = e.target.checked ? 'on' : 'off'; syncMotion(); writeSave(save); };
 $('noAdsBtn').onclick = async () => { const ok = await Store.buyRemoveAds(); if (ok) { save.noAds = true; writeSave(save); openSettings(); toast(t('toast.noAds')); } };
 $('restoreBtn').onclick = async () => { const ok = await Store.restore(); if (ok) { save.noAds = true; writeSave(save); openSettings(); toast(t('toast.restored')); } else toast(t('toast.noRestore')); };
 document.querySelectorAll('.segbtn').forEach(b => { b.onclick = () => setLang(b.dataset.lang); });
@@ -2622,7 +2632,14 @@ function loadLevel(d, opts = {}) {
   layout(); renderHUD(); renderLegend(); updateHint();
   if (def.intro && opts.intro !== false && mode === 'stage' && !save.seen.includes(li)) showIntro(); else hideIntro();
 }
+// Shared PCs often have the OS "reduce motion" flag on; say so once, because it hides most of the game's feedback.
+function motionNotice() {
+  if (!osReduceMotion || save.motion !== 'auto' || save.motionNoticed) return;
+  save.motionNoticed = true; writeSave(save);
+  setTimeout(() => toast(t('toast.motion'), 4500), 600);
+}
 function startStage(i) {
+  motionNotice();
   mode = 'stage'; li = Math.max(0, Math.min(LEVELS.length - 1, i));
   save.level = li; writeSave(save);
   loadLevel(LEVELS[li]);
