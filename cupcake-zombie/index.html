@@ -159,8 +159,8 @@ i.off { color: var(--paper-edge); -webkit-text-stroke: 1px var(--ink-soft); }
 .sent { display: inline-block; }
 /* Reserve three lines, including padding. Hover, selection and busy copy must
    not resize the tray or change the cell underneath a stationary pointer. */
-.hintline { flex: 0 0 auto; height: calc(4.2em + 12px); min-height: calc(4.2em + 12px); overflow-y: auto; overscroll-behavior: contain; text-wrap: balance; padding: 6px 18px; font-size: 13px; color: var(--ink-soft); text-align: center; line-height: 1.4; }
-.hintline b { font-family: var(--f-display); font-weight: 400; color: var(--ink); margin-right: 6px; }
+.hintline { flex: 0 0 auto; height: calc(4.35em + 12px); min-height: calc(4.35em + 12px); overflow-y: auto; overscroll-behavior: contain; text-wrap: balance; padding: 6px 18px; font-size: 15px; color: var(--ink-soft); text-align: center; line-height: 1.45; display: flex; flex-direction: column; justify-content: center; justify-content: safe center; }
+.hintline b { font-family: var(--f-display); font-weight: 400; color: var(--ink); margin-right: 6px; font-size: 16px; }
 .selection-tip { display: block; color: var(--mold-deep); font-size: 0.92em; }
 .hud {
   background: var(--paper); border-top: 2px solid var(--ink);
@@ -284,7 +284,7 @@ html.reduce-motion .reward-card, html.reduce-motion .reward-card small { animati
 @keyframes starpop { from { transform: scale(0) rotate(-40deg); } }
 html.reduce-motion .overlay, html.reduce-motion .card, html.reduce-motion .bigstars span.on, html.reduce-motion .pips .mold { animation: none; } html.reduce-motion .btn, html.reduce-motion .sheet, html.reduce-motion .sheet-card { transition: none; }
 @media (max-height: 700px) {
-  .hintline { font-size: 12px; }
+  .hintline { font-size: 14px; }
   .logo-big p { font-size: 12px; }
   #app.has-bg .title-wrap { padding-top: 28px; gap: 12px; }
 }
@@ -423,7 +423,7 @@ html.reduce-motion :is(.btn.ui-pressed:not(:disabled), .stage-btn.ui-pressed, .c
         <div class="title-secondary"><button class="btn" id="dailyBtn">오늘의 퍼즐</button><button class="btn" id="collectionBtn" data-i18n="collection.title">컵케익 도감</button></div>
         <div class="row-mini"><span class="small" id="streak"></span><button class="btn small" id="settingsBtn" data-i18n="title.settings">설정</button></div>
       </div>
-      <div class="foot" data-i18n="title.foot">빌드 2026.10.22 13:12 · b3bfc31</div>
+      <div class="foot" data-i18n="title.foot">빌드 2026.10.22 14:12 · 2843285</div>
     </div>
   </section>
 
@@ -516,7 +516,7 @@ html.reduce-motion :is(.btn.ui-pressed:not(:disabled), .stage-btn.ui-pressed, .c
     <button class="btn" id="restoreBtn" data-i18n="set.restore">구매 복원</button>
     <button class="btn quiet" id="resetBtn2" data-i18n="set.reset">진행 기록 지우기</button>
     <div class="confirm" id="resetConfirm" hidden><span data-i18n="set.resetConfirm">별과 진행 기록이 전부 지워져요. 정말 지울까요?</span><div class="row"><button class="btn" id="resetYes" data-i18n="set.resetYes">지우기</button><button class="btn" id="resetNo" data-i18n="set.resetNo">취소</button></div></div>
-    <p class="small" data-i18n="set.credits">그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 13:12 · b3bfc31</p>
+    <p class="small" data-i18n="set.credits">그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 14:12 · 2843285</p>
   </div>
 </div>
 
@@ -824,7 +824,7 @@ ko: {
   'title.tagline': '내가 곰팡이가 되어 진열대를 상하게 만드는 퍼즐',
   'title.play': '시작하기', 'title.continue': '이어서 하기 · {n}',
   'title.map': '스테이지 고르기', 'title.daily': '오늘의 퍼즐', 'title.dailyDone': '완료',
-  'title.settings': '설정', 'title.streak': '{n}일 연속', 'title.foot': '빌드 2026.10.22 13:12 · b3bfc31',
+  'title.settings': '설정', 'title.streak': '{n}일 연속', 'title.foot': '빌드 2026.10.22 14:12 · 2843285',
   'map.title': '스테이지', 'map.chapter': '{n}장', 'map.locked': '앞 스테이지를 먼저 깨면 열려요',
   'map.navigation': '스테이지 탐색', 'map.jump': '장 바로가기',
   'map.ariaStage': '스테이지 {n} {name}', 'map.ariaStars': ', 별 {n}개', 'map.ariaLocked': ', 잠김',
@@ -877,7 +877,7 @@ ko: {
   'set.title': '설정', 'set.close': '닫기', 'set.sound': '소리', 'set.haptic': '진동', 'set.motion': '애니메이션', 'set.motionOs': '이 기기는 움직임 줄이기가 켜져 있어요', 'toast.motion': '이 기기는 움직임 줄이기가 켜져 있어요. 설정에서 애니메이션을 켤 수 있어요.', 'set.lang': '언어 / Language',
   'set.hints': '힌트 {n}개 보유', 'set.noAds': '광고 제거 · {price}', 'set.noAdsDone': '광고 제거됨', 'set.restore': '구매 복원',
   'set.reset': '진행 기록 지우기', 'set.resetConfirm': '별과 진행 기록이 전부 지워져요. 정말 지울까요?', 'set.resetYes': '지우기', 'set.resetNo': '취소',
-  'set.credits': '그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 13:12 · b3bfc31',
+  'set.credits': '그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.22 14:12 · 2843285',
   'ad.hint': '광고 보고 힌트 +1', 'ad.spore': '광고 보고 포자 +1', 'ad.title': '광고',
   'ad.sub': '테스트 빌드라 진짜 광고 대신 이 화면이 떠요. 앱에서는 여기서 광고가 나와요.',
   'ad.wait': '{n}초…', 'ad.claim': '보상 받기', 'ad.close': '닫기', 'ad.skip': '그만 보기',
@@ -904,7 +904,7 @@ en: {
   'title.tagline': "You're the mold. Spoil the whole shelf.",
   'title.play': 'Play', 'title.continue': 'Continue · {n}',
   'title.map': 'Select Stage', 'title.daily': 'Daily Puzzle', 'title.dailyDone': 'Done',
-  'title.settings': 'Settings', 'title.streak': '{n}-day streak', 'title.foot': 'build 2026.10.22 13:12 · b3bfc31',
+  'title.settings': 'Settings', 'title.streak': '{n}-day streak', 'title.foot': 'build 2026.10.22 14:12 · 2843285',
   'map.title': 'Stages', 'map.chapter': 'CHAPTER {n}', 'map.locked': 'Clear the previous stage to unlock',
   'map.navigation': 'Stage navigation', 'map.jump': 'Jump to chapter',
   'map.ariaStage': 'Stage {n} {name}', 'map.ariaStars': ', {n} stars', 'map.ariaLocked': ', locked',
@@ -957,7 +957,7 @@ en: {
   'set.title': 'Settings', 'set.close': 'Close', 'set.sound': 'Sound', 'set.haptic': 'Haptics', 'set.motion': 'Animations', 'set.motionOs': 'This device has reduce-motion turned on', 'toast.motion': 'This device has reduce-motion on. You can turn animations back on in Settings.', 'set.lang': 'Language / 언어',
   'set.hints': 'Hints: {n}', 'set.noAds': 'Remove ads · {price}', 'set.noAdsDone': 'Ads removed', 'set.restore': 'Restore purchase',
   'set.reset': 'Reset progress', 'set.resetConfirm': 'All stars and progress will be erased. Really reset?', 'set.resetYes': 'Reset', 'set.resetNo': 'Cancel',
-  'set.credits': 'Art & design: Studio Penumbra · Code: Fable · build 2026.10.22 13:12 · b3bfc31',
+  'set.credits': 'Art & design: Studio Penumbra · Code: Fable · build 2026.10.22 14:12 · 2843285',
   'ad.hint': 'Watch an ad: +1 hint', 'ad.spore': 'Watch an ad: +1 spore', 'ad.title': 'Ad',
   'ad.sub': 'This is a test build, so this screen stands in for a real ad. In the app, an ad plays here.',
   'ad.wait': '{n}s…', 'ad.claim': 'Claim reward', 'ad.close': 'Close', 'ad.skip': 'Skip',
@@ -1979,25 +1979,24 @@ function cupcakePose(v, time = now, reduced = reduceMotion) {
   }
   return { sx: 1 + k * 0.55, sy: 1 - k };
 }
-// Celebration hop: the whole cupcake leaves the well (feet off the ground), squashing on take-off and landing.
-const HOP = 560;
-function hop(i, delay = 0, amp = 0.32) { if (vis[i]) { vis[i].hopAt = now + delay; vis[i].hopAmp = amp; } }
-function hopPose(v) {
-  const p = v.hopAt >= 0 ? (now - v.hopAt) / HOP : -1;
-  if (reduceMotion || !(p >= 0 && p < 1)) return { dy: 0, sx: 1, sy: 1, air: 0 };
-  const air = Math.sin(p * Math.PI);
-  let sx = 1, sy = 1;
-  if (p < 0.12) { const q = Math.sin(p / 0.12 * Math.PI); sy = 1 - 0.14 * q; sx = 1 + 0.1 * q; }
-  else if (p > 0.84) { const q = Math.sin((p - 0.84) / 0.16 * Math.PI); sy = 1 - 0.17 * q; sx = 1 + 0.12 * q; }
-  else { sy = 1 + 0.1 * air; sx = 1 - 0.07 * air; }
-  return { dy: -S * (v.hopAmp || 0.32) * air, sx, sy, air };
+// Celebration shamble: zombies are slow and heavy, so they do not jump — they sway on their feet with a lazy
+// lurch (tilt about the feet, a slump into each lean) while stink wafts up, one after another across the tray.
+const SWAY = 1300;
+function sway(i, delay = 0, amp = 0.15) { if (vis[i]) { vis[i].swayAt = now + delay; vis[i].swayAmp = amp; } }
+function swayPose(v) {
+  const p = v.swayAt >= 0 ? (now - v.swayAt) / SWAY : -1;
+  if (reduceMotion || !(p >= 0 && p < 1)) return { rot: 0, sx: 1, sy: 1, dy: 0 };
+  const env = Math.sin(p * Math.PI); // eases in and out
+  const rot = (v.swayAmp || 0.15) * Math.sin(p * Math.PI * 3) * env; // one and a half slow lurches
+  const lean = Math.abs(Math.sin(p * Math.PI * 3)) * env;
+  return { rot, sx: 1 + 0.05 * lean, sy: 1 - 0.07 * lean, dy: 0 };
 }
 function drawCupcake(i, v, sc) {
-  const x0 = cxOf(i), hp = hopPose(v), by = baseY(i) + hp.dy;
+  const x0 = cxOf(i), sw = swayPose(v), by = baseY(i);
   const zombie = isZombieShown(v);
-  const pose = cupcakePose(v), sx = pose.sx * hp.sx, sy = pose.sy * hp.sy;
-  ctx.save(); ctx.fillStyle = `rgba(60, 40, 40, ${0.18 * (1 - hp.air * 0.5)})`;
-  ctx.beginPath(); ctx.ellipse(x0, baseY(i) - S * 0.04, S * 0.33 * (1 - hp.air * 0.3), S * 0.09 * (1 - hp.air * 0.3), 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  const pose = cupcakePose(v), sx = pose.sx * sw.sx, sy = pose.sy * sw.sy;
+  ctx.save(); ctx.fillStyle = 'rgba(60, 40, 40, 0.18)';
+  ctx.beginPath(); ctx.ellipse(x0, by - S * 0.04, S * 0.33, S * 0.09, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
   const freshKey = freshSpriteKey(v);
   if (!zombie) {
     const react = v.reactAt >= 0 && selected === i && !busy && !result && !introOpen && v.infAt < 0 &&
@@ -2007,7 +2006,7 @@ function drawCupcake(i, v, sc) {
     // The tint shares the exact same pose; rotating a second copy made two
     // outlines shimmer against each other during the infection fade.
     if (v.infAt >= 0 && TINT[freshKey]) { const p = Math.min(1, (now - v.infAt) / 230); drawSpriteAt(ctx, freshKey, x0, by, sc, 0, sx, sy, false, p, TINT[freshKey]); }
-  } else drawSpriteAt(ctx, zombieKey(v), x0, by, sc, 0, sx, sy, zombieFlip(v));
+  } else drawSpriteAt(ctx, zombieKey(v), x0, by, sc, sw.rot, sx, sy, zombieFlip(v));
   if (v.wrap) { const fl = v.flashAt >= 0 ? Math.max(0, 1 - (now - v.flashAt) / 500) : 0; drawWrap(ctx, x0, by + 2, S * 0.86, 1, fl); }
 }
 
@@ -2613,7 +2612,7 @@ function rebuildVis() {
     zv: ((i * 7 + li * 3) % 3 === 0) ? 'zombieA' : 'zombieB',
     flip: ((i * 5 + li) % 4) === 1,
     phase: (i * 1.37) % (Math.PI * 2),
-    infAt: -1, bumpAt: -1, bumpAmp: 0, hopAt: -1, hopAmp: 0, peekAt: -1, reactAt: -1, flashAt: -1, gone: false,
+    infAt: -1, bumpAt: -1, bumpAmp: 0, swayAt: -1, swayAmp: 0, peekAt: -1, reactAt: -1, flashAt: -1, gone: false,
   });
 }
 function loadLevel(d, opts = {}) {
@@ -2705,17 +2704,20 @@ function playTicks(n, sim, done) {
   at(end + 450, () => playTicks(n - 1, sim, done));
 }
 
-// The shelf has gone bad: zombies hop in a wave across the tray, sprinkles rain down, a stamp slams on.
+// The shelf has gone bad: the zombies shamble and sway in a slow wave across the tray with stink rising,
+// sprinkles rain down for the player, and a stamp slams on.
 function chapterDone() { return mode === 'stage' && li % 10 === 9 && li < LEVELS.length - 1; }
 function celebrate(stars) {
   const last = mode === 'stage' && li === LEVELS.length - 1;
   const text = last ? t('res.bakery') : chapterDone() ? t('res.chapterStamp', { n: Math.floor(li / 10) + 1 }) : t('res.wiped');
   if (reduceMotion) { stamp(text, '#5B7A21', 900); return; }
-  for (let i = 0; i < vis.length; i++) if (vis[i]) hop(i, (i % state.W) * 55 + Math.floor(i / state.W) * 25, 0.34);
+  for (let i = 0; i < vis.length; i++) if (vis[i]) {
+    const delay = (i % state.W) * 90 + Math.floor(i / state.W) * 40;
+    sway(i, delay, 0.15); at(delay + 120, () => { if (vis[i] && isZombieShown(vis[i])) stink(i); });
+  }
   at(260, () => stamp(text, '#5B7A21', 1400));
   at(380, () => confetti(stars === 3 ? 52 : 36));
-  at(900, () => { for (let i = 0; i < vis.length; i++) if (vis[i]) hop(i, (state.W - 1 - i % state.W) * 45, 0.2); });
-  at(950, () => tone(note(9), 0.12, 'sine', 0.04));
+  at(700, () => tone(110, 0.5, 'sawtooth', 0.03, 0.8)); // a low, lazy groan under the sway
 }
 function finish(res) {
   busy = false;
@@ -2990,6 +2992,12 @@ function updateHint() {
   else if (result) el.innerHTML = '';
   else if (hintCell >= 0) el.innerHTML = sents(t('hint.hint'));
   else el.innerHTML = tutorialStage() ? sents(t('hint.default')) : '';
+  fitHint(el);
+}
+// The hint box has a fixed height so the board never jumps; long rule text steps down a size or two instead of clipping.
+function fitHint(el) {
+  el.style.fontSize = '';
+  for (const px of [14, 13, 12]) { if (el.scrollHeight <= el.clientHeight + 1) break; el.style.fontSize = px + 'px'; }
 }
 
 // ---------- input ----------
