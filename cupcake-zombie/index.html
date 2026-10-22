@@ -115,6 +115,15 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .chip.done { color: var(--mold-deep); }
 .map-nav select { min-width: 0; flex: 1; min-height: 44px; border: 2px solid var(--ink); border-radius: 12px; padding: 6px; color: var(--ink); background: var(--paper); font: inherit; font-size: 13px; }
 .map-nav .btn { min-height: 44px; font-size: 12px; padding: 6px 10px; }
+.stage-jump { flex: none; display: grid; grid-template-columns: minmax(0, 1fr) 76px auto; align-items: center; gap: 8px; margin: 0 16px 8px; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 14px; background: var(--paper); }
+.stage-jump[hidden] { display: none; }
+.stage-jump-copy { min-width: 0; line-height: 1.3; }
+.stage-jump label { display: block; font-family: var(--f-display); font-size: 15px; }
+.stage-jump .small { display: block; margin-top: 3px; font-size: 11px; }
+.stage-jump input { min-width: 0; width: 100%; min-height: 44px; padding: 6px 4px; border: 2px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font: inherit; font-size: 18px; text-align: center; }
+.stage-jump input:focus-visible { outline: 3px solid var(--mold); outline-offset: 2px; }
+.stage-jump .btn { padding: 6px 10px; font-size: 14px; }
+@media (max-width: 360px) { .stage-jump { margin-inline: 10px; padding: 8px; gap: 6px; grid-template-columns: minmax(0, 1fr) 62px auto; } }
 /* shelf map: cupcakes standing on wooden planks */
 .chapter.shelf { padding: 12px 10px 14px; }
 .chap-head { align-items: center; margin-bottom: 4px; padding: 0 4px; }
@@ -439,13 +448,18 @@ html.reduce-motion :is(.btn.ui-pressed:not(:disabled), .stage-btn.ui-pressed, .c
         <div class="title-secondary"><button class="btn" id="dailyBtn">오늘의 퍼즐</button><button class="btn" id="collectionBtn" data-i18n="collection.title">컵케익 도감</button></div>
         <div class="row-mini"><span class="small" id="streak"></span><button class="btn small" id="settingsBtn" data-i18n="title.settings">설정</button></div>
       </div>
-      <div class="foot" data-i18n="title.foot">빌드 2026.10.23 07:49 · 020a732</div>
+      <div class="foot" data-i18n="title.foot">빌드 2026.10.23 · stage-select-v1</div>
     </div>
   </section>
 
   <section class="screen" id="scr-map">
     <header class="bar"><button class="btn small" id="mapBack" data-i18n-aria="aria.home" aria-label="처음으로">←</button><h2 data-i18n="map.title">스테이지</h2><button class="btn small" id="mapCollectionBtn" data-i18n="collection.short">도감</button><span class="small" id="mapStars"></span></header>
     <nav class="map-nav" data-i18n-aria="map.navigation"><div class="chapter-chips" id="chapterChips" role="tablist" data-i18n-aria="map.jump"></div><button class="btn small" id="mapContinue"></button></nav>
+    <form class="stage-jump" id="stageJumpForm" hidden>
+      <div class="stage-jump-copy"><label for="stageNumber" data-i18n="map.stageNumber">스테이지 바로가기</label><span class="small" id="stageJumpNote"></span></div>
+      <input id="stageNumber" type="number" inputmode="numeric" min="1" step="1" required aria-describedby="stageJumpNote">
+      <button class="btn small go" type="submit" data-i18n="map.stageGo">이동</button>
+    </form>
     <div class="scroll" id="chapterList"></div>
   </section>
 
@@ -533,7 +547,7 @@ html.reduce-motion :is(.btn.ui-pressed:not(:disabled), .stage-btn.ui-pressed, .c
     <button class="btn" id="restoreBtn" data-i18n="set.restore">구매 복원</button>
     <button class="btn quiet" id="resetBtn2" data-i18n="set.reset">진행 기록 지우기</button>
     <div class="confirm" id="resetConfirm" hidden><span data-i18n="set.resetConfirm">별과 진행 기록이 전부 지워져요. 정말 지울까요?</span><div class="row"><button class="btn" id="resetYes" data-i18n="set.resetYes">지우기</button><button class="btn" id="resetNo" data-i18n="set.resetNo">취소</button></div></div>
-    <p class="small" data-i18n="set.credits">그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.23 07:49 · 020a732</p>
+    <p class="small" data-i18n="set.credits">그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.23 · stage-select-v1</p>
   </div>
 </div>
 
@@ -842,9 +856,11 @@ ko: {
   'title.tagline': '내가 곰팡이가 되어 진열대를 상하게 만드는 퍼즐',
   'title.play': '시작하기', 'title.continue': '이어서 하기 · {n}',
   'title.map': '스테이지 고르기', 'title.daily': '오늘의 퍼즐', 'title.dailyDone': '완료',
-  'title.settings': '설정', 'title.streak': '{n}일 연속', 'title.foot': '빌드 2026.10.23 07:49 · 020a732',
+  'title.settings': '설정', 'title.streak': '{n}일 연속', 'title.foot': '빌드 2026.10.23 · stage-select-v1',
   'map.title': '스테이지', 'map.chapter': '{n}장', 'map.chip': '{n}장', 'map.locked': '앞 스테이지를 먼저 깨면 열려요',
   'map.navigation': '스테이지 탐색', 'map.jump': '장 바로가기',
+  'map.stageNumber': '스테이지 바로가기', 'map.stageGo': '이동',
+  'map.freeSelect': '전체 {n}판 자유롭게 선택', 'map.stageRange': '1~{n} 사이의 스테이지 번호를 입력해 주세요',
   'map.ariaStage': '스테이지 {n} {name}', 'map.ariaStars': ', 별 {n}개', 'map.ariaLocked': ', 잠김',
   'aria.home': '처음으로', 'aria.back': '뒤로', 'aria.help': '이 진열대의 규칙',
   'aria.board': '머핀 틀 게임판. 방향키로 칸을 고르고 Enter로 포자를 날려요.',
@@ -895,7 +911,7 @@ ko: {
   'set.title': '설정', 'set.close': '닫기', 'set.sound': '소리', 'set.haptic': '진동', 'set.motion': '애니메이션', 'set.motionOs': '이 기기는 움직임 줄이기가 켜져 있어요', 'toast.motion': '이 기기는 움직임 줄이기가 켜져 있어요. 설정에서 애니메이션을 켤 수 있어요.', 'set.lang': '언어 / Language',
   'set.hints': '힌트 {n}개 보유', 'set.noAds': '광고 제거 · {price}', 'set.noAdsDone': '광고 제거됨', 'set.restore': '구매 복원',
   'set.reset': '진행 기록 지우기', 'set.resetConfirm': '별과 진행 기록이 전부 지워져요. 정말 지울까요?', 'set.resetYes': '지우기', 'set.resetNo': '취소',
-  'set.credits': '그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.23 07:49 · 020a732',
+  'set.credits': '그림·기획 구름이구름 · 개발 페이블 · 빌드 2026.10.23 · stage-select-v1',
   'ad.hint': '광고 보고 힌트 +1', 'ad.spore': '광고 보고 포자 +1', 'ad.title': '광고',
   'ad.sub': '테스트 빌드라 진짜 광고 대신 이 화면이 떠요. 앱에서는 여기서 광고가 나와요.',
   'ad.wait': '{n}초…', 'ad.claim': '보상 받기', 'ad.close': '닫기', 'ad.skip': '그만 보기',
@@ -922,9 +938,11 @@ en: {
   'title.tagline': "You're the mold. Spoil the whole shelf.",
   'title.play': 'Play', 'title.continue': 'Continue · {n}',
   'title.map': 'Select Stage', 'title.daily': 'Daily Puzzle', 'title.dailyDone': 'Done',
-  'title.settings': 'Settings', 'title.streak': '{n}-day streak', 'title.foot': 'build 2026.10.23 07:49 · 020a732',
+  'title.settings': 'Settings', 'title.streak': '{n}-day streak', 'title.foot': 'build 2026.10.23 · stage-select-v1',
   'map.title': 'Stages', 'map.chapter': 'CHAPTER {n}', 'map.chip': 'Ch.{n}', 'map.locked': 'Clear the previous stage to unlock',
   'map.navigation': 'Stage navigation', 'map.jump': 'Jump to chapter',
+  'map.stageNumber': 'Jump to stage', 'map.stageGo': 'Go',
+  'map.freeSelect': 'Choose any of the {n} stages', 'map.stageRange': 'Enter a stage number from 1 to {n}',
   'map.ariaStage': 'Stage {n} {name}', 'map.ariaStars': ', {n} stars', 'map.ariaLocked': ', locked',
   'aria.home': 'Home', 'aria.back': 'Back', 'aria.help': 'Rules for this shelf',
   'aria.board': 'Muffin tin board. Use the arrow keys to pick a cell and Enter to fling a spore.',
@@ -975,7 +993,7 @@ en: {
   'set.title': 'Settings', 'set.close': 'Close', 'set.sound': 'Sound', 'set.haptic': 'Haptics', 'set.motion': 'Animations', 'set.motionOs': 'This device has reduce-motion turned on', 'toast.motion': 'This device has reduce-motion on. You can turn animations back on in Settings.', 'set.lang': 'Language / 언어',
   'set.hints': 'Hints: {n}', 'set.noAds': 'Remove ads · {price}', 'set.noAdsDone': 'Ads removed', 'set.restore': 'Restore purchase',
   'set.reset': 'Reset progress', 'set.resetConfirm': 'All stars and progress will be erased. Really reset?', 'set.resetYes': 'Reset', 'set.resetNo': 'Cancel',
-  'set.credits': 'Art & design: Studio Penumbra · Code: Fable · build 2026.10.23 07:49 · 020a732',
+  'set.credits': 'Art & design: Studio Penumbra · Code: Fable · build 2026.10.23 · stage-select-v1',
   'ad.hint': 'Watch an ad: +1 hint', 'ad.spore': 'Watch an ad: +1 spore', 'ad.title': 'Ad',
   'ad.sub': 'This is a test build, so this screen stands in for a real ad. In the app, an ad plays here.',
   'ad.wait': '{n}s…', 'ad.claim': 'Claim reward', 'ad.close': 'Close', 'ad.skip': 'Skip',
@@ -2461,7 +2479,10 @@ document.addEventListener('click', e => {
 }, true);
 
 // ---------- platform adapters (web mock now, native plugins later) ----------
-const Native = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+// The app build stays sequential even when the native bridge has not loaded.
+const NATIVE_BUILD = /*NATIVE_BUILD*/false;
+const Native = NATIVE_BUILD || !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const WEB_STAGE_SELECT = !Native;
 function haptic(kind = 'light') {
   if (!save.haptics) return;
   try {
@@ -2517,7 +2538,8 @@ function toast(msg, ms = 1800) { const t = $('toast'); t.textContent = msg; t.hi
 
 // ---------- progress ----------
 const starsOf = i => save.stars[i] || 0;
-const unlocked = i => i === 0 || starsOf(i - 1) > 0;
+const validStage = i => Number.isInteger(i) && i >= 0 && i < LEVELS.length;
+const unlocked = i => validStage(i) && (WEB_STAGE_SELECT || i === 0 || starsOf(i - 1) > 0);
 const totalStars = () => LEVELS.reduce((a, _, i) => a + starsOf(i), 0);
 function nextStage() { const i = LEVELS.findIndex((_, k) => !starsOf(k)); return i < 0 ? LEVELS.length - 1 : i; }
 function starsFor(m) { return m === 0 ? 3 : m <= 2 ? 2 : 1; }
@@ -2575,6 +2597,13 @@ function renderMap() {
   const box = $('chapterList'); box.innerHTML = '';
   const jump = $('chapterChips'); jump.innerHTML = '';
   const next = nextStage();
+  const focus = WEB_STAGE_SELECT && validStage(save.level) ? save.level : next;
+  $('stageJumpForm').hidden = !WEB_STAGE_SELECT;
+  if (WEB_STAGE_SELECT) {
+    $('stageJumpNote').textContent = t('map.freeSelect', { n: LEVELS.length });
+    $('stageNumber').max = LEVELS.length;
+    $('stageNumber').value = focus + 1;
+  }
   $('mapContinue').textContent = t('title.continue', { n: next + 1 });
   for (const ch of CHAPTERS) {
     const got = LEVELS.slice(ch.from, ch.to + 1).reduce((a, _, k) => a + starsOf(ch.from + k), 0);
@@ -2602,8 +2631,16 @@ function renderMap() {
     }
     box.appendChild(wrap);
   }
-  requestAnimationFrame(() => jumpToChapter(CHAPTERS.find(ch => next >= ch.from && next <= ch.to).no));
+  requestAnimationFrame(() => jumpToChapter(CHAPTERS.find(ch => focus >= ch.from && focus <= ch.to).no));
 }
+// Submit also works with Enter; range checks apply to programmatic submits too.
+$('stageJumpForm').onsubmit = e => {
+  e.preventDefault();
+  if (!WEB_STAGE_SELECT || screen !== 'map') return;
+  const input = $('stageNumber'), index = input.valueAsNumber - 1;
+  if (!validStage(index)) { toast(t('map.stageRange', { n: LEVELS.length })); input.focus(); return; }
+  startStage(index);
+};
 function jumpToChapter(no) {
   const box = $('chapterList'), chapter = $('chapter-' + no);
   if (chapter) box.scrollTop += chapter.getBoundingClientRect().top - box.getBoundingClientRect().top - 16;
@@ -2616,6 +2653,12 @@ function markChapterChip(no) {
 // the chip row follows the shelf being scrolled
 $('chapterList').addEventListener('scroll', () => {
   const box = $('chapterList'), top = box.getBoundingClientRect().top + box.clientHeight * 0.35;
+  // The last shelf cannot always align with the top of a tall viewport.
+  if (box.scrollTop + box.clientHeight >= box.scrollHeight - 2) {
+    const last = box.lastElementChild;
+    if (last) markChapterChip(last.id.replace('chapter-', ''));
+    return;
+  }
   let best = null;
   for (const el of box.querySelectorAll('.chapter')) { if (el.getBoundingClientRect().top <= top) best = el; }
   if (best) markChapterChip(best.id.replace('chapter-', ''));
@@ -2693,10 +2736,13 @@ function motionNotice() {
   setTimeout(() => toast(t('toast.motion'), 4500), 600);
 }
 function startStage(i) {
+  if (!validStage(i)) return false;
+  if (!unlocked(i)) { haptic(); toast(t('map.locked')); return false; }
   motionNotice();
-  mode = 'stage'; li = Math.max(0, Math.min(LEVELS.length - 1, i));
+  mode = 'stage'; li = i;
   save.level = li; writeSave(save);
   loadLevel(LEVELS[li]);
+  return true;
 }
 function startDaily() { mode = 'daily'; li = -1; loadLevel(dailyDef()); }
 function restart() {
@@ -3182,8 +3228,7 @@ async function boot(data) {
   buildTints();
   drawBg();
   requestAnimationFrame(t => { now = t; requestAnimationFrame(frame); });
-  if (data && data.screen === 'play' && Number.isInteger(data.level)) startStage(data.level);
-  else showScreen('title');
+  if (!(data && data.screen === 'play' && startStage(data.level))) showScreen('title');
   try { await document.fonts.ready; if (state) renderHUD(); } catch (e) {}
 }
 try { window.claude?.hot?.snapshot?.(() => ({ screen, level: li })); } catch (e) {}
