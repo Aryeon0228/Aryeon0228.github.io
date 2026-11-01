@@ -5,8 +5,8 @@ import vm from 'node:vm';
 import * as THREE from '../vendor/three/build/three.module.js';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const toggleSource = html.slice(html.indexOf("  var ringToggle=document.getElementById('ring-toggle')"), html.indexOf('  /* ---------- Post FX prototypes'));
-const passSource = html.slice(html.indexOf('  function renderPass(material, dustMat, target, clearHex){'), html.indexOf('  function setFx(mode){'));
+const toggleSource = html.slice(html.indexOf("  var ringToggle=document.getElementById('ring-toggle')"), html.indexOf('  /* ---------- Eclipse lighting'));
+const passSource = html.slice(html.indexOf('  function renderPass(material, dustMat, target, clearHex){'), html.indexOf('  // Where the planet sits on screen'));
 
 function harness() {
   class Element extends EventTarget {
@@ -78,22 +78,20 @@ test('theme changes retain the hidden-ring description and restore the current t
   }
 });
 
-test('eclipse and X-Ray passes keep hidden dust hidden, then restore the enabled ring without hiding moons', () => {
+test('the eclipse pass keeps hidden dust hidden, then restores the enabled ring without hiding moons', () => {
   const h = harness(), originalDust = h.ringDust.material, originalMoon = h.moon.material;
   for (const show of [false, true, false]) {
     h.state.setRingVisible(show);
-    for (const pass of ['eclipse', 'xray']) {
-      const bodyMaterial = {name:pass + '-body'}, dustMaterial = {name:pass + '-dust'};
-      h.state.renderPass(bodyMaterial, dustMaterial, {}, 0);
-      const draw = h.draws.at(-1);
-      assert.equal(draw.some(entry => entry.object === h.ringDust), show);
-      assert.equal(draw.some(entry => entry.object === h.ringDustNear), false, 'one full-ring pass replaces both scene halves');
-      assert.equal(draw.find(entry => entry.object === h.moon).material, bodyMaterial);
-      assert.equal(draw.find(entry => entry.object === h.body).material, bodyMaterial);
-      if (show) assert.equal(draw.find(entry => entry.object === h.ringDust).material, dustMaterial);
-      assert.equal(h.ringDust.visible, show); assert.equal(h.ringDustNear.visible, show);
-      assert.equal(h.ringDust.material, originalDust); assert.equal(h.moon.material, originalMoon);
-      assert.equal(h.moon.visible, true); assert.equal(h.stars.visible, true); assert.equal(h.atmo.visible, true);
-    }
+    const bodyMaterial = {name:'eclipse-body'}, dustMaterial = {name:'eclipse-dust'};
+    h.state.renderPass(bodyMaterial, dustMaterial, {}, 0);
+    const draw = h.draws.at(-1);
+    assert.equal(draw.some(entry => entry.object === h.ringDust), show);
+    assert.equal(draw.some(entry => entry.object === h.ringDustNear), false, 'one full-ring pass replaces both scene halves');
+    assert.equal(draw.find(entry => entry.object === h.moon).material, bodyMaterial);
+    assert.equal(draw.find(entry => entry.object === h.body).material, bodyMaterial);
+    if (show) assert.equal(draw.find(entry => entry.object === h.ringDust).material, dustMaterial);
+    assert.equal(h.ringDust.visible, show); assert.equal(h.ringDustNear.visible, show);
+    assert.equal(h.ringDust.material, originalDust); assert.equal(h.moon.material, originalMoon);
+    assert.equal(h.moon.visible, true); assert.equal(h.stars.visible, true); assert.equal(h.atmo.visible, true);
   }
 });

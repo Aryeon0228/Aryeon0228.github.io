@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const bind = html.slice(html.indexOf('  function bind(id, out, key, target){'), html.indexOf("  bind('s-pen'"));
-const motion = html.slice(html.indexOf("  var sunSlider = document.getElementById('s-sun')"), html.indexOf('  // The one sun of every mode:'));
+const motion = html.slice(html.indexOf("  var sunSlider = document.getElementById('s-sun')"), html.indexOf('  function aimSun(){'));
 const ease = html.match(/  function ease\(current, target, dt, speed\)\{[^\n]+/)[0];
 
 function harness({reduce = false} = {}) {

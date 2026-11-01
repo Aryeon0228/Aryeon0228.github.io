@@ -6,6 +6,7 @@
 <script>
 (function(){var root=document.documentElement;var theme=root.dataset.themeLock;try{if(!theme)theme=localStorage.getItem('penumbra-theme');}catch(e){}if(theme!=='day'&&theme!=='night')theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'night':'day';root.dataset.theme=theme;root.style.colorScheme=theme==='day'?'light':'dark';})();
 </script>
+<script src="home-motion.js?v=15d54a8a4bfa"></script>
 
 <title>김소연 | Studio Penumbra</title>
 <meta name="description" content="김소연 포트폴리오 · Studio Penumbra — 컴퓨터 그래픽스 연구와 인터랙티브 웹 데모.">
@@ -84,7 +85,7 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 #meteor-sky{ position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; }
 #meteor-trail{ position:absolute; inset:0; width:100%; height:100%; z-index:4; pointer-events:none; }
 .hero.meteor-active,.hero.meteor-active .planet-drag{ cursor:none; }
-@media (prefers-reduced-motion:reduce){ #meteor-trail,#meteor-sky{ display:none; } }
+html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ display:none; }
 /* Hit area follows the projected planet; the rest of the page remains scrollable. */
 .planet-drag{
   position:absolute; z-index:3; transform:translate(-50%,-50%); border:0;
@@ -147,7 +148,7 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 .hero-role b{ color:var(--w); font-weight:500; }
 
 /* ---------- 조작 콘솔 ----------
-   빛과 대기 조절, 후처리 모드, 텔레메트리를 왼쪽 아래에 모아 행성을 가리지 않는다.
+   애니메이션, 음악, 빛과 대기 조절을 왼쪽 아래에 모아 행성을 가리지 않는다.
    조절 슬라이더는 바 위에 겹쳐 열려서, 열고 닫아도 바와 텔레메트리는 움직이지 않는다. */
 .console{
   position:absolute; z-index:3; left:var(--pad); right:var(--pad); bottom:24px;
@@ -160,7 +161,7 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 .rack-bar,.rack-b{ background:rgba(0,0,0,.78); border:1px solid var(--ln); backdrop-filter:blur(6px); }
 .rack-bar{ display:flex; flex-wrap:wrap; align-items:center; padding:4px 0; }
 .rack-h{
-  display:flex; align-items:center; gap:10px; min-height:32px; padding:0 14px;
+  display:flex; align-items:center; gap:10px; min-height:44px; padding:0 14px;
   border:0; background:none; color:#a6a6a6; cursor:pointer; user-select:none;
 }
 .rack-h .lbl{ color:inherit; font:500 12px var(--f-ko); letter-spacing:.06em; }
@@ -199,35 +200,12 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
 .ring-toggle[aria-checked="true"] .ring-toggle-track{ border-color:var(--w); }
 .ring-toggle[aria-checked="true"] .ring-toggle-track::before{ transform:translateX(12px); background:var(--w); }
 
-/* ---------- Post FX switch ---------- */
-.fx-switch{
-  display:flex; flex-wrap:wrap; align-items:center; gap:6px;
-  padding:0 12px 0 14px; border-right:1px solid var(--ln);
-}
-.fx-switch .lbl{ margin-right:6px; font-size:12px; letter-spacing:.12em; color:var(--g2); }
-.fx-switch button{
-  min-height:32px; padding:4px 10px; border:1px solid var(--ln2); background:rgba(0,0,0,.6);
-  color:#a6a6a6; font:500 12px var(--f-mono); letter-spacing:.06em; cursor:pointer;
-}
-.fx-switch button:hover{ color:var(--w); }
-.fx-switch button[aria-pressed="true"]{ color:#000; background:var(--w); border-color:var(--w); }
-.fx-switch button:focus-visible{ outline:1px solid var(--w); outline-offset:3px; }
-.fx-layers{ display:none; gap:4px; margin-left:10px; padding-left:12px; border-left:1px solid var(--ln2); }
-.hero[data-fx="xray"] .fx-layers{ display:flex; }
-.xray-label{
-  position:absolute; z-index:2; left:0; top:0; display:none; pointer-events:none; white-space:nowrap;
-  color:var(--w); font:12px var(--f-mono); letter-spacing:.06em; text-shadow:0 0 6px #000;
-}
-.hero[data-fx="xray"] .xray-label{ display:block; }
-html[data-theme="day"] .fx-switch{ display:none; }
-html[data-theme="day"] .xray-label{ display:none !important; }
-
 /* ---------- 텔레메트리 ---------- */
 .tele{ display:flex; flex-wrap:wrap; gap:0 32px; }
 .tele div{ display:grid; gap:3px; }
 .tele b{ font-family:var(--f-mono); font-size:12.5px; font-weight:500; color:var(--w); font-variant-numeric:tabular-nums; }
 
-/* The renderer's name steps aside so the readout stays beside the console, even with X-RAY's passes. */
+/* Keep the readout beside the playback controls on narrower screens. */
 @media(max-width:1200px){
   .tele div:last-child{ display:none; }
 }
@@ -251,8 +229,6 @@ html[data-theme="day"] .xray-label{ display:none !important; }
   /* The toggle sits right under its sliders; the modes stay on the bottom row. */
   .rack-bar{ flex-direction:column-reverse; align-items:stretch; padding:0 0 6px; }
   .rack-h{ justify-content:space-between; border-bottom:1px solid var(--ln); }
-  .fx-switch{ flex-wrap:wrap-reverse; padding:6px 6px 0 14px; border-right:0; }
-  .fx-layers{ margin-left:0; padding-left:0; border-left:0; }
   /* Three short columns keep the open sliders below the planet. */
   .rack-b{ width:100%; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 10px; padding:10px 10px 8px; }
   .knob-head{ flex-direction:column; align-items:flex-start; gap:0; }
@@ -357,7 +333,8 @@ html[data-theme="day"] .xray-label{ display:none !important; }
 footer{ padding-block:50px 68px; border-top:1px solid var(--ln); }
 footer div{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; }
 
-@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+html[data-motion="off"] *,html[data-motion="off"] *::before,html[data-motion="off"] *::after{ animation:none !important; transition:none !important; }
+html[data-motion="off"]{ scroll-behavior:auto; }
 /* Portfolio navigation and content */
 html{scroll-behavior:smooth;scroll-padding-top:96px}
 .site-header{position:sticky;top:0;z-index:30;background:rgba(0,0,0,.92);border-bottom:1px solid var(--ln);backdrop-filter:blur(16px)}
@@ -446,7 +423,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
  .site-links>a{font-size:21px}.nav-korean{font-size:10px}
  .content-fold summary{font-size:16px;gap:12px}
 }
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.site-links>a,.site-links>a::after,.menu-toggle-icon,.work-card{transition:none}}
+
 
 .publication-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.publication-tags span{font-size:10px;color:#bbb;border:1px solid #444;padding:3px 8px}.detail-row p.position-role{color:#ccc;font-size:12px;margin-top:7px}
 /* Compact capability list below each simulator introduction. */
@@ -461,14 +438,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .work-card--game:is(:hover,:focus-within) .game-preview img{opacity:1;filter:grayscale(0)}
 .work-card--game:is(:hover,:focus-within) .game-preview-hint{opacity:0}
 @media(max-width:640px),(hover:none),(pointer:coarse){.game-preview img{opacity:1;filter:none}.game-preview-hint{display:none}}
-@media(prefers-reduced-motion:reduce){.game-preview img,.game-preview-hint{transition:none}}
+
 
 .game-preview img.game-preview-rainbowtrees{object-fit:cover;object-position:50% 50%}
 .award-row h3{font-weight:500;color:#eee}.award-list .award-row:last-child{border-bottom:1px solid var(--ln)}
 .degree-label{display:inline-block;margin-bottom:12px;padding:3px 10px;border:1px solid #555;color:#ddd;font-size:12px;line-height:1.6}.education-row h3{font-weight:500;color:#eee}
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
-<link rel="stylesheet" href="home-tactile.css?v=5f99804c5004">
+<link rel="stylesheet" href="home-tactile.css?v=47aa55d31c5a">
 <link rel="stylesheet" href="home-theme.css?v=0db7a846444b">
 <link rel="stylesheet" href="home-lab.css?v=5ecfc5203d32">
 <script src="home-theme.js?v=618ba80fa029" defer></script>
@@ -477,7 +454,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .site-nav.wrap{max-width:1400px}
 @media(max-width:1399px){.site-header .site-links{margin-left:0}.site-header .theme-switch{margin-left:auto}html[data-theme="day"] .site-header .site-links{background:#fafaf8;border-bottom-color:var(--ln)}}
 </style>
-<link rel="stylesheet" href="home-music.css?v=4a80bd54ae90">
+<link rel="stylesheet" href="home-music.css?v=025312c86ebe">
 <link rel="stylesheet" href="home-diorama.css?v=48601e2fc354">
 </head>
 <body>
@@ -500,7 +477,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   <button type="button" id="planet-drag" class="planet-drag" hidden
     aria-label="행성과 고리 회전" title="드래그해서 회전 · 방향키로 미세 조절"></button>
   <div class="frame"><span></span><span></span><span></span><span></span></div>
-  <div class="xray-label" id="xray-label" aria-hidden="true"></div>
 
   <div class="hero-inner">
     <div class="wrap">
@@ -525,22 +501,22 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     </div>
   </div>
 
-  <!-- 조작 콘솔: 빛과 대기 조절 · 후처리 모드 · 텔레메트리 -->
+  <!-- 조작 콘솔: 애니메이션 · 음악 · 빛과 대기 조절 -->
   <div class="console">
     <div class="rack">
       <div class="rack-bar">
-        <div class="fx-switch" role="group" aria-label="후처리 효과 실험">
-          <span class="lbl">Post FX</span>
-          <button type="button" data-fx="eclipse" aria-pressed="true">ECLIPSE</button>
-          <button type="button" data-fx="xray" aria-pressed="false">X-RAY</button>
-          <button type="button" data-fx="off" aria-pressed="false">OFF</button>
-          <span class="fx-layers" role="group" aria-label="돋보기로 볼 렌더 패스 (숫자 1–4)">
-            <button type="button" data-xray-layer aria-pressed="true">N·L</button>
-            <button type="button" data-xray-layer aria-pressed="false">NRM</button>
-            <button type="button" data-xray-layer aria-pressed="false">DEP</button>
-            <button type="button" data-xray-layer aria-pressed="false">WIRE</button>
-          </span>
+        <div class="hero-playback" role="group" aria-label="애니메이션과 음악">
+          <span class="eclipse-badge" aria-label="이클립스 효과">ECLIPSE</span>
+          <button type="button" id="motion-toggle" class="motion-toggle" role="switch" aria-checked="false" aria-label="애니메이션" hidden>
+            <svg class="playback-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path class="playback-play" d="M4 2.5 13 8 4 13.5Z" fill="currentColor"/><g class="playback-pause" fill="currentColor"><rect x="4" y="3" width="3" height="10"/><rect x="9" y="3" width="3" height="10"/></g></svg>
+            <span>애니메이션</span><span data-motion-label>꺼짐</span>
+          </button>
+          <button type="button" id="music-toggle" class="music-toggle" aria-label="배경음악 켜기" aria-pressed="false" aria-describedby="music-status" hidden>
+            <span class="music-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>음악</span><span data-music-label>꺼짐</span>
+          </button>
         </div>
+        <span id="music-status" class="music-status" role="status" aria-live="polite"></span>
         <button type="button" class="rack-h" aria-expanded="false" aria-controls="rack-b"><span class="lbl">빛과 대기 조절</span></button>
       </div>
       <div class="rack-b" id="rack-b" hidden>
@@ -569,6 +545,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         </div>
       </div>
     </div>
+    <p class="scene-status" id="scene-status" role="status" hidden></p>
     <div class="tele">
       <div><span class="lbl">Rotation</span><b id="t-rot">0.0°</b></div>
       <div><span class="lbl">Incidence</span><b id="t-inc">0.0°</b></div>
@@ -828,7 +805,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var ctx=trailCanvas.getContext('2d');
   if(!ctx) return;
   var finePointer=window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
-  var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var motion=window.penumbraMotion;
   var points=[], dust=[], head=null, frameId=0, width=0, height=0, pixelRatio=1;
   var lifetime=360, previous=null, dustDistance=0;
   var meteorDay=document.documentElement.dataset.theme==='day';
@@ -883,7 +860,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     if(points.length || dust.length) frameId=requestAnimationFrame(drawMeteor);
   }
   function moveMeteor(e){
-    if(e.pointerType!=='mouse' || !finePointer.matches || reducedMotion.matches || document.hidden || hero.dataset.fx === 'xray'){
+    if(e.pointerType!=='mouse' || !finePointer.matches || !motion.enabled || document.hidden){
       clearMeteor(); return;
     }
     var rect=hero.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
@@ -933,7 +910,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   window.addEventListener('keydown',clearMeteor);
   document.addEventListener('visibilitychange',clearMeteor);
   if(finePointer.addEventListener) finePointer.addEventListener('change',clearMeteor);
-  if(reducedMotion.addEventListener) reducedMotion.addEventListener('change',clearMeteor);
+  motion.subscribe(clearMeteor);
   window.addEventListener('resize',sizeMeteor);
   if('ResizeObserver' in window) new ResizeObserver(sizeMeteor).observe(hero);
   sizeMeteor();
@@ -942,12 +919,21 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 (function(){
   "use strict";
   var canvas = document.getElementById('gl');
-  if(typeof THREE === 'undefined'){ canvas.style.display='none'; return; }
+  function showSceneFallback(message){
+    canvas.style.display='none';
+    var status=document.getElementById('scene-status');
+    status.textContent=message;
+    status.hidden=false;
+    document.querySelector('.tele').hidden=true;
+    document.querySelector('.rack-h').hidden=true;
+    document.querySelector('.eclipse-badge').hidden=true;
+  }
+  if(typeof THREE === 'undefined'){ showSceneFallback('3D 화면을 불러오지 못했어요. 인터넷 연결을 확인한 뒤 새로고침해 주세요.'); return; }
 
   var renderer;
   try{
     renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:false });
-  }catch(e){ canvas.style.display='none'; return; }
+  }catch(e){ showSceneFallback('3D 화면을 표시할 수 없어 기본 이미지를 보여드려요. 브라우저의 그래픽 가속 설정을 확인해 주세요.'); return; }
   var isDay=document.documentElement.dataset.theme==='day';
   var uDay={value:isDay ? 1 : 0};
   renderer.setClearColor(isDay ? 0xf3f3f1 : 0x000000, 1);
@@ -982,7 +968,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     uTurb:   { value: planetBaseline.turb },
     uBand:   { value: planetBaseline.band }
   };
-  // ECLIPSE's backlight: how much of the far sun stands behind what we see (0 outside ECLIPSE).
+  // ECLIPSE's backlight: how much of the far sun stands behind what we see.
   var uFwd = { value:0 };
 
   var BODY_VERT = [
@@ -1725,7 +1711,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var compMat = new THREE.ShaderMaterial({
     uniforms:{
       tScene:{value:null}, tBloom:{value:null}, uStr:{value:0.42},
-      tX:{value:null}, uLens:{value:new THREE.Vector4(0,0,1,0)},
       tOcc:{value:null}, uOccTexel:{value:new THREE.Vector2(1,1)}, tRays:{value:null}, uRaysTexel:{value:new THREE.Vector2(1,1)}, uEclipse:{value:0}, uExposure:{value:1}, uBacklit:{value:1}, uBurst:{value:0}, uFlash:{value:0},
       uSun:{value:new THREE.Vector2(.5,.5)}, uSunR:{value:1}, uAspect:{value:1}, uDisc:{value:.012},
       uPlanet:{value:new THREE.Vector3(.5,.5,.2)}, uTotality:{value:0},
@@ -1735,7 +1720,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     fragmentShader:[
       'precision highp float;',
       'uniform sampler2D tScene; uniform sampler2D tBloom; uniform float uStr; varying vec2 vUv;',
-      'uniform sampler2D tX; uniform vec4 uLens;',
       'uniform vec3 uPlanet; uniform float uTotality; uniform float uFlareTime;',
       'uniform sampler2D tOcc; uniform vec2 uOccTexel; uniform sampler2D tRays; uniform vec2 uRaysTexel; uniform float uEclipse; uniform float uExposure; uniform float uBacklit; uniform float uBurst; uniform float uFlash;',
       // Four bilinear taps half a texel apart: a 3x3 tent over a low-resolution target.
@@ -1844,13 +1828,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
       '  c = pow(1.0-exp(-max(c,vec3(0.0))*1.45*uExposure), vec3(0.88));',
-      // Inside the lens, one render pass replaces the finished image.
-      '  if(uLens.w > 0.0){',
-      '    float r = length(gl_FragCoord.xy - uLens.xy);',
-      '    float inside = 1.0 - smoothstep(uLens.z - 1.0, uLens.z, r);',
-      '    float edge = 1.0 - smoothstep(0.0, 1.4, abs(r - uLens.z));',
-      '    c = mix(c, texture2D(tX, vUv).rgb, inside * uLens.w) + edge * .75 * uLens.w;',
-      '  }',
       '  float d = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898,78.233)))*43758.5453);',
       '  gl_FragColor = vec4(c + (d-0.5)/255.0, 1.0);',
       '}'
@@ -2143,7 +2120,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   });
 
   // Hide only the grains, keeping moons and the planet's rotation available. Their visibility
-  // is shared by the normal scene, eclipse occlusion and X-Ray passes.
+  // is shared by the normal scene and eclipse occlusion pass.
   var ringToggle=document.getElementById('ring-toggle'), ringState=document.getElementById('ring-state');
   var ringSceneDescription=canvas.getAttribute('aria-label');
   function updateRingDescription(){
@@ -2165,11 +2142,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   ringToggle.addEventListener('click',function(){ setRingVisible(!ringVisible); });
   ringToggle.disabled=false;
 
-  /* ---------- Post FX prototypes ----------
-     Two optional effects, chosen with the Post FX switch (or ?fx=xray / ?fx=eclipse):
-     X-RAY shows one of the render's inner passes inside a lens under the cursor;
-     ECLIPSE moves a far sun behind the name and the planet: rays, a total eclipse, a flare. */
+  /* ---------- Eclipse lighting ----------
+     A far sun passes behind the name and the planet: rays, totality and a flare. */
   var heroEl = document.querySelector('.hero');
+  heroEl.dataset.fx = 'eclipse';
   var heroName = document.querySelector('.hero-name'), nameShadow = '', nameBlur = '';
   // The name is shaded letter by letter, so each letter darkens and glows by its own distance
   // from the sun. Screen readers get the whole name from the heading's label.
@@ -2201,69 +2177,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       letter.x = rect.left - box.left; letter.y = rect.top - box.top; letter.w = rect.width; letter.h = rect.height;
     });
   }
-  var fxButtons = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
-  var layerButtons = Array.prototype.slice.call(document.querySelectorAll('[data-xray-layer]'));
-  var lensLabel = document.getElementById('xray-label');
-  var fxMode = 'off', xrayLayer = 0;
-  var fxPointer = { x:0, y:0, inside:false };
-  var lens = { x:0, y:0, amount:0, radius:120 };
-  var finePointerFx = window.matchMedia('(hover: hover) and (pointer: fine)');
-
-  var XRAY_LAYERS = [
-    { name:'N·L LIGHTING', note:'빛을 받는 양만' },
-    { name:'NORMAL', note:'표면이 향한 방향' },
-    { name:'DEPTH', note:'카메라까지의 거리' },
-    { name:'WIREFRAME', note:'실제 폴리곤' }
-  ];
-  var XRAY_VERT = [
-    'varying vec3 vN; varying float vZ;',
-    'void main(){',
-    '  vN = normalize(normalMatrix * normal);',
-    '  vec4 mv = modelViewMatrix * vec4(position,1.0);',
-    '  vZ = -mv.z;',
-    '  gl_Position = projectionMatrix * mv;',
-    '}'
-  ].join('\n');
-  function xrayMaterial(body){
-    return new THREE.ShaderMaterial({
-      uniforms:{ uLight:bodyUniforms.uLight },
-      vertexShader:XRAY_VERT,
-      fragmentShader:['precision highp float;','uniform vec3 uLight; varying vec3 vN; varying float vZ;',
-        'void main(){ vec3 n = normalize(vN) * (gl_FrontFacing ? 1.0 : -1.0);', body, '}'].join('\n'),
-      side:THREE.DoubleSide
-    });
-  }
-  var xrayMaterials = [
-    // The unlit side keeps a faint cosine gradient so the form still reads.
-    xrayMaterial('float l = dot(n, normalize(uLight)); gl_FragColor = vec4(vec3(max(l, 0.0) * .9 + (l * .5 + .5) * .12), 1.0);'),
-    xrayMaterial('gl_FragColor = vec4(n * .5 + .5, 1.0);'),
-    // Linear depth with contour lines every third of a unit, like a survey map.
-    xrayMaterial('float d = clamp((vZ - 3.5) / 7.0, 0.0, 1.0); float iso = smoothstep(.93, 1.0, fract(vZ * 3.0));' +
-      ' gl_FragColor = vec4(vec3((1.0 - d) * .85 + iso * .25), 1.0);'),
-    new THREE.MeshBasicMaterial({ color:0xffffff, wireframe:true, transparent:true, opacity:.3 })
-  ];
   var occluderMaterial = new THREE.MeshBasicMaterial({ color:0x000000 });
-  // In the passes the ring shows what it is made of: every grain, as a tiny sphere facing the
-  // camera, its normal rebuilt from where the pixel falls on the point.
-  function dustPass(body){
-    return dustMaterial([
-      '  vec2 q = gl_PointCoord * 2.0 - 1.0; float d = dot(q, q);',
-      '  if(d > 1.0) discard;',
-      '  vec3 n = vec3(q.x, -q.y, sqrt(1.0 - d));',
-      '  ' + body
-    ].join('\n'));
-  }
-  var dustPasses = [
-    dustPass('float l = dot(n, vLight); gl_FragColor = vec4(vec3(max(l, 0.0) * .9 + (l * .5 + .5) * .12), 1.0);'),
-    dustPass('gl_FragColor = vec4(n * .5 + .5, 1.0);'),
-    dustPass('float z = clamp((vZ - 3.5) / 7.0, 0.0, 1.0); float iso = smoothstep(.93, 1.0, fract(vZ * 3.0));' +
-      ' gl_FragColor = vec4(vec3((1.0 - z) * .85 + iso * .25), 1.0);'),
-    dustPass('gl_FragColor = vec4(vec3(.3), 1.0);')
-  ];
   // In the half-resolution eclipse mask each grain blocks the sun over as much of its pixel as it covers.
   var dustOccluder = dustMaterial('  gl_FragColor = vec4(0.0, 0.0, 0.0, vBlock * step(length(gl_PointCoord - 0.5), 0.5));',
     { pixel:.5, material:{ transparent:true, depthWrite:false, depthTest:true } });
-  var rtX = new THREE.WebGLRenderTarget(2, 2, RT);
   var rtOcc = new THREE.WebGLRenderTarget(2, 2, RT);
   var rtRays = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
 
@@ -2346,68 +2263,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     hidden.forEach(function(object){ object.visible = true; });
   }
 
-  function setFx(mode){
-    fxMode = mode;
-    if(mode !== 'eclipse'){ clearName(); heroName.style.filter = ''; nameBlur = ''; }
-    if(mode === 'off') delete heroEl.dataset.fx; else heroEl.dataset.fx = mode;
-    fxButtons.forEach(function(button){ button.setAttribute('aria-pressed', String(button.dataset.fx === mode)); });
-    lens.amount = 0;
-    updateLensLabel();
-  }
-  function setLayer(index){
-    xrayLayer = (index + XRAY_LAYERS.length) % XRAY_LAYERS.length;
-    layerButtons.forEach(function(button, i){ button.setAttribute('aria-pressed', String(i === xrayLayer)); });
-    updateLensLabel();
-  }
-  function updateLensLabel(){
-    var layer = XRAY_LAYERS[xrayLayer];
-    lensLabel.textContent = '0' + (xrayLayer + 1) + ' / ' + layer.name + '  ·  ' + layer.note;
-  }
-  fxButtons.forEach(function(button){ button.addEventListener('click', function(){ setFx(button.dataset.fx); }); });
-  layerButtons.forEach(function(button, i){ button.addEventListener('click', function(){ setLayer(i); }); });
-  document.addEventListener('keydown', function(e){
-    if(fxMode !== 'xray' || e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input,textarea,select')) return;
-    var index = '1234'.indexOf(e.key);
-    if(index >= 0) setLayer(index);
-  });
-  heroEl.addEventListener('pointermove', function(e){
-    var bounds = canvas.getBoundingClientRect();
-    fxPointer.x = e.clientX - bounds.left; fxPointer.y = e.clientY - bounds.top;
-    fxPointer.inside = e.pointerType === 'mouse' && !e.target.closest('.rack,.tele,.fx-switch,a,input,summary,button:not(#planet-drag)');
-  }, { passive:true });
-  heroEl.addEventListener('pointerleave', function(){ fxPointer.inside = false; }, { passive:true });
-  var requestedFx = new URLSearchParams(location.search).get('fx');
-  setLayer(0);
-  // ECLIPSE is the default; ?fx=off or ?fx=xray opens the others.
-  setFx(requestedFx === 'xray' || requestedFx === 'off' ? requestedFx : 'eclipse');
-
-  // Where the planet sits on screen, in CSS pixels; the lens and the sun rest there without a mouse.
+  // Where the planet sits on screen, in CSS pixels, for the eclipse lighting.
   var fxCenter = new THREE.Vector3();
   function planetOnScreen(){
     fxCenter.copy(rig.position).project(camera);
     return { x:(fxCenter.x + 1) * canvas.clientWidth / 2, y:(1 - fxCenter.y) * canvas.clientHeight / 2 };
   }
   function ease(current, target, dt, speed){ return current + (target - current) * (1 - Math.exp(-dt * speed)); }
-
-  function updateLens(dt){
-    var w = canvas.clientWidth, h = canvas.clientHeight, dpr = renderer.getPixelRatio();
-    var mouse = finePointerFx.matches && fxPointer.inside;
-    var home = planetOnScreen();
-    var tx = mouse ? fxPointer.x : home.x, ty = mouse ? fxPointer.y : home.y;
-    if(lens.amount === 0){ lens.x = tx; lens.y = ty; }
-    lens.x = ease(lens.x, tx, dt, 18); lens.y = ease(lens.y, ty, dt, 18);
-    lens.radius = Math.max(84, Math.min(150, Math.min(w, h) * .17)) * (mouse ? 1 : 1.25);
-    lens.amount = ease(lens.amount, 1, dt, 8);
-    compMat.uniforms.uLens.value.set(lens.x * dpr, (h - lens.y) * dpr, lens.radius * dpr, lens.amount);
-    // Keep the label beside the lens and inside the hero; flip it to the left near the right edge.
-    var labelWidth = lensLabel.offsetWidth, lx = lens.x + lens.radius * .72, ly = lens.y + lens.radius * .72;
-    if(lx + labelWidth > w - 12) lx = lens.x - lens.radius * .72 - labelWidth;
-    // A resting lens (no mouse) carries its label centred above it, clear of the controls below.
-    if(!mouse){ lx = lens.x - labelWidth / 2; ly = lens.y - lens.radius - 26; }
-    lx = Math.max(12, Math.min(lx, w - labelWidth - 12));
-    ly = Math.min(ly, h - 28);
-    lensLabel.style.transform = 'translate(' + Math.round(lx) + 'px,' + Math.round(ly) + 'px)';
-  }
 
   // A far sun, moved by the panel's SUN AZIMUTH along a straight sweep: it turns about the
   // vertical axis through the line from the camera to the planet, so on screen it travels
@@ -2506,9 +2368,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       sunSlider.setAttribute('aria-valuetext', step === 0 ? '0, 기본 모습' : sunLabel.textContent);
     }
   }
-  // The one sun of every mode: ECLIPSE, X-RAY, OFF and the day theme all light the planet from
-  // it, so switching modes keeps the light where it is. Sets the planet's light and the sun's
-  // point on screen.
+  // Day and eclipse lighting share the same sun direction and screen position.
   function aimSun(){
     var w = canvas.clientWidth, h = canvas.clientHeight, tanHalf = Math.tan(camera.fov * Math.PI / 360);
     sunTarget.copy(rig.position).sub(camera.position).normalize();
@@ -2636,7 +2496,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   // and out a couple of times, and settles sharp, leaving only a trace of veiling glare.
   var cam = { exposure:1, velocity:0, glare:0, hunt:0, age:9 };
   function runCamera(sunInFrame, backlight, dt){
-    dt = Math.min(dt || .016, .05);
+    dt = Math.min(dt, .05);
     var target = 1 - .3 * sunInFrame;
     if(reduce){ cam.exposure = target; cam.velocity = 0; }
     else{
@@ -2667,20 +2527,34 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     applyCamera('0.0');
   }
 
-  var reduce = false;
-  try{
-    var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    reduce = mq.matches;
+  var motion = window.penumbraMotion;
+  var reduce = !motion.enabled;
+  var sceneDirty = true;
+  function invalidateScene(){ sceneDirty = true; }
+  document.getElementById('sun-hint').hidden = reduce;
+  motion.subscribe(function(enabled){
+    reduce = !enabled;
     document.getElementById('sun-hint').hidden = reduce;
-    if(mq.addEventListener) mq.addEventListener('change', function(e){
-      reduce = e.matches;
-      document.getElementById('sun-hint').hidden = reduce;
-    });
-  }catch(e){}
+    lastFrame = performance.now();
+    frames = 0; fpsT = lastFrame;
+    if(reduce){ clearRingBrush(); ringHeld=false; ringScatter.value=0; }
+    invalidateScene();
+  });
+  ['input','change','click','pointerup','keydown'].forEach(function(type){
+    heroEl.addEventListener(type,invalidateScene,{passive:true});
+  });
+  heroEl.addEventListener('pointermove',function(){ if(activePointer !== null) invalidateScene(); },{passive:true});
+  window.addEventListener('resize',invalidateScene,{passive:true});
+  window.addEventListener('penumbra-theme-change',invalidateScene);
+  document.addEventListener('visibilitychange',function(){
+    lastFrame = performance.now();
+    invalidateScene();
+  });
+  if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone',invalidateScene);
 
   var visible = true;
   if('IntersectionObserver' in window){
-    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },{threshold:0.01}).observe(canvas);
+    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; lastFrame=performance.now(); invalidateScene(); },{threshold:0.01}).observe(canvas);
   }
 
   var dragCenter = new THREE.Vector3();
@@ -2725,7 +2599,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       var bw = Math.max(2, pw>>2), bh = Math.max(2, ph>>2);
       rtA.setSize(bw, bh); rtB.setSize(bw, bh);
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
-      rtX.setSize(pw, ph);
       rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
       compMat.uniforms.uOccTexel.value.set(1 / rtOcc.width, 1 / rtOcc.height);
       nameMaskDirty = lettersDirty = true;
@@ -2740,16 +2613,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       elInc = document.getElementById('t-inc'),
       elFps = document.getElementById('t-fps');
 
-  var t0 = performance.now(), frozen = 12.0;
+  var t0 = performance.now(), sceneTime = 0;
   var fpsT = t0, frames = 0, lastTele = 0, lastFrame=t0;
 
   function frame(now){
     requestAnimationFrame(frame);
+    var interval=now-lastFrame; lastFrame=now;
     if(!visible || document.hidden){ if(tierWatch) tierWatch.since = 0; return; }
+    if(reduce && !sceneDirty) return;
+    sceneDirty = false;
     resize();
 
-    var t = reduce ? frozen : (now - t0)/1000;
-    var interval=now-lastFrame, dt=Math.min(interval/1000,0.05); lastFrame=now;
+    var dt=reduce ? 0 : Math.max(0,Math.min(interval/1000,0.05));
+    sceneTime += dt;
+    var t=sceneTime;
     stepRingBrush(dt,now);
     // Held, the thrown grains stay out; let go, they drift back into their orbits.
     ringScatter.value+=((ringHeld ? 1 : 0)-ringScatter.value)*(1-Math.exp(-dt*(ringHeld ? 10 : 2.2)));
@@ -2758,7 +2635,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // 태양 방위각: every mode lights the planet from the same sun, before anything is drawn.
     driftSun(dt);
     aimSun();
-    var eclipseAmount = fxMode === 'eclipse' && !isDay ? updateSun(dt) : 0;
+    var eclipseAmount = !isDay ? updateSun(dt) : 0;
     uFwd.value = eclipseAmount * compMat.uniforms.uBacklit.value;
     if(!eclipseAmount){ updateSunVeil(0,0); if(compMat.uniforms.uExposure.value !== 1) resetCamera(); if(isDay) clearName(); }
     bodyUniforms.uTime.value  = t;
@@ -2817,14 +2694,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }
     blurMat.uniforms.uDir.value.set(dx, dy);
 
-    // Post FX: one inner pass for the lens, or the occlusion mask and its rays for the eclipse.
-    if(fxMode === 'xray'){
-      renderPass(xrayMaterials[xrayLayer], dustPasses[xrayLayer], rtX, 0x000000);
-      compMat.uniforms.tX.value = rtX.texture;
-      updateLens(dt);
-    }else compMat.uniforms.uLens.value.w = 0;
     // With the sun behind the viewer there is nothing to mask or scatter.
-    if(fxMode === 'eclipse' && eclipseAmount > 0){
+    if(eclipseAmount > 0){
       renderPass(occluderMaterial, dustOccluder, rtOcc, 0xffffff);
       if(nameMaskDirty) drawNameMask();
       renderer.autoClear = false;
@@ -2834,7 +2705,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       drawPost(raysMats[raysTier], rtRays);
       compMat.uniforms.tRays.value = rtRays.texture;
       compMat.uniforms.uEclipse.value = eclipseAmount;
-      if(tierWatch) watchTier(now, interval);
+      if(tierWatch && !reduce) watchTier(now, interval);
     }else compMat.uniforms.uEclipse.value = 0;
 
     // 합성 → 화면
@@ -2844,13 +2715,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }
 
     // 텔레메트리
+    if(reduce) elFps.textContent = '일시정지';
     frames++;
     if(now - lastTele > 120){
       lastTele = now;
       elRot.textContent = ((t*0.009*180/Math.PI) % 360).toFixed(1) + '°';
       elInc.textContent = ((P.sun % 1)*360).toFixed(1) + '°';
     }
-    if(now - fpsT > 1000){
+    if(!reduce && now - fpsT > 1000){
       elFps.textContent = Math.round(frames*1000/(now-fpsT)) + ' fps';
       frames = 0; fpsT = now;
     }
@@ -2858,15 +2730,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   requestAnimationFrame(frame);
 })();
 </script>
-<script type="module" src="home-tactile.js?v=f79902e74d52"></script>
-<script type="module" src="home-meteors.js?v=bde91b774490"></script>
+<script type="module" src="home-tactile.js?v=50b1dca97b47"></script>
+<script type="module" src="home-meteors.js?v=62c919f55a6b"></script>
 <audio id="home-music" data-src="assets/audio/penumbra-orbit-horizon.mp3?v=aab15f1e6525" preload="none" loop></audio>
-<button type="button" id="music-toggle" class="music-toggle" aria-label="배경음악 켜기" aria-pressed="false" aria-describedby="music-status" hidden>
-  <span class="music-icon" aria-hidden="true"><i></i><i></i><i></i></span>
-  <span data-music-label>Music Off</span>
-</button>
-<span id="music-status" class="music-status" role="status" aria-live="polite"></span>
 <script src="home-diorama.js?v=8f54b0535287" defer></script>
-<script type="module" src="home-music.js?v=0bcc97d75c86"></script>
+<script type="module" src="home-music.js?v=a50d6bb0bdda"></script>
 </body>
 </html>

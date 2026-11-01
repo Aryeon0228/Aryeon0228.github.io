@@ -2,8 +2,8 @@
 const effects = { tilt: true, light: true };
 const root = document.documentElement;
 const pointerMedia = matchMedia('(min-width: 641px) and (hover: hover) and (pointer: fine)');
-const reducedMedia = matchMedia('(prefers-reduced-motion: reduce)');
-const canTrack = () => pointerMedia.matches && !reducedMedia.matches;
+const motion = window.penumbraMotion;
+const canTrack = () => pointerMedia.matches && motion.enabled;
 const clamp = (value) => Math.max(-1, Math.min(1, value));
 const cards = [];
 const links = [];
@@ -166,6 +166,6 @@ window.addEventListener('scroll', resetAll, { passive: true });
 document.addEventListener('visibilitychange', () => { if (document.hidden) resetAll(); });
 document.addEventListener('keydown', (event) => { if (event.key === 'Tab') resetAll(); });
 pointerMedia.addEventListener('change', syncEffects);
-reducedMedia.addEventListener('change', syncEffects);
+motion.subscribe(syncEffects);
 
 syncEffects();

@@ -4,7 +4,7 @@ const canvas = document.getElementById('meteor-sky');
 const ctx = canvas?.getContext('2d');
 
 if (hero && ctx) {
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const motion = window.penumbraMotion;
   const finePointer = matchMedia('(any-hover: hover) and (any-pointer: fine)');
   const controls = '.rack,a,button,input,select,textarea,summary,.hero-name,.hero-role,.hero-mark,.tele';
   let width = 0, height = 0, ratio = 1;
@@ -13,7 +13,7 @@ if (hero && ctx) {
   let lastFlick = -2000, lastTap = -1000;
   let day = document.documentElement.dataset.theme === 'day';
 
-  const canAnimate = () => visible && !document.hidden && !reducedMotion.matches && width > 0 && height > 0;
+  const canAnimate = () => visible && !document.hidden && motion.enabled && width > 0 && height > 0;
   const random = (min, max) => min + Math.random() * (max - min);
 
   function resetPointer() {
@@ -171,7 +171,7 @@ if (hero && ctx) {
   window.addEventListener('pagehide', stop);
   window.addEventListener('pageshow', sync);
   document.addEventListener('visibilitychange', sync);
-  reducedMotion.addEventListener('change', sync);
+  motion.subscribe(sync);
   finePointer.addEventListener('change', resetPointer);
   window.addEventListener('penumbra-theme-change', () => {
     day = document.documentElement.dataset.theme === 'day';

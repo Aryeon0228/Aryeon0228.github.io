@@ -117,12 +117,18 @@ html[data-tactile-tilt="on"] .work-card[data-tactile-pressed] .work-card-face {
   .work-card-face { padding: 24px; }
 }
 
-@media (max-width: 640px), (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+@media (max-width: 640px), (hover: none), (pointer: coarse) {
   .work-card[data-tactile-card] .work-card-face { transform: none; box-shadow: none; will-change: auto; }
   .work-card-face::before, .work-card-face::after { display: none; }
   [data-tactile-link] > span[aria-hidden="true"],
   [data-tactile-link]:active > span[aria-hidden="true"] { transform: none; }
 }
+
+html[data-motion="off"] .work-card[data-tactile-card] .work-card-face { transform: none; box-shadow: none; will-change: auto; }
+html[data-motion="off"] .work-card-face::before,
+html[data-motion="off"] .work-card-face::after { display: none; }
+html[data-motion="off"] [data-tactile-link] > span[aria-hidden="true"],
+html[data-motion="off"] [data-tactile-link]:active > span[aria-hidden="true"] { transform: none; }
 
 /* The action stays visible before hover, including on touch-only devices. */
 .work-card[data-lab-card] { cursor: pointer; }
@@ -159,6 +165,4 @@ html[data-tactile-tilt="on"] .work-card[data-tactile-pressed] .work-card-face {
     border-color: var(--lab-button-active-bg);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .work-card .content-actions .lab-launch { transition: none; }
-}
+html[data-motion="off"] .work-card .content-actions .lab-launch { transition: none; }
