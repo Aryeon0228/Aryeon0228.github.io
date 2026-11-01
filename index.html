@@ -6,7 +6,7 @@
 <script>
 (function(){var root=document.documentElement;var theme=root.dataset.themeLock;try{if(!theme)theme=localStorage.getItem('penumbra-theme');}catch(e){}if(theme!=='day'&&theme!=='night')theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'night':'day';root.dataset.theme=theme;root.style.colorScheme=theme==='day'?'light':'dark';})();
 </script>
-<script src="home-motion.js?v=15d54a8a4bfa"></script>
+<script src="home-motion.js?v=dcfb4531a76c"></script>
 
 <title>김소연 | Studio Penumbra</title>
 <meta name="description" content="김소연 포트폴리오 · Studio Penumbra — 컴퓨터 그래픽스 연구와 인터랙티브 웹 데모.">
@@ -495,8 +495,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         빛과 그림자 사이, 아직 드러나지 않은 가능성을 만듭니다.
       </p>
       <nav class="hero-actions" aria-label="주요 작업 바로가기">
-        <a href="#work">작품 보기 <span aria-hidden="true">↓</span></a>
-        <a href="#lab">Lab 둘러보기 <span aria-hidden="true">↓</span></a>
+        <a href="#work">View Work <span aria-hidden="true">↓</span></a>
+        <a href="#lab">Explore Lab <span aria-hidden="true">↓</span></a>
       </nav>
     </div>
   </div>
@@ -505,15 +505,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   <div class="console">
     <div class="rack">
       <div class="rack-bar">
-        <div class="hero-playback" role="group" aria-label="애니메이션과 음악">
+        <div class="hero-playback" role="group" aria-label="Animation and music">
           <span class="eclipse-badge" aria-label="이클립스 효과">ECLIPSE</span>
-          <button type="button" id="motion-toggle" class="motion-toggle" role="switch" aria-checked="false" aria-label="애니메이션" hidden>
+          <button type="button" id="motion-toggle" class="motion-toggle" role="switch" aria-checked="false" aria-label="Animation" hidden>
             <svg class="playback-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path class="playback-play" d="M4 2.5 13 8 4 13.5Z" fill="currentColor"/><g class="playback-pause" fill="currentColor"><rect x="4" y="3" width="3" height="10"/><rect x="9" y="3" width="3" height="10"/></g></svg>
-            <span>애니메이션</span><span data-motion-label>꺼짐</span>
+            <span>Animation</span><span data-motion-label>Off</span>
           </button>
-          <button type="button" id="music-toggle" class="music-toggle" aria-label="배경음악 켜기" aria-pressed="false" aria-describedby="music-status" hidden>
+          <button type="button" id="music-toggle" class="music-toggle" aria-label="Turn music on" aria-pressed="false" aria-describedby="music-status" hidden>
             <span class="music-icon" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span>음악</span><span data-music-label>꺼짐</span>
+            <span>Music</span><span data-music-label>Off</span>
           </button>
         </div>
         <span id="music-status" class="music-status" role="status" aria-live="polite"></span>
@@ -2734,6 +2734,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <script type="module" src="home-meteors.js?v=62c919f55a6b"></script>
 <audio id="home-music" data-src="assets/audio/penumbra-orbit-horizon.mp3?v=aab15f1e6525" preload="none" loop></audio>
 <script src="home-diorama.js?v=8f54b0535287" defer></script>
-<script type="module" src="home-music.js?v=a50d6bb0bdda"></script>
+<script type="module" src="home-music.js?v=b40779bf6724"></script>
 </body>
 </html>

@@ -8,9 +8,9 @@ export function setupMusic(audio, button, status, page = document) {
   function show(state) {
     button.dataset.state = state;
     button.setAttribute('aria-pressed', String(state === 'on'));
-    const text = state === 'on' ? '켜짐' : state === 'loading' ? '준비 중' : state === 'error' ? '재시도' : '꺼짐';
+    const text = state === 'on' ? 'On' : state === 'loading' ? 'Loading' : state === 'error' ? 'Retry' : 'Off';
     if (label) label.textContent = text;
-    const action = state === 'on' ? '배경음악 끄기' : state === 'loading' ? '음악 불러오기 취소' : state === 'error' ? '배경음악 다시 시도' : '배경음악 켜기';
+    const action = state === 'on' ? 'Turn music off' : state === 'loading' ? 'Cancel loading music' : state === 'error' ? 'Retry music' : 'Turn music on';
     button.setAttribute('aria-label', action);
     button.title = `Orbit · Horizon — ${action}`;
   }

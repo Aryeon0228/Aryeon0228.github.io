@@ -21,11 +21,11 @@
   function updateButton() {
     if (!button) return;
     button.setAttribute('role', 'switch');
-    button.setAttribute('aria-label', '애니메이션');
+    button.setAttribute('aria-label', 'Animation');
     button.setAttribute('aria-checked', String(enabled));
     button.dataset.state = enabled ? 'on' : 'off';
     const label = button.querySelector('[data-motion-label]');
-    if (label) label.textContent = enabled ? '켜짐' : '꺼짐';
+    if (label) label.textContent = enabled ? 'On' : 'Off';
   }
 
   function sync() {

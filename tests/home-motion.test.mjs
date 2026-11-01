@@ -52,9 +52,9 @@ test('a first visit follows the system before the body and its switch are ready'
     h.ready();
     assert.equal(h.button.hidden, false);
     assert.equal(h.button.attrs.role, 'switch');
-    assert.equal(h.button.attrs['aria-label'], '애니메이션');
+    assert.equal(h.button.attrs['aria-label'], 'Animation');
     assert.equal(h.button.attrs['aria-checked'], String(!reduced));
-    assert.equal(h.button.label.textContent, reduced ? '꺼짐' : '켜짐');
+    assert.equal(h.button.label.textContent, reduced ? 'Off' : 'On');
     assert.equal(h.saved.size, 0, 'reading the system does not create a user preference');
   }
 });
@@ -67,7 +67,7 @@ test('explicit enabling overrides reduced motion, notifies consumers, and surviv
   assert.equal(h.motion.enabled, true);
   assert.equal(h.root.dataset.motion, 'on');
   assert.equal(h.button.attrs['aria-checked'], 'true');
-  assert.equal(h.button.label.textContent, '켜짐');
+  assert.equal(h.button.label.textContent, 'On');
   assert.equal(h.saved.get('penumbra-motion'), 'on');
   assert.deepEqual(frames, [true]);
   assert.deepEqual(h.changes, [true]);
@@ -97,7 +97,7 @@ test('explicit playback and pause still work without access to local storage', (
   h.click(); assert.equal(h.motion.enabled, true);
   h.system(false); h.system(true); assert.equal(h.motion.enabled, true);
   h.click(); assert.equal(h.motion.enabled, false);
-  assert.equal(h.button.label.textContent, '꺼짐');
+  assert.equal(h.button.label.textContent, 'Off');
 });
 
 test('saved pause wins over system animation; invalid saved values use the system', () => {
@@ -109,7 +109,7 @@ test('saved pause wins over system animation; invalid saved values use the syste
 test('another tab can update the preference; clearing it restores the current system setting', () => {
   const h = harness({ reduced: true, ready: true });
   h.storage('on'); assert.equal(h.motion.enabled, true);
-  assert.equal(h.button.label.textContent, '켜짐');
+  assert.equal(h.button.label.textContent, 'On');
   h.storage('off', 'unrelated-key'); assert.equal(h.motion.enabled, true);
   h.storage(null); assert.equal(h.motion.enabled, false);
   h.system(false); assert.equal(h.motion.enabled, true);

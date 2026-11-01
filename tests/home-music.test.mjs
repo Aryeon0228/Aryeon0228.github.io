@@ -58,7 +58,7 @@ test('a slow network play can be cancelled and cannot turn music back on', async
 });
 test('failed playback stays off and can be retried', async () => {
   const h=harness(); h.click(); h.plays[0].reject(new Error('NotAllowedError')); await settle();
-  assert.equal(h.button.dataset.state,'error'); assert.equal(h.button.label.textContent,'재시도'); assert.ok(h.status.textContent.length>0);
+  assert.equal(h.button.dataset.state,'error'); assert.equal(h.button.label.textContent,'Retry'); assert.ok(h.status.textContent.length>0);
   h.click(); h.plays[1].resolve(); await settle(); h.tick();
   assert.equal(h.button.dataset.state,'on'); assert.equal(h.status.textContent,'');
 });
