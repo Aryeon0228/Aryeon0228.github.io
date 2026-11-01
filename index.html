@@ -447,7 +447,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=47aa55d31c5a">
 <link rel="stylesheet" href="home-theme.css?v=0db7a846444b">
-<link rel="stylesheet" href="home-lab.css?v=5ecfc5203d32">
+<link rel="stylesheet" href="home-lab.css?v=6e07b1a0b8f6">
 <script src="home-theme.js?v=618ba80fa029" defer></script>
 <style>
 /* The teaching materials link has its own page; keep it outside section tracking. */
@@ -490,10 +490,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         <span class="ko">김소연</span>
       </h1>
 
-      <p class="hero-role">
-        게임 아트 <b>실무</b> · 빛과 표면의 <b>연구</b> · 다음 세대를 위한 <b>강의</b>.
-        빛과 그림자 사이, 아직 드러나지 않은 가능성을 만듭니다.
-      </p>
+      <div class="hero-role">
+        <p class="hero-specialty">Game Artist &amp; AI Creative Technologist</p>
+        <p class="hero-intro">게임 아트와 실시간 그래픽스 경험을 바탕으로, 생성형 AI를 활용한 인터랙티브 웹·3D 도구와 제작 교육을 설계합니다.</p>
+      </div>
       <nav class="hero-actions" aria-label="주요 작업 바로가기">
         <a href="#work">View Work <span aria-hidden="true">↓</span></a>
         <a href="#lab">Explore Lab <span aria-hidden="true">↓</span></a>
@@ -561,6 +561,25 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <div><h2 id="lab-title">Lab</h2><p>직접 조작하는 그래픽스 실험, 제작을 돕는 도구와 인터랙티브 작업.</p>
 </div>
 </div>
+<article class="lab-feature" id="prompt-lab" aria-labelledby="prompt-feature-title">
+<div class="lab-feature-copy">
+<p class="lab-feature-label">FEATURED / AI TOOL</p>
+<h3 id="prompt-feature-title">Prompt Coach <span>프롬프트 코치</span></h3>
+<p class="lab-feature-lead">아이디어를 구체적인 제작 조건으로.</p>
+<p class="lab-feature-description">장면 아이디어나 참고 이미지에서 시작해, AI의 질문에 답하며 프롬프트를 완성합니다. 무엇을 유지하고 바꿀지, 왜 그 조건이 필요한지 함께 짚어봅니다.</p>
+<p class="lab-feature-context">ChatGPT·Claude에 MCP로 연결해 같은 대화에서 이어갑니다.</p>
+<div class="content-actions"><a class="lab-launch" href="prompt-coach/" target="_blank" rel="noopener noreferrer" aria-label="프롬프트 코치 열기 (새 탭)">Try Prompt Coach <span aria-hidden="true">↗</span></a></div>
+</div>
+<div class="lab-feature-process">
+<h4>장면에서 프롬프트까지</h4>
+<ol>
+<li><span aria-hidden="true">01</span><div><strong>아이디어·참고 이미지</strong><p>만들고 싶은 장면에서 출발</p></div></li>
+<li><span aria-hidden="true">02</span><div><strong>유지할 것·바꿀 것</strong><p>질문과 답변으로 조건 구체화</p></div></li>
+<li><span aria-hidden="true">03</span><div><strong>프롬프트 완성·수정</strong><p>제작 결과를 보고 다음 수정으로</p></div></li>
+</ol>
+<p class="lab-feature-role">기획 · UX 설계 · MCP 연동<br>실제 사용 피드백을 바탕으로 지속 개선</p>
+</div>
+</article>
 <nav class="lab-jump-links" aria-label="Lab 분류 바로가기"><a href="#lab-experiments">인터랙티브 실험 <span aria-hidden="true">↓</span></a><a href="#lab-tools">제작 도구 <span aria-hidden="true">↓</span></a><a href="#lab-showcases">제작 사례 <span aria-hidden="true">↓</span></a>
 </nav>
 <section class="lab-category" id="lab-experiments" aria-labelledby="lab-experiments-title" tabindex="-1">
@@ -654,15 +673,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </section>
 <section class="lab-category" id="lab-tools" aria-labelledby="lab-tools-title" tabindex="-1">
 <header class="lab-category-heading">
-<h3 id="lab-tools-title">제작 도구</h3><p>프롬프트를 다듬고, 반복되는 3D 작업을 줄이는 도구입니다.</p>
+<h3 id="lab-tools-title">제작 도구</h3><p>반복되는 3D 작업을 줄이는 스크립트입니다.</p>
 </header>
-<article class="work-card lab-tool-card" id="prompt-lab">
-<h4 class="lab-card-title">Prompt Lab · 프롬프트 코치</h4>
-<div class="work-description"><p>아이디어나 참고 이미지에서 시작해, AI의 질문에 답하며 프롬프트를 구체화합니다.</p>
-</div>
-<div class="content-actions"><a class="lab-launch" data-launch-label="코치 열기" href="prompt-coach/" target="_blank" rel="noopener noreferrer" aria-label="프롬프트 코치 열기 (새 탭)">코치 열기 <span aria-hidden="true">↗</span></a>
-</div>
-</article>
+
 <section class="lab-scripts" aria-labelledby="lab-scripts-title">
 <header class="lab-scripts-heading">
 <h4 id="lab-scripts-title">3ds Max Scripts</h4><span>도구 6종 · 버전 2가지</span>
