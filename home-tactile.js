@@ -71,7 +71,7 @@ function enhanceLabCard(card) {
   const arrow = document.createElement('span');
   arrow.setAttribute('aria-hidden', 'true');
   arrow.textContent = '↗';
-  primary.replaceChildren(document.createTextNode('Lab 열기 '), arrow);
+  primary.replaceChildren(document.createTextNode(`${primary.dataset.launchLabel || 'Lab 열기'} `), arrow);
   const status = card.querySelector('.lab-card-status')?.textContent.trim();
   primary.setAttribute('aria-label', `${title}${status ? ` (${status})` : ''} 열기${primary.target === '_blank' ? ' (새 탭)' : ''}`);
   card.dataset.labCard = '';
