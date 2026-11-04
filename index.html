@@ -80,7 +80,7 @@ h1,h2,h3,h4{ margin:0; text-wrap:balance; font-weight:400; }
 /* ============================================================
    HERO
    ============================================================ */
-.hero{ position:relative; min-height:760px; display:flex; align-items:stretch; overflow:hidden; }
+.hero{ position:relative; min-height:760px; display:flex; flex-direction:column; align-items:stretch; overflow:hidden; }
 #gl{ position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0; }
 #meteor-sky{ position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; }
 #meteor-trail{ position:absolute; inset:0; width:100%; height:100%; z-index:4; pointer-events:none; }
@@ -126,7 +126,7 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 .frame span:nth-child(3){ bottom:0; left:0; border-right:0; border-top:0; }
 .frame span:nth-child(4){ bottom:0; right:0; border-left:0; border-top:0; }
 
-.hero-inner{ position:relative; z-index:2; width:100%; display:flex; align-items:center; padding-block:clamp(72px,9vw,96px); }
+.hero-inner{ position:relative; z-index:2; flex:1; width:100%; display:flex; align-items:center; padding-top:clamp(72px,9vw,96px); padding-bottom:48px; }
 
 .hero-inner > .wrap{ width:100%; }
 
@@ -148,21 +148,19 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 .hero-role b{ color:var(--w); font-weight:500; }
 
 /* ---------- 조작 콘솔 ----------
-   애니메이션, 음악, 빛과 대기 조절을 왼쪽 아래에 모아 행성을 가리지 않는다.
-   조절 슬라이더는 바 위에 겹쳐 열려서, 열고 닫아도 바와 텔레메트리는 움직이지 않는다. */
+   본문 뒤의 정상 흐름에 자리를 두고, 슬라이더도 바 아래로 펼친다.
+   창 크기나 글자 크기가 바뀌어도 소개와 바로가기를 덮지 않는다. */
 .console{
-  position:absolute; z-index:3; left:var(--pad); right:var(--pad); bottom:24px;
-  display:flex; flex-wrap:wrap-reverse; align-items:flex-start; gap:10px 32px;
-  pointer-events:none;
+  position:relative; z-index:3; width:100%; max-width:1200px; margin:0 auto; padding:0 var(--pad) 24px;
+  display:flex; flex-direction:column; align-items:stretch; gap:16px;
 }
-.console > *{ pointer-events:auto; }
-.rack{ position:relative; max-width:100%; }
-/* Each box blurs what is behind it; a blurring parent would leave the popover nothing to blur. */
-.rack-bar,.rack-b{ background:rgba(0,0,0,.78); border:1px solid var(--ln); backdrop-filter:blur(6px); }
-.rack-bar{ display:flex; flex-wrap:wrap; align-items:center; padding:4px 0; }
+.rack{ position:relative; min-width:0; width:100%; scroll-margin-top:80px; }
+/* Keep the scene subdued behind each control surface. */
+.rack-bar,.rack-b{ background:rgba(0,0,0,.9); border:1px solid var(--ln2); backdrop-filter:blur(6px); }
+.rack-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; padding:10px 12px; }
 .rack-h{
-  display:flex; align-items:center; gap:10px; min-height:44px; padding:0 14px;
-  border:0; background:none; color:#a6a6a6; cursor:pointer; user-select:none;
+  display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:44px; margin-left:auto; padding:0 14px;
+  border:0; border-left:1px solid var(--ln2); background:none; color:#bfbfbf; cursor:pointer; user-select:none;
 }
 .rack-h .lbl{ color:inherit; font:500 12px var(--f-ko); letter-spacing:.06em; }
 .rack-h::after{ content:'+'; font:300 18px/1 var(--f-mono); }
@@ -170,9 +168,8 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 .rack-h:hover{ color:var(--w); }
 .rack-h:focus-visible{ outline:1px solid #bdbdbd; outline-offset:3px; }
 .rack-b{
-  position:absolute; left:0; bottom:100%; min-width:100%; margin-bottom:-1px;
-  display:grid; grid-template-columns:repeat(3,minmax(124px,1fr)); gap:0 12px;
-  padding:11px 12px 9px;
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) minmax(110px,.6fr); gap:24px;
+  padding:24px; border-top:0;
 }
 .rack-b[hidden]{ display:none; }
 /* Read with every slider; on screen, the scale under each slider says the same. */
@@ -191,7 +188,7 @@ input[type=range]::-moz-range-thumb{ width:9px; height:9px; background:var(--w);
 input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px; }
 .knob-scale{ display:flex; justify-content:space-between; gap:8px; font-size:12px; line-height:1.4; color:var(--g2); }
 .knob-hint{ margin:5px 0 0; font-size:11px; line-height:1.4; color:var(--g2); }
-.ring-setting{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:10px; padding-top:8px; border-top:1px solid var(--ln); color:var(--w); font:12px var(--f-ko); }
+.ring-setting{ display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:14px; padding-left:24px; border-left:1px solid var(--ln2); color:var(--w); font:12px var(--f-ko); }
 .ring-toggle{ display:flex; align-items:center; gap:9px; min-height:44px; padding:0 10px; border:1px solid var(--ln2); background:transparent; color:var(--w); font:12px var(--f-ko); cursor:pointer; }
 .ring-toggle:hover{ background:var(--ln); }
 .ring-toggle:disabled{ opacity:.4; cursor:default; }
@@ -201,11 +198,12 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
 .ring-toggle[aria-checked="true"] .ring-toggle-track::before{ transform:translateX(12px); background:var(--w); }
 
 /* ---------- 텔레메트리 ---------- */
-.tele{ display:flex; flex-wrap:wrap; gap:0 32px; }
+.tele{ display:flex; flex-wrap:wrap; align-self:flex-end; gap:12px 28px; padding:0 4px; }
+.tele .lbl{ color:var(--g2); font-size:9px; }
 .tele div{ display:grid; gap:3px; }
 .tele b{ font-family:var(--f-mono); font-size:12.5px; font-weight:500; color:var(--w); font-variant-numeric:tabular-nums; }
 
-/* Keep the readout beside the playback controls on narrower screens. */
+/* Keep the secondary readout compact on narrower screens. */
 @media(max-width:1200px){
   .tele div:last-child{ display:none; }
 }
@@ -216,6 +214,9 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
   .hero{ min-height:680px; }
   .hero-veil{ background:linear-gradient(90deg,rgba(0,0,0,.70),transparent 64%); }
 }
+@media(max-width:900px){
+  .rack-b{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
 @media(max-width:600px){
   .hero{ min-height:800px; }
   .hero-inner{ padding-top:58px; }
@@ -223,17 +224,13 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
   .hero-role{ margin-top:20px; font-size:14px; max-width:30ch; }
   .hero-veil{ background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.42) 27%,transparent 43%); }
   .hero-fb::before{ left:56%; top:64%; width:310px; }
-  .console{ bottom:20px; gap:10px 18px; }
+  .console{ padding-bottom:20px; gap:16px; }
   .tele{ gap:18px; }
   .rack{ width:100%; }
-  /* The toggle sits right under its sliders; the modes stay on the bottom row. */
-  .rack-bar{ flex-direction:column-reverse; align-items:stretch; padding:0 0 6px; }
-  .rack-h{ justify-content:space-between; border-bottom:1px solid var(--ln); }
-  /* Three short columns keep the open sliders below the planet. */
-  .rack-b{ width:100%; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 10px; padding:10px 10px 8px; }
-  .knob-head{ flex-direction:column; align-items:flex-start; gap:0; }
-  .knob-scale{ flex-wrap:wrap; column-gap:6px; }
-  .knob-scale span:last-child{ margin-left:auto; }
+  .rack-bar{ flex-direction:column; align-items:stretch; gap:10px; padding:12px; }
+  .rack-h{ margin:0; padding:10px 0 0; border-left:0; border-top:1px solid var(--ln2); }
+  .rack-b{ grid-template-columns:minmax(0,1fr); gap:22px; padding:20px; }
+  .ring-setting{ flex-direction:row; align-items:center; justify-content:space-between; gap:16px; padding:16px 0 0; border-left:0; border-top:1px solid var(--ln2); }
   .frame{ opacity:.18; }
 }
 
@@ -447,14 +444,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=47aa55d31c5a">
 <link rel="stylesheet" href="home-theme.css?v=0db7a846444b">
-<link rel="stylesheet" href="home-lab.css?v=6e07b1a0b8f6">
+<link rel="stylesheet" href="home-lab.css?v=9bcfd4229054">
 <script src="home-theme.js?v=618ba80fa029" defer></script>
 <style>
 /* The teaching materials link has its own page; keep it outside section tracking. */
 .site-nav.wrap{max-width:1400px}
 @media(max-width:1399px){.site-header .site-links{margin-left:0}.site-header .theme-switch{margin-left:auto}html[data-theme="day"] .site-header .site-links{background:#fafaf8;border-bottom-color:var(--ln)}}
 </style>
-<link rel="stylesheet" href="home-music.css?v=025312c86ebe">
+<link rel="stylesheet" href="home-music.css?v=dc7eb6f2f13e">
 <link rel="stylesheet" href="home-diorama.css?v=48601e2fc354">
 </head>
 <body>
@@ -789,24 +786,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   updateLocation();
 })();
 
-// The light and atmosphere sliders open above the console bar, which stays where it is.
-// On touch layouts the opened panel must stay below the sticky header.
+// The light controls expand in document flow beneath the playback bar.
 (function(){
-  var rack=document.querySelector('.rack');
-  var toggle=rack.querySelector('.rack-h');
+  var toggle=document.querySelector('.rack-h');
   var sliders=document.getElementById('rack-b');
-  var header=document.querySelector('.site-header');
-  var touchLayout=window.matchMedia('(max-width:640px), (any-pointer:coarse)');
   toggle.addEventListener('click',function(){
     var open=toggle.getAttribute('aria-expanded')!=='true';
     toggle.setAttribute('aria-expanded',String(open));
     sliders.hidden=!open;
-    if(!open || !touchLayout.matches) return;
-    // The sliders sit outside the bar's box, so measure them and the bar separately.
-    var limit=header.getBoundingClientRect().bottom+12;
-    var top=sliders.getBoundingClientRect().top, bottom=rack.getBoundingClientRect().bottom;
-    var shift=top<limit ? top-limit : Math.min(Math.max(0,bottom-window.innerHeight+16),top-limit);
-    if(shift) window.scrollBy({top:shift,behavior:'auto'});
   });
 })();
 

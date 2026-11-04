@@ -1,7 +1,7 @@
 /* Playback controls live together in the hero console, beside the lighting controls. */
 .hero-playback {
   display:flex; flex-wrap:wrap; align-items:center; gap:8px;
-  min-width:0; padding:4px 10px; border-right:1px solid var(--ln);
+  min-width:0; padding:0;
 }
 .eclipse-badge {
   padding:0 4px; color:var(--g2);
@@ -36,7 +36,7 @@
 .scene-status { flex-basis:100%; max-width:58ch; margin:0; color:var(--g2); font:400 13px/1.6 var(--f-ko); }
 .console [hidden] { display:none; }
 @media(max-width:600px) {
-  .hero-playback { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:10px 12px; border-right:0; }
+  .hero-playback { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
   .eclipse-badge { grid-column:1 / -1; padding:0; }
   .motion-toggle,.music-toggle { width:100%; padding-inline:8px; }
 }

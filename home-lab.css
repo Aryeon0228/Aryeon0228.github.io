@@ -175,7 +175,6 @@ html[data-theme="day"] #lab .lab-card-status { color: #72539f; }
 .hero-specialty { color:var(--w); font:500 18px/1.5 var(--f-lat); margin:0 0 12px; text-wrap:balance; }
 .hero-intro { margin:0; color:#b7b7b7; font:400 15px/1.8 var(--f-ko); word-break:keep-all; overflow-wrap:break-word; }
 html[data-theme="day"] .hero-intro { color:#4d534d; }
-.hero-inner { padding-bottom:150px; }
 #prompt-lab { scroll-margin-top:100px; }
 .lab-feature { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:40px; padding:32px; margin:8px 0 40px; border:1px solid var(--ln2); background:var(--k1); }
 .lab-feature-label { margin:0 0 16px; color:var(--g2); font:500 12px/1.5 var(--f-mono); letter-spacing:.08em; }
@@ -200,7 +199,6 @@ html[data-theme="day"] .hero-intro { color:#4d534d; }
 @media(max-width:600px) {
   .hero-role { max-width:34ch; }
   .hero-specialty { font-size:17px; }
-  .hero-inner { padding-bottom:220px; }
   .lab-feature { padding:20px; }
   .lab-feature h3 { font-size:28px; }
 }
