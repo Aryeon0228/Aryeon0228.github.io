@@ -26,12 +26,7 @@
 .playback-icon svg { display:block; width:14px; height:14px; }
 .motion-toggle[aria-checked="true"] .playback-play,
 .motion-toggle[aria-checked="false"] .playback-pause { display:none; }
-.music-icon { gap:3px; }
-.music-icon i { display:block; flex:0 0 2px; width:2px; height:3px; background:currentColor; transition:height .3s; }
-.music-toggle[data-state="on"] .music-icon i { animation:music-breathe 2.4s ease-in-out infinite alternate; }
-.music-toggle[data-state="on"] .music-icon i:nth-child(2) { height:12px; animation-delay:-.8s; }
-.music-toggle[data-state="on"] .music-icon i:nth-child(3) { height:8px; animation-delay:-1.6s; }
-@keyframes music-breathe { from { transform:scaleY(.45); } to { transform:scaleY(1); } }
+.music-icon { flex-basis:18px; width:18px; height:18px; }
 .music-status { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 .scene-status { flex-basis:100%; max-width:58ch; margin:0; color:var(--g2); font:400 13px/1.6 var(--f-ko); }
 .console [hidden] { display:none; }
@@ -40,16 +35,9 @@
   .eclipse-badge { grid-column:1 / -1; padding:0; }
   .motion-toggle,.music-toggle { width:100%; padding-inline:8px; }
 }
-@media(max-width:359px) {
-  .hero-playback { grid-template-columns:1fr; }
-}
 html[data-motion="off"] .motion-toggle,
-html[data-motion="off"] .music-toggle,
-html[data-motion="off"] .music-icon i { transition:none; }
-html[data-motion="off"] .music-toggle[data-state="on"] .music-icon i { animation:none; }
+html[data-motion="off"] .music-toggle { transition:none; }
 @media(prefers-reduced-motion:reduce) {
   html:not([data-motion="on"]) .motion-toggle,
-  html:not([data-motion="on"]) .music-toggle,
-  html:not([data-motion="on"]) .music-icon i { transition:none; }
-  html:not([data-motion="on"]) .music-toggle[data-state="on"] .music-icon i { animation:none; }
+  html:not([data-motion="on"]) .music-toggle { transition:none; }
 }
