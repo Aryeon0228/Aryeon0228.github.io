@@ -15,12 +15,18 @@
 /* the still invites a click; once running, the scene takes the frame */
 .diorama-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:0 22px;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.62);color:#fff;font:500 12px/1 var(--f-mono);letter-spacing:.08em;cursor:pointer;transition:background-color .2s,border-color .2s}
 .diorama-play:hover,.diorama-play:focus-visible{background:rgba(0,0,0,.85);border-color:#fff}
-.diorama-play:focus-visible,.diorama-close:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.diorama-play:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .diorama-play span{font-size:10px}
-.diorama-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#efe7d8}
-.diorama-close{position:absolute;top:10px;right:10px;z-index:1;min-height:32px;padding:0 12px;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.82);color:#111;font:500 11px/1 var(--f-mono);letter-spacing:.06em;cursor:pointer}
-.diorama-close:hover{background:#fff}
+.diorama-stage iframe{display:block;width:100%;height:auto;aspect-ratio:16 / 9;border:0;background:#efe7d8}
+/* Controls and feedback stay outside the scene, including on a narrow phone screen. */
+.diorama-controls{display:flex;flex-wrap:wrap;gap:4px;padding:6px;background:#151715;color:#eee}
+.diorama-controls button,.diorama-controls a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 10px;border:1px solid #61665e;background:transparent;color:inherit;font:500 12px/1.4 var(--f-ko);text-decoration:none;cursor:pointer}
+.diorama-controls button:hover,.diorama-controls a:hover{background:#30352d}
+.diorama-controls button:focus-visible,.diorama-controls a:focus-visible{outline:2px solid currentColor;outline-offset:1px}
+.diorama-controls .diorama-close{margin-right:auto}
+.diorama-status{margin:0;padding:10px 12px;background:#151715;color:#cbd0c6;font:400 12px/1.6 var(--f-ko);overflow-wrap:anywhere}
 .diorama-stage.is-live img,.diorama-stage.is-live .diorama-play{display:none}
+.diorama-card .game-preview.diorama-stage.is-live{aspect-ratio:auto}
 .diorama-stage.is-live{border-color:#555}
 
 @media(min-width:980px){
@@ -33,13 +39,15 @@ html[data-theme="day"] .diorama-play{border-color:rgba(0,0,0,.4);background:rgba
 html[data-theme="day"] .diorama-play:hover,html[data-theme="day"] .diorama-play:focus-visible{background:#fff;border-color:#111}
 html[data-theme="day"] .diorama-play:focus-visible{outline-color:#111}
 html[data-theme="day"] .diorama-stage.is-live{border-color:#92978d}
+html[data-theme="day"] .diorama-controls,html[data-theme="day"] .diorama-status{background:#f4f5ef;color:#343c30}
+html[data-theme="day"] .diorama-controls button:hover,html[data-theme="day"] .diorama-controls a:hover{background:#e0e5d8}
 
 @media(prefers-reduced-motion:reduce){.diorama-play{transition:none}}
 
 /* Cupcake Zombie: a portrait phone game, so the stage stands upright beside its copy */
 .cupcake-card .game-preview.cupcake-stage{aspect-ratio:9 / 16;width:100%;max-width:360px;justify-self:center;background:#e9dfcf}
 .cupcake-stage img{object-fit:cover;object-position:50% 0}
-.cupcake-stage iframe{background:#e9dfcf}
+.cupcake-stage iframe{aspect-ratio:9 / 16;background:#e9dfcf}
 #lab .cupcake-card .cupcake-note{margin-top:14px;font-size:12px;opacity:.7}
 @media(min-width:720px){
   #lab .cupcake-card{grid-template-columns:minmax(0,320px) minmax(0,1fr);align-items:start;column-gap:32px}
