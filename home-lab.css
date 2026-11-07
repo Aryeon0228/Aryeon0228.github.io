@@ -40,19 +40,15 @@
 .work-facts dt { color:var(--g2); }
 .work-facts dd { margin:0; color:var(--w); }
 .work-facts a { text-decoration:underline; text-underline-offset:4px; }
-.team-project { display:grid; grid-template-columns:minmax(160px,.8fr) minmax(0,1.2fr) auto; align-items:center; gap:20px 28px; padding:24px 0; border-top:1px solid var(--ln); scroll-margin-top:100px; }
+.team-project { display:grid; grid-template-columns:minmax(160px,.8fr) minmax(0,1.2fr); align-items:center; gap:20px 28px; padding:24px 0; border-top:1px solid var(--ln); scroll-margin-top:100px; }
 .team-project:last-child { border-bottom:1px solid var(--ln); }
 .team-project h4 { margin:4px 0 0; font:400 24px/1.4 var(--f-lat); color:var(--w); }
 .team-project-meta { margin:0 0 8px; font:400 12px/1.7 var(--f-ko); color:var(--g2); }
 .team-project-role { margin:0; font:400 14px/1.8 var(--f-ko); color:var(--w); }
 .team-project-role span { margin-right:10px; font-size:12px; color:var(--g2); }
-.work-career-link { display:inline-flex; align-items:center; gap:12px; min-height:44px; border-bottom:1px solid var(--ln2); font:400 12px/1.5 var(--f-ko); white-space:nowrap; }
-.work-career-link:hover { border-color:var(--w); }
-.career-project-links { margin-top:16px; }
-#career .detail-row[id],#awards .detail-row[id] { scroll-margin-top:100px; }
+#career,#awards .detail-row[id] { scroll-margin-top:100px; }
 @media(max-width:760px) {
   .team-project { grid-template-columns:1fr; gap:12px; }
-  .team-project .work-career-link { justify-self:start; }
 }
 
 #lab { --lab-copy: #b7b7b7; }
