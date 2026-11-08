@@ -13,13 +13,10 @@ function harness({reduce = false} = {}) {
     value = '0'; defaultValue = '0'; hidden = false; attrs = {}; textContent = '';
     setAttribute(key, value) { this.attrs[key] = String(value); }
   }
-  const slider = new Element(), label = new Element(), panel = new Element(), toggle = new Element();
+  const slider = new Element(), label = new Element();
   const doc = new EventTarget(), win = new EventTarget();
   doc.hidden = false;
-  doc.getElementById = id => ({'s-sun':slider, 'v-sun':label, 'rack-b':panel}[id]);
-  doc.querySelector = () => toggle;
-  // The real panel handler is registered before the renderer's listener.
-  toggle.addEventListener('click', () => { panel.hidden = !panel.hidden; });
+  doc.getElementById = id => ({'s-sun':slider, 'v-sun':label}[id]);
   let now = 0;
   const state = {document:doc, window:win, performance:{now:() => now}, reduce, P:{}, planetBaseline:{sun:.74},
     compMat:{uniforms:{uSun:{value:{x:.5}}}}, bodyUniforms:{uLight:{value:{z:-1}}}};
@@ -30,11 +27,10 @@ function harness({reduce = false} = {}) {
     Object.assign(event, props);
     target.dispatchEvent(event);
   }
-  return {state, slider, panel, label, doc, win, send,
+  return {state, slider, label, doc, win, send,
     input(value) { slider.value = String(value); send(slider, 'input'); },
     down() { send(slider, 'pointerdown', {pointerId:7, button:0}); },
     up() { send(win, 'pointerup', {pointerId:7}); },
-    close() { panel.hidden = false; send(toggle, 'click'); },
     advance(seconds) {
       for(let elapsed = 0; elapsed < seconds - 1e-8; elapsed += .02) {
         now += 20; state.driftSun(.02);
@@ -73,12 +69,6 @@ test('holding a range key pauses at its endpoint; release and subsequent inputs 
   h.advance(.04); assert.ok(h.state.P.sun > selected);
 });
 
-test('closing the panel resumes promptly and smoothly, without waiting for the hold', () => {
-  const h = harness(); h.input(65); const selected = h.state.P.sun;
-  h.close(); h.advance(.02);
-  assert.ok(h.state.P.sun > selected && h.state.P.sun < selected + .00001);
-});
-
 test('pointer cancellation, capture loss, blur and a hidden document cannot strand manual hold', () => {
   for(const reason of ['pointercancel', 'lostpointercapture', 'blur', 'visibilitychange']) {
     const h = harness(); h.down(); h.input(60); const selected = h.state.P.sun;
@@ -90,14 +80,14 @@ test('pointer cancellation, capture loss, blur and a hidden document cannot stra
   }
 });
 
-test('reduced motion stays still after input and panel close; enabling motion later works', () => {
+test('reduced motion stays still after input; enabling motion later works', () => {
   const h = harness({reduce:true}); h.input(50); const selected = h.state.P.sun;
-  h.close(); h.advance(5); assert.equal(h.state.P.sun, selected);
+  h.advance(5); assert.equal(h.state.P.sun, selected);
   h.state.reduce = false; h.advance(.1); assert.ok(h.state.P.sun > selected);
 });
 
 test('the 360-degree endpoint wraps to the same physical angle when motion restarts', () => {
-  const h = harness(); h.input(100); h.close(); h.advance(.02);
+  const h = harness(); h.input(100); h.advance(2.02);
   assert.ok(h.state.P.sun >= .74 && h.state.P.sun < .74001);
   assert.equal(h.slider.value, 0);
 });

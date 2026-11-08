@@ -148,32 +148,17 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 .hero-role b{ color:var(--w); font-weight:500; }
 
 /* ---------- 조작 콘솔 ----------
-   본문 뒤의 정상 흐름에 자리를 두고, 슬라이더도 바 아래로 펼친다.
-   창 크기나 글자 크기가 바뀌어도 소개와 바로가기를 덮지 않는다. */
+   모든 조절 항목을 하나의 바에 항상 표시한다. */
 .console{
   position:relative; z-index:3; width:100%; max-width:1200px; margin:0 auto; padding:0 var(--pad) 24px;
   display:flex; flex-direction:column; align-items:stretch; gap:16px;
 }
-.rack{ position:relative; min-width:0; width:100%; scroll-margin-top:80px; }
-/* Keep the scene subdued behind each control surface. */
-.rack-bar,.rack-b{ background:rgba(0,0,0,.9); border:1px solid var(--ln2); backdrop-filter:blur(6px); }
-.rack-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; padding:10px 12px; }
-.rack-h{
-  display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:44px; margin-left:auto; padding:0 14px;
-  border:0; border-left:1px solid var(--ln2); background:none; color:#bfbfbf; cursor:pointer; user-select:none;
-}
-.rack-h .lbl{ color:inherit; font:500 12px var(--f-ko); letter-spacing:.06em; }
-.rack-h::after{ content:'+'; font:300 18px/1 var(--f-mono); }
-.rack-h[aria-expanded="true"]::after{ content:'−'; }
-.rack-h:hover{ color:var(--w); }
-.rack-h:focus-visible{ outline:1px solid #bdbdbd; outline-offset:3px; }
-.rack-b{
-  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) minmax(110px,.6fr); gap:24px;
-  padding:24px; border-top:0;
-}
+.rack{ position:relative; display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:20px; min-width:0; width:100%; padding:10px 12px; background:rgba(0,0,0,.9); border:1px solid var(--ln2); backdrop-filter:blur(6px); scroll-margin-top:80px; }
+.rack-bar{ min-width:0; }
+.rack-b{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:center; gap:20px; min-width:0; padding-left:20px; border-left:1px solid var(--ln2); }
 .rack-b[hidden]{ display:none; }
-/* Read with every slider; on screen, the scale under each slider says the same. */
-.rack-note{ position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+/* Keep detailed guidance available to assistive technology without adding rows. */
+.rack-note,.knob-scale,.knob-hint{ position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 .knob-head{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
 .knob-head em,.knob-head b{ font:500 12px var(--f-mono); color:var(--w); }
 input[type=range]{
@@ -186,17 +171,6 @@ input[type=range]::-webkit-slider-thumb{
 }
 input[type=range]::-moz-range-thumb{ width:9px; height:9px; background:var(--w); border:none; border-radius:0; cursor:ew-resize; }
 input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px; }
-.knob-scale{ display:flex; justify-content:space-between; gap:8px; font-size:12px; line-height:1.4; color:var(--g2); }
-.knob-hint{ margin:5px 0 0; font-size:11px; line-height:1.4; color:var(--g2); }
-.ring-setting{ display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:14px; padding-left:24px; border-left:1px solid var(--ln2); color:var(--w); font:12px var(--f-ko); }
-.ring-toggle{ display:flex; align-items:center; gap:9px; min-height:44px; padding:0 10px; border:1px solid var(--ln2); background:transparent; color:var(--w); font:12px var(--f-ko); cursor:pointer; }
-.ring-toggle:hover{ background:var(--ln); }
-.ring-toggle:disabled{ opacity:.4; cursor:default; }
-.ring-toggle-track{ position:relative; width:28px; height:16px; border:1px solid var(--g2); border-radius:10px; }
-.ring-toggle-track::before{ content:''; position:absolute; top:3px; left:3px; width:8px; height:8px; border-radius:50%; background:var(--g2); }
-.ring-toggle[aria-checked="true"] .ring-toggle-track{ border-color:var(--w); }
-.ring-toggle[aria-checked="true"] .ring-toggle-track::before{ transform:translateX(12px); background:var(--w); }
-
 /* ---------- 텔레메트리 ---------- */
 .tele{ display:flex; flex-wrap:wrap; align-self:flex-end; gap:12px 28px; padding:0 4px; }
 .tele .lbl{ color:var(--g2); font-size:9px; }
@@ -214,8 +188,9 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
   .hero{ min-height:680px; }
   .hero-veil{ background:linear-gradient(90deg,rgba(0,0,0,.70),transparent 64%); }
 }
-@media(max-width:900px){
-  .rack-b{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media(max-width:1000px){
+  .rack{ grid-template-columns:minmax(0,1fr); gap:16px; }
+  .rack-b{ padding:16px 0 0; border-left:0; border-top:1px solid var(--ln2); }
 }
 @media(max-width:600px){
   .hero{ min-height:800px; }
@@ -226,17 +201,14 @@ input[type=range]:focus-visible{ outline:1px solid var(--w); outline-offset:5px;
   .hero-fb::before{ left:56%; top:64%; width:310px; }
   .console{ padding-bottom:20px; gap:16px; }
   .tele{ gap:18px; }
-  .rack{ width:100%; }
-  .rack-bar{ flex-direction:column; align-items:stretch; gap:10px; padding:12px; }
-  .rack-h{ margin:0; padding:10px 0 0; border-left:0; border-top:1px solid var(--ln2); }
-  .rack-b{ grid-template-columns:minmax(0,1fr); gap:22px; padding:20px; }
-  .ring-setting{ flex-direction:row; align-items:center; justify-content:space-between; gap:16px; padding:16px 0 0; border-left:0; border-top:1px solid var(--ln2); }
+  .rack{ width:100%; gap:10px; }
+  .rack-b{ padding-top:10px; }
+  .rack-b{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 20px; }
   .frame{ opacity:.18; }
 }
 
 /* Keep the small square handle, with a finger-sized native hit target. */
 @media(max-width:640px),(any-pointer:coarse){
-  .rack-h{ min-height:44px; }
   .rack input[type=range]{ position:relative; z-index:1; height:44px; margin-block:-11px; }
   .rack input[type=range]::-webkit-slider-thumb{
     box-sizing:border-box; width:44px; height:44px;
@@ -449,7 +421,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=47aa55d31c5a">
-<link rel="stylesheet" href="home-theme.css?v=0db7a846444b">
+<link rel="stylesheet" href="home-theme.css?v=d88d58d7e8d6">
 <link rel="stylesheet" href="home-lab.css?v=450952629fc6">
 <script src="home-theme.js?v=618ba80fa029" defer></script>
 <style>
@@ -521,31 +493,24 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
           </button>
         </div>
         <span id="music-status" class="music-status" role="status" aria-live="polite"></span>
-        <button type="button" class="rack-h" aria-expanded="false" aria-controls="rack-b"><span class="lbl">빛과 대기 조절</span></button>
       </div>
-      <div class="rack-b" id="rack-b" hidden>
+      <div class="rack-b" id="rack-b" role="group" aria-label="빛과 대기 조절">
         <p class="rack-note" id="rack-note">0은 지금 맞춘 기본 모습입니다.<br>오른쪽으로 밀어 변화를 더해보세요.</p>
         <div>
           <div class="knob-head"><em>PENUMBRA</em><b id="v-pen" class="num">0</b></div>
-          <input type="range" id="s-pen" min="0" max="100" value="0" aria-describedby="rack-note scale-pen" aria-label="반그림자 폭">
+          <input type="range" id="s-pen" min="0" max="100" value="0" aria-describedby="rack-note scale-pen" aria-label="반그림자 폭" title="반그림자 폭: 기본 → 넓게">
           <div class="knob-scale" id="scale-pen"><span>기본</span><span>넓게</span></div>
         </div>
         <div>
           <div class="knob-head"><em>SUN AZIMUTH</em><b id="v-sun" class="num">0</b></div>
-          <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun sun-hint" aria-label="태양 방위각">
+          <input type="range" id="s-sun" min="0" max="100" value="0" aria-describedby="rack-note scale-sun sun-hint" aria-label="태양 방위각" title="태양 방위각: 기본 → 한 바퀴 회전. 조절 후 천천히 이어집니다.">
           <div class="knob-scale" id="scale-sun"><span>기본</span><span>한 바퀴 회전</span></div>
           <p class="knob-hint" id="sun-hint">조절 후 천천히 이어집니다.</p>
         </div>
         <div>
           <div class="knob-head"><em>ATMOSPHERE</em><b id="v-atm" class="num">0</b></div>
-          <input type="range" id="s-atm" min="0" max="100" value="0" aria-describedby="rack-note scale-atm" aria-label="대기 밀도">
+          <input type="range" id="s-atm" min="0" max="100" value="0" aria-describedby="rack-note scale-atm" aria-label="대기 밀도" title="대기 밀도: 기본 → 대기 줄이기">
           <div class="knob-scale" id="scale-atm"><span>기본</span><span>대기 줄이기</span></div>
-        </div>
-        <div class="ring-setting">
-          <span id="ring-label">고리 표시</span>
-          <button type="button" id="ring-toggle" class="ring-toggle" role="switch" aria-checked="true" aria-labelledby="ring-label" disabled>
-            <span class="ring-toggle-track" aria-hidden="true"></span><span id="ring-state" aria-hidden="true">켜짐</span>
-          </button>
         </div>
       </div>
     </div>
@@ -903,17 +868,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   updateLocation();
 })();
 
-// The light controls expand in document flow beneath the playback bar.
-(function(){
-  var toggle=document.querySelector('.rack-h');
-  var sliders=document.getElementById('rack-b');
-  toggle.addEventListener('click',function(){
-    var open=toggle.getAttribute('aria-expanded')!=='true';
-    toggle.setAttribute('aria-expanded',String(open));
-    sliders.hidden=!open;
-  });
-})();
-
 // A local, short-lived meteor cursor; no animation loop runs when the tail is gone.
 (function(){
   "use strict";
@@ -1042,7 +996,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     status.textContent=message;
     status.hidden=false;
     document.querySelector('.tele').hidden=true;
-    document.querySelector('.rack-h').hidden=true;
+    document.getElementById('rack-b').hidden=true;
     document.querySelector('.eclipse-badge').hidden=true;
   }
   if(typeof THREE === 'undefined'){ showSceneFallback('3D 화면을 불러오지 못했어요. 인터넷 연결을 확인한 뒤 새로고침해 주세요.'); return; }
@@ -1287,7 +1241,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
      행성이 고리 위에 그림자를 드리운다. 그 그림자의 흐린 가장자리 역시 반그림자이므로
      PENUMBRA 슬라이더가 표면과 고리를 동시에 지배한다 — 같은 현상이니 같은 값이어야 한다. */
   var uRing = { value: planetBaseline.ring };
-  var ringVisible = true;
   var RING_I = 1.25, RING_O = 4.80;
 
   // Fixed-seed irregular spacing: distinct orbits, with real empty gaps.
@@ -2089,7 +2042,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var hitPlanetCenter=new THREE.Vector3(),hitPlanetScale=new THREE.Vector3(),hitOcclusion=new THREE.Vector3();
   var hitPlanet=new THREE.Sphere(),hitRay=new THREE.Ray();
   function nearestVisibleOrbit(clientX,clientY,bounds,slop){
-    if(!ringVisible) return null;
     var px=clientX-bounds.left,py=clientY-bounds.top;
     var hitSlop=slop===undefined ? ringHitSlop : slop;
     var bestDistance=hitSlop*hitSlop,bestPoint=null;
@@ -2138,7 +2090,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     ringBrushes.value.forEach(function(brush,index){ brush.w=0; ringBrushVelocity[index]=0; });
   }
   function moveRingBrush(e){
-    if(!ringVisible || e.pointerType!=='mouse' || !ringHoverMedia.matches || reduce || document.hidden || activePointer!==null
+    if(e.pointerType!=='mouse' || !ringHoverMedia.matches || reduce || document.hidden || activePointer!==null
       || (e.target!==dragControl && e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary'))){
       releaseRingBrush(); return;
     }
@@ -2161,7 +2113,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     }
   }
   function stepRingBrush(dt,now){
-    if(!ringVisible || reduce || !ringHoverMedia.matches || document.hidden){ clearRingBrush(); return; }
+    if(reduce || !ringHoverMedia.matches || document.hidden){ clearRingBrush(); return; }
     if(ringHover.inside && activePointer===null && now>=ringHover.nextCheck){
       ringHover.nextCheck=now+1000/24;
       var bounds=canvas.getBoundingClientRect();
@@ -2198,7 +2150,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   if(ringHoverMedia.addEventListener) ringHoverMedia.addEventListener('change',clearRingBrush);
 
   document.querySelector('.hero').addEventListener('pointerdown',function(e){
-    if(!ringVisible || activePointer!==null || e.pointerType!=='mouse' || e.button!==0) return;
+    if(activePointer!==null || e.pointerType!=='mouse' || e.button!==0) return;
     if(e.target.closest('.rack,.hero-name,.hero-role,.hero-mark,.tele,a,button,input,summary')) return;
     var bounds=canvas.getBoundingClientRect();
     ringPointer.set((e.clientX-bounds.left)/bounds.width*2-1,1-(e.clientY-bounds.top)/bounds.height*2);
@@ -2235,29 +2187,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     var step=dragDiameter*(e.shiftKey ? 5 : 1)/180;
     turnPlanet(delta[0]*step,delta[1]*step);
   });
-
-  // Hide only the grains, keeping moons and the planet's rotation available. Their visibility
-  // is shared by the normal scene and eclipse occlusion pass.
-  var ringToggle=document.getElementById('ring-toggle'), ringState=document.getElementById('ring-state');
-  var ringSceneDescription=canvas.getAttribute('aria-label');
-  function updateRingDescription(){
-    canvas.setAttribute('aria-label',ringVisible ? ringSceneDescription : '고리 없는 행성과 그 주위를 공전하는 작은 위성, 먼 별들이 보입니다.');
-  }
-  function setRingVisible(show){
-    ringVisible=show;
-    ringDust.visible=ringDustNear.visible=show;
-    if(!show){ clearRingBrush(); ringHeld=false; ringScatter.value=0; }
-    ringToggle.setAttribute('aria-checked',String(show));
-    ringState.textContent=show ? '켜짐' : '꺼짐';
-    dragControl.setAttribute('aria-label',show ? '행성과 고리 회전' : '행성 회전');
-    updateRingDescription();
-  }
-  window.addEventListener('penumbra-theme-change',function(){
-    ringSceneDescription=canvas.getAttribute('aria-label');
-    updateRingDescription();
-  });
-  ringToggle.addEventListener('click',function(){ setRingVisible(!ringVisible); });
-  ringToggle.disabled=false;
 
   /* ---------- Eclipse lighting ----------
      A far sun passes behind the name and the planet: rays, totality and a flare. */
@@ -2465,11 +2394,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   sunSlider.addEventListener('blur', releaseSunControl);
   window.addEventListener('blur', releaseSunControl);
   document.addEventListener('visibilitychange', function(){ if(document.hidden) releaseSunControl(); });
-  document.querySelector('.rack-h').addEventListener('click', function(){
-    if(!document.getElementById('rack-b').hidden) return;
-    sunPointer = null; sunKeyHeld = false;
-    sunResumeAt = performance.now();
-  });
   function driftSun(dt){
     if(reduce || sunPointer !== null || sunKeyHeld || performance.now() < sunResumeAt) return;
     sunMotion = ease(sunMotion, 1, dt, 1.8);
