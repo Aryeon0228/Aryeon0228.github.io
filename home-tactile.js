@@ -70,7 +70,8 @@ function enhanceLabCard(card) {
   primary.classList.add('lab-launch');
   const arrow = document.createElement('span');
   arrow.setAttribute('aria-hidden', 'true');
-  arrow.textContent = '↗';
+  arrow.className = 'action-icon';
+  arrow.innerHTML = '<svg viewBox="0 0 24 24" focusable="false"><use href="#action-open"/></svg>';
   primary.replaceChildren(document.createTextNode(`${primary.dataset.launchLabel || 'Lab 열기'} `), arrow);
   const status = card.querySelector('.lab-card-status')?.textContent.trim();
   primary.setAttribute('aria-label', `${title}${status ? ` (${status})` : ''} 열기${primary.target === '_blank' ? ' (새 탭)' : ''}`);

@@ -18,8 +18,8 @@
 [data-motion-label],[data-music-label] { color:var(--g2); white-space:nowrap; font-size:12px; }
 .motion-toggle[aria-checked="true"] [data-motion-label],
 .music-toggle[data-state="on"] [data-music-label] { color:var(--w); }
-.playback-icon,.music-icon { display:flex; flex:0 0 14px; align-items:center; justify-content:center; width:14px; height:16px; }
-.playback-icon svg { display:block; width:14px; height:14px; }
+.playback-icon,.music-icon { display:flex; flex:0 0 18px; align-items:center; justify-content:center; width:18px; height:18px; }
+.playback-icon svg { display:block; width:18px; height:18px; }
 .motion-toggle[aria-checked="true"] .playback-play,
 .motion-toggle[aria-checked="false"] .playback-pause { display:none; }
 .music-icon { flex-basis:18px; width:18px; height:18px; }
