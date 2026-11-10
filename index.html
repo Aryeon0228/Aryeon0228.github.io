@@ -387,7 +387,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=47aa55d31c5a">
 <link rel="stylesheet" href="home-theme.css?v=fd4339c4b85d">
-<link rel="stylesheet" href="home-lab.css?v=d3db0711e861">
+<link rel="stylesheet" href="home-lab.css?v=e3b79a364494">
 <script src="home-theme.js?v=618ba80fa029" defer></script>
 <style>
 /* The teaching materials link has its own page; keep it outside section tracking. */
@@ -395,9 +395,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 @media(max-width:1399px){.site-header .site-links{margin-left:0}.site-header .theme-switch{margin-left:auto}html[data-theme="day"] .site-header .site-links{background:#fafaf8;border-bottom-color:var(--ln)}}
 </style>
 <link rel="stylesheet" href="home-music.css?v=7c8c76a8e425">
+<link rel="stylesheet" href="home-space.css?v=8375622669a3">
 <link rel="stylesheet" href="home-diorama.css?v=f18742926c66">
 </head>
 <body>
+<canvas id="page-stars" aria-hidden="true"></canvas>
 
 <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
 <div class="site-header"><nav class="site-nav wrap" aria-label="주 메뉴">
@@ -468,13 +470,60 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <main id="main-content" tabindex="-1"><span class="legacy-anchor" id="portfolio" aria-hidden="true"></span><span class="legacy-anchor" id="work" aria-hidden="true"></span>
 <section class="portfolio-section career-section" id="career" tabindex="-1" aria-labelledby="career-title">
 <div class="wrap">
-<div class="content-heading"><span class="content-kicker">01 / CAREER</span><div><h2 id="career-title">Career</h2><p>게임을 만드는 일에서, 함께 만드는 법을 나누는 일까지.</p></div></div>
-<div class="career-axis-labels" aria-hidden="true"><span>회사 경력</span><span>강의 · 멘토링</span></div>
-<p class="career-order">시작 시점 기준 · 최신순</p>
+<div class="content-heading"><span class="content-kicker">01 / CAREER</span><div><h2 id="career-title">Career</h2><p>게임을 만들고, 만드는 법을 나눕니다.</p></div></div>
+<p class="career-order">회사와 강의, 각각 최신 경력부터.</p>
 <div class="career-timeline">
-<section class="career-year" aria-labelledby="career-year-2026"><h3 class="career-year-label" id="career-year-2026">2026</h3>
-<div class="career-track career-track--company"></div>
-<div class="career-track career-track--teaching">
+<section class="career-track career-track--company" aria-labelledby="career-company-title"><h3 class="career-track-title" id="career-company-title">회사 경력</h3>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-lemegeton" aria-hidden="true"></span><span class="legacy-anchor" id="career-wildplan" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2025.12–현재</span></div>
+<h4>와일드플랜</h4><p class="career-role">아트팀</p>
+<p class="career-project">레메게톤 (다크 판타지 액션 로그라이크) / Unity</p>
+<p class="career-tasks">배경 모델링 · 레벨 디자인 · 셰이더 · 이펙트 · 애니메이션</p>
+</article>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-animoca" aria-hidden="true"></span><span class="legacy-anchor" id="career-animoca" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2023.08–2025.07</span></div>
+<h4>애니모카게임즈</h4><p class="career-role">아트팀</p>
+<p class="career-project">Cosmic Bomber (글로벌 블록체인 게임) / Unity</p>
+<p class="career-tasks">모델링 · 레벨 디자인 · 이펙트</p>
+</article>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-ableane" aria-hidden="true"></span><span class="legacy-anchor" id="career-ableane" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2021.12–2023.09</span></div>
+<h4>이한크리에이티브 · 에이블에이앤이</h4><p class="career-role">AD</p>
+<p class="career-project">듀윙 · 롯데월드 메타버스 등 / Unity</p>
+<p class="career-tasks">아트 디렉팅 · 모델링 · 이펙트</p>
+</article>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-darong" aria-hidden="true"></span><span class="legacy-anchor" id="career-darong" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2018.11–2021.09</span></div>
+<h4>다롱스튜디오</h4><p class="career-role">AD</p>
+<p class="career-project">Colorzzle (퍼즐 · 59만 다운로드) · RainbowTrees (클리커) / Unity</p>
+<p class="career-tasks">아트 디렉팅 · 모델링 · 이펙트 · UI</p>
+</article>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-lineplay" aria-hidden="true"></span><span class="legacy-anchor" id="career-lineplay" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2017.01–2017.02</span></div>
+<h4>라인플레이</h4><p class="career-role">개발3실 · 선임</p>
+<p class="career-project">MMORPG 프로젝트 / Unreal</p>
+<p class="career-tasks">배경 모델링 · 레벨 디자인</p>
+</article>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-neowiz" aria-hidden="true"></span><span class="legacy-anchor" id="career-neowiz" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2013.10–2017.01</span></div>
+<h4>네오위즈게임즈</h4><p class="career-role">로키스튜디오 · AD</p>
+<p class="career-project">TapSonic Top · Animal Symphony 등 / Unity</p>
+<p class="career-tasks">아트 디렉팅 · 배경 모델링 · 레벨 디자인 · 이펙트 · 애니메이션</p>
+</article>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-r2" aria-hidden="true"></span><span class="legacy-anchor" id="career-webzen" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2011.10–2013.06</span></div>
+<h4>웹젠</h4><p class="career-role">레인보우스튜디오 · 대리</p>
+<p class="career-project">R2 (MMORPG)</p>
+<p class="career-tasks">배경 모델링 · 레벨 디자인</p>
+</article>
+<article class="career-entry">
+<span class="legacy-anchor" id="work-eyasoft" aria-hidden="true"></span><span class="legacy-anchor" id="career-eyasoft" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2009.01–2011.09</span></div>
+<h4>이야소프트</h4><p class="career-role">개발5팀</p>
+<p class="career-project">에다전설 (쿼터뷰 MMORPG)</p>
+<p class="career-tasks">배경 모델링 · 레벨 디자인 · 이펙트</p>
+</article>
+</section>
+<section class="career-track career-track--teaching" aria-labelledby="career-teaching-title"><h3 class="career-track-title" id="career-teaching-title">강의 · 멘토링</h3>
 <article class="career-entry">
 <span class="legacy-anchor" id="teaching" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">강의 · 멘토링</span><span class="career-date">2026.09–현재</span></div>
 <h4>신구대학교</h4><p class="career-role">정보미디어학부 게임콘텐츠과 · 겸임교수</p>
@@ -490,18 +539,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <h4>경기콘텐츠진흥원</h4><p class="career-role">경기게임아카데미 · 아트파트 멘토</p>
 <p class="career-project">인디게임팀 대상 아트 멘토링</p>
 </article>
-</div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2025"><h3 class="career-year-label" id="career-year-2025">2025</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-lemegeton" aria-hidden="true"></span><span class="legacy-anchor" id="career-wildplan" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2025.12–현재</span></div>
-<h4>와일드플랜</h4><p class="career-role">아트팀</p>
-<p class="career-project">레메게톤 (다크 판타지 액션 로그라이크) / Unity</p>
-<p class="career-tasks">배경 모델링 · 레벨 디자인 · 셰이더 · 이펙트 · 애니메이션</p>
-</article>
-</div>
-<div class="career-track career-track--teaching">
 <article class="career-entry">
 <div class="career-entry-meta"><span class="career-kind">강의 · 멘토링</span><span class="career-date">2025.08–현재</span></div>
 <h4>경기게임마이스터고등학교</h4><p class="career-role">산학교사</p>
@@ -512,94 +549,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <h4>청강문화산업대학</h4><p class="career-role">멘토</p>
 <p class="career-project">졸업생 특화 프로그램 포트폴리오 멘토링</p>
 </article>
-</div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2023"><h3 class="career-year-label" id="career-year-2023">2023</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-animoca" aria-hidden="true"></span><span class="legacy-anchor" id="career-animoca" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2023.08–2025.07</span></div>
-<h4>애니모카게임즈</h4><p class="career-role">아트팀</p>
-<p class="career-project">Cosmic Bomber (글로벌 블록체인 게임) / Unity</p>
-<p class="career-tasks">모델링 · 레벨 디자인 · 이펙트</p>
-</article>
-</div>
-<div class="career-track career-track--teaching"></div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2022"><h3 class="career-year-label" id="career-year-2022">2022</h3>
-<div class="career-track career-track--company"></div>
-<div class="career-track career-track--teaching">
 <article class="career-entry">
 <div class="career-entry-meta"><span class="career-kind">강의 · 멘토링</span><span class="career-date">2022.03–2023.08</span></div>
 <h4>청강문화산업대학</h4><p class="career-role">게임스쿨 · 강사 / 겸임교수</p>
 <p class="career-project">3D그래픽연출, 3D모델링기초, 2D게임그래픽포트폴리오</p>
 </article>
-</div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2021"><h3 class="career-year-label" id="career-year-2021">2021</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-ableane" aria-hidden="true"></span><span class="legacy-anchor" id="career-ableane" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2021.12–2023.09</span></div>
-<h4>이한크리에이티브 · 에이블에이앤이</h4><p class="career-role">AD</p>
-<p class="career-project">듀윙 · 롯데월드 메타버스 등 / Unity</p>
-<p class="career-tasks">아트 디렉팅 · 모델링 · 이펙트</p>
-</article>
-</div>
-<div class="career-track career-track--teaching"></div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2018"><h3 class="career-year-label" id="career-year-2018">2018</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-darong" aria-hidden="true"></span><span class="legacy-anchor" id="career-darong" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2018.11–2021.09</span></div>
-<h4>다롱스튜디오</h4><p class="career-role">AD</p>
-<p class="career-project">Colorzzle (퍼즐 · 59만 다운로드) · RainbowTrees (클리커) / Unity</p>
-<p class="career-tasks">아트 디렉팅 · 모델링 · 이펙트 · UI</p>
-</article>
-</div>
-<div class="career-track career-track--teaching"></div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2017"><h3 class="career-year-label" id="career-year-2017">2017</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-lineplay" aria-hidden="true"></span><span class="legacy-anchor" id="career-lineplay" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2017.01–2017.02</span></div>
-<h4>라인플레이</h4><p class="career-role">개발3실 · 선임</p>
-<p class="career-project">MMORPG 프로젝트 / Unreal</p>
-<p class="career-tasks">배경 모델링 · 레벨 디자인</p>
-</article>
-</div>
-<div class="career-track career-track--teaching"></div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2013"><h3 class="career-year-label" id="career-year-2013">2013</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-neowiz" aria-hidden="true"></span><span class="legacy-anchor" id="career-neowiz" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2013.10–2017.01</span></div>
-<h4>네오위즈게임즈</h4><p class="career-role">로키스튜디오 · AD</p>
-<p class="career-project">TapSonic Top · Animal Symphony 등 / Unity</p>
-<p class="career-tasks">아트 디렉팅 · 배경 모델링 · 레벨 디자인 · 이펙트 · 애니메이션</p>
-</article>
-</div>
-<div class="career-track career-track--teaching"></div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2011"><h3 class="career-year-label" id="career-year-2011">2011</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-r2" aria-hidden="true"></span><span class="legacy-anchor" id="career-webzen" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2011.10–2013.06</span></div>
-<h4>웹젠</h4><p class="career-role">레인보우스튜디오 · 대리</p>
-<p class="career-project">R2 (MMORPG)</p>
-<p class="career-tasks">배경 모델링 · 레벨 디자인</p>
-</article>
-</div>
-<div class="career-track career-track--teaching"></div>
-</section>
-<section class="career-year" aria-labelledby="career-year-2009"><h3 class="career-year-label" id="career-year-2009">2009</h3>
-<div class="career-track career-track--company">
-<article class="career-entry">
-<span class="legacy-anchor" id="work-eyasoft" aria-hidden="true"></span><span class="legacy-anchor" id="career-eyasoft" aria-hidden="true"></span><div class="career-entry-meta"><span class="career-kind">회사 경력</span><span class="career-date">2009.01–2011.09</span></div>
-<h4>이야소프트</h4><p class="career-role">개발5팀</p>
-<p class="career-project">에다전설 (쿼터뷰 MMORPG)</p>
-<p class="career-tasks">배경 모델링 · 레벨 디자인 · 이펙트</p>
-</article>
-</div>
-<div class="career-track career-track--teaching"></div>
 </section>
 </div></div></section><span class="legacy-anchor" id="vibe" aria-hidden="true"></span><section class="portfolio-section" id="lab" tabindex="-1" aria-labelledby="lab-title">
 <div class="wrap">
@@ -2661,6 +2615,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   requestAnimationFrame(frame);
 })();
 </script>
+<script src="home-space.js?v=3160f06f84af" defer></script>
 <script type="module" src="home-tactile.js?v=6ceaa13633c5"></script>
 <script type="module" src="home-meteors.js?v=62c919f55a6b"></script>
 <audio id="home-music" data-src="assets/audio/penumbra-orbit-horizon.mp3?v=aab15f1e6525" preload="none" loop></audio>

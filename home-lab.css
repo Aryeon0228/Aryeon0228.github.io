@@ -7,20 +7,16 @@
 html[data-theme="day"] #career { --career-copy:#50545c; --career-accent:#70558c; }
 #career .content-heading { margin-bottom:64px; }
 #career .content-heading p { color:var(--career-copy); }
-.career-axis-labels { display:grid; grid-template-columns:1fr 1fr; gap:112px; padding-bottom:20px; border-bottom:1px solid var(--ln); }
-.career-axis-labels span { font:500 16px/1.5 var(--f-ko); color:var(--w); }
-.career-order { margin:16px 0 42px; text-align:center; font:400 12px/1.6 var(--f-ko); color:var(--career-copy); }
-.career-timeline { position:relative; }
-.career-timeline::before { content:""; position:absolute; top:12px; bottom:0; left:50%; width:1px; background:linear-gradient(var(--ln2),var(--career-accent) 12%,var(--ln2) 90%,transparent); }
-.career-year { position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:112px; padding:0 0 76px; }
-.career-year:last-child { padding-bottom:12px; }
-.career-year-label { position:absolute; top:0; left:50%; transform:translateX(-50%); margin:0; padding:5px 12px; background:var(--k); color:var(--career-accent); font:400 13px/1.5 var(--f-mono); letter-spacing:.07em; }
+.career-order { margin:-32px 0 44px; font:400 12px/1.6 var(--f-ko); color:var(--career-copy); }
+.career-timeline { position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:112px; }
+.career-timeline::before { content:""; position:absolute; top:0; bottom:0; left:50%; width:1px; background:linear-gradient(transparent,var(--career-accent) 4%,var(--ln2) 90%,transparent); }
 .career-track { min-width:0; }
+.career-track-title { margin:0 0 38px; padding-bottom:20px; border-bottom:1px solid var(--ln); font:500 16px/1.5 var(--f-ko); color:var(--w); }
 .career-entry { position:relative; padding-top:3px; scroll-margin-top:100px; }
-.career-entry + .career-entry { margin-top:42px; }
-.career-track--company .career-entry::after,.career-track--teaching .career-entry::before { content:""; position:absolute; top:15px; width:26px; height:1px; background:var(--ln2); }
-.career-track--company .career-entry::after { right:-38px; }
-.career-track--teaching .career-entry::before { left:-38px; }
+.career-entry + .career-entry { margin-top:54px; }
+.career-entry::before { content:""; position:absolute; top:13px; width:5px; height:5px; border-radius:50%; background:var(--career-accent); box-shadow:0 0 8px rgb(191 178 220 / .18); }
+.career-track--company .career-entry::before { right:-59px; }
+.career-track--teaching .career-entry::before { left:-58px; }
 .career-entry-meta { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 14px; margin-bottom:12px; }
 .career-kind { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 .career-date { color:var(--career-accent); font:400 13px/1.6 var(--f-mono); letter-spacing:.01em; }
@@ -32,16 +28,13 @@ html[data-theme="day"] #career { --career-copy:#50545c; --career-accent:#70558c;
 #awards .detail-row[id] { scroll-margin-top:100px; }
 @media(max-width:700px) {
   #career .content-heading { margin-bottom:32px; }
-  .career-axis-labels { display:none; }
-  .career-order { margin:0 0 30px; text-align:left; }
+  .career-order { margin:0 0 30px; }
+  .career-timeline { display:block; padding-left:28px; }
   .career-timeline::before { left:0; }
-  .career-year { display:block; padding:0 0 44px 28px; }
-  .career-year-label { position:relative; left:auto; top:auto; transform:none; width:fit-content; margin:0 0 24px -40px; padding:5px 12px; font-size:14px; }
-  .career-track:empty { display:none; }
-  .career-track + .career-track:not(:empty) { margin-top:32px; }
-  .career-entry + .career-entry { margin-top:32px; }
-  .career-kind { position:static; width:auto; height:auto; clip-path:none; overflow:visible; color:var(--career-copy); font:400 12px/1.6 var(--f-ko); }
-  .career-track--company .career-entry::after,.career-track--teaching .career-entry::before { width:5px; height:5px; top:10px; left:-30px; right:auto; border-radius:50%; background:var(--career-accent); }
+  .career-track-title { margin-bottom:28px; }
+  .career-track + .career-track { margin-top:64px; }
+  .career-entry + .career-entry { margin-top:36px; }
+  .career-track--company .career-entry::before,.career-track--teaching .career-entry::before { left:-30px; right:auto; }
   .career-entry h4 { font-size:21px; }
 }
 

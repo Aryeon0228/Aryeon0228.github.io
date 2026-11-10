@@ -1,0 +1,11 @@
+/* One continuous star field beneath the hero and the reading sections. */
+body { isolation:isolate; }
+#page-stars { position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none; }
+/* Let the planet dissolve into the same sky, instead of ending at a hard edge. */
+#gl,.hero-fb,#meteor-sky {
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 58%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0%,#000 58%,transparent 100%);
+}
+.hero-veil { -webkit-mask-image:linear-gradient(#000 60%,transparent); mask-image:linear-gradient(#000 60%,transparent); }
+#career { border-top:0; }
+.hero .frame span:nth-child(n+3) { display:none; }
