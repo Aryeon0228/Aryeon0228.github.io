@@ -24,6 +24,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@200;300;400;500;600&family=IBM+Plex+Sans+KR:wght@200;300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200&amp;family=Noto+Sans+KR:wght@200&amp;text=SOYOUNKIM%EA%B9%80%EC%86%8C%EC%97%B0&amp;display=swap">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@150&amp;text=SOYOUN&amp;display=swap">
 
 <style>
 /* ============================================================
@@ -138,13 +141,14 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 
 .hero-name{
   width:fit-content; max-width:100%;
-  font-family:var(--f-lat); font-weight:200;
-  font-size:clamp(50px,9.6vw,116px); line-height:.9; letter-spacing:-.026em;
+  font-family:'Manrope',var(--f-lat); font-weight:200;
+  font-size:clamp(50px,9.6vw,116px); line-height:1.02; letter-spacing:.015em;
 }
-.hero-name b{ font-weight:600; display:block; }
+.hero-name .given-name{ font-family:'Raleway','Manrope',var(--f-lat); font-weight:150; }
+.hero-name b{ font-weight:inherit; display:block; }
 .hero-name .ko{
-  font-family:var(--f-ko); font-weight:600;
-  display:block; font-size:.30em; letter-spacing:.02em; color:var(--g2); margin-top:20px; line-height:1.4;
+  font-family:'Noto Sans KR',var(--f-ko); font-weight:200;
+  display:block; font-size:.24em; letter-spacing:.14em; color:var(--g2); margin-top:24px; line-height:1.5;
 }
 .hero-role{ color:var(--g2); max-width:40ch; margin:26px 0 0; font-size:15px; }
 .hero-role b{ color:var(--w); font-weight:500; }
@@ -178,7 +182,7 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 @media(max-width:600px){
   .hero{ min-height:800px; }
   .hero-inner{ padding-top:58px; }
-  .hero-name{ font-size:66px; }
+  .hero-name{ font-size:clamp(50px,16vw,66px); }
   .hero-role{ margin-top:20px; font-size:14px; max-width:30ch; }
   .hero-veil{ background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.42) 27%,transparent 43%); }
   .hero-fb::before{ left:56%; top:64%; width:310px; }
@@ -400,7 +404,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=47aa55d31c5a">
 <link rel="stylesheet" href="home-theme.css?v=102238a33d2a">
-<link rel="stylesheet" href="home-lab.css?v=c7648eef332d">
+<link rel="stylesheet" href="home-lab.css?v=042d51d20a48">
 <script src="home-theme.js?v=618ba80fa029" defer></script>
 <style>
 /* The teaching materials link has its own page; keep it outside section tracking. */
@@ -446,7 +450,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       </div>
 
       <h1 class="hero-name">
-        SOYOUN<b>KIM</b>
+        <span class="given-name">SOYOUN</span><b>KIM</b>
         <span class="ko">김소연</span>
       </h1>
 
