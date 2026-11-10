@@ -133,7 +133,7 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 
 .hero-inner{ position:relative; z-index:2; flex:1; width:100%; display:flex; align-items:center; padding-top:clamp(72px,9vw,96px); padding-bottom:48px; }
 
-.hero-inner > .wrap{ width:100%; }
+.hero-inner > .wrap{ width:100%; max-width:1400px; }
 
 .hero-mark{ display:flex; align-items:center; gap:12px; margin-bottom:26px; width:fit-content; max-width:100%; }
 .hero-mark .dot{ width:5px; height:5px; background:var(--w); border-radius:50%; animation:blip 2.6s ease-in-out infinite; }
@@ -156,7 +156,7 @@ html[data-motion="off"] #meteor-trail,html[data-motion="off"] #meteor-sky{ displ
 /* ---------- 조작 콘솔 ----------
    애니메이션과 음악 버튼만 작게 모아 둔다. */
 .console{
-  position:relative; z-index:3; width:100%; max-width:1200px; margin:0 auto; padding:0 var(--pad) 24px;
+  position:relative; z-index:3; width:100%; max-width:1400px; margin:0 auto; padding:0 var(--pad) 24px;
   display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 24px;
 }
 .rack{ position:relative; min-width:0; max-width:100%; padding:8px; background:rgba(0,0,0,.9); border:1px solid var(--ln2); backdrop-filter:blur(6px); }
@@ -404,7 +404,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=47aa55d31c5a">
 <link rel="stylesheet" href="home-theme.css?v=27a8382e370c">
-<link rel="stylesheet" href="home-lab.css?v=f1625ad92ed3">
+<link rel="stylesheet" href="home-lab.css?v=433b9123d7a8">
 <script src="home-theme.js?v=618ba80fa029" defer></script>
 <style>
 /* The teaching materials link has its own page; keep it outside section tracking. */

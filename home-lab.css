@@ -16,40 +16,36 @@
 .career-star { position:absolute; display:block; top:11px; width:10px; height:10px; color:var(--career-accent); pointer-events:none; }
 .career-star > svg { position:relative; z-index:1; display:block; width:100%; height:100%; overflow:visible; }
 .career-star path { fill:currentColor; stroke:currentColor; stroke-width:1.2; stroke-linejoin:round; }
-/* Color belongs to the brief optical flare; the resting marker remains gray. */
-.career-star::before,.career-star::after { content:""; position:absolute; left:50%; top:50%; opacity:0; pointer-events:none; transform:translate(-50%,-50%) scale(.5); }
-.career-star::before {
-  width:32px; height:32px; border-radius:50%;
-  background:conic-gradient(from 25deg,#ff9b87,#ffe9a0,#a6f2cf,#83ccff,#bda4ff,#ffa6c6,#ff9b87);
-  mask-image:radial-gradient(circle,transparent 25%,#000 42%,transparent 70%);
-  filter:blur(1px);
+/* Thin diffraction spikes, with a delayed cross-ray instead of a circular halo. */
+.career-star { --glint-delay:0ms; }
+.career-track--teaching .career-star { --glint-delay:180ms; }
+.career-star::before,.career-star::after {
+  content:""; position:absolute; left:50%; top:50%; opacity:0; pointer-events:none;
+  clip-path:polygon(0 50%,48% 35%,50% 0,52% 35%,100% 50%,52% 65%,50% 100%,48% 65%);
+  background:linear-gradient(90deg,transparent,#ffad86 18%,#ffe4a1 33%,#fff 47% 53%,#a8efd7 65%,#8ebeff 82%,transparent);
 }
-.career-star::after {
-  width:44px; height:2px;
-  background:linear-gradient(90deg,transparent,#ff9b87 16%,#ffe9a0 32%,#fff 48% 52%,#a6f2cf 65%,#83ccff 82%,transparent);
-  filter:blur(.4px);
-}
-.career-star.is-twinkling { transform-origin:center; animation:career-star-glint 900ms ease-out both; }
-.career-star.is-twinkling::before { animation:career-star-halo 900ms ease-out both; }
-.career-star.is-twinkling::after { animation:career-star-ray 900ms ease-out both; }
+.career-star::before { width:62px; height:3px; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.15); }
+.career-star::after { width:38px; height:2px; transform:translate(-50%,-50%) rotate(70deg) scaleX(.15); }
+.career-star.is-twinkling { transform-origin:center; animation:career-star-glint 1050ms ease-out var(--glint-delay) both; }
+.career-star.is-twinkling::before { animation:career-star-ray 1050ms ease-out var(--glint-delay) both; }
+.career-star.is-twinkling::after { animation:career-star-crossray 1050ms ease-out var(--glint-delay) both; }
 @keyframes career-star-glint {
-  0% { transform:scale(1); color:var(--career-accent); filter:drop-shadow(0 0 0 transparent); }
-  28% { transform:scale(1.55); color:var(--career-accent); filter:drop-shadow(0 0 2px rgb(255 255 255 / .35)); }
-  42% { transform:scale(2.2); color:#fff; filter:drop-shadow(0 0 3px rgb(255 255 255 / .8)); }
-  62% { transform:scale(1.25); color:var(--career-accent); filter:drop-shadow(0 0 2px rgb(255 255 255 / .25)); }
-  100% { transform:scale(1); color:var(--career-accent); filter:drop-shadow(0 0 0 transparent); }
-}
-@keyframes career-star-halo {
-  0%,15% { opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(-12deg); }
-  42% { opacity:.85; transform:translate(-50%,-50%) scale(1) rotate(0deg); }
-  70% { opacity:.18; transform:translate(-50%,-50%) scale(1.25) rotate(12deg); }
-  100% { opacity:0; transform:translate(-50%,-50%) scale(1.35) rotate(16deg); }
+  0%,12% { transform:scale(1); color:var(--career-accent); }
+  26% { transform:scale(1.35); color:#fff; }
+  48% { transform:scale(1.05); color:#eee; }
+  100% { transform:scale(1); color:var(--career-accent); }
 }
 @keyframes career-star-ray {
-  0%,22% { opacity:0; transform:translate(-50%,-50%) rotate(-24deg) scaleX(.35); }
-  42% { opacity:1; transform:translate(-50%,-50%) rotate(-24deg) scaleX(1); }
-  65% { opacity:.2; transform:translate(-50%,-50%) rotate(-24deg) scaleX(.7); }
-  100% { opacity:0; transform:translate(-50%,-50%) rotate(-24deg) scaleX(.35); }
+  0%,12% { opacity:0; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.15); }
+  26% { opacity:1; transform:translate(-50%,-50%) rotate(-20deg) scaleX(1); }
+  46% { opacity:.4; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.7); }
+  76%,100% { opacity:0; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.1); }
+}
+@keyframes career-star-crossray {
+  0%,27% { opacity:0; transform:translate(-50%,-50%) rotate(70deg) scaleX(.15); }
+  39% { opacity:.85; transform:translate(-50%,-50%) rotate(70deg) scaleX(1); }
+  58% { opacity:.25; transform:translate(-50%,-50%) rotate(70deg) scaleX(.65); }
+  90%,100% { opacity:0; transform:translate(-50%,-50%) rotate(70deg) scaleX(.1); }
 }
 html[data-motion="off"] .career-star.is-twinkling,
 html[data-motion="off"] .career-star.is-twinkling::before,
