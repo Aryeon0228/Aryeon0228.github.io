@@ -10,7 +10,7 @@ const links = [];
 let pendingFrame = 0;
 
 // (the diorama card holds a live scene in an iframe: it stays flat)
-for (const card of document.querySelectorAll('#work .work-card, #lab .work-card:not(.diorama-card)')) {
+for (const card of document.querySelectorAll('#lab .work-card:not(.diorama-card)')) {
   const face = document.createElement('div');
   face.className = 'work-card-face';
   face.append(...card.childNodes);
