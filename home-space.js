@@ -20,7 +20,7 @@
     if (document.hidden) return;
     context.clearRect(0, 0, width, height);
     const day = document.documentElement.dataset.theme === 'day';
-    context.fillStyle = day ? '#70558c' : '#d9d5ef';
+    context.fillStyle = day ? '#777777' : '#dedede';
     // Keep small screens as quiet as the desktop; density stays roughly constant.
     const count = Math.min(stars.length, Math.max(28, Math.round(width * height / 9000)));
     for (const star of stars.slice(0, count)) {

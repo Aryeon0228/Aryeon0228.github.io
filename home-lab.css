@@ -13,8 +13,52 @@
 .career-track-title { margin:0 0 40px; padding-bottom:20px; border-bottom:1px solid var(--ln); font:500 16px/1.5 var(--f-ko); color:var(--w); }
 .career-entry { position:relative; padding-top:4px; scroll-margin-top:100px; }
 .career-entry + .career-entry { margin-top:56px; }
-.career-star { position:absolute; top:11px; width:10px; height:10px; color:var(--career-accent); pointer-events:none; }
+.career-star { position:absolute; display:block; top:11px; width:10px; height:10px; color:var(--career-accent); pointer-events:none; }
+.career-star > svg { position:relative; z-index:1; display:block; width:100%; height:100%; overflow:visible; }
 .career-star path { fill:currentColor; stroke:currentColor; stroke-width:1.2; stroke-linejoin:round; }
+/* Color belongs to the brief optical flare; the resting marker remains gray. */
+.career-star::before,.career-star::after { content:""; position:absolute; left:50%; top:50%; opacity:0; pointer-events:none; transform:translate(-50%,-50%) scale(.5); }
+.career-star::before {
+  width:32px; height:32px; border-radius:50%;
+  background:conic-gradient(from 25deg,#ff9b87,#ffe9a0,#a6f2cf,#83ccff,#bda4ff,#ffa6c6,#ff9b87);
+  mask-image:radial-gradient(circle,transparent 25%,#000 42%,transparent 70%);
+  filter:blur(1px);
+}
+.career-star::after {
+  width:44px; height:2px;
+  background:linear-gradient(90deg,transparent,#ff9b87 16%,#ffe9a0 32%,#fff 48% 52%,#a6f2cf 65%,#83ccff 82%,transparent);
+  filter:blur(.4px);
+}
+.career-star.is-twinkling { transform-origin:center; animation:career-star-glint 900ms ease-out both; }
+.career-star.is-twinkling::before { animation:career-star-halo 900ms ease-out both; }
+.career-star.is-twinkling::after { animation:career-star-ray 900ms ease-out both; }
+@keyframes career-star-glint {
+  0% { transform:scale(1); color:var(--career-accent); filter:drop-shadow(0 0 0 transparent); }
+  28% { transform:scale(1.55); color:var(--career-accent); filter:drop-shadow(0 0 2px rgb(255 255 255 / .35)); }
+  42% { transform:scale(2.2); color:#fff; filter:drop-shadow(0 0 3px rgb(255 255 255 / .8)); }
+  62% { transform:scale(1.25); color:var(--career-accent); filter:drop-shadow(0 0 2px rgb(255 255 255 / .25)); }
+  100% { transform:scale(1); color:var(--career-accent); filter:drop-shadow(0 0 0 transparent); }
+}
+@keyframes career-star-halo {
+  0%,15% { opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(-12deg); }
+  42% { opacity:.85; transform:translate(-50%,-50%) scale(1) rotate(0deg); }
+  70% { opacity:.18; transform:translate(-50%,-50%) scale(1.25) rotate(12deg); }
+  100% { opacity:0; transform:translate(-50%,-50%) scale(1.35) rotate(16deg); }
+}
+@keyframes career-star-ray {
+  0%,22% { opacity:0; transform:translate(-50%,-50%) rotate(-24deg) scaleX(.35); }
+  42% { opacity:1; transform:translate(-50%,-50%) rotate(-24deg) scaleX(1); }
+  65% { opacity:.2; transform:translate(-50%,-50%) rotate(-24deg) scaleX(.7); }
+  100% { opacity:0; transform:translate(-50%,-50%) rotate(-24deg) scaleX(.35); }
+}
+html[data-motion="off"] .career-star.is-twinkling,
+html[data-motion="off"] .career-star.is-twinkling::before,
+html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
+@media(prefers-reduced-motion:reduce) {
+  html:not([data-motion="on"]) .career-star.is-twinkling,
+  html:not([data-motion="on"]) .career-star.is-twinkling::before,
+  html:not([data-motion="on"]) .career-star.is-twinkling::after { animation:none; }
+}
 .career-track--company .career-star { right:-37px; }
 .career-track--teaching .career-star { left:-37px; }
 .career-entry::before { content:""; position:absolute; top:16px; width:24px; height:1px; background:var(--ln2); pointer-events:none; }
