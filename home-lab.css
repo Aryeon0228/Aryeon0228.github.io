@@ -14,9 +14,10 @@ html[data-theme="day"] #career { --career-copy:#50545c; --career-accent:#70558c;
 .career-track-title { margin:0 0 38px; padding-bottom:20px; border-bottom:1px solid var(--ln); font:500 16px/1.5 var(--f-ko); color:var(--w); }
 .career-entry { position:relative; padding-top:3px; scroll-margin-top:100px; }
 .career-entry + .career-entry { margin-top:54px; }
-.career-entry::before { content:""; position:absolute; top:13px; width:5px; height:5px; border-radius:50%; background:var(--career-accent); box-shadow:0 0 8px rgb(191 178 220 / .18); }
-.career-track--company .career-entry::before { right:-59px; }
-.career-track--teaching .career-entry::before { left:-58px; }
+.career-star { position:absolute; top:6px; width:20px; height:20px; color:var(--career-accent); pointer-events:none; }
+.career-star path { fill:currentColor; stroke:currentColor; stroke-width:1.2; stroke-linejoin:round; }
+.career-track--company .career-star { right:-66px; }
+.career-track--teaching .career-star { left:-66px; }
 .career-entry-meta { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 14px; margin-bottom:12px; }
 .career-kind { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 .career-date { color:var(--career-accent); font:400 13px/1.6 var(--f-mono); letter-spacing:.01em; }
@@ -25,6 +26,17 @@ html[data-theme="day"] #career { --career-copy:#50545c; --career-accent:#70558c;
 #career .career-project { margin:18px 0 0; font:400 14px/1.85 var(--f-ko); color:var(--career-copy); }
 #career .career-tasks { margin:6px 0 0; font:400 14px/1.85 var(--f-ko); color:var(--career-copy); }
 .career-entry p { word-break:keep-all; overflow-wrap:anywhere; }
+.career-courses { display:grid; gap:9px; margin:18px 0 0; font:400 14px/1.8 var(--f-ko); }
+.career-courses > div { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:3px 18px; }
+.career-courses dt { color:var(--career-copy); overflow-wrap:anywhere; }
+.career-courses dd { margin:0; color:var(--w); white-space:nowrap; }
+.career-course-note { display:block; font-size:12px; color:var(--career-copy); }
+.career-term { margin-top:22px; }
+.career-term h5 { margin:0; font:500 13px/1.7 var(--f-ko); color:var(--w); }
+.career-term .career-courses { margin-top:9px; }
+#career .career-hours-total { margin:9px 0 0; color:var(--career-accent); font:500 13px/1.7 var(--f-ko); text-align:right; }
+#career .career-hours-note { margin:30px 0 0; color:var(--career-copy); font:400 12px/1.8 var(--f-ko); }
+.career-mentoring-group { margin-top:64px; }
 #awards .detail-row[id] { scroll-margin-top:100px; }
 @media(max-width:700px) {
   #career .content-heading { margin-bottom:32px; }
@@ -34,7 +46,7 @@ html[data-theme="day"] #career { --career-copy:#50545c; --career-accent:#70558c;
   .career-track-title { margin-bottom:28px; }
   .career-track + .career-track { margin-top:64px; }
   .career-entry + .career-entry { margin-top:36px; }
-  .career-track--company .career-entry::before,.career-track--teaching .career-entry::before { left:-30px; right:auto; }
+  .career-track--company .career-star,.career-track--teaching .career-star { left:-38px; right:auto; }
   .career-entry h4 { font-size:21px; }
 }
 
