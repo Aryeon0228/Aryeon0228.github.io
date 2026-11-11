@@ -98,6 +98,8 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .teaching-course-tools > div { padding:12px 0; border-top:1px solid var(--ln); align-items:baseline; }
 .teaching-course-tools dt,.teaching-feedback-list dt { color:var(--w); font:500 15px/1.7 var(--f-ko); }
 .teaching-course-tools dd,.teaching-feedback-list dd { margin:0; color:var(--copy); font:400 14px/1.8 var(--f-ko); word-break:keep-all; overflow-wrap:anywhere; }
+.teaching-course-detail { display:block; margin-top:4px; color:var(--copy); font-size:13px; }
+.teaching-course-proof { display:inline-flex; align-items:center; gap:6px; margin-top:8px; color:var(--w); font-size:13px; text-underline-offset:4px; }
 .teaching-feedback-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:28px; padding-top:28px; border-top:1px solid var(--ln2); }
 .teaching-feedback-intro { margin:8px 0 20px; font:400 14px/1.8 var(--f-ko); color:var(--copy); }
 .teaching-feedback-list { display:grid; gap:16px; margin:0; }
