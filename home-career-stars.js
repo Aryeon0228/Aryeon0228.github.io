@@ -32,6 +32,10 @@
         star.armed = false;
         star.active = true;
         star.lastFlash = now;
+        // Pick the direction once per flash so the rays never rotate mid-glint.
+        const angle = (12 + Math.random() * 28) * (Math.random() < .5 ? -1 : 1);
+        star.element.style.setProperty('--glint-angle', `${angle.toFixed(1)}deg`);
+        star.element.style.setProperty('--glint-cross-angle', `${(angle + 80 + Math.random() * 20).toFixed(1)}deg`);
         star.element.classList.add('is-twinkling');
       } else if (!star.active && Math.abs(distance) > band + 100) {
         star.armed = true;

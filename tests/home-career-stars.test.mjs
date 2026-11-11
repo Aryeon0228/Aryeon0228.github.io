@@ -9,6 +9,7 @@ function harness(enabled = true) {
   const frames = new Map(), classes = new Set();
   let id = 0, clock = 0, change;
   const star = new EventTarget();
+  star.style = { setProperty() {} };
   star.classList = { add: x => classes.add(x), remove: x => classes.delete(x) };
   star.getBoundingClientRect = () => ({ top: 600 - window.scrollY, bottom:610 - window.scrollY, height:10 });
   Object.assign(window, { scrollY:0, innerHeight:800, penumbraMotion:{ enabled, subscribe(fn) { change=fn; } } });

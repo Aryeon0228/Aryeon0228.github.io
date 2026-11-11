@@ -24,8 +24,8 @@
   clip-path:polygon(0 50%,48% 35%,50% 0,52% 35%,100% 50%,52% 65%,50% 100%,48% 65%);
   background:linear-gradient(90deg,transparent,#ffad86 18%,#ffe4a1 33%,#fff 47% 53%,#a8efd7 65%,#8ebeff 82%,transparent);
 }
-.career-star::before { width:62px; height:3px; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.15); }
-.career-star::after { width:38px; height:2px; transform:translate(-50%,-50%) rotate(70deg) scaleX(.15); }
+.career-star::before { width:62px; height:3px; transform:translate(-50%,-50%) rotate(var(--glint-angle, -20deg)) scaleX(.15); }
+.career-star::after { width:38px; height:2px; transform:translate(-50%,-50%) rotate(var(--glint-cross-angle, 70deg)) scaleX(.15); }
 .career-star.is-twinkling { transform-origin:center; animation:career-star-glint 1050ms ease-out var(--glint-delay) both; }
 .career-star.is-twinkling::before { animation:career-star-ray 1050ms ease-out var(--glint-delay) both; }
 .career-star.is-twinkling::after { animation:career-star-crossray 1050ms ease-out var(--glint-delay) both; }
@@ -36,16 +36,16 @@
   100% { transform:scale(1); color:var(--career-accent); }
 }
 @keyframes career-star-ray {
-  0%,12% { opacity:0; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.15); }
-  26% { opacity:1; transform:translate(-50%,-50%) rotate(-20deg) scaleX(1); }
-  46% { opacity:.4; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.7); }
-  76%,100% { opacity:0; transform:translate(-50%,-50%) rotate(-20deg) scaleX(.1); }
+  0%,12% { opacity:0; transform:translate(-50%,-50%) rotate(var(--glint-angle, -20deg)) scaleX(.15); }
+  26% { opacity:1; transform:translate(-50%,-50%) rotate(var(--glint-angle, -20deg)) scaleX(1); }
+  46% { opacity:.4; transform:translate(-50%,-50%) rotate(var(--glint-angle, -20deg)) scaleX(.7); }
+  76%,100% { opacity:0; transform:translate(-50%,-50%) rotate(var(--glint-angle, -20deg)) scaleX(.1); }
 }
 @keyframes career-star-crossray {
-  0%,27% { opacity:0; transform:translate(-50%,-50%) rotate(70deg) scaleX(.15); }
-  39% { opacity:.85; transform:translate(-50%,-50%) rotate(70deg) scaleX(1); }
-  58% { opacity:.25; transform:translate(-50%,-50%) rotate(70deg) scaleX(.65); }
-  90%,100% { opacity:0; transform:translate(-50%,-50%) rotate(70deg) scaleX(.1); }
+  0%,27% { opacity:0; transform:translate(-50%,-50%) rotate(var(--glint-cross-angle, 70deg)) scaleX(.15); }
+  39% { opacity:.85; transform:translate(-50%,-50%) rotate(var(--glint-cross-angle, 70deg)) scaleX(1); }
+  58% { opacity:.25; transform:translate(-50%,-50%) rotate(var(--glint-cross-angle, 70deg)) scaleX(.65); }
+  90%,100% { opacity:0; transform:translate(-50%,-50%) rotate(var(--glint-cross-angle, 70deg)) scaleX(.1); }
 }
 html[data-motion="off"] .career-star.is-twinkling,
 html[data-motion="off"] .career-star.is-twinkling::before,
@@ -79,10 +79,10 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .career-term .career-courses { margin-top:8px; }
 /* Keep each weekly total attached to the school or semester it describes. */
 .career-term { padding-left:16px; border-left:1px solid var(--ln2); }
-.career-term-heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:8px 16px; }
-#career .career-load { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; width:fit-content; margin:16px 0 0; color:var(--copy); font:400 12px/1.6 var(--f-ko); }
+.career-term-heading { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:baseline; gap:8px 12px; }
+.career-term-role { display:block; color:var(--copy); font-weight:400; }
+#career .career-load { display:flex; align-items:baseline; justify-self:end; gap:8px; white-space:nowrap; margin:0; color:var(--copy); font:400 12px/1.6 var(--f-ko); }
 #career .career-load strong { color:var(--w); font-size:14px; font-weight:500; white-space:nowrap; }
-#career .career-term-heading .career-load { margin:0; }
 .career-order span { display:block; margin-top:8px; }
 .career-order strong { font-weight:500; color:var(--w); }
 .teaching-offer { margin:40px 0 48px; padding:28px 0; border-block:1px solid var(--ln2); scroll-margin-top:100px; }
