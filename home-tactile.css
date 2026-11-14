@@ -1,11 +1,9 @@
 :root {
   --work-card-top: #0b0b0b;
   --work-card-bottom: #030303;
-  --work-card-hover-border: #656565;
   --work-card-reflection: 255 255 255;
   --work-card-light-strong: .055;
   --work-card-light-soft: .018;
-  --work-card-edge: 255 255 255;
   --lab-button-bg: #1a1a1a;
   --lab-button-fg: #ededed;
   --lab-button-border: #686868;
@@ -16,11 +14,9 @@
 html[data-theme="day"] {
   --work-card-top: #fbfbf9;
   --work-card-bottom: #eceeea;
-  --work-card-hover-border: #737875;
   --work-card-reflection: 255 255 255;
   --work-card-light-strong: .58;
   --work-card-light-soft: .20;
-  --work-card-edge: 83 91 87;
   --lab-button-bg: #f8f9f6;
   --lab-button-fg: #252b28;
   --lab-button-border: #8b928d;
@@ -55,10 +51,8 @@ html[data-theme="day"] {
 
 .work-card-face > .content-actions { margin-top: auto; }
 .work-card-face > * { position: relative; z-index: 1; }
-.work-card:is(:hover, :focus-within) .work-card-face { border-color: var(--work-card-hover-border); }
 
-.work-card-face::before,
-.work-card-face::after {
+.work-card-face::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -74,18 +68,7 @@ html[data-theme="day"] {
     rgb(var(--work-card-reflection) / var(--work-card-light-strong)), rgb(var(--work-card-reflection) / var(--work-card-light-soft)) 42%, transparent 76%);
 }
 
-.work-card-face::after {
-  z-index: 2;
-  inset: -1px;
-  border: 1px solid transparent;
-  background: radial-gradient(260px circle at var(--card-x, 50%) var(--card-y, 35%),
-    rgb(var(--work-card-edge) / .30), transparent 75%) border-box;
-  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-}
-
-html[data-tactile-light="on"] .work-card[data-tactile-active] .work-card-face::before,
-html[data-tactile-light="on"] .work-card[data-tactile-active] .work-card-face::after {
+html[data-tactile-light="on"] .work-card[data-tactile-active] .work-card-face::before {
   opacity: 1;
 }
 
@@ -166,3 +149,5 @@ html[data-motion="off"] [data-tactile-link]:active > span[aria-hidden="true"] { 
   }
 }
 html[data-motion="off"] .work-card .content-actions .lab-launch { transition: none; }
+
+.apple-mark{display:block;width:16px;height:18px;flex:none}
