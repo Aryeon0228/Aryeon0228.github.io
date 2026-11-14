@@ -55,3 +55,10 @@ html[data-theme="day"] .diorama-controls button:hover,html[data-theme="day"] .di
   #lab .cupcake-card{grid-template-columns:minmax(0,320px) minmax(0,1fr);align-items:start;column-gap:32px}
   #lab .cupcake-card>.work-card-top{grid-column:1 / -1}
 }
+
+/* The coach and its demonstrated result read as one project, before the other Labs. */
+.lab-feature-group{margin-bottom:48px;border:1px solid var(--ln2);background:var(--k1)}
+.lab-feature-group .lab-feature{margin:0;border:0;background:transparent}
+#lab .lab-feature-group .diorama-card{margin:0;padding:32px;border:0;border-top:1px solid var(--ln2);background:transparent}
+@media(max-width:760px){#lab .lab-feature-group .diorama-card{padding:24px}}
+@media(max-width:600px){#lab .lab-feature-group .diorama-card{padding:20px}}
