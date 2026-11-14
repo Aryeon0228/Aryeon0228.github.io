@@ -9,3 +9,14 @@ body { isolation:isolate; }
 .hero-veil { -webkit-mask-image:linear-gradient(#000 60%,transparent); mask-image:linear-gradient(#000 60%,transparent); }
 #career { border-top:0; }
 .hero .frame span:nth-child(n+3) { display:none; }
+/* The final approach stays underneath the contact copy; it never captures scrolling. */
+#planet-horizon { position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none; opacity:0; }
+.planet-landing { position:relative; height:clamp(240px,34vh,400px); overflow:hidden; pointer-events:none; }
+.planet-landing-fallback { position:absolute; width:400%; height:220%; left:-150%; top:28%; border-radius:50%; border-top:1px solid #717171; background:radial-gradient(ellipse at 40% 0%,#222 0%,#0b0b0b 32%,#000 65%); }
+.planet-landing.has-planet-renderer .planet-landing-fallback { display:none; }
+html[data-motion="off"] .planet-landing .planet-landing-fallback { display:block; }
+html[data-theme="day"] .planet-landing-fallback { border-color:#aaa; background:radial-gradient(ellipse at 40% 0%,#ddd,#f3f3f1 65%); }
+
+.planet-station-fallback { position:absolute; left:56%; top:-34px; width:84px; height:59px; }
+/* A quiet strip keeps footer links readable over the moving foreground. */
+.portfolio-footer { position:relative; background:linear-gradient(transparent,color-mix(in srgb,var(--k0) 85%,transparent)); }

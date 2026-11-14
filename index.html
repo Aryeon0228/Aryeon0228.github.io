@@ -336,7 +336,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .contact-links p{font:12px var(--f-mono);color:var(--g2);margin:0}.contact-links p span{color:#ccc;margin-left:14px}
 .contact-links .cv-link{font-size:13px;border:1px solid #444;padding:12px 18px;margin-top:8px}
 .tool-tags{display:flex;flex-wrap:wrap;gap:10px;padding:4px 0 30px}.tool-tags span{font-size:12px;color:#bbb;border:1px solid #333;padding:6px 12px}
-.portfolio-footer{padding:28px 0;border-top:1px solid var(--ln);color:var(--g2);font:12px/1.6 var(--f-mono)}
+.portfolio-footer{padding:28px 0;border-top:0;color:var(--g2);font:12px/1.6 var(--f-mono)}
 .portfolio-footer>.wrap{display:flex;justify-content:space-between;gap:20px}
 @media(max-width:1399px){
  .site-nav{height:66px}
@@ -411,7 +411,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 @media(max-width:1399px){.site-header .site-links{margin-left:0}.site-header .theme-switch{margin-left:auto}html[data-theme="day"] .site-header .site-links{background:#fafaf8;border-bottom-color:var(--ln)}}
 </style>
 <link rel="stylesheet" href="home-music.css?v=b585db45213a">
-<link rel="stylesheet" href="home-space.css?v=8375622669a3">
+<link rel="stylesheet" href="home-space.css?v=22194e65a4fe">
 <link rel="stylesheet" href="home-diorama.css?v=f18742926c66">
 </head>
 <body>
@@ -420,6 +420,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <symbol id="action-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
 </defs></svg>
 <canvas id="page-stars" aria-hidden="true"></canvas>
+<canvas id="planet-horizon" aria-hidden="true"></canvas>
 
 <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
 <div class="site-header"><nav class="site-nav wrap" aria-label="주 메뉴">
@@ -791,6 +792,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <p>왜 막히는지, 어째서 이렇게 구현되는지<br>어떤 원리로 작동하는지 꼼꼼하게 살피며 공부하고 고민했습니다.</p>
 <p>이제 그 경험을 살려,<br>혼자 풀기 어려웠던 문제를 함께 짚고 해결 방법을 찾도록 돕습니다.</p>
 </div><div class="contact-links"><a href="mailto:cloudysnowyday@gmail.com">cloudysnowyday@gmail.com <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#action-open"/></svg></span></a><p>Discord / Telegram <span>@cloudysnowyday</span></p><a class="cv-link" href="CV_2026_0823.pdf" download>이력서 PDF 다운로드 <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#action-download"/></svg></span></a></div></div></section></main>
+<div class="planet-landing" aria-hidden="true"><div class="planet-landing-fallback"><svg class="planet-station-fallback" viewBox="0 0 100 70" focusable="false"><path d="M5 28h44v20H5z" fill="#777975"/><path d="M2 25h50v4H2z" fill="#999b95"/><path d="M52 48V28a16 16 0 0 1 32 0v20z" fill="#777975"/><path d="M52 28a16 16 0 0 1 32 0" fill="#999b95"/><path d="M66 14h3v13h-3z" fill="#333c3f"/><path d="M11 33h6v6h-6zm11 0h6v6h-6zm11 0h6v6h-6z" fill="#ffc47c"/><path d="M2 48h84v3H2z" fill="#333c3f"/></svg></div></div>
 <footer class="portfolio-footer"><div class="wrap"><span>© 2026 Studio Penumbra · 김소연</span><a href="#home">Back to top ↑</a></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1188,6 +1190,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     "  }else{ gl_FragColor=vec4(vec3(glow),1.); }",
     "}"
   ].join('\n');
+
+  // The closing approach uses the same planet surface, without another hero scene.
+  window.penumbraPlanetShaders = Object.freeze({ bodyVertex:BODY_VERT, bodyFragment:BODY_FRAG, atmosphereVertex:ATMO_VERT, atmosphereFragment:ATMO_FRAG });
 
   var ATMO_R = 1.28;
   var atmo = new THREE.Mesh(
@@ -2680,6 +2685,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <script src="home-preview.js?v=3b6b7f421fe5" defer></script>
 <script src="home-career-stars.js?v=6462ae86e529" defer></script>
 <script src="home-space.js?v=40138f94bcae" defer></script>
+<script src="home-meadow.js?v=69728cbad04a" defer></script>
+<script src="home-horizon.js?v=9d57d94b5c2f" defer></script>
 <script type="module" src="home-tactile.js?v=4128b5f59059"></script>
 <script type="module" src="home-meteors.js?v=62c919f55a6b"></script>
 <audio id="home-music" data-src="assets/audio/penumbra-orbit-horizon.mp3?v=aab15f1e6525" preload="none" loop></audio>
