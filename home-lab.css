@@ -160,8 +160,6 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .lab-scripts-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 16px; }
 .lab-scripts-heading h3 { margin: 0; color: var(--w); font: 500 22px/1.5 var(--f-lat); }
 .lab-scripts-heading span { color: var(--g2); font: 400 12px/1.5 var(--f-mono); }
-.lab-script-bundles { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 12px; }
-.lab-script-bundles a { display: inline-flex; align-items: center; min-height: 44px; color: var(--w); font: 400 14px/1.6 var(--f-ko); text-decoration: underline; text-underline-offset: 4px; }
 .lab-script-version-note { margin: 0 0 12px; color: var(--lab-copy); font: 400 13px/1.75 var(--f-ko); }
 .lab-script-help { margin: 0 0 20px; color: var(--g2); font: 400 13px/1.75 var(--f-ko); }
 .lab-script-help p { margin: 0; }
@@ -199,7 +197,6 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .lab-script-variant span { color: var(--g2); font: 400 12px/1.5 var(--f-mono); }
 .lab-script-variant:hover { border-color: var(--g2); background: var(--k1); }
 .lab-script-variant:focus-visible,
-.lab-script-bundles a:focus-visible,
 .lab-script-help summary:focus-visible { outline: 2px solid var(--w); outline-offset: 3px; }
 
 @media (max-width: 979px) {

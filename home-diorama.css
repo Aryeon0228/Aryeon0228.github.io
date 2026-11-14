@@ -1,6 +1,8 @@
 /* Finished interactive examples have their own Lab section. The live stage stays flat. */
 #lab .diorama-card{grid-column:1 / -1;display:grid;grid-template-columns:1fr;gap:24px}
 #lab .diorama-card>.work-card-top{margin-bottom:0}
+#lab .diorama-card>.diorama-title{grid-column:1 / -1;display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 16px}
+.diorama-title span{color:var(--g2);font:400 13px/1.5 var(--f-lat)}
 .diorama-card .game-preview.diorama-stage{aspect-ratio:16 / 9;margin:0}
 .diorama-stage img{object-fit:cover}
 .diorama-body{display:flex;flex-direction:column;min-width:0;container-type:inline-size}
