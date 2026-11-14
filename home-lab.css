@@ -153,6 +153,8 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 }
 #lab .work-card:is(:hover, :focus-within) .lab-launch { background: transparent; border: 0; color: var(--w); }
 #lab .content-actions a span { color: inherit; }
+#lab .content-actions .lab-secondary-link { color:var(--g2); font-size:12px; }
+#lab .content-actions .lab-secondary-link:hover { color:var(--w); }
 #lab .content-actions a:focus-visible { outline: 2px solid var(--w); outline-offset: 3px; }
 
 /* Scripts remain expanded, in compact rows below the browser tools. */
@@ -171,7 +173,7 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .lab-scripts-grid { display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--ln2); }
 .lab-script-card {
   display: grid;
-  grid-template-columns: minmax(160px, .85fr) minmax(0, 1.65fr) 250px;
+  grid-template-columns: minmax(160px, .85fr) minmax(0, 1.65fr) 224px;
   align-items: center;
   gap: 12px 24px;
   min-width: 0;
@@ -182,25 +184,18 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .lab-script-card p { margin: 0; color: var(--lab-copy); font: 400 14px/1.7 var(--f-ko); }
 .lab-script-variants { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .lab-script-variant {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 4px;
-  min-width: 0;
-  min-height: 60px;
-  padding: 8px 12px;
-  border: 1px solid var(--ln2);
-  color: var(--w);
-  font: 400 12px/1.5 var(--f-ko);
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  min-width:0; min-height:44px; padding:6px 8px;
+  border:1px solid var(--ln); color:var(--g2);
+  font:400 12px/1.5 var(--f-ko);
 }
-.lab-script-variant span { color: var(--g2); font: 400 12px/1.5 var(--f-mono); }
-.lab-script-variant:hover { border-color: var(--g2); background: var(--k1); }
+.lab-script-variant .action-icon { flex:none; }
+.lab-script-variant:hover { color:var(--w); border-color: var(--g2); background: var(--k1); }
 .lab-script-variant:focus-visible,
 .lab-script-help summary:focus-visible { outline: 2px solid var(--w); outline-offset: 3px; }
 
 @media (max-width: 979px) {
-  .lab-script-card { grid-template-columns: minmax(0, 1fr) 250px; gap: 8px 24px; }
+  .lab-script-card { grid-template-columns: minmax(0, 1fr) 224px; gap: 8px 24px; }
   .lab-script-card h4,
   .lab-script-card p { grid-column: 1; }
   .lab-script-variants { grid-column: 2; grid-row: 1 / 3; }
@@ -211,7 +206,7 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
   #lab .work-card-face { padding: 20px; }
   #lab .work-card[data-tactile-card] { padding: 0; }
   .lab-script-card { grid-template-columns: minmax(0, 1fr); gap: 8px; padding-block: 20px; }
-  .lab-script-variants { grid-column: 1; grid-row: auto; margin-top: 4px; }
+  .lab-script-variants { grid-column: 1; grid-row: auto; margin-top: 4px; width:224px; max-width:100%; }
 }
 
 /* AI practice is introduced through one featured project, with a single entry point. */
@@ -223,14 +218,11 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .hero-intro { margin:0; color:var(--copy); font:400 15px/1.8 var(--f-ko); word-break:keep-all; overflow-wrap:break-word; }
 #prompt-lab { scroll-margin-top:100px; }
 .lab-feature { display:grid; grid-template-columns:minmax(240px,.8fr) minmax(0,1.4fr); gap:32px; padding:32px; margin:0 0 32px; border:1px solid var(--ln2); background:var(--k1); }
-.lab-feature-label { margin:0 0 16px; color:var(--g2); font:500 12px/1.5 var(--f-mono); letter-spacing:.02em; }
 .lab-feature h3 { margin:0; color:var(--w); font:500 32px/1.3 var(--f-lat); }
-.lab-feature h3 span { display:block; margin-top:8px; color:var(--lab-copy); font:400 15px/1.6 var(--f-ko); }
-.lab-feature-lead { margin:24px 0 8px; color:var(--w); font:500 18px/1.6 var(--f-ko); }
-.lab-feature-description { margin:0; color:var(--lab-copy); font:400 15px/1.8 var(--f-ko); }
+.lab-feature-description { margin:20px 0 0; color:var(--lab-copy); font:400 15px/1.8 var(--f-ko); }
 .lab-feature-context { margin:16px 0 0; color:var(--g2); font:400 13px/1.7 var(--f-ko); }
 .lab-feature p { word-break:keep-all; overflow-wrap:break-word; }
-.lab-feature-role { width:100%; margin:24px 0 0; padding-top:16px; border-top:1px solid var(--ln); color:var(--g2); font:400 13px/1.8 var(--f-ko); }
+.lab-feature-role { grid-column:1 / -1; width:100%; margin:0; padding-top:16px; border-top:1px solid var(--ln); color:var(--g2); font:400 13px/1.8 var(--f-ko); }
 @media(max-width:760px) {
   .lab-feature { grid-template-columns:1fr; gap:28px; padding:24px; }
 }
@@ -243,7 +235,7 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 
 /* Real service captures, switched in place without moving the surrounding cards. */
 .lab-feature-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
-#lab .lab-feature-copy .content-actions{width:100%;margin-top:24px}
+#lab .lab-feature-copy .content-actions{width:100%;margin-top:20px}
 .lab-feature-preview{min-width:0;align-self:center}
 .preview-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;margin-bottom:12px}
 .preview-toolbar h4{font:500 14px/1.5 var(--f-ko);color:var(--w)}
