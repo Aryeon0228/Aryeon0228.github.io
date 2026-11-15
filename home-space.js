@@ -22,9 +22,9 @@
     twinkleTimer = setTimeout(() => {
       twinkleTimer = 0;
       if (!canTwinkle()) return;
-      twinkle = { index:Math.floor(random() * starCount()), start:performance.now(), duration:1400 + random() * 600 };
+      twinkle = { index:Math.floor(random() * starCount()), start:performance.now(), duration:1200 + random() * 600 };
       schedule();
-    }, 1400 + random() * 2000);
+    }, 450 + random() * 700);
   }
   function resetTwinkle() {
     clearTimeout(twinkleTimer);
@@ -39,23 +39,24 @@
     if (document.hidden) return;
     context.clearRect(0, 0, width, height);
     const day = document.documentElement.dataset.theme === 'day';
-    context.fillStyle = day ? '#777777' : '#dedede';
+    const baseColor = day ? '#777777' : '#dedede';
     // Keep small screens as quiet as the desktop; density stays roughly constant.
     const count = starCount();
     const progress = twinkle ? (performance.now() - twinkle.start) / twinkle.duration : 0;
     if (twinkle && (progress >= 1 || !canTwinkle())) twinkle = null;
     for (let index = 0; index < count; index++) {
       const star = stars[index];
-      const pulse = twinkle?.index === index ? Math.pow(Math.sin(Math.PI * Math.max(0, progress)), 3) : 0;
+      const pulse = twinkle?.index === index ? Math.pow(Math.sin(Math.PI * Math.max(0, progress)), 2) : 0;
       const x = star.x * width;
       const y = ((star.y * height - offset * star.speed) % height + height) % height;
+      context.fillStyle = pulse > .15 ? '#ffffff' : baseColor;
       context.globalAlpha = Math.min(1, star.opacity * (day ? .6 : 1) + pulse * .8);
       context.beginPath();
-      context.arc(x, y, star.radius + pulse * .45, 0, Math.PI * 2);
+      context.arc(x, y, star.radius + pulse * .7, 0, Math.PI * 2);
       context.fill();
       if (pulse > .15) {
-        const reach = 2 + pulse * 4, waist = .45;
-        context.globalAlpha = pulse * .85;
+        const reach = 2 + pulse * 7, waist = .38;
+        context.globalAlpha = pulse * .95;
         context.beginPath();
         context.moveTo(x, y - reach);
         context.lineTo(x + waist, y - waist);

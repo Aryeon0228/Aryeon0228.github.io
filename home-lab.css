@@ -16,6 +16,8 @@
 .career-star { position:absolute; display:block; top:11px; width:10px; height:10px; color:var(--career-accent); pointer-events:none; }
 .career-star > svg { position:relative; z-index:1; display:block; width:100%; height:100%; overflow:visible; }
 .career-star path { fill:currentColor; stroke:currentColor; stroke-width:1.2; stroke-linejoin:round; }
+#lab-title { display:flex; align-items:center; gap:24px; }
+#lab-title .lab-heading-star { --career-accent:var(--accent); position:relative; top:auto; flex:0 0 10px; }
 /* Thin diffraction spikes, with a delayed cross-ray instead of a circular halo. */
 .career-star { --glint-delay:0ms; }
 .career-track--teaching .career-star { --glint-delay:180ms; }
