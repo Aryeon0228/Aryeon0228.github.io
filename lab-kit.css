@@ -28,73 +28,73 @@ body[data-lab] .lab-heading p { max-width: 560px; color: var(--k6); font: 300 14
 }
 
 /* ---------- element defaults inside a lab ---------- */
-:where(body[data-lab] main) :where(h1, h2, h3, h4, p) { margin: 0; }
-:where(body[data-lab] main) :where(code, output, kbd, samp) { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
-:where(body[data-lab] main) :where(button, a, input, select, summary, [tabindex]):focus-visible { outline: 2px solid var(--k10); outline-offset: 3px; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) :where(h1, h2, h3, h4, p) { margin: 0; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) :where(code, output, kbd, samp) { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) :where(button, a, input, select, summary, [tabindex]):focus-visible { outline: 2px solid var(--k10); outline-offset: 3px; }
 
 /* Selects: pills with a quiet chevron. */
-:where(body[data-lab] main) select {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) select {
   -webkit-appearance: none; appearance: none; min-width: 0; min-height: 40px;
   padding: 0 36px 0 16px; border: 0; border-radius: 999px;
   background: var(--k2) var(--lk-chevron) no-repeat right 14px center / 12px;
   color: var(--k9); font: 400 14px/1.2 var(--f-ko); cursor: pointer;
 }
-:where(body[data-lab] main) select:hover { background-color: var(--k3); }
-:where(body[data-lab] main) select option { background: var(--k1); color: var(--k9); }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) select:hover { background-color: var(--k3); }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) select option { background: var(--k1); color: var(--k9); }
 
 /* Sliders: a row of dots and a slim white bar. */
-:where(body[data-lab] main) input[type=range] {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range] {
   -webkit-appearance: none; appearance: none; display: block; width: 100%; min-width: 0; height: 32px;
   margin: 0; padding: 0; border: 0; background: transparent; color: var(--k9); cursor: ew-resize; accent-color: var(--k10);
 }
-:where(body[data-lab] main) input[type=range]:disabled { opacity: .4; cursor: default; }
-:where(body[data-lab] main) input[type=range]::-webkit-slider-runnable-track {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range]:disabled { opacity: .4; cursor: default; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range]::-webkit-slider-runnable-track {
   height: 32px; border: 0; border-radius: 0;
   background: radial-gradient(circle, var(--k4) 0 1.5px, transparent 2px) 0 50% / 10px 100% repeat-x;
 }
-:where(body[data-lab] main) input[type=range]::-moz-range-track {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range]::-moz-range-track {
   height: 32px; border: 0; border-radius: 0;
   background: radial-gradient(circle, var(--k4) 0 1.5px, transparent 2px) 0 50% / 10px 100% repeat-x;
 }
-:where(body[data-lab] main) input[type=range]::-moz-range-progress { background: transparent; }
-:where(body[data-lab] main) input[type=range]::-webkit-slider-thumb {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range]::-moz-range-progress { background: transparent; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none; width: 4px; height: 22px; margin-top: 5px;
   border: 0; border-radius: 2px; background: var(--k10); box-shadow: 0 0 0 5px rgb(255 255 255 / .1);
 }
-:where(body[data-lab] main) input[type=range]::-moz-range-thumb {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range]::-moz-range-thumb {
   width: 4px; height: 22px; border: 0; border-radius: 2px; background: var(--k10); box-shadow: 0 0 0 5px rgb(255 255 255 / .1);
 }
-:where(body[data-lab] main) input[type=range]:focus-visible { outline-offset: 2px; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) input[type=range]:focus-visible { outline-offset: 2px; }
 
 /* Checkboxes and radios: native, in white. */
-:where(body[data-lab] main) :is(input[type=checkbox], input[type=radio]) { width: 18px; height: 18px; margin: 0; accent-color: var(--k10); cursor: pointer; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) :is(input[type=checkbox], input[type=radio]) { width: 18px; height: 18px; margin: 0; accent-color: var(--k10); cursor: pointer; }
 
 /* Text and number fields: sunken pills. */
-:where(body[data-lab] main) :is(input[type=text], input[type=number], input[type=search], input:not([type])) {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) :is(input[type=text], input[type=number], input[type=search], input:not([type])) {
   min-width: 0; height: 40px; padding: 0 16px; border: 0; border-radius: 999px;
   background: var(--k0); color: var(--k9); font: 14px var(--f-mono);
 }
 
 /* Collapsible explanations: a chevron, not a triangle. */
-:where(body[data-lab] main) summary {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) summary {
   display: flex; align-items: center; gap: 10px; min-height: 40px;
   color: var(--k6); font-size: 14px; list-style: none; cursor: pointer;
 }
-:where(body[data-lab] main) summary::-webkit-details-marker { display: none; }
-:where(body[data-lab] main) summary::before {
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) summary::-webkit-details-marker { display: none; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) summary::before {
   content: ""; flex-shrink: 0; width: 6px; height: 6px; margin: 0 2px;
   border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
   transform: rotate(-45deg); transition: transform .15s;
 }
-:where(body[data-lab] main) details[open] > summary::before { transform: rotate(45deg); }
-:where(body[data-lab] main) summary:hover { color: var(--k10); }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) details[open] > summary::before { transform: rotate(45deg); }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) summary:hover { color: var(--k10); }
 
 /* Tables: rows divided by one hairline, numbers in mono. */
-:where(body[data-lab] main) table { width: 100%; border-collapse: collapse; font-size: 14px; }
-:where(body[data-lab] main) caption { padding-bottom: 12px; color: var(--k5); font-size: 12px; text-align: left; }
-:where(body[data-lab] main) :is(th, td) { padding: 10px 12px 10px 0; border: 0; border-bottom: 1px solid var(--k2); text-align: left; vertical-align: top; }
-:where(body[data-lab] main) th { color: var(--k5); font-size: 12px; font-weight: 500; }
-:where(body[data-lab] main) td { color: var(--k8); }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) table { width: 100%; border-collapse: collapse; font-size: 14px; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) caption { padding-bottom: 12px; color: var(--k5); font-size: 12px; text-align: left; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) :is(th, td) { padding: 10px 12px 10px 0; border: 0; border-bottom: 1px solid var(--k2); text-align: left; vertical-align: top; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) th { color: var(--k5); font-size: 12px; font-weight: 500; }
+:where(body[data-lab] main, body[data-lab] > .lab-sheet) td { color: var(--k8); }
 
 /* ---------- components ---------- */
 .lk-card { min-width: 0; padding: 20px; border: 0; border-radius: var(--lk-radius); background: var(--k1); }
@@ -185,3 +185,6 @@ body[data-lab] .lab-heading p { max-width: 560px; color: var(--k6); font: 300 14
 @media (prefers-reduced-motion: reduce) {
   body[data-lab] main *, body[data-lab] main *::before { transition: none !important; }
 }
+
+/* Keep instructions legible while leaving measurements and secondary labels quiet. */
+body[data-lab] :is(.control-note,.panel-note,.layout-note,.room-note,.fl-note,.view-legend){font-size:14px;line-height:1.65;color:#bfbfbf}

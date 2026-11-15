@@ -31,7 +31,7 @@ for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.add
 canvas.addEventListener('keydown',e=>{const moves={ArrowLeft:[-.035,0],ArrowRight:[.035,0],ArrowUp:[0,.025],ArrowDown:[0,-.025]};if(moves[e.key]){e.preventDefault();aim(...moves[e.key]);}else if(e.key.toLowerCase()==='r'){e.preventDefault();resetView();}});
 function resetView(){state.yaw=initial.yaw;state.pitch=initial.pitch;requestRender();}
 function fill(input){input.style.setProperty('--fill',((+input.value-+input.min)/(+input.max-+input.min)*100)+'%');}
-for(const [id,key,out,scale,format] of [['depth','depth','dV',100,v=>v.toFixed(1)+' m'],['grid','grid','gV',1,v=>v+' bays'],['reflStr','refl','rV',100,v=>Math.round(v*100)+'%'],['dustStr','dust','duV',100,v=>Math.round(v*100)+'%']]){
+for(const [id,key,out,scale,format] of [['depth','depth','dV',100,v=>v.toFixed(1)+' m'],['grid','grid','gV',1,v=>v+'열'],['reflStr','refl','rV',100,v=>Math.round(v*100)+'%'],['dustStr','dust','duV',100,v=>Math.round(v*100)+'%']]){
  const input=$(id);fill(input);input.addEventListener('input',()=>{state[key]=+input.value/scale;$(out).textContent=format(state[key]);fill(input);requestRender();});
 }
 for(const [id,key] of [['bRefl','reflOn'],['bDust','dustOn']])$(id).addEventListener('click',()=>{state[key]=!state[key];$(id).setAttribute('aria-checked',String(state[key]));requestRender();});
@@ -39,7 +39,7 @@ $('bReset').addEventListener('click',resetView);
 $('bShuffle').addEventListener('click',()=>{previousSeed=state.seed;nextSeed+=13;currentSeed=nextSeed;state.seed=currentSeed;$('bCompare').disabled=false;$('bCompare').setAttribute('aria-pressed','false');$('announce').textContent='새 실내 구성을 만들었습니다. 이전 구성과 비교할 수 있어요.';requestRender();});
 $('bCompare').addEventListener('click',()=>{if(previousSeed===null)return;const compare=$('bCompare').getAttribute('aria-pressed')!=='true';state.seed=compare?previousSeed:currentSeed;$('bCompare').setAttribute('aria-pressed',String(compare));$('announce').textContent=compare?'이전 실내 구성입니다. 다시 누르면 새 구성으로 돌아갑니다.':'새 실내 구성입니다.';requestRender();});
 $('bMode').addEventListener('click',()=>{state.mode=1-state.mode;$('bMode').setAttribute('aria-pressed',String(!!state.mode));$('bMode').textContent=state.mode?'재질 보기':'면 구분 보기';$('legend').classList.toggle('visible',!!state.mode);requestRender();});
-const lights={day:{value:1,label:'DAYLIGHT'},dusk:{value:.34,label:'BLUE HOUR'},night:{value:.035,label:'AFTER DARK'}};
+const lights={day:{value:1,label:'주간'},dusk:{value:.34,label:'해질녘'},night:{value:.035,label:'야간'}};
 function showLight(key){$('sceneName').textContent=lights[key].label;for(const button of document.querySelectorAll('[data-light]'))button.setAttribute('aria-pressed',String(button.dataset.light===key));}
 for(const button of document.querySelectorAll('[data-light]'))button.addEventListener('click',()=>{state.day=lights[button.dataset.light].value;showLight(button.dataset.light);requestRender();});
 

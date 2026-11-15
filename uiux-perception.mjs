@@ -38,6 +38,7 @@ function canvas(stage, id, description) {
 }
 function caption(scene, text, description = text) {
   scene.caption.textContent = text;
+  scene.caption.hidden = text.trim().endsWith('?');
   scene.desc.textContent = description;
 }
 const emptyCleanup = () => {};
@@ -209,7 +210,7 @@ function mountCommonFate({ stage, controls, signal, announce = () => {}, state }
 }
 
 function mountHierarchy({ stage, controls, signal, announce = () => {}, state }) {
-  stage.innerHTML = `<div class="pc-experiment pc-hierarchy"><div class="pc-booking" data-booking><div class="pc-booking-kicker">EQUIPMENT RENTAL</div><div class="pc-booking-heading"><p class="pc-booking-title">Sony FX3</p><p class="pc-booking-description">시네마 카메라 · 대여 가능</p></div><div class="pc-booking-details"><div><span>이용 일시</span><strong>내일 10:00–17:00</strong></div><div><span>구성품</span><strong>본체 · 배터리 2개 · 충전기</strong></div></div><div class="pc-booking-bottom"><p>신분증을 지참해 대여 데스크에서 수령하세요.</p><button type="button" class="pc-booking-action" data-reserve>예약 내용 확인</button></div></div><p class="experiment-caption pc-caption" data-caption>장비명, 대여 시간, 확인 버튼 중 무엇이 먼저 보이나요?</p></div>`;
+  stage.innerHTML = `<div class="pc-experiment pc-hierarchy"><div class="pc-booking" data-booking><div class="pc-booking-kicker">EQUIPMENT RENTAL</div><div class="pc-booking-heading"><p class="pc-booking-title">Sony FX3</p><p class="pc-booking-description">시네마 카메라 · 대여 가능</p></div><div class="pc-booking-details"><div><span>이용 일시</span><strong>내일 10:00–17:00</strong></div><div><span>구성품</span><strong>본체 · 배터리 2개 · 충전기</strong></div></div><div class="pc-booking-bottom"><p>신분증을 지참해 대여 데스크에서 수령하세요.</p><button type="button" class="pc-booking-action" data-reserve>예약 내용 확인</button></div></div><p class="experiment-caption pc-caption" data-caption hidden>장비명, 대여 시간, 확인 버튼 중 무엇이 먼저 보이나요?</p></div>`;
   controls.innerHTML = range('hierarchy-size', '크기 차이', 0, 100, 80, '%') + range('hierarchy-contrast', '대비 차이', 0, 100, 75, '%') + range('hierarchy-spacing', '묶음 사이 여백', 0, 100, 65, '%') + '<label class="pc-check"><input id="pc-hierarchy-align" type="checkbox" data-control="hierarchy-align" checked>왼쪽 기준선 정렬</label>' + actions([['hierarchy-flat', '위계 낮추기'], ['hierarchy-clear', '위계 높이기', true]]) + '<p class="control-note">내용은 같습니다. 한 번에 하나씩 바꾸며 읽는 순서를 비교해 보세요.</p>';
   const booking = query(stage, '[data-booking]');
   function update() {
@@ -224,6 +225,7 @@ function mountHierarchy({ stage, controls, signal, announce = () => {}, state })
     booking.style.setProperty('--pc-action-color', contrast > 45 ? '#000000' : '#ececec');
     booking.style.setProperty('--pc-support', mix('#ececec', '#a6a6a6', contrast / 100));
     booking.classList.toggle('pc-unaligned', !value(controls, 'hierarchy-align').checked);
+    query(stage, '[data-caption]').hidden = true;
     query(stage, '[data-caption]').textContent = '장비명, 대여 시간, 확인 버튼 중 무엇이 먼저 보이나요?';
   }
   ['hierarchy-size', 'hierarchy-contrast', 'hierarchy-spacing', 'hierarchy-align'].forEach(id => listen(controls, id, update, signal));
@@ -232,6 +234,7 @@ function mountHierarchy({ stage, controls, signal, announce = () => {}, state })
     value(controls, 'hierarchy-align').checked = levels[3]; update();
   }, signal, 'click');
   on(query(stage, '[data-reserve]'), 'click', () => {
+    query(stage, '[data-caption]').hidden = false;
     query(stage, '[data-caption]').textContent = '이 버튼을 얼마나 빨리 찾았나요? 대비와 크기를 낮춰 다시 비교해 보세요.';
     announce('예약 확인 버튼을 선택했습니다. 이 화면은 시각적 위계를 비교하는 실험용 예시입니다.');
   }, signal);

@@ -203,3 +203,15 @@ dialog > p { color: var(--k6); font-size: 14px; line-height: 1.8; }
   .specimen-controls { grid-template-columns: 1fr; }
   .stage-bottom > span { max-width: 170px; }
 }
+
+.preset-browser{margin:20px 0;border-block:1px solid #383838}
+.preset-browser>summary{padding:14px 0;cursor:pointer;font-size:14px;color:#ddd}
+.preset-browser .preset-categories{margin-top:4px}
+.preset-browser .preset-grid{margin-bottom:16px}
+.selected-preset{margin:0 0 16px;padding:0;border:0}
+.selected-preset output{font-size:16px}
+.specimen-controls{grid-template-columns:minmax(0,1fr)}
+@media(max-width:760px){.lab-sheet .material-inspector{display:flex!important;flex-direction:column}.lab-sheet .settings-panel{overflow-y:auto;min-height:0}.lab-sheet .inspector-tabs,.lab-sheet .inspector-footer{flex:none}}
+
+#lightingPanel .environment-control{display:grid;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #383838}
+#lightingPanel .background-choice{justify-content:space-between}

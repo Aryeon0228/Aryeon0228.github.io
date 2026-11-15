@@ -1,7 +1,7 @@
 // Focus Lab: move the plane of focus through a desk and watch what lands as a point.
-import {SUBJECTS,sharpZone,stopsBetween,focusToScale,scaleToFocus,blurDisc,isSharp,formatLength,formatAperture,FOCUS_MIN,FOCUS_MAX} from './focus-optics.mjs?v=fbf860ce43e1';
-import {explain} from './focus-why.mjs?v=aa099c8e4764';
-import {createSideView,SUBJECT_COLORS} from './focus-side.mjs?v=952dfe5778a0';
+import {SUBJECTS,sharpZone,stopsBetween,focusToScale,scaleToFocus,blurDisc,isSharp,formatLength,formatFocusRange,formatAperture,FOCUS_MIN,FOCUS_MAX} from './focus-optics.mjs?v=59306f6569d2';
+import {explain} from './focus-why.mjs?v=013b4ac808ff';
+import {createSideView,SUBJECT_COLORS} from './focus-side.mjs?v=77d2d9e3577e';
 
 const $=id=>document.getElementById(id);
 const INITIAL={s:.8,N:2};
@@ -24,7 +24,7 @@ function syncControls(){
  for(const b of document.querySelectorAll('[data-subject]')){const S=SUBJECTS.find(x=>x.id===b.dataset.subject);b.setAttribute('aria-pressed',String(Math.abs(Math.log(S.distance/s))<.02));}
  for(const b of document.querySelectorAll('[data-aperture]'))b.setAttribute('aria-pressed',String(+b.dataset.aperture===N));
  const stops=stopsBetween(2,N);
- $('r-zone').textContent=Number.isFinite(zone.far)?`${formatLength(zone.near)}–${formatLength(zone.far)}`:`${formatLength(zone.near)}–∞`;
+ $('r-zone').textContent=formatFocusRange(zone);
  $('r-depth').textContent=Number.isFinite(zone.far)?formatLength(zone.depth):'∞';
  $('r-hyper').textContent=formatLength(zone.hyperfocal);
  $('r-light').textContent=N===2?'기준':`−${stops.toFixed(1)} 스톱`;
@@ -105,7 +105,7 @@ $('reset').addEventListener('click',()=>{stopTour();compensate=false;$('cmp-aper
 // ---------------------------------------------------------------- auto tour: racks focus and stops down until the visitor takes over
 const TOUR=[{s:.4,N:2},{s:2,N:2},{s:.8,N:2},{s:.8,N:16},{s:.8,N:2}];
 let touring=false,tourTimer=0,tourBeat=0,onScreen=true;
-function tourButton(){$('tour').setAttribute('aria-pressed',String(touring));$('tour').textContent=touring?'자동 둘러보기 ❚❚':'자동 둘러보기 ▶';}
+function tourButton(){$('tour').setAttribute('aria-pressed',String(touring));$('tour').textContent=touring?'초점 자동 비교 ❚❚':'초점 자동 비교 ▶';}
 function tourStep(){
  if(!touring)return;
  if(onScreen&&!document.hidden&&activeTab==='focus'){const beat=TOUR[tourBeat%TOUR.length];tourBeat++;setAperture(beat.N);setFocus(beat.s,true);}
@@ -119,7 +119,7 @@ for(const event of ['pointerdown','keydown'])for(const el of [$('panel-focus'),$
 // ---------------------------------------------------------------- the photo
 function fillGuideTable(){
  const Ns=[2,5.6,16],rows=[.4,.8,2,3];
- const head=`<thead><tr><th scope="col">초점 거리</th>${Ns.map(N=>`<th scope="col">${formatAperture(N)}</th>`).join('')}</tr></thead>`;
+ const head=`<thead><tr><th scope="col">초점을 맞춘 거리</th>${Ns.map(N=>`<th scope="col">${formatAperture(N)}</th>`).join('')}</tr></thead>`;
  const body=rows.map(s=>`<tr><th scope="row">${formatLength(s)}</th>${Ns.map(N=>{const z=sharpZone(s,N);return `<td>${Number.isFinite(z.far)?formatLength(z.depth):'∞'}</td>`;}).join('')}</tr>`).join('');
  const hyper=`<tr><th scope="row">과초점 거리</th>${Ns.map(N=>`<td>${formatLength(sharpZone(1,N).hyperfocal)}</td>`).join('')}</tr>`;
  $('dof-table').insertAdjacentHTML('beforeend',head+'<tbody>'+body+hyper+'</tbody>');
@@ -127,7 +127,7 @@ function fillGuideTable(){
 fillGuideTable();
 syncControls();
 try{
- const {createFocusPhoto}=await import('./focus-photo.mjs?v=664c37319e65');
+ const {createFocusPhoto}=await import('./focus-photo.mjs?v=3cc49525e6e0');
  photo=createFocusPhoto($('photo'));
  const frameEl=$('frame');
  const fit=()=>{const w=frameEl.clientWidth,h=frameEl.clientHeight;if(!w||!h)return;const ratio=Math.min(devicePixelRatio||1,1.5,Math.sqrt(1.8e6/(w*h)));photo.resize(w,h,ratio);points=photo.subjectPoints();thumbsAperture=null;requestDraw();};
@@ -135,5 +135,5 @@ try{
  $('photo').addEventListener('webglcontextlost',e=>{e.preventDefault();stopTour();$('photo-error').hidden=false;});
  new IntersectionObserver(entries=>{onScreen=entries[0].isIntersecting;}).observe(frameEl);
  $('tour').hidden=false;tourButton();
- if(!reduceMotion.matches)startTour();
+
 }catch(error){console.error('Focus Lab photo:',error);photo=null;$('photo-error').hidden=false;}

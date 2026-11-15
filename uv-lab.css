@@ -242,3 +242,19 @@
   .meter i { transition: none; }
   .inspection-workbench button, #analysis-results button { transition: none; }
 }
+
+.mobile-preview-choice{display:none}
+@media(max-width:720px){
+ .mobile-preview-choice{display:flex;gap:8px;margin:16px 0 12px}
+ .mobile-preview-choice button{flex:1;min-height:44px;padding:8px;border:1px solid #444;background:transparent;color:#bbb;font:inherit;font-size:13px}
+ .mobile-preview-choice button[aria-pressed="true"]{background:#eee;color:#111}
+ .inspectors[data-preview-layout="both"]{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+ .inspectors[data-preview-layout="both"] .canvas-wrap{height:clamp(160px,44vw,280px)}
+ .inspectors[data-preview-layout="both"] .pane-heading{flex-wrap:wrap;gap:4px;padding:8px 0;min-height:84px;align-content:flex-start}
+ .inspectors[data-preview-layout="both"] .pane-heading h2{font-size:14px}
+ .inspectors[data-preview-layout="both"] .pane-heading h2 span{display:none}
+ .inspectors[data-preview-layout="both"] .view-legend{font-size:12px;min-height:48px;margin:4px 0}
+ .inspectors[data-preview-layout="both"] .pane-foot{flex-direction:column;align-items:flex-start;font-size:12px}
+ .inspectors[data-preview-layout="both"] .specimen-tag{display:none}
+ .inspectors[data-preview-layout="uv"] .model-panel,.inspectors[data-preview-layout="model"] .uv-panel{display:none}
+}

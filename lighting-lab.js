@@ -49,7 +49,7 @@ function update(){
   $(side+'-distance').setAttribute('aria-valuetext',s.distance.toFixed(2)+'미터');$(side+'-illuminance').setAttribute('aria-valuetext',fmt(s.lux)+'럭스');
   $(side+'-canvas').setAttribute('aria-label',label+' 조명('+src.name+')으로 비춘 확산 구와 바닥');
   $(side+'-condition').textContent=src.kind==='point'?`${src.name} ${s.count}개 · ${s.distance.toFixed(2)} m · ${s.source==='candle'?'1개당 1 cd 가정':'1개당 800 lm / 전방향 가정'}`:s.source==='sun'?(daylightPreset(s.lux)?.condition||'햇빛 · 직접 설정')+' · '+fmt(s.lux)+' lx (예시)':src.condition+(Math.abs(s.lux-src.lux)>.00001?' · 조도 조절됨':'');
-  const l=linearDisplay(v.lux,state.rho,v.exposure);$(side+'-status').textContent=l<.001?'현재 노출에서 반사광이 거의 보이지 않습니다.':l>.95?'하이라이트가 흰색에 가까워집니다.':state.mode==='individual'?'자동 노출에 공통·개별 보정을 더한 화면입니다.':state.offsets.left===state.offsets.right?'같은 노출로 비교 중입니다.':'개별 노출 보정이 적용된 화면입니다.';
+  const l=linearDisplay(v.lux,state.rho,v.exposure);$(side+'-status').textContent=l<.001?`지금 노출에서는 ${src.name}이 거의 보이지 않아요. ‘${label}에 노출 맞추기’를 눌러보세요.`:l>.95?'하이라이트가 흰색에 가까워집니다.':state.mode==='individual'?'자동 노출에 공통·개별 보정을 더한 화면입니다.':state.offsets.left===state.offsets.right?'같은 노출로 비교 중입니다.':'개별 노출 보정이 적용된 화면입니다.';
   const marker=$(side+'-marker');marker.style.left=(Math.max(0,Math.min(1,(Math.log10(v.lux)+2)/8))*100)+'%';marker.querySelector('span').textContent=label+' · '+src.name;marker.title=fmt(v.lux)+' lx';
  }
  $('comparison-condition').textContent=state.mode==='individual'?'물체·반사율·색 기준을 같게 두고, 각 장면 자동 노출로 광원을 비교합니다.':state.offsets.left!==state.offsets.right?'물체·반사율·색 기준은 같고, 광원과 개별 노출이 다른 비교입니다.':'물체·반사율·노출·색 기준을 같게 두고, 왼쪽과 오른쪽 광원을 비교합니다.';
@@ -59,7 +59,7 @@ function update(){
  for(const key of ['neutral','left','right']){$('wb-'+key).setAttribute('aria-pressed',state.whiteBalance===key);$('wb-'+key).disabled=!state.color;}
  $('wb-left-label').textContent='왼쪽 · '+SOURCES[state.left.source].name+' 기준';$('wb-right-label').textContent='오른쪽 · '+SOURCES[state.right.source].name+' 기준';
  $('color-status').textContent=!state.color?'색감을 끄고 밝기만 비교합니다.':state.whiteBalance==='neutral'?'양쪽에 중립적인 색 기준을 적용합니다.':SOURCES[state[state.whiteBalance].source].name+'을 흰색의 기준으로 삼아 양쪽을 함께 보정합니다.';
- $('stops').textContent=Math.abs(diff).toFixed(2);$('ratio-text').replaceChildren();
+ $('stops').textContent=Math.abs(diff).toFixed(1);$('ratio-text').replaceChildren();
  if(Math.abs(diff)<1e-8){$('ratio-text').textContent='두 측정면의 조도가 같습니다.';}
  else{const stronger=diff>0?'right':'left',name=SOURCES[state[stronger].source].name,strong=document.createElement('strong');strong.textContent=fmt(2**Math.abs(diff))+'배';$('ratio-text').append((stronger==='left'?'왼쪽':'오른쪽')+' '+name+' 쪽이 ',strong,' 강합니다.');}
  $('why').replaceChildren(...explain(state).map(part=>{if(!part.strong)return part.text;const b=document.createElement('strong');b.textContent=part.text;return b;}));
@@ -146,7 +146,7 @@ function openLinkedPanel(){
 }
 window.addEventListener('hashchange',openLinkedPanel);
 for(const key of panels){const tab=$('tab-'+key);tab.onclick=()=>showPanel(key);tab.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const index=panels.indexOf(key);showPanel(e.key==='Home'?panels[0]:e.key==='End'?panels.at(-1):panels[(index+(e.key==='ArrowRight'?1:-1)+panels.length)%panels.length],true);}});}
-$('open-guide').onclick=()=>showPanel('guide',true);$('back-experiment').onclick=()=>showPanel('experiment',true);$('color-help').onclick=()=>{showPanel('guide');$('color-guide').scrollIntoView({block:'start'});};
+$('back-experiment').onclick=()=>showPanel('experiment',true);$('color-help').onclick=()=>{showPanel('guide');$('color-guide').scrollIntoView({block:'start'});};
 
 initRoomLab(()=>showPanel('room'));
 sync();update();openLinkedPanel();

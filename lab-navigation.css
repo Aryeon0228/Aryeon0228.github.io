@@ -225,3 +225,6 @@ body[data-lab] .lab-heading p {
 @media (max-width: 1360px) and (min-width: 641px) {
   body[data-lab] .site-header .wordmark > span:last-child { display: none; }
 }
+
+/* The first instruction is body copy, not metadata. */
+body[data-lab] .lab-heading>p,body[data-lab] .lab-heading>div>p{font-size:14px;font-weight:400;line-height:1.7;color:#bfbfbf}

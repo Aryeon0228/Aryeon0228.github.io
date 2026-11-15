@@ -246,3 +246,12 @@ for(const drop of [$('drop-zone'),$('empty-model')]){
 window.addEventListener('dragover',event=>event.preventDefault());window.addEventListener('drop',event=>{event.preventDefault();openFile(event.dataTransfer.files[0]);});
 try{preview=createPreview($('model-canvas'),{onSelect:select});}catch(error){console.warn('UV Lab 3D preview unavailable',error);$('render-error').hidden=false;}
 useDemo('loose');
+
+// Phones start with both views together; enlarge either without losing selection.
+for(const button of document.querySelectorAll('button[data-preview-layout]')){
+ button.addEventListener('click',()=>{
+  document.querySelector('.inspectors').dataset.previewLayout=button.dataset.previewLayout;
+  document.querySelectorAll('button[data-preview-layout]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+  window.dispatchEvent(new Event('resize'));
+ });
+}

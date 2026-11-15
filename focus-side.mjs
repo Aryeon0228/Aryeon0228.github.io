@@ -1,4 +1,4 @@
-import {SUBJECTS,blurDisc,isSharp,sharpZone,focusToScale,formatLength} from './focus-optics.mjs?v=fbf860ce43e1';
+import {SUBJECTS,blurDisc,isSharp,sharpZone,focusToScale,formatLength} from './focus-optics.mjs?v=59306f6569d2';
 // The side view: subjects on a logarithmic distance axis, the lens and its iris, the sensor.
 // Behind the lens everything is only millimetres apart, so the drawing is exaggerated: each disc on
 // the sensor is drawn in proportion to its true size (DISC_SCALE px per mm, capped), and the rays

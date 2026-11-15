@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {FullScreenQuad} from 'three/addons/postprocessing/Pass.js';
-import {LENS,SUBJECTS} from './focus-optics.mjs?v=fbf860ce43e1';
+import {LENS,SUBJECTS} from './focus-optics.mjs?v=59306f6569d2';
 // The photo Focus Lab's lens takes: a cute desk seen from the lens, 50 mm on full frame.
 // The scene does not depend on focus or aperture, so it is rendered once (with depth) per size.
 // Every change of focus or aperture only re-runs the blur, which reads the same thin-lens

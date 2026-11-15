@@ -178,3 +178,8 @@ body[data-lab="uiux"] :is(input, select):focus-visible { outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   body[data-lab="uiux"] *, body[data-lab="uiux"] *::before, body[data-lab="uiux"] *::after { transition: none !important; scroll-behavior: auto; }
 }
+
+.experiment-number[hidden],#experiment-kicker[hidden],#frame-position[hidden],.pc-caption[hidden]{display:none}
+.experiment-frame-head{justify-content:flex-end;padding-block:8px}
+.observation-prompt{margin:16px 0 20px;padding:0;border:0;background:none;align-items:baseline}
+#experiment-question{font-size:16px;line-height:1.65}

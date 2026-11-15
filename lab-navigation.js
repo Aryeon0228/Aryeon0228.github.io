@@ -1,4 +1,4 @@
-// Keep the current lab visible, with a grouped picker on narrow screens.
+// Keep the current lab visible, with a simple picker on narrow screens.
 for (const nav of document.querySelectorAll('.lab-navigation')) {
   const links = [...nav.querySelectorAll('a')];
   const current = links.find(link => link.getAttribute('aria-current') === 'page');
@@ -10,20 +10,12 @@ for (const nav of document.querySelectorAll('.lab-navigation')) {
   label.textContent = '랩 이동';
   const select = document.createElement('select');
   select.setAttribute('aria-label', '랩 이동');
-  const groups = new Map();
   for (const link of links) {
-    const name = link.dataset.labGroup;
-    if (!groups.has(name)) {
-      const group = document.createElement('optgroup');
-      group.label = name;
-      groups.set(name, group);
-      select.append(group);
-    }
     const option = document.createElement('option');
     option.value = link.href;
     option.textContent = link.textContent.trim();
     option.selected = link === current;
-    groups.get(name).append(option);
+    select.append(option);
   }
   select.addEventListener('change', () => {
     const destination = links.find(link => link.href === select.value);

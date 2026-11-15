@@ -36,3 +36,9 @@ export function formatLength(m){
  const cm=m*100;return (cm>=10?cm.toFixed(0):cm.toFixed(1))+' cm';
 }
 export const formatAperture=N=>'f/'+(Number.isInteger(N)?N:N.toFixed(1));
+
+// Range endpoints need finer rounding than a chosen focus distance (e.g. 39.7–40.3 cm).
+export function formatFocusRange(zone){
+ const endpoint=m=>!Number.isFinite(m)?'∞':m<1?(m*100).toFixed(1)+' cm':m.toFixed(2)+' m';
+ return `${endpoint(zone.near)}–${endpoint(zone.far)}`;
+}
