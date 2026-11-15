@@ -58,17 +58,27 @@ test('motion off keeps stars static and resuming does not include skipped scroll
   assert.equal(h.frames.size,1);
 });
 
-test('an occasional glint brightens one star, ends, and returns to timer-only idle', () => {
+test('three distinct stars glint at staggered times, then return to timer-only idle', () => {
   const h=harness(); const base=h.flush();
   assert.equal(h.timers.size,1);
+  assert.ok([...h.timers.values()][0].delay<=500);
   h.startTwinkle(); h.flush(); assert.equal(h.frames.size,1);
-  h.advance(800); const peak=h.flush();
-  assert.equal(h.spikes(),1);
-  assert.equal(peak.filter((p,i)=>p[2]>base[i][2]).length,1);
-  h.advance(1500); const end=h.flush();
+  h.advance(100); const early=h.flush();
+  assert.equal(early.filter((p,i)=>p[2]>base[i][2]).length,1);
+  h.advance(750); const peak=h.flush();
+  assert.ok(h.spikes()>=2);
+  assert.equal(peak.filter((p,i)=>p[2]>base[i][2]).length,3);
+  h.advance(2500); const end=h.flush();
   assert.equal(h.spikes(),0);
   assert.deepEqual(end,base);
   assert.equal(h.frames.size,0); assert.equal(h.timers.size,1);
+});
+test('a narrow viewport limits overlapping glints to two stars', () => {
+  const h=harness(); h.window.innerWidth=390;
+  h.window.dispatchEvent(new Event('resize'));
+  const base=h.flush(); h.startTwinkle(); h.advance(750);
+  const peak=h.flush();
+  assert.equal(peak.filter((p,i)=>p[2]>base[i][2]).length,2);
 });
 test('hidden, motion-off and day mode cancel glints and timers', () => {
   const h=harness(); h.flush(); h.startTwinkle(); h.flush();

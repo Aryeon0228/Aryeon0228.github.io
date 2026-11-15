@@ -1,4 +1,4 @@
-// Scroll-driven depth with occasional short glints; frames run only while a glint is active.
+// Scroll-driven depth and staggered glints; no animation frames during quiet intervals.
 (function () {
   'use strict';
   const canvas = document.getElementById('page-stars');
@@ -7,7 +7,7 @@
   const motion = window.penumbraMotion;
   let enabled = motion ? motion.enabled : !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let width = 0, height = 0, offset = 0, previousY = window.scrollY;
-  let pending = 0, twinkleTimer = 0, twinkle = null;
+  let pending = 0, twinkleTimer = 0, twinkles = [];
   let seed = 90210;
   const random = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
   const stars = Array.from({ length: 110 }, () => ({
@@ -18,18 +18,26 @@
   const starCount = () => Math.min(stars.length, Math.max(28, Math.round(width * height / 9000)));
   const canTwinkle = () => enabled && !document.hidden && document.documentElement.dataset.theme !== 'day';
   function queueTwinkle() {
-    if (twinkleTimer || twinkle || !canTwinkle()) return;
+    if (twinkleTimer || twinkles.length || !canTwinkle()) return;
     twinkleTimer = setTimeout(() => {
       twinkleTimer = 0;
       if (!canTwinkle()) return;
-      twinkle = { index:Math.floor(random() * starCount()), start:performance.now(), duration:1200 + random() * 600 };
+      const available = Array.from({ length:starCount() }, (_, index) => index);
+      const now = performance.now();
+      let delay = 0;
+      twinkles = Array.from({ length:width < 600 ? 2 : 3 }, () => {
+        const index = available.splice(Math.floor(random() * available.length), 1)[0];
+        const glint = { index, start:now + delay, duration:1100 + random() * 500 };
+        delay += 240 + random() * 160;
+        return glint;
+      });
       schedule();
-    }, 450 + random() * 700);
+    }, 180 + random() * 320);
   }
   function resetTwinkle() {
     clearTimeout(twinkleTimer);
     twinkleTimer = 0;
-    twinkle = null;
+    twinkles = [];
     if (pending) cancelAnimationFrame(pending);
     pending = 0;
     schedule();
@@ -42,11 +50,13 @@
     const baseColor = day ? '#777777' : '#dedede';
     // Keep small screens as quiet as the desktop; density stays roughly constant.
     const count = starCount();
-    const progress = twinkle ? (performance.now() - twinkle.start) / twinkle.duration : 0;
-    if (twinkle && (progress >= 1 || !canTwinkle())) twinkle = null;
+    const now = performance.now();
+    twinkles = canTwinkle() ? twinkles.filter(glint => now < glint.start + glint.duration) : [];
     for (let index = 0; index < count; index++) {
       const star = stars[index];
-      const pulse = twinkle?.index === index ? Math.pow(Math.sin(Math.PI * Math.max(0, progress)), 2) : 0;
+      const glint = twinkles.find(item => item.index === index);
+      const progress = glint ? Math.max(0, (now - glint.start) / glint.duration) : 0;
+      const pulse = Math.pow(Math.sin(Math.PI * progress), 2);
       const x = star.x * width;
       const y = ((star.y * height - offset * star.speed) % height + height) % height;
       context.fillStyle = pulse > .15 ? '#ffffff' : baseColor;
@@ -55,7 +65,7 @@
       context.arc(x, y, star.radius + pulse * .7, 0, Math.PI * 2);
       context.fill();
       if (pulse > .15) {
-        const reach = 2 + pulse * 7, waist = .38;
+        const reach = 2 + pulse * 9, waist = .38;
         context.globalAlpha = pulse * .95;
         context.beginPath();
         context.moveTo(x, y - reach);
@@ -71,7 +81,7 @@
       }
     }
     context.globalAlpha = 1;
-    if (twinkle) schedule();
+    if (twinkles.length) schedule();
     else queueTwinkle();
   }
   function schedule() {
