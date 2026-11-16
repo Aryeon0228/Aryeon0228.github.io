@@ -18,7 +18,16 @@
 .career-star path { fill:currentColor; stroke:currentColor; stroke-width:1.2; stroke-linejoin:round; }
 .star-heading { position:relative; }
 .star-heading .section-heading-star { --career-accent:var(--accent); top:0; left:-16px; }
-@media(max-width:600px) { .star-heading .section-heading-star { left:-12px; } }
+/* Keep the peak glint inside the narrow page gutter, even at its 1.35× scale. */
+@media(max-width:1100px) {
+  .star-heading .section-heading-star::before,
+  .star-heading .section-heading-star::after { width:24px; }
+}
+@media(max-width:600px) {
+  .star-heading .section-heading-star { top:-4px; left:-10px; }
+  .star-heading .section-heading-star::before { width:18px; }
+  .star-heading .section-heading-star::after { width:20px; }
+}
 /* Thin diffraction spikes, with a delayed cross-ray instead of a circular halo. */
 .career-star { --glint-delay:0ms; }
 .career-track--teaching .career-star { --glint-delay:180ms; }
