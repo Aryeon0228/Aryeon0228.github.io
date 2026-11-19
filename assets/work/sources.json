@@ -22,5 +22,17 @@
     "source": "Cupcake Zombie 타이틀 화면 캡처 (cupcake-zombie/, 390×693 @2x)",
     "width": 780,
     "height": 1386
+  },
+  {
+    "file": "focus-preview-f2.jpg",
+    "source": "Focus Lab 실험 화면 캡처: 50 mm, 초점 80 cm, f/2, 셔터로 밝기 보정",
+    "width": 555,
+    "height": 370
+  },
+  {
+    "file": "focus-preview-f16.jpg",
+    "source": "Focus Lab 실험 화면 캡처: 50 mm, 초점 80 cm, f/16, 셔터로 밝기 보정",
+    "width": 555,
+    "height": 370
   }
 ]
