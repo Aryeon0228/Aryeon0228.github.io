@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#070f24">
+  <meta name="theme-color" content="#000000">
   <meta name="description" content="히트 스톱, 반동, 화면 흔들림과 소리. 같은 공격에 효과를 하나씩 더하며 타격감을 비교하는 수업용 게임 데모.">
   <title>타격감 랩 | Studio Penumbra</title>
   <link rel="canonical" href="https://studio-penumbra.com/impact-lab.html">
@@ -12,17 +12,20 @@
   <meta property="og:url" content="https://studio-penumbra.com/impact-lab.html">
   <meta property="og:type" content="website">
   <link rel="icon" href="favicon-32.png" sizes="32x32">
-  <link rel="stylesheet" href="impact-lab.css?v=20261125-i18n">
-  <script defer src="impact-lab-i18n.js?v=20261125-i18n"></script>
-  <script defer src="impact-lab.js?v=20261125-i18n"></script>
-  <script defer src="impact-lab-controls.js?v=20261125-i18n"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Sans+KR:wght@400;500;600&amp;display=swap">
+  <link rel="stylesheet" href="impact-lab.css?v=20261125-penumbra">
+  <script defer src="impact-lab-i18n.js?v=20261125-penumbra"></script>
+  <script defer src="impact-lab.js?v=20261125-penumbra"></script>
+  <script defer src="impact-lab-controls.js?v=20261125-penumbra"></script>
 </head>
 <body>
   <div class="app" id="app">
     <header class="topbar">
       <div class="brand">
         <svg class="brand-symbol" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2v8M20 30v8M2 20h8M30 20h8"/><path d="M10 10h20v20H10z"/><path class="symbol-center" d="M17 17h6v6h-6z"/></svg>
-        <div><p class="eyebrow"><a class="lab-home" href="index.html#lab" aria-label="Studio Penumbra의 Lab 목록으로" data-i18n-aria-label="home">Studio Penumbra / Lab</a></p><h1><span data-i18n="app.name">타격감 랩</span><span class="brand-sub">IMPACT LAB</span></h1></div>
+        <div><p class="eyebrow"><a class="lab-home" href="index.html#lab" aria-label="Studio Penumbra의 Lab 목록으로" data-i18n-aria-label="home">Studio Penumbra / Lab</a></p><h1><span data-i18n="app.name">타격감 랩</span><span class="brand-sub">Impact Lab</span></h1></div>
       </div>
       <nav class="toolbar" aria-label="화면 설정" data-i18n-aria-label="toolbar">
         <div class="language-control" role="group" aria-label="언어 선택" data-i18n-aria-label="language"><button type="button" data-language="ko" lang="ko" aria-label="한국어" aria-pressed="true">한글</button><button type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button></div>
