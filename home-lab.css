@@ -175,7 +175,7 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 #lab .content-actions .lab-secondary-link:hover { color:var(--w); }
 #lab .content-actions a:focus-visible { outline: 2px solid var(--w); outline-offset: 3px; }
 
-/* Two small, real examples; previews are figures, never links to image files. */
+/* Real experiment previews; figures open their Lab, never image files. */
 #lab .work-card--mini-preview:not([data-tactile-card]),
 #lab .work-card--mini-preview > .work-card-face { display:grid; grid-template-columns:minmax(0,1fr) 152px; gap:8px 24px; }
 #lab .work-card--mini-preview .lab-card-title { grid-column:1; grid-row:1; align-self:end; }
@@ -187,9 +187,11 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 .lab-palette-preview > img { height:64px; }
 .lab-mini-swatches { display:grid; grid-template-columns:repeat(5,1fr); gap:2px; margin-top:4px; }
 .lab-mini-swatches span { height:12px; background:var(--swatch); }
-.lab-focus-pair { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.lab-focus-pair, .lab-preview-pair { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .lab-focus-pair img { height:64px; object-position:40% center; }
-.lab-focus-pair span { display:block; margin-top:4px; color:var(--copy); font:400 11px/1.5 var(--f-mono); }
+.lab-focus-pair span, .lab-preview-pair span { display:block; margin-top:4px; color:var(--copy); font:400 11px/1.5 var(--f-mono); }
+.lab-scene-preview > img { height:96px; object-fit:contain; }
+.lab-preview-pair img { height:64px; object-fit:contain; }
 @media(min-width:641px) and (max-width:979px), (max-width:480px) {
   #lab .work-card--mini-preview:not([data-tactile-card]),
   #lab .work-card--mini-preview > .work-card-face { display:flex; }
@@ -199,6 +201,8 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
   #lab .work-card--mini-preview .content-actions { order:3; }
   .lab-palette-preview > img { height:88px; object-position:center 36%; }
   .lab-focus-pair img { height:88px; }
+  .lab-preview-pair img { height:88px; }
+  .lab-scene-preview > img { height:120px; }
 }
 
 /* Scripts remain expanded, in compact rows below the browser tools. */

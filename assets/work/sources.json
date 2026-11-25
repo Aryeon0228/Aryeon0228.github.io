@@ -34,5 +34,65 @@
     "source": "Focus Lab 실험 화면 캡처: 50 mm, 초점 80 cm, f/16, 셔터로 밝기 보정",
     "width": 555,
     "height": 370
+  },
+  {
+    "file": "light-preview-window.jpg",
+    "source": "Light Lab 실제 실험 화면 캡처 · 창빛만 들어온 방",
+    "width": 557,
+    "height": 371
+  },
+  {
+    "file": "light-preview-lamp.jpg",
+    "source": "Light Lab 실제 실험 화면 캡처 · 같은 노출에서 백열등을 더해 밝아진 방",
+    "width": 557,
+    "height": 371
+  },
+  {
+    "file": "material-preview-smooth.jpg",
+    "source": "Material Lab 실제 실험 화면 캡처 · 거칠기 0.25의 황동: 선명한 반사",
+    "width": 290,
+    "height": 290
+  },
+  {
+    "file": "material-preview-rough.jpg",
+    "source": "Material Lab 실제 실험 화면 캡처 · 거칠기 0.8의 황동: 넓게 퍼진 반사",
+    "width": 290,
+    "height": 290
+  },
+  {
+    "file": "uv-preview-layout.jpg",
+    "source": "UV Lab 실제 실험 화면 캡처 · 평면에 펼친 UV 조각과 테스트 무늬",
+    "width": 300,
+    "height": 300
+  },
+  {
+    "file": "uv-preview-model.jpg",
+    "source": "UV Lab 실제 실험 화면 캡처 · 같은 테스트 무늬를 입힌 3D 케이스",
+    "width": 320,
+    "height": 300
+  },
+  {
+    "file": "interior-preview.jpg",
+    "source": "Interior Lab 실제 실험 화면 캡처 · 비스듬한 시점에서 창문 너머로 보이는 방과 가구",
+    "width": 400,
+    "height": 285
+  },
+  {
+    "file": "composition-preview-contrast.jpg",
+    "source": "Composition Lab 실제 실험 화면 캡처 · 큰 상자와 컵, 작은 원과 연필을 배치한 구도",
+    "width": 445,
+    "height": 230
+  },
+  {
+    "file": "uiux-preview-even.jpg",
+    "source": "UI/UX Lab 실제 실험 화면 캡처 · 같은 간격으로 놓인 점 24개",
+    "width": 365,
+    "height": 190
+  },
+  {
+    "file": "uiux-preview-grouped.jpg",
+    "source": "UI/UX Lab 실제 실험 화면 캡처 · 간격을 벌려 세 묶음으로 보이는 같은 점 24개",
+    "width": 365,
+    "height": 190
   }
 ]
