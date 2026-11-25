@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <title>타격감 랩의 로봇 사격 연습장</title>
+  <defs>
+    <pattern id="floor" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#0a1735"/><path d="M40 0H0V40" fill="none" stroke="#173260" stroke-width="1"/></pattern>
+  </defs>
+  <rect width="640" height="360" rx="8" fill="#070f24"/>
+  <rect x="22" y="28" width="596" height="302" fill="url(#floor)" stroke="#24487a"/>
+  <path d="M34 62V40H56M584 40H606V62M34 296V318H56M584 318H606V296" fill="none" stroke="#416daf" stroke-width="2"/>
+  <path d="M370 46V312" fill="none" stroke="#254b7c" stroke-dasharray="5 8"/>
+  <ellipse cx="158" cy="230" rx="39" ry="12" fill="#03091b"/>
+  <g transform="translate(158 182)">
+    <rect x="23" y="-12" width="48" height="23" rx="5" fill="#1f4b86" stroke="#5caaff" stroke-width="2"/>
+    <rect x="62" y="-8" width="12" height="15" rx="2" fill="#beeaff"/>
+    <rect x="-34" y="-12" width="68" height="65" rx="18" fill="#0860a3"/>
+    <rect x="-34" y="-29" width="68" height="60" rx="17" fill="#32c7ff" stroke="#b0edff" stroke-width="2"/>
+    <rect x="-26" y="-14" width="52" height="28" rx="9" fill="#082954"/>
+    <rect x="-12" y="-5" width="8" height="10" rx="3" fill="#d8f8ff"/>
+    <rect x="9" y="-5" width="8" height="10" rx="3" fill="#d8f8ff"/>
+    <path d="M-10 40H12" stroke="#3d9bff" stroke-width="4"/>
+    <rect x="-43" y="-4" width="9" height="28" rx="4" fill="#208bca"/>
+  </g>
+  <ellipse cx="487" cy="230" rx="39" ry="12" fill="#03091b"/>
+  <ellipse cx="487" cy="221" rx="61" ry="25" fill="none" stroke="#254b7c"/>
+  <g transform="translate(487 180) rotate(8)">
+    <rect x="-35" y="-16" width="70" height="59" rx="16" fill="#ac3a24"/>
+    <path d="M-32-24-19-38H19L32-24V22L19 34H-19L-32 22Z" fill="#ff9143" stroke="#ffc783" stroke-width="2"/>
+    <rect x="-23" y="-17" width="46" height="26" rx="7" fill="#3d2334"/>
+    <path d="M-14-4H-6M6-4H14" stroke="#ffd293" stroke-width="4"/>
+    <path d="M-10 23H10" stroke="#b7542b" stroke-width="4"/>
+    <rect x="-41" y="-9" width="8" height="29" rx="3" fill="#944726"/>
+    <rect x="33" y="-9" width="8" height="29" rx="3" fill="#944726"/>
+  </g>
+  <g fill="#75dfff"><rect x="272" y="178" width="24" height="6" rx="3"/><rect x="345" y="178" width="24" height="6" rx="3"/></g>
+  <g fill="none" stroke="#ffc36c"><circle cx="446" cy="179" r="33" stroke-width="3"/><path d="M411 156 394 146M411 201 394 212M432 140 426 124M432 216 426 234" stroke-width="4"/></g>
+  <g fill="#ffad4e"><rect x="404" y="173" width="7" height="7" transform="rotate(20 407 177)"/><rect x="421" y="133" width="6" height="6"/><rect x="422" y="221" width="8" height="8" transform="rotate(30 426 225)"/></g>
+  <g fill="#d9f5ff"><rect x="393" y="189" width="5" height="5"/><rect x="452" y="130" width="5" height="5"/><rect x="458" y="221" width="5" height="5"/></g>
+  <g fill="#ffaf69"><rect x="453" y="112" width="12" height="4" rx="1"/><rect x="470" y="112" width="12" height="4" rx="1"/><rect x="487" y="112" width="12" height="4" rx="1"/></g>
+  <g fill="#314572"><rect x="504" y="112" width="12" height="4" rx="1"/><rect x="521" y="112" width="12" height="4" rx="1"/></g>
+</svg>

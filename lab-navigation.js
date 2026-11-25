@@ -1,5 +1,13 @@
 // Keep the current lab visible, with a simple picker on narrow screens.
 for (const nav of document.querySelectorAll('.lab-navigation')) {
+  // Add the new experiment before building either the desktop list or mobile picker.
+  if (![...nav.querySelectorAll('a')].some(link => new URL(link.href).pathname.endsWith('/impact-lab.html'))) {
+    const impact = document.createElement('a');
+    impact.href = 'impact-lab.html';
+    impact.textContent = '타격감 랩';
+    if (window.location.pathname.endsWith('/impact-lab.html')) impact.setAttribute('aria-current', 'page');
+    nav.append(impact);
+  }
   const links = [...nav.querySelectorAll('a')];
   const current = links.find(link => link.getAttribute('aria-current') === 'page');
   if (!current) continue;
