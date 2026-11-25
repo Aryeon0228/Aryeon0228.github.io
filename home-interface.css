@@ -1,0 +1,42 @@
+/* Quiet, content-led adaptations of Lucian patterns; licenses/lucian-uxui.txt. */
+.nav-shortcuts .nav-location { display:none; }
+@media(max-width:640px) {
+  .site-header .nav-shortcuts > a[data-section] { display:none; }
+  .site-header .nav-shortcuts .nav-location:not([hidden]) { display:inline-flex; color:var(--w); }
+}
+.career-timeline::after {
+  content:""; position:absolute; top:0; bottom:0; left:50%; width:1px;
+  background:var(--w); opacity:.55; pointer-events:none;
+  transform-origin:top; transform:scaleY(var(--reading-progress,0));
+}
+.career-entry::before { transition:background-color .3s; }
+.career-entry.is-reached::before { background:var(--g2); }
+@media(max-width:700px) { .career-timeline::after { left:0; } }
+.contact-email { position:relative; display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; max-width:100%; padding-bottom:24px; }
+.contact-email>a { min-width:0; }
+.contact-email>a:hover { text-decoration:underline; text-underline-offset:6px; }
+.email-copy { display:inline-flex; align-items:center; justify-content:center; flex:0 0 44px; width:44px; height:44px; padding:0; color:var(--g2); background:transparent; border:0; cursor:pointer; }
+.email-copy[hidden] { display:none; }
+.email-copy:hover,.email-copy[data-state="copied"] { color:var(--w); }
+.email-copy:focus-visible { outline:2px solid var(--w); outline-offset:2px; }
+.copy-symbol,.copy-check { transition:opacity .18s; }
+.copy-check,.email-copy[data-state="copied"] .copy-symbol { opacity:0; }
+.email-copy[data-state="copied"] .copy-check { opacity:1; }
+.email-copy-status { position:absolute; bottom:0; left:0; color:var(--g2); font:400 12px/1.6 var(--f-ko); }
+.music-play,.music-pause { transition:opacity .18s; transform-origin:center; }
+.music-pause,.music-toggle[data-state="on"] .music-play { opacity:0; }
+.music-toggle[data-state="on"] .music-pause { opacity:1; }
+[data-music-label] { min-width:3.8em; text-align:left; }
+#lab img[data-preview-state] { transition:opacity .3s; }
+#lab img[data-preview-state="loading"] { opacity:0; }
+html[data-motion="off"] .career-timeline::after { display:none; }
+@media(prefers-reduced-motion:reduce) {
+  html:not([data-motion="on"]) .career-timeline::after { display:none; }
+  html:not([data-motion="on"]) :is(.career-entry,.copy-symbol,.copy-check,.music-play,.music-pause,img[data-preview-state]) { transition:none; }
+}
+
+@media(max-width:360px) {
+  .contact-email { gap:4px 8px; }
+  .contact-email>a { font-size:16px; }
+  .contact-email>a .action-icon { display:none; }
+}
