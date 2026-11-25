@@ -38,10 +38,11 @@
     if (typeof state.auto === 'boolean') $('#auto-toggle').checked = state.auto;
     if (typeof state.reduced === 'boolean') $('#reduced-toggle').checked = state.reduced;
     if (typeof state.paused === 'boolean') {
-      $('#pause-button').setAttribute('aria-pressed', String(state.paused));
-      $('#pause-button span').textContent = t(state.paused ? 'resume' : 'pause');
-      $('#pause-button').setAttribute('aria-label', t(state.paused ? 'resume' : 'pause'));
-      $('#pause-button svg').innerHTML = state.paused ? '<path d="m6 3 10 7-10 7z"/>' : '<path d="M6 4v12M14 4v12"/>';
+      const paused = window.impactComparison?.active ? window.impactComparison.paused : state.paused;
+      $('#pause-button').setAttribute('aria-pressed', String(paused));
+      $('#pause-button span').textContent = t(paused ? 'resume' : 'pause');
+      $('#pause-button').setAttribute('aria-label', t(paused ? 'resume' : 'pause'));
+      $('#pause-button svg').innerHTML = paused ? '<path d="m6 3 10 7-10 7z"/>' : '<path d="M6 4v12M14 4v12"/>';
     }
   }
   function resetCompare() {
@@ -54,6 +55,7 @@
     $('#compare-hint').textContent = t(comparison ? 'compare.off' : 'compare.hint');
   }
   function compare() {
+    if (window.impactComparison?.active) return;
     if (!game()) return;
     if (!comparison) {
       const effects = game().getState().effects;
@@ -100,8 +102,14 @@
   $('#compare-button').addEventListener('click', compare);
   $('#auto-toggle').addEventListener('change', event => game()?.setAuto(event.target.checked));
   $('#reduced-toggle').addEventListener('change', event => { resetCompare(); game()?.setReduced(event.target.checked); sync(game()?.getState()); });
-  $('#pause-button').addEventListener('click', () => { if (game()) { game().setPaused(!game().getState().paused); sync(game().getState()); } });
-  $('#reset-button').addEventListener('click', () => { game()?.reset(); sync(game()?.getState()); notify(t('message.reset')); });
+  $('#pause-button').addEventListener('click', () => {
+    if (window.impactComparison?.active) { window.impactComparison.togglePause(); return; }
+    if (game()) { game().setPaused(!game().getState().paused); sync(game().getState()); }
+  });
+  $('#reset-button').addEventListener('click', () => {
+    if (window.impactComparison?.active) { window.impactComparison.replay(); return; }
+    game()?.reset(); sync(game()?.getState()); notify(t('message.reset'));
+  });
   $('#panel-button').addEventListener('click', () => {
     const hidden = $('#app').classList.toggle('controls-hidden');
     $('#panel-button').setAttribute('aria-expanded', String(!hidden));
@@ -155,5 +163,17 @@
   window.addEventListener('impact:stats', event => sync({paused:event.detail.paused, auto:event.detail.auto}));
   document.addEventListener('impact:settings', event => sync(event.detail));
   document.addEventListener('impact:stats', event => sync({paused:event.detail.paused, auto:event.detail.auto}));
+  window.impactControls = {
+    refresh: () => sync(game()?.getState()),
+    prepareSceneComparison() {
+      // A temporary all-off comparison must not replace the user's saved setup.
+      if (comparison) {
+        const saved = comparison;
+        resetCompare();
+        ids.forEach(id => game().setEffect(id, saved[id].on, saved[id].value));
+        sync(game().getState());
+      }
+    }
+  };
   paintLanguage();
 })();

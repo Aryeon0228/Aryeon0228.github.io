@@ -4,7 +4,7 @@ for (const nav of document.querySelectorAll('.lab-navigation')) {
   if (![...nav.querySelectorAll('a')].some(link => new URL(link.href).pathname.endsWith('/impact-lab.html'))) {
     const impact = document.createElement('a');
     impact.href = 'impact-lab.html';
-    impact.textContent = 'Impact Lab';
+    impact.textContent = 'Game Feel Lab';
     if (window.location.pathname.endsWith('/impact-lab.html')) impact.setAttribute('aria-current', 'page');
     nav.append(impact);
   }

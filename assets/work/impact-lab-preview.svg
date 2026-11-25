@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
-  <title>Impact Lab의 로봇 사격 연습장</title>
+  <title>Game Feel Lab의 로봇 사격 연습장</title>
   <defs>
     <pattern id="floor" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#070707"/><path d="M40 0H0V40" fill="none" stroke="#191919" stroke-width="1"/></pattern>
   </defs>

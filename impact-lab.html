@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <meta name="description" content="히트 스톱, 반동, 화면 흔들림과 소리. 같은 공격에 효과를 하나씩 더하며 타격감을 비교하는 수업용 게임 데모.">
-  <title>타격감 랩 | Studio Penumbra</title>
+  <title>Game Feel Lab | Studio Penumbra</title>
   <link rel="canonical" href="https://studio-penumbra.com/impact-lab.html">
-  <meta property="og:title" content="타격감 랩 | Studio Penumbra">
+  <meta property="og:title" content="Game Feel Lab | Studio Penumbra">
   <meta property="og:description" content="직접 움직이고 쏘며 히트 스톱, 반동, 화면 흔들림과 소리를 비교해 보세요.">
   <meta property="og:url" content="https://studio-penumbra.com/impact-lab.html">
   <meta property="og:type" content="website">
@@ -15,17 +15,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Sans+KR:wght@400;500;600&amp;display=swap">
-  <link rel="stylesheet" href="impact-lab.css?v=20261125-penumbra">
-  <script defer src="impact-lab-i18n.js?v=20261125-penumbra"></script>
-  <script defer src="impact-lab.js?v=20261125-penumbra"></script>
-  <script defer src="impact-lab-controls.js?v=20261125-penumbra"></script>
+  <link rel="stylesheet" href="impact-lab.css?v=20261125-gamefeel">
+  <script defer src="impact-lab-i18n.js?v=20261125-gamefeel"></script>
+  <script defer src="impact-lab.js?v=20261125-gamefeel"></script>
+  <script defer src="impact-lab-controls.js?v=20261125-gamefeel"></script>
+  <script defer src="impact-lab-compare.js?v=20261125-gamefeel"></script>
 </head>
 <body>
   <div class="app" id="app">
     <header class="topbar">
       <div class="brand">
         <svg class="brand-symbol" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2v8M20 30v8M2 20h8M30 20h8"/><path d="M10 10h20v20H10z"/><path class="symbol-center" d="M17 17h6v6h-6z"/></svg>
-        <div><p class="eyebrow"><a class="lab-home" href="index.html#lab" aria-label="Studio Penumbra의 Lab 목록으로" data-i18n-aria-label="home">Studio Penumbra / Lab</a></p><h1><span data-i18n="app.name">타격감 랩</span><span class="brand-sub">Impact Lab</span></h1></div>
+        <div><p class="eyebrow"><a class="lab-home" href="index.html#lab" aria-label="Studio Penumbra의 Lab 목록으로" data-i18n-aria-label="home">Studio Penumbra / Lab</a></p><h1><span data-i18n="app.name">Game Feel Lab</span></h1></div>
       </div>
       <nav class="toolbar" aria-label="화면 설정" data-i18n-aria-label="toolbar">
         <div class="language-control" role="group" aria-label="언어 선택" data-i18n-aria-label="language"><button type="button" data-language="ko" lang="ko" aria-label="한국어" aria-pressed="true">한글</button><button type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button></div>
@@ -50,6 +51,19 @@
             <div class="touch-attacks"><button id="touch-melee" type="button" data-i18n="melee">근접</button><button id="touch-fire" type="button" data-i18n="fire">발사</button></div>
           </div>
         </div>
+        <section id="same-scene-pane" class="same-scene-pane" aria-labelledby="scene-title" hidden>
+          <header class="scene-header"><div><p class="eyebrow" data-i18n="scene.eyebrow">같은 장면, 다른 효과</p><h2 id="scene-title" data-i18n="scene.title">전후 비교</h2></div><button id="scene-close" type="button" data-i18n="scene.close">직접 플레이로</button></header>
+          <div class="scene-controls">
+            <div class="scene-attacks" role="group" aria-label="비교할 공격" data-i18n-aria-label="scene.attack"><button type="button" data-scene-attack="shoot" aria-pressed="true" data-i18n="scene.shoot">발사</button><button type="button" data-scene-attack="melee" aria-pressed="false" data-i18n="scene.melee">근접 공격</button></div>
+            <label class="scene-speed"><span data-i18n="scene.speed">재생 속도</span><select id="scene-speed" aria-label="재생 속도" data-i18n-aria-label="scene.speed"><option value="1">1×</option><option value="0.5">0.5×</option><option value="0.25">0.25×</option></select></label>
+            <button id="scene-replay" type="button" data-i18n="scene.replay">다시 재생</button>
+          </div>
+          <div class="comparison-grid">
+            <figure class="comparison-view"><figcaption><span data-i18n="scene.before">효과 없음</span><span id="scene-before-stats" class="scene-stats"></span></figcaption><canvas id="scene-before" aria-label="같은 공격을 효과 없이 재생" data-i18n-aria-label="scene.before.aria"></canvas></figure>
+            <figure class="comparison-view"><figcaption><span data-i18n="scene.after">현재 설정</span><span id="scene-after-stats" class="scene-stats"></span></figcaption><canvas id="scene-after" aria-label="같은 공격을 현재 효과 설정으로 재생" data-i18n-aria-label="scene.after.aria"></canvas></figure>
+          </div>
+          <div class="scene-notes"><p data-i18n="scene.conditions">시작 위치·조준·공격 시점·피해량이 같아요. 효과를 바꾸면 두 장면이 함께 다시 시작해요.</p><p data-i18n="scene.timing">히트 스톱의 멈춤과 피격 반응의 밀림도 비교에 포함돼요. 소리는 현재 설정 쪽에서 재생돼요.</p><span id="scene-state" role="status" aria-live="polite"></span></div>
+        </section>
         <footer class="play-footer">
           <p id="game-instructions" class="desktop-instructions"><span><kbd>WASD</kbd><kbd data-i18n="arrows">방향키</kbd> <span data-i18n="move">이동</span></span><span><kbd data-i18n="mouse">마우스</kbd> <span data-i18n="aim">조준 · 클릭 연사</span></span><span><kbd>Space</kbd> <span data-i18n="melee.instruction">근접 공격</span></span></p>
           <p class="mobile-instructions" data-i18n="touch.instruction">화면을 눌러 조준 · 방향 버튼으로 이동</p>
@@ -60,6 +74,7 @@
       <aside id="effect-panel" class="effect-panel" aria-label="타격 효과 설정" data-i18n-aria-label="effects.aria">
         <div class="panel-heading"><div><p class="eyebrow" data-i18n="effects.eyebrow">같은 공격, 다른 느낌</p><h2 data-i18n="effects.heading">효과 조절</h2></div><span id="active-count" class="active-count">7개 켜짐</span></div>
         <div class="preset-controls" aria-label="전체 효과 설정" data-i18n-aria-label="effects.all"><button id="all-on" type="button" data-i18n="effects.on">모두 켜기</button><button id="all-off" type="button" data-i18n="effects.off">모두 끄기</button></div>
+        <button id="scene-open" class="scene-open" type="button" aria-pressed="false"><span data-i18n="scene.open">같은 장면 비교</span><span data-i18n="scene.open.hint">나란히 · 반복 재생</span></button>
         <button id="compare-button" class="compare-button" type="button" aria-pressed="false"><span id="compare-title">기본과 비교</span><span id="compare-hint">현재 설정 잠깐 끄기</span></button>
 
         <div id="effects" class="effects">

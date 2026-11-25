@@ -2,9 +2,9 @@
   'use strict';
   // One shared vocabulary for the controls, live messages, and canvas.
   const copy = {
-    'page.title': ['타격감 랩 | Studio Penumbra', 'Impact Lab | Studio Penumbra'],
+    'page.title': ['Game Feel Lab | Studio Penumbra', 'Game Feel Lab | Studio Penumbra'],
     'page.description': ['같은 공격에 효과를 하나씩 더하며 타격감을 비교하는 수업용 게임 데모.', 'Explore game feel by adding hit stop, recoil, screen shake, particles, and sound to the same attack.'],
-    'app.name': ['타격감 랩', 'Impact Lab'],
+    'app.name': ['Game Feel Lab', 'Game Feel Lab'],
     'home': ['Studio Penumbra의 Lab 목록으로', 'Back to Studio Penumbra Labs'],
     'toolbar': ['화면 설정', 'Display controls'],
     'language': ['언어 선택', 'Choose language'],
@@ -95,7 +95,27 @@
     'canvas.hint': ['화면을 클릭해 연사 · 가까이 가서 Space 공격', 'Hold click to fire · move closer and press Space to melee'],
     'canvas.auto': ['자동 사격 중', 'Auto firing'],
     'canvas.paused': ['잠깐 멈춤', 'Paused'],
-    'canvas.resume': ['P 키 또는 재개 버튼', 'Press P or choose Resume']
+    'canvas.resume': ['P 키 또는 재개 버튼', 'Press P or choose Resume'],
+    'scene.open': ['같은 장면 비교', 'Compare the same scene'],
+    'scene.open.hint': ['나란히 · 반복 재생', 'Side by side · replay'],
+    'scene.eyebrow': ['같은 장면, 다른 효과', 'Same scene, different effects'],
+    'scene.title': ['전후 비교', 'Before and after'],
+    'scene.close': ['직접 플레이로', 'Back to play'],
+    'scene.attack': ['비교할 공격', 'Attack to compare'],
+    'scene.shoot': ['발사', 'Shoot'],
+    'scene.melee': ['근접 공격', 'Melee'],
+    'scene.speed': ['재생 속도', 'Playback speed'],
+    'scene.replay': ['다시 재생', 'Replay'],
+    'scene.before': ['효과 없음', 'No effects'],
+    'scene.after': ['현재 설정', 'Your settings'],
+    'scene.before.aria': ['같은 공격을 효과 없이 재생', 'The same attack with no effects'],
+    'scene.after.aria': ['같은 공격을 현재 효과 설정으로 재생', 'The same attack with your current effects'],
+    'scene.conditions': ['시작 위치·조준·공격 시점·피해량이 같아요. 효과를 바꾸면 두 장면이 함께 다시 시작해요.', 'Identical starting positions, aim, attack timing, and damage. Changing an effect restarts both scenes together.'],
+    'scene.timing': ['히트 스톱의 멈춤과 피격 반응의 밀림도 비교에 포함돼요. 소리는 현재 설정 쪽에서 재생돼요.', 'Hit stop and knockback remain part of the comparison. Audio plays only on the side with your settings.'],
+    'scene.running': ['같은 장면을 반복 재생 중', 'Replaying the same scene'],
+    'scene.paused': ['비교 일시정지 · P 키로 계속하기', 'Comparison paused · press P to resume'],
+    'scene.hit': ['명중 {hits} · 체력 {hp}', 'Hits {hits} · HP {hp}'],
+    'scene.no.effects': ['현재 모든 효과가 꺼져 있어 두 장면이 같아요.', 'All effects are off, so both scenes are identical.']
   };
   const storageKey = 'impact-lab-language';
   let language = 'ko';
