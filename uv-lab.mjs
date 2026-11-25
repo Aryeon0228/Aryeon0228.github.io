@@ -14,7 +14,7 @@ let colorMap=null,colorWorker=null,colorJob=0,colorPending=false;
 const viewport={zoom:1,panX:0,panY:0};
 const canvas=$('uv-canvas'),context=canvas.getContext('2d');
 
-function status(message,error=false){$('load-status').textContent=message;$('load-status').classList.toggle('error',error);$('source-feedback').textContent=error?message:'';$('source-feedback').hidden=!error;}
+function status(message,error=false){$('load-status').textContent=error?(state.model?state.model.name+' · 기존 검사 결과 유지':''):message;$('load-status').classList.remove('error');$('source-feedback').textContent=error?message:'';$('source-feedback').hidden=!error;}
 function syncSource(){
   const hasModel=!!state.analysis;document.querySelector('.quick-controls').dataset.ready=String(hasModel);
   document.querySelectorAll('[data-source]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.source===state.source)));
@@ -51,18 +51,18 @@ function createWorker(){
   worker.onmessage=({data})=>{
     if(data.id!==jobId)return;
     const request=pendingAnalysis;pendingAnalysis=null;
-    if(data.error){if(state.model)syncScope();busy(false);status(data.error,true);return;}
+    if(data.error){if(state.model)syncScope();busy(false);status((request?.file?request.file.name+' · ':'')+data.error,true);return;}
     if(request.file)rememberSource();
     state.model=data.model||request.model;state.materialId=request.materialId;
     state.source=state.model.demo?'demo':'file';state.analysis=data.result;state.selected=-1;state.listLimit=24;
     syncScope();busy(false);presentModel({preserveView:request.preserveView});
-    status(`${state.model.demo?'예제 준비 완료':'검사 완료'} · ${number(state.analysis.stats.triangles)}개 삼각형 · ${state.analysis.islands.length}개 아일랜드`);
+    status(`${state.model.demo?'예제 준비 완료':state.model.name+' · 검사 완료'} · ${number(state.analysis.stats.triangles)}개 삼각형 · ${state.analysis.islands.length}개 아일랜드`);
   };
   worker.onerror=()=>{pendingAnalysis=null;if(state.model)syncScope();busy(false);status('파일을 읽는 중 문제가 생겼어요. 다른 파일이나 예제를 선택해 다시 시도해주세요.',true);worker.terminate();worker=null;};
 }
 function analyze({file,model=state.model,materialId=state.materialId,preserveView=false}={}){
   if(!worker)createWorker();jobId++;pendingAnalysis={file,model,materialId:file?-1:materialId,preserveView};busy(true);
-  status(file?'파일을 읽고 UV를 검사하고 있어요…':'UV 배치를 검사하고 있어요…');
+  status(file?file.name+' · UV 검사 중…':'UV 배치 검사 중…');
   worker.postMessage({id:jobId,model:file?null:model,file,options:{materialId:pendingAnalysis.materialId,resolution:state.resolution}});
 }
 function syncScope(){

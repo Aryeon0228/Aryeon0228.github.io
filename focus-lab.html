@@ -7,12 +7,14 @@
 <link rel="icon" type="image/png" href="assets/penumbra.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@200;300;400;500;600&family=IBM+Plex+Sans+KR:wght@200;300;400;500;600&display=swap">
-<link rel="stylesheet" href="penumbra-ui.css?v=040eb593b248"><link rel="stylesheet" href="lab-navigation.css?v=23e1ca38f9a8"><link rel="stylesheet" href="lab-shell.css?v=fa4bf57634ef"><link rel="stylesheet" href="lab-kit.css?v=f947b20f5f24"><link rel="stylesheet" href="focus-lab.css?v=c71b3ad8dff8">
+<link rel="stylesheet" href="penumbra-ui.css?v=040eb593b248"><link rel="stylesheet" href="lab-navigation.css?v=23e1ca38f9a8"><link rel="stylesheet" href="lab-shell.css?v=36bbb8a34263"><link rel="stylesheet" href="lab-kit.css?v=f947b20f5f24"><link rel="stylesheet" href="focus-lab.css?v=c71b3ad8dff8">
 <script src="penumbra-ui.js?v=6fe9293ba561" defer></script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
-<script type="module" src="focus-lab.mjs?v=2c8da7f8b26f"></script>
+<script type="module" src="focus-lab.mjs?v=5484913b8cbd"></script>
 <script src="lab-navigation.js?v=5bf04299b45a" defer></script>
-<script src="lab-shell.js?v=4750f34612c0" defer></script>
+<script src="lab-shell.js?v=f8f190c5435c" defer></script>
+<link rel="stylesheet" href="lab-polish.css?v=4d06a4dd47ce">
+<script type="module" src="lab-polish.mjs?v=249bc5c1e046"></script>
 </head>
 <body data-lab="focus"><a class="skip-link" href="#focus-main">실험으로 건너뛰기</a>
 <div class="site-header"><nav class="site-nav nav-wrap" aria-label="주 메뉴">
@@ -22,7 +24,7 @@
 </nav><div class="lab-navigation-bar"><nav class="lab-navigation" aria-label="랩 이동"><a href="https://pixel-pow.com/">Color Lab</a><a href="lighting-lab.html">Light Lab</a><a href="focus-lab.html" aria-current="page">Focus Lab</a><a href="brdf-viewer.html">Material Lab</a><a href="uv-lab.html">UV Lab</a><a href="interior-mapping.html">Interior Lab</a><a href="https://pixel-pow.com/composition">Composition Lab</a><a href="uiux-lab.html">UI/UX Lab</a></nav></div></div>
 <main class="study-shell" id="focus-main">
 <div class="study-heading lab-heading"><div><div class="study-kicker"><a href="https://studio-penumbra.com/#lab">Lab</a></div><h1>Focus <b>Lab</b></h1><p>초점이 맞는 면을 옮기고, 조리개로 선명한 범위를 바꿔보세요.</p></div></div>
-<div class="fl-toolbar"><div class="fl-tabs" role="tablist" aria-label="실험과 설명"><button type="button" role="tab" id="tab-focus" aria-selected="true" aria-controls="panel-focus">포커스 실험</button><button type="button" role="tab" id="tab-exposure" aria-selected="false" aria-controls="panel-exposure" tabindex="-1">조리개와 노출</button><button type="button" role="tab" id="tab-guide" aria-selected="false" aria-controls="panel-guide" tabindex="-1">원리와 설명</button></div><div class="fl-tools"><button type="button" class="fl-quiet" id="tour" aria-pressed="false" hidden>초점 자동 비교 ▶</button><button type="button" class="fl-quiet" id="reset">처음으로 ↺</button></div></div>
+<div class="fl-toolbar"><div class="fl-tabs" role="tablist" aria-label="실험과 설명"><button type="button" role="tab" id="tab-focus" aria-selected="true" aria-controls="panel-focus">포커스 실험</button><button type="button" role="tab" id="tab-exposure" aria-selected="false" aria-controls="panel-exposure" tabindex="-1">조리개와 노출</button><button type="button" role="tab" id="tab-guide" aria-selected="false" aria-controls="panel-guide" tabindex="-1">원리와 설명</button></div><div class="fl-tools"><button type="button" class="fl-quiet" id="tour" aria-pressed="false" hidden>초점 자동 비교 ▶</button><button type="button" class="fl-quiet" id="reset">실험 초기화 ↺</button></div></div>
 
 <section class="fl-workbench" id="panel-focus" role="tabpanel" aria-labelledby="tab-focus">
 <div class="fl-main">

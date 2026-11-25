@@ -121,10 +121,11 @@ function animate(now){
  controls.update();if(dirty){composer?composer.render():renderer.render(scene,camera);dirty=false;}
 }
 function toggleAO(){if(ao)ao.enabled=$('ssaoToggle').checked;dirty=true;}
+function fileState(input,state,message){const note=$(input.id+'Status');note.dataset.state=state;note.textContent=message;input.setAttribute('aria-busy',String(state==='loading'));}
 async function loadCustomModel(input){
- const files=Array.from(input.files||[]),file=files.find(f=>/\.(obj|glb|gltf)$/i.test(f.name));if(!file){status('OBJ, GLB 또는 GLTF 파일을 선택해주세요.');return;}
+ const files=Array.from(input.files||[]),file=files.find(f=>/\.(obj|glb|gltf)$/i.test(f.name));if(!file){fileState(input,'error','OBJ, GLB 또는 GLTF 파일을 선택해 주세요.');return;}
  const serial=++modelSerial,urls=new Map();const makeURL=file=>{if(!urls.has(file.name))urls.set(file.name,URL.createObjectURL(file));return urls.get(file.name);};
- loading(1);
+ loading(1);fileState(input,'loading',file.name+' · 모델 확인 중…');
  try{
   const manager=new THREE.LoadingManager();manager.setURLModifier(url=>{
    if(url.startsWith('blob:')||url.startsWith('data:'))return url;
@@ -136,18 +137,18 @@ async function loadCustomModel(input){
   if(serial!==modelSerial){disposeGeometry(object);return;}
   const oldMaterials=new Set();object.traverse(child=>{if(child.isMesh){for(const m of Array.isArray(child.material)?child.material:[child.material])oldMaterials.add(m);}});
   replaceModel(object);oldMaterials.forEach(m=>{for(const value of Object.values(m))if(value?.isTexture)value.dispose();m.dispose();});
-  status(file.name+' · 현재 재질을 적용했습니다.');$('specimenName').textContent=file.name;dirty=true;
- }catch(error){console.error(error);status('모델을 읽지 못했습니다. '+(error.message||'파일 형식을 확인해주세요.'));}
- finally{for(const url of urls.values())URL.revokeObjectURL(url);loading(-1);}
+  fileState(input,'ready',file.name+' · 적용 완료');status(file.name+' · 현재 재질을 적용했습니다.');$('specimenName').textContent=file.name;dirty=true;
+ }catch(error){console.error(error);if(serial===modelSerial)fileState(input,'error',file.name+' · 모델을 읽지 못했습니다. 파일 형식과 함께 필요한 파일을 확인해 주세요. 기존 모델은 유지됩니다.');}
+ finally{for(const url of urls.values())URL.revokeObjectURL(url);loading(-1);if(serial===modelSerial){input.value='';input.setAttribute('aria-busy','false');}}
 }
 async function loadNormalMap(input){
- const file=input.files?.[0];if(!file)return;const serial=++normalSerial,url=URL.createObjectURL(file);
+ const file=input.files?.[0];if(!file)return;const serial=++normalSerial,url=URL.createObjectURL(file);fileState(input,'loading',file.name+' · 이미지 확인 중…');
  try{
   const loader=/\.tga$/i.test(file.name)?new TGALoader():new THREE.TextureLoader();const texture=await loader.loadAsync(url);
   if(serial!==normalSerial){texture.dispose();return;}
-  texture.colorSpace=THREE.NoColorSpace;material.normalMap?.dispose();material.normalMap=texture;material.normalScale.set(1,1);material.needsUpdate=true;dirty=true;status(file.name+' · 노멀맵을 적용했습니다.');
- }catch(error){console.error(error);status('노멀맵을 읽지 못했습니다. PNG, JPG, WEBP 또는 TGA 파일을 확인해주세요.');}
- finally{URL.revokeObjectURL(url);}
+  texture.colorSpace=THREE.NoColorSpace;material.normalMap?.dispose();material.normalMap=texture;material.normalScale.set(1,1);material.needsUpdate=true;dirty=true;fileState(input,'ready',file.name+' · 적용 완료');status(file.name+' · 노멀맵을 적용했습니다.');
+ }catch(error){console.error(error);if(serial===normalSerial)fileState(input,'error',file.name+' · 이미지를 읽지 못했습니다. PNG, JPG, WebP, TGA 파일을 확인해 주세요. 기존 노멀맵은 유지됩니다.');}
+ finally{URL.revokeObjectURL(url);if(serial===normalSerial){input.value='';input.setAttribute('aria-busy','false');}}
 }
 function init(){
  scene=new THREE.Scene();scene.background=new THREE.Color(0x0b0b0b);scene.fog=new THREE.Fog(0x0b0b0b,12,27);
@@ -189,7 +190,7 @@ $('resetModel').addEventListener('click',()=>{
  ++modelSerial;createGeometry('sphere');$('geometrySelect').value='sphere';$('modelFile').value='';
  const preset=Object.values(presetCategories).flat().find(item=>item.id===currentPreset);
  $('specimenName').textContent=preset?preset.name.toUpperCase():'CUSTOM';
- status('기본 구로 돌아왔습니다. 재질 설정과 노멀맵은 유지됩니다.');
+ fileState($('modelFile'),'ready','기본 구');status('기본 구로 돌아왔습니다. 재질 설정과 노멀맵은 유지됩니다.');
 });
 $('openReference').addEventListener('click',()=>$('referencePanel').showModal());
 document.querySelectorAll('[data-open-guide]').forEach(button=>button.addEventListener('click',()=>{const guide=$('infoModal');guide.showModal();guide.scrollTop=0;}));

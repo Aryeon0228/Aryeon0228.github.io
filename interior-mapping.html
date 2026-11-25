@@ -10,11 +10,13 @@
 <link rel="icon" type="image/png" href="assets/penumbra.png">
 <meta name="description" content="창 너머의 공간, 빛, 유리를 탐색하는 Studio Penumbra Interior Lab.">
 <title>Interior Lab | Studio Penumbra</title>
-<link rel="stylesheet" href="lab-navigation.css?v=23e1ca38f9a8"><link rel="stylesheet" href="lab-shell.css?v=fa4bf57634ef"><link rel="stylesheet" href="lab-kit.css?v=f947b20f5f24"><link rel="stylesheet" href="interior-lab.css?v=48446b2d6b6a">
+<link rel="stylesheet" href="lab-navigation.css?v=23e1ca38f9a8"><link rel="stylesheet" href="lab-shell.css?v=36bbb8a34263"><link rel="stylesheet" href="lab-kit.css?v=f947b20f5f24"><link rel="stylesheet" href="interior-lab.css?v=48446b2d6b6a">
 <script src="penumbra-ui.js?v=6fe9293ba561" defer></script>
-<script type="module" src="interior-lab.mjs?v=3608ba87cd01"></script>
+<script type="module" src="interior-lab.mjs?v=02af0e3f5fc4"></script>
 <script src="lab-navigation.js?v=5bf04299b45a" defer></script>
-<script src="lab-shell.js?v=4750f34612c0" defer></script>
+<script src="lab-shell.js?v=f8f190c5435c" defer></script>
+<link rel="stylesheet" href="lab-polish.css?v=4d06a4dd47ce">
+<script type="module" src="lab-polish.mjs?v=249bc5c1e046"></script>
 </head>
 <body id="top" data-lab="interior">
 <a class="skip-link" href="#study">미리보기로 건너뛰기</a>
@@ -43,9 +45,9 @@
 <div class="actions"><button class="action" id="bShuffle">실내 구성 바꾸기 <span aria-hidden="true">↗</span></button><button class="action" id="bCompare" aria-pressed="false" disabled>이전 구성 비교 <span aria-hidden="true">⇄</span></button><p class="layout-note">구성을 바꾼 뒤, 같은 시점에서 이전 구성과 번갈아 비교하세요.</p><button class="action" id="bReset">시점 초기화 <span aria-hidden="true">↺</span></button><button class="text-button" id="bMode" aria-pressed="false">면 구분 보기</button><span class="sr-only" id="announce" aria-live="polite"></span></div>
 </section>
 <section class="source-panel" id="sourcePanel" role="tabpanel" aria-labelledby="sourceTab" hidden>
-<div class="source-heading"><h2>Shader source</h2><p>지금 보이는 공간을 그리는 GLSL 코드입니다.</p></div>
+<div class="source-heading"><h2>셰이더 코드</h2><p>지금 보이는 공간을 그리는 GLSL 코드입니다.</p></div>
 <div class="shader-files" role="group" aria-label="셰이더 파일 선택"><button data-shader="fragment" aria-pressed="true">fragment.glsl</button><button data-shader="vertex" aria-pressed="false">vertex.glsl</button></div>
-<div class="source-toolbar"><span class="source-meta" id="sourceMeta">GLSL ES 1.00</span><div class="source-actions"><button id="copyShader">복사</button><button id="downloadShader">다운로드 ↓</button></div></div>
+<div class="source-toolbar"><span class="source-meta" id="sourceMeta">GLSL ES 1.00</span><div class="source-actions"><button id="copyShader">복사</button><button id="downloadShader">코드 다운로드 ↓</button></div></div>
 <pre class="code-scroll" id="codeScroll" tabindex="0" aria-label="셰이더 소스 코드, 가로와 세로로 스크롤할 수 있습니다"><code id="shaderCode"></code></pre>
 <div class="source-status" id="sourceStatus" role="status" aria-live="polite">읽기 전용 · WebGL 1.0</div>
 </section>

@@ -17,7 +17,11 @@
   const title=panel.dataset.labSheet||'조절';
   const name=document.createElement('span');name.className='lab-sheet-title';name.textContent=title;
   const state=document.createElement('span');state.className='lab-sheet-state';state.setAttribute('aria-hidden','true');
-  handle.append(name,state);sheet.append(question,view,handle,panel);
+  handle.append(name,state);
+  const toolbar=document.createElement('div');toolbar.className='lab-sheet-toolbar';
+  const resize=document.createElement('button');resize.type='button';resize.className='lab-sheet-resize';resize.hidden=true;resize.textContent='미리보기 확대';resize.setAttribute('aria-pressed','false');
+  resize.addEventListener('click',()=>{const large=sheet.classList.toggle('is-preview-large');resize.setAttribute('aria-pressed',String(large));resize.textContent=large?'조절 영역 확대':'미리보기 확대';requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));});
+  toolbar.append(handle,resize);sheet.append(question,view,toolbar,panel);
   let open=false,previousOverflow='',inertElements=[];
   function setOpen(next){
     next=phone.matches&&next;
@@ -43,6 +47,7 @@
     handle.setAttribute('aria-expanded',String(open));
     handle.setAttribute('aria-label',title+(open?' 닫기':' 열기'));
     state.textContent=open?'닫기 ×':'열기 +';
+    resize.hidden=!open||!preview;
     // Collapsed controls must not receive keyboard focus outside the visible handle.
     panel.inert=phone.matches&&!open;
     if(changed&&phone.matches)handle.focus({preventScroll:true});

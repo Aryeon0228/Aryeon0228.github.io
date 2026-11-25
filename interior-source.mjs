@@ -4,7 +4,8 @@ const $=id=>document.getElementById(id);
 export function initSourcePanel(shaders){
  const tabs=[$('controlsTab'),$('sourceTab')];
  const panels=[$('controlsPanel'),$('sourcePanel')];
- let selectedShader='fragment';
+ let selectedShader='fragment',copyTimer;
+ function resetCopy(){clearTimeout(copyTimer);$('copyShader').textContent='코드 복사';delete $('copyShader').dataset.feedback;}
  const sourceText=()=>shaders[selectedShader].trim();
  function selectPanel(index,focus=false){
   tabs.forEach((tab,i)=>{tab.setAttribute('aria-selected',String(i===index));tab.tabIndex=i===index?0:-1;panels[i].hidden=i!==index;});
@@ -31,19 +32,21 @@ export function initSourcePanel(shaders){
   return result+escape(source.slice(end));
  }
  function showSource(){
+  resetCopy();
   const source=sourceText();
   // Each displayed line comes from the same script element passed to gl.shaderSource.
   $('shaderCode').innerHTML=source.split('\n').map((line,i)=>'<span class="code-line" data-line="'+(i+1)+'">'+(highlight(line)||' ')+'</span>').join('');
-  $('sourceMeta').textContent=source.split('\n').length+' lines';
+  $('sourceMeta').textContent=source.split('\n').length+'줄';
   $('codeScroll').scrollTop=0;$('codeScroll').scrollLeft=0;
   $('sourceStatus').textContent='읽기 전용 · WebGL 1.0';
   for(const button of document.querySelectorAll('[data-shader]'))button.setAttribute('aria-pressed',String(button.dataset.shader===selectedShader));
  }
  for(const button of document.querySelectorAll('[data-shader]'))button.addEventListener('click',()=>{selectedShader=button.dataset.shader;showSource();});
  $('copyShader').addEventListener('click',async()=>{
-  const source=sourceText(),filename=selectedShader+'.glsl';
-  try{await navigator.clipboard.writeText(source);$('sourceStatus').textContent=filename+' 코드를 복사했습니다.';}
+  const selected=selectedShader,source=sourceText(),filename=selectedShader+'.glsl';
+  try{await navigator.clipboard.writeText(source);if(selected!==selectedShader)return;resetCopy();$('copyShader').textContent='복사 완료';$('copyShader').dataset.feedback='copied';$('sourceStatus').textContent=filename+' 복사 완료';copyTimer=setTimeout(resetCopy,4000);}
   catch{
+   if(selected!==selectedShader)return;
    const range=document.createRange();range.selectNodeContents($('shaderCode'));const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);
    $('sourceStatus').textContent='코드를 선택했어요. Ctrl+C 또는 ⌘C로 복사하세요.';
   }
@@ -51,6 +54,6 @@ export function initSourcePanel(shaders){
  $('downloadShader').addEventListener('click',()=>{
   const url=URL.createObjectURL(new Blob([sourceText()+'\n'],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');link.href=url;link.download='penumbra-interior.'+(selectedShader==='fragment'?'frag':'vert');document.body.append(link);link.click();link.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);$('sourceStatus').textContent=selectedShader+'.glsl 파일을 다운로드했습니다.';
+  setTimeout(()=>URL.revokeObjectURL(url),1000);$('sourceStatus').textContent='코드 파일 다운로드를 시작했습니다.';
  });
 }

@@ -1,6 +1,6 @@
 // Interior Lab: raymarched interior mapping behind a procedural facade (WebGL 1).
 import {shaders} from './interior-shaders.mjs?v=0e51f3cf274c';
-import {initSourcePanel} from './interior-source.mjs?v=8a2a9e3f966d';
+import {initSourcePanel} from './interior-source.mjs?v=5218a1da012a';
 
 const $=id=>document.getElementById(id),canvas=$('gl');
 const initial={yaw:.20,pitch:.065,depth:4.8,grid:5,seed:0,refl:.28,dust:.08,day:.34,mode:0,reflOn:true,dustOn:true};

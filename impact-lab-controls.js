@@ -29,6 +29,8 @@
         tile.classList.toggle('is-off', !effect.on);
         if (effect.on) count++;
       });
+      $('#all-on').disabled = count === tiles.length;
+      $('#all-off').disabled = count === 0;
       $('#active-count').textContent = t(count ? 'effects.active' : 'effects.none', {count, total:tiles.length});
     }
     if (typeof state.auto === 'boolean') $('#auto-toggle').checked = state.auto;

@@ -1,0 +1,33 @@
+/* Lucian interaction references adapted to the existing Lab palette. */
+body[data-lab] { --lab-label:#bfbfbf; --lab-value:#eee; }
+body[data-lab] :is(.lab-heading p,.control-note,.panel-note,.fl-note,.room-note) { font-weight:400; }
+/* Tabs navigate; filled choices adjust the experiment. */
+body[data-lab] [role="tablist"] { gap:0;padding:0;background:transparent;border-radius:0;border-bottom:1px solid #444;overflow-x:auto; }
+body[data-lab] [role="tablist"]>[role="tab"] { position:relative;flex-shrink:0;min-height:44px;padding:12px 16px;border:0;border-radius:0;background:transparent;color:#bfbfbf;font-size:14px;font-weight:400;white-space:nowrap; }
+body[data-lab] [role="tablist"]>[aria-selected="true"] { background:transparent;color:#fff;font-weight:500;box-shadow:inset 0 -2px #eee; }
+body[data-lab] [role="tablist"]>[role="tab"]:focus-visible { outline:2px solid #fff;outline-offset:-3px; }
+body[data-lab] :is(button,summary,select) { scroll-margin-block:80px; }
+body[data-lab] :is(output,.lab-exact) { font-variant-numeric:tabular-nums; }
+body[data-lab] .lab-readout-source { display:none; }
+body[data-lab] .lab-exact { display:inline-flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;color:#eee;font:14px var(--f-mono); }
+body[data-lab] input.lab-exact-input { width:80px;min-height:40px;height:40px;padding:8px;border:1px solid #666;border-radius:8px;background:#111;color:#eee;font:14px var(--f-mono);text-align:right; }
+.lab-range-scale { position:relative;display:flex;justify-content:space-between;margin:0 0 12px;color:#bfbfbf;font:12px var(--f-mono); }
+.lab-range-scale>:nth-child(2) { position:absolute;transform:translateX(-50%); }
+body[data-lab] .lab-file-status { min-height:24px;margin:8px 0 16px;color:#bfbfbf;font-size:14px;line-height:1.6;overflow-wrap:anywhere; }
+body[data-lab] .lab-file-status[data-state="error"] { color:#eee; }
+body[data-lab] .lab-file-status[data-state="error"]::before { content:'! ';font-weight:600; }
+body[data-lab] button:disabled { opacity:.45;cursor:default; }
+body[data-lab="uiux"] .nav-index { display:none; }
+body[data-lab="uiux"] .nav-group h2 { letter-spacing:0; }
+body[data-lab="uiux"] :is(#copy-link,#save-note),body[data-lab="interior"] #copyShader { min-width:112px; }
+body[data-lab] button[data-feedback="copied"]::before { content:'✓';margin-right:8px; }
+/* One comparison result, below the images. Explanations no longer float over the scene. */
+body[data-lab="light"] .comparison-heading .result { display:none; }
+body[data-lab="light"] .comparison-condition { display:none; }
+body[data-lab="light"] .why-caption { position:static;transform:none;max-width:72ch;margin:16px 0 0;padding:0;background:transparent;color:#bfbfbf;font-size:14px;line-height:1.65; }
+@media(max-width:760px) {
+ body[data-lab] :is(.lk-seg>button,.fl-seg>button,.segmented>button,summary) { min-height:44px; }
+ body[data-lab] [role="tablist"]>[role="tab"] { padding-inline:12px; }
+ body[data-lab="uv"] .button-group>button { min-height:44px; }
+}
+@media(prefers-reduced-motion:reduce) { body[data-lab] *,body[data-lab] *::before { scroll-behavior:auto!important; } }

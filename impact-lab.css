@@ -183,3 +183,5 @@ html[lang=en] .brand-sub { display: none; }
   .touch-controls { bottom: 16px; left: 16px; right: 16px; }
 }
 @media (prefers-reduced-motion:reduce) { *,*:before,*:after { transition: none!important; } }
+
+@media(max-width:900px){.quiet-button,.language-control button{min-width:44px;min-height:44px}.toolbar{flex-wrap:wrap;gap:4px}}

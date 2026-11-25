@@ -35,3 +35,15 @@
 }
 
 .lab-sheet.is-open>.lab-sheet-preview:empty{display:none}
+
+/* Expand the preview without replacing the canvas or losing the panel's scroll position. */
+.lab-sheet-toolbar{display:contents}.lab-sheet-resize{display:none}
+@media(max-width:760px){
+ .lab-sheet-toolbar{display:flex;align-items:center;flex:none;background:#151515;border-bottom:1px solid #444}
+ .lab-sheet-handle{flex:1;min-width:0;padding:12px 16px;border-bottom:0}
+ .lab-sheet-resize:not([hidden]){display:block;flex:none;min-height:44px;margin-right:8px;padding:8px;border:0;border-radius:8px;background:transparent;color:#bfbfbf;font:400 12px var(--f-ko,sans-serif);cursor:pointer}
+ .lab-sheet.is-open.is-preview-large>.lab-sheet-preview{height:55dvh;max-height:55dvh;min-height:80px}
+ .lab-sheet-question{padding:12px 16px}.lab-sheet-state{font-size:14px}
+ .lab-sheet.is-open>.lab-sheet-preview{min-height:min(140px,25dvh)}
+ .lab-sheet-toolbar button:focus-visible{outline:2px solid white;outline-offset:-4px}
+}

@@ -17,7 +17,7 @@ let photo=null,points=[],rack=null,frame=0,thumbsAperture=null,activeTab='focus'
 // ---------------------------------------------------------------- what the page says
 function syncControls(){
  const {s,N}=state,zone=sharpZone(s,N),slider=$('focus');
- slider.value=Math.round(focusToScale(s)*1000);$('focus-out').value=formatLength(s);
+ slider.step='any';slider.value=focusToScale(s)*1000;$('focus-out').value=formatLength(s);
  slider.setAttribute('aria-valuetext',`${formatLength(s)}, 선명 범위 ${formatLength(zone.depth)}`);
  const left=focusToScale(Math.max(zone.near,FOCUS_MIN)),right=Number.isFinite(zone.far)?focusToScale(Math.min(zone.far,FOCUS_MAX)):1;
  $('zone-band').style.left=(left*100)+'%';$('zone-band').style.width=Math.max(.8,(Math.min(1,right)-left)*100)+'%';
