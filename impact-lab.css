@@ -10,3 +10,14 @@
 .desktop-instructions{font-size:14px}.active-count{font-size:13px}.effect-label{font-size:16px}.effect p{font-size:14px}.solo-button{font-size:13px;min-height:28px}.range-row output{font-size:14px;flex-basis:52px}.panel-foot p{font-size:13px}.reduced-control{font-size:14px}
 
 .lab-home{color:inherit;text-decoration:none}.lab-home:hover{color:var(--mint)}.lab-home:focus-visible{outline:2px solid var(--mint);outline-offset:4px;border-radius:2px}
+
+/* Language labels remain visible beside the compact mobile toolbar. */
+.language-control{display:flex;flex:none;border:1px solid #294c7b;border-radius:7px;padding:3px;gap:2px;margin-right:10px;background:#0a1934}
+.language-control button{min-width:38px;min-height:34px;padding:5px 8px;background:transparent;color:#adc5e8;border-radius:4px;font-size:13px;font-weight:650}
+.language-control button:hover{background:#163665;color:var(--ink)}
+.language-control button[aria-pressed=true]{background:#215be1;color:#fff}
+html[lang=en] .brand-sub{display:none}
+html[lang=en] .compare-button{flex-wrap:wrap;gap:3px 12px;text-align:left}
+html[lang=en] .compare-button>span{white-space:nowrap}
+@media(max-width:600px){.topbar{flex-wrap:wrap;gap:10px}.brand{flex:1}.toolbar{justify-content:flex-end}.language-control{margin-right:5px}.language-control button{min-width:33px;padding:5px}.controls-hidden .play-area{height:calc(100dvh - 125px);min-height:390px}}
+@media(max-width:420px){.topbar .brand{flex-basis:100%}.topbar .toolbar{width:100%;justify-content:flex-start}.language-control{margin-right:auto}.topbar{padding-top:12px;padding-bottom:10px}.brand-symbol{width:29px;height:29px}.brand h1{font-size:21px}.quiet-button{width:38px}.toolbar #fullscreen-button{display:flex}}

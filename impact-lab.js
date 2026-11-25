@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const tr = (key, values) => window.impactI18n.t(key, values);
   const canvas = document.getElementById('arena');
   const ctx = canvas.getContext('2d', { alpha: false });
   const W = 1100, H = 740, TAU = Math.PI * 2;
@@ -167,10 +168,10 @@
     ctx.restore();
     for(const [x,y,sx,sy] of [[52,118,1,1],[W-52,118,-1,1],[52,H-78,1,-1],[W-52,H-78,-1,-1]]){line(x,y,x+22*sx,y,'#4d76a7',2);line(x,y,x,y+22*sy,'#4d76a7',2);}
     ctx.save();ctx.setLineDash([5,11]);line(590,125,590,H-85,'#23426c');ctx.restore();
-    label('START',150,H-112,13,'#819ac1');label('TARGET ZONE',W-160,H-112,13,'#819ac1','center');
+    label(tr('canvas.start'),150,H-112,13,'#819ac1');label(tr('canvas.zone'),W-160,H-112,13,'#819ac1','center');
     ctx.save();ctx.globalAlpha=.45;label('IMPACT',W/2,H/2-45,88,'#23416d','center',800);label('TRAINING ROOM',W/2,H/2+18,19,'#3e6396','center',600);ctx.restore();
-    line(36,83,W-36,83,'#1c355b');label('자유 연습장',38,44,20,'#deebff','left',700);
-    label('10 DAMAGE / SHOT',W-38,42,14,'#a0b8dc','right');
+    line(36,83,W-36,83,'#1c355b');label(tr('canvas.practice'),38,44,20,'#deebff','left',700);
+    label(tr('canvas.damage'),W-38,42,14,'#a0b8dc','right');
   }
   function drawTarget(t){
     const x=t.x+t.ox,y=t.y+t.oy;
@@ -178,7 +179,7 @@
     line(t.x-50,t.y+26,t.x-42,t.y+26,'#6385b4');line(t.x+42,t.y+26,t.x+50,t.y+26,'#6385b4');
     if(t.respawn>0){
       ctx.save();ctx.setLineDash([4,6]);circle(t.x,t.y,25,null,'#3766a1',1.5);ctx.restore();
-      label('재생성 중',t.x,t.y+60,13,'#92afd6','center');return;
+      label(tr('canvas.respawning'),t.x,t.y+60,13,'#92afd6','center');return;
     }
     ctx.save();ctx.translate(x,y);ctx.scale(1, .45);circle(0,63,30,'#030920');ctx.restore();
     ctx.save();ctx.translate(x,y);if(t.wobble>0)ctx.rotate(Math.sin(elapsed*60)*t.wobble*.32);
@@ -191,7 +192,7 @@
     round(-34,-7,6,23,3,'#6d352c');round(28,-7,6,23,3,'#6d352c');
     ctx.restore();
     for(let i=0;i<5;i++)round(x-29+i*12,y-47,9,3,1,i<t.hp/20?'#ffad60':'#293653');
-    label(`표적 ${String.fromCharCode(65+t.i)}`,t.x,t.y+67,13,'#92acd2','center');
+    label(tr('canvas.target', {name:String.fromCharCode(65+t.i)}),t.x,t.y+67,13,'#92acd2','center');
   }
   function drawPlayer(){
     const x=player.x,y=player.y;
@@ -215,7 +216,7 @@
       ctx.beginPath();ctx.arc(0,0,145,-.6,.12);ctx.strokeStyle='#bcf5ff';ctx.lineWidth=12*(1-t)+3;ctx.stroke();
       ctx.beginPath();ctx.arc(0,0,128,-.8,0);ctx.strokeStyle='#28bbff';ctx.lineWidth=3;ctx.stroke();ctx.restore();
     }
-    if(!shots&&!auto){label('YOU',x,y+61,13,'#62cfff','center',700);}
+    if(!shots&&!auto){label(tr('canvas.you'),x,y+61,13,'#62cfff','center',700);}
   }
   function draw(){
     ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070f24';ctx.fillRect(0,0,cssW,cssH);
@@ -236,12 +237,12 @@
     ctx.restore();
     // HUD is outside the shaken scene so controls and statistics remain stable.
     ctx.save();ctx.translate(view.x,view.y);ctx.scale(view.scale,view.scale);
-    label(String(hits).padStart(3,'0'),40,H-30,30,'#e5efff','left',750);label('명중',108,H-27,14,'#a1b7d8');
-    label(`${destroyed}개 표적 격파`,W-40,H-27,14,'#a1b7d8','right');
-    if(combo>1){label(`${combo} COMBO`,W/2,H-30,21,'#ffad63','center',750);}
-    if(!shots&&!auto&&!paused){round(312,137,476,44,22,'#133267','#3769a0');label('화면을 클릭해 연사 · 가까이 가서 Space 공격',550,159,16,'#d9ebff','center');}
-    if(auto){round(W/2-57,42,114,25,12,'#153c78');label('자동 사격 중',W/2,55,12,'#8fdaff','center');}
-    if(paused){ctx.fillStyle='rgba(3,8,25,.76)';ctx.fillRect(0,0,W,H);label('잠깐 멈춤',W/2,H/2-18,40,'#e7f0ff','center',700);label('P 키 또는 재개 버튼',W/2,H/2+33,17,'#aac3e7','center');}
+    label(String(hits).padStart(3,'0'),40,H-30,30,'#e5efff','left',750);label(tr('canvas.hits'),108,H-27,14,'#a1b7d8');
+    label(tr('canvas.destroyed', {count:destroyed}),W-40,H-27,14,'#a1b7d8','right');
+    if(combo>1){label(tr('canvas.combo', {count:combo}),W/2,H-30,21,'#ffad63','center',750);}
+    if(!shots&&!auto&&!paused){round(290,137,520,44,22,'#133267','#3769a0');label(tr('canvas.hint'),550,159,16,'#d9ebff','center');}
+    if(auto){round(W/2-57,42,114,25,12,'#153c78');label(tr('canvas.auto'),W/2,55,12,'#8fdaff','center');}
+    if(paused){ctx.fillStyle='rgba(3,8,25,.76)';ctx.fillRect(0,0,W,H);label(tr('canvas.paused'),W/2,H/2-18,40,'#e7f0ff','center',700);label(tr('canvas.resume'),W/2,H/2+33,17,'#aac3e7','center');}
     ctx.restore();
   }
   function resize(){const r=canvas.getBoundingClientRect();cssW=r.width;cssH=r.height;dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(cssW*dpr));canvas.height=Math.max(1,Math.round(cssH*dpr));view.scale=Math.min(cssW/W,cssH/H);view.x=(cssW-W*view.scale)/2;view.y=(cssH-H*view.scale)/2;draw();}

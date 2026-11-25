@@ -12,18 +12,20 @@
   <meta property="og:url" content="https://studio-penumbra.com/impact-lab.html">
   <meta property="og:type" content="website">
   <link rel="icon" href="favicon-32.png" sizes="32x32">
-  <link rel="stylesheet" href="impact-lab.css?v=20261125-blue">
-  <script defer src="impact-lab.js?v=20261125-blue"></script>
-  <script defer src="impact-lab-controls.js?v=20261125-blue"></script>
+  <link rel="stylesheet" href="impact-lab.css?v=20261125-i18n">
+  <script defer src="impact-lab-i18n.js?v=20261125-i18n"></script>
+  <script defer src="impact-lab.js?v=20261125-i18n"></script>
+  <script defer src="impact-lab-controls.js?v=20261125-i18n"></script>
 </head>
 <body>
   <div class="app" id="app">
     <header class="topbar">
       <div class="brand">
         <svg class="brand-symbol" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2v8M20 30v8M2 20h8M30 20h8"/><path d="M10 10h20v20H10z"/><path class="symbol-center" d="M17 17h6v6h-6z"/></svg>
-        <div><p class="eyebrow"><a class="lab-home" href="index.html#lab" aria-label="Studio Penumbra의 Lab 목록으로">Studio Penumbra / Lab</a></p><h1>타격감 랩<span class="brand-sub">IMPACT LAB</span></h1></div>
+        <div><p class="eyebrow"><a class="lab-home" href="index.html#lab" aria-label="Studio Penumbra의 Lab 목록으로" data-i18n-aria-label="home">Studio Penumbra / Lab</a></p><h1><span data-i18n="app.name">타격감 랩</span><span class="brand-sub">IMPACT LAB</span></h1></div>
       </div>
-      <nav class="toolbar" aria-label="화면 설정">
+      <nav class="toolbar" aria-label="화면 설정" data-i18n-aria-label="toolbar">
+        <div class="language-control" role="group" aria-label="언어 선택" data-i18n-aria-label="language"><button type="button" data-language="ko" lang="ko" aria-label="한국어" aria-pressed="true">한글</button><button type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button></div>
         <button id="pause-button" class="quiet-button" type="button" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4v12M14 4v12"/></svg><span>일시정지</span></button>
         <button id="reset-button" class="quiet-button" type="button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1-1 5M3 3v5h5"/></svg><span>처음부터</span></button>
         <button id="fullscreen-button" class="quiet-button" type="button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4M13 3h4v4M3 13v4h4M17 13v4h-4"/></svg><span>전체 화면</span></button>
@@ -32,42 +34,42 @@
     </header>
 
     <main class="workspace">
-      <section class="play-area" aria-label="타격감 게임">
+      <section class="play-area" aria-label="타격감 게임" data-i18n-aria-label="game">
         <div class="stage" id="stage">
-          <canvas id="arena" tabindex="0" aria-label="타격감 연습장. 방향키나 WASD로 이동하고 마우스로 조준합니다. 클릭하면 발사하고 스페이스 키로 근접 공격합니다." aria-describedby="game-instructions"></canvas>
-          <div id="touch-controls" class="touch-controls" aria-label="터치 조작">
-            <div class="dpad" aria-label="이동">
-              <button type="button" data-move="up" aria-label="위로 이동"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 12 5-5 5 5"/></svg></button>
-              <button type="button" data-move="left" aria-label="왼쪽으로 이동"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
-              <button type="button" data-move="down" aria-label="아래로 이동"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg></button>
-              <button type="button" data-move="right" aria-label="오른쪽으로 이동"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
+          <canvas id="arena" tabindex="0" aria-label="타격감 연습장. 방향키나 WASD로 이동하고 마우스로 조준합니다. 클릭하면 발사하고 스페이스 키로 근접 공격합니다." data-i18n-aria-label="game.aria" aria-describedby="game-instructions"></canvas>
+          <div id="touch-controls" class="touch-controls" aria-label="터치 조작" data-i18n-aria-label="touch">
+            <div class="dpad" aria-label="이동" data-i18n-aria-label="move">
+              <button type="button" data-move="up" aria-label="위로 이동" data-i18n-aria-label="move.up"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 12 5-5 5 5"/></svg></button>
+              <button type="button" data-move="left" aria-label="왼쪽으로 이동" data-i18n-aria-label="move.left"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
+              <button type="button" data-move="down" aria-label="아래로 이동" data-i18n-aria-label="move.down"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg></button>
+              <button type="button" data-move="right" aria-label="오른쪽으로 이동" data-i18n-aria-label="move.right"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
             </div>
-            <div class="touch-attacks"><button id="touch-melee" type="button">근접</button><button id="touch-fire" type="button">발사</button></div>
+            <div class="touch-attacks"><button id="touch-melee" type="button" data-i18n="melee">근접</button><button id="touch-fire" type="button" data-i18n="fire">발사</button></div>
           </div>
         </div>
         <footer class="play-footer">
-          <p id="game-instructions" class="desktop-instructions"><span><kbd>WASD</kbd><kbd>방향키</kbd> 이동</span><span><kbd>마우스</kbd> 조준 · 클릭 연사</span><span><kbd>Space</kbd> 근접 공격</span></p>
-          <p class="mobile-instructions">화면을 눌러 조준 · 방향 버튼으로 이동</p>
-          <label class="auto-control"><input id="auto-toggle" type="checkbox"><span class="mini-check" aria-hidden="true"></span><span>자동 시연</span></label>
+          <p id="game-instructions" class="desktop-instructions"><span><kbd>WASD</kbd><kbd data-i18n="arrows">방향키</kbd> <span data-i18n="move">이동</span></span><span><kbd data-i18n="mouse">마우스</kbd> <span data-i18n="aim">조준 · 클릭 연사</span></span><span><kbd>Space</kbd> <span data-i18n="melee.instruction">근접 공격</span></span></p>
+          <p class="mobile-instructions" data-i18n="touch.instruction">화면을 눌러 조준 · 방향 버튼으로 이동</p>
+          <label class="auto-control"><input id="auto-toggle" type="checkbox"><span class="mini-check" aria-hidden="true"></span><span data-i18n="auto">자동 시연</span></label>
         </footer>
       </section>
 
-      <aside id="effect-panel" class="effect-panel" aria-label="타격 효과 설정">
-        <div class="panel-heading"><div><p class="eyebrow">같은 공격, 다른 느낌</p><h2>효과 조절</h2></div><span id="active-count" class="active-count">7개 켜짐</span></div>
-        <div class="preset-controls" aria-label="전체 효과 설정"><button id="all-on" type="button">모두 켜기</button><button id="all-off" type="button">모두 끄기</button></div>
+      <aside id="effect-panel" class="effect-panel" aria-label="타격 효과 설정" data-i18n-aria-label="effects.aria">
+        <div class="panel-heading"><div><p class="eyebrow" data-i18n="effects.eyebrow">같은 공격, 다른 느낌</p><h2 data-i18n="effects.heading">효과 조절</h2></div><span id="active-count" class="active-count">7개 켜짐</span></div>
+        <div class="preset-controls" aria-label="전체 효과 설정" data-i18n-aria-label="effects.all"><button id="all-on" type="button" data-i18n="effects.on">모두 켜기</button><button id="all-off" type="button" data-i18n="effects.off">모두 끄기</button></div>
         <button id="compare-button" class="compare-button" type="button" aria-pressed="false"><span id="compare-title">기본과 비교</span><span id="compare-hint">현재 설정 잠깐 끄기</span></button>
 
         <div id="effects" class="effects">
-          <section class="effect" data-effect="hitstop"><div class="effect-head"><label class="effect-label" for="toggle-hitstop">히트 스톱</label><button class="solo-button" type="button" data-solo="hitstop" aria-label="히트 스톱만 켜기">이것만</button><label class="switch"><input id="toggle-hitstop" type="checkbox" checked aria-label="히트 스톱"><span aria-hidden="true"></span></label></div><p>맞는 순간, 동작을 잠깐 멈추기</p><div class="range-row"><input id="range-hitstop" type="range" min="0" max="140" step="10" value="60" aria-label="히트 스톱 시간"><output for="range-hitstop">60 ms</output></div></section>
-          <section class="effect" data-effect="shake"><div class="effect-head"><label class="effect-label" for="toggle-shake">화면 흔들림</label><button class="solo-button" type="button" data-solo="shake" aria-label="화면 흔들림만 켜기">이것만</button><label class="switch"><input id="toggle-shake" type="checkbox" checked aria-label="화면 흔들림"><span aria-hidden="true"></span></label></div><p>충돌할 때 카메라를 짧게 흔들기</p><div class="range-row"><input id="range-shake" type="range" min="0" max="16" step="1" value="7" aria-label="화면 흔들림 강도"><output for="range-shake">7 px</output></div></section>
-          <section class="effect" data-effect="recoil"><div class="effect-head"><label class="effect-label" for="toggle-recoil">발사 반동</label><button class="solo-button" type="button" data-solo="recoil" aria-label="발사 반동만 켜기">이것만</button><label class="switch"><input id="toggle-recoil" type="checkbox" checked aria-label="발사 반동"><span aria-hidden="true"></span></label></div><p>쏘는 순간 무기가 뒤로 움직이기</p><div class="range-row"><input id="range-recoil" type="range" min="0" max="24" step="1" value="12" aria-label="발사 반동 크기"><output for="range-recoil">12 px</output></div></section>
-          <section class="effect" data-effect="knockback"><div class="effect-head"><label class="effect-label" for="toggle-knockback">피격 반응</label><button class="solo-button" type="button" data-solo="knockback" aria-label="피격 반응만 켜기">이것만</button><label class="switch"><input id="toggle-knockback" type="checkbox" checked aria-label="피격 반응"><span aria-hidden="true"></span></label></div><p>맞은 표적이 밀렸다가 돌아오기</p><div class="range-row"><input id="range-knockback" type="range" min="0" max="70" step="5" value="35" aria-label="피격 반응 크기"><output for="range-knockback">35 px</output></div></section>
-          <section class="effect" data-effect="particles"><div class="effect-head"><label class="effect-label" for="toggle-particles">타격 입자</label><button class="solo-button" type="button" data-solo="particles" aria-label="타격 입자만 켜기">이것만</button><label class="switch"><input id="toggle-particles" type="checkbox" checked aria-label="타격 입자"><span aria-hidden="true"></span></label></div><p>맞은 위치에서 빛 조각이 퍼지기</p><div class="range-row"><input id="range-particles" type="range" min="0" max="50" step="5" value="25" aria-label="타격 입자 수"><output for="range-particles">25개</output></div></section>
-          <section class="effect" data-effect="flash"><div class="effect-head"><label class="effect-label" for="toggle-flash">피격 점멸</label><button class="solo-button" type="button" data-solo="flash" aria-label="피격 점멸만 켜기">이것만</button><label class="switch"><input id="toggle-flash" type="checkbox" checked aria-label="피격 점멸"><span aria-hidden="true"></span></label></div><p>맞은 표적을 잠깐 밝게 보여주기</p><div class="range-row"><input id="range-flash" type="range" min="0" max="180" step="10" value="80" aria-label="피격 점멸 시간"><output for="range-flash">80 ms</output></div></section>
-          <section class="effect" data-effect="sound"><div class="effect-head"><label class="effect-label" for="toggle-sound">타격 소리</label><button class="solo-button" type="button" data-solo="sound" aria-label="타격 소리만 켜기">이것만</button><label class="switch"><input id="toggle-sound" type="checkbox" checked aria-label="타격 소리"><span aria-hidden="true"></span></label></div><p>발사와 충돌 순간에 소리 맞추기</p><div class="range-row"><input id="range-sound" type="range" min="0" max="100" step="5" value="35" aria-label="타격 소리 음량"><output for="range-sound">35%</output></div></section>
+          <section class="effect" data-effect="hitstop"><div class="effect-head"><label class="effect-label" data-i18n="effect.hitstop" for="toggle-hitstop">히트 스톱</label><button class="solo-button" type="button" data-solo="hitstop" aria-label="히트 스톱만 켜기" data-i18n="solo">이것만</button><label class="switch"><input id="toggle-hitstop" data-i18n-aria-label="effect.hitstop" type="checkbox" checked aria-label="히트 스톱"><span aria-hidden="true"></span></label></div><p data-i18n="effect.hitstop.description">맞는 순간, 동작을 잠깐 멈추기</p><div class="range-row"><input id="range-hitstop" data-i18n-aria-label="effect.hitstop.range" type="range" min="0" max="140" step="10" value="60" aria-label="히트 스톱 시간"><output for="range-hitstop">60 ms</output></div></section>
+          <section class="effect" data-effect="shake"><div class="effect-head"><label class="effect-label" data-i18n="effect.shake" for="toggle-shake">화면 흔들림</label><button class="solo-button" type="button" data-solo="shake" aria-label="화면 흔들림만 켜기" data-i18n="solo">이것만</button><label class="switch"><input id="toggle-shake" data-i18n-aria-label="effect.shake" type="checkbox" checked aria-label="화면 흔들림"><span aria-hidden="true"></span></label></div><p data-i18n="effect.shake.description">충돌할 때 카메라를 짧게 흔들기</p><div class="range-row"><input id="range-shake" data-i18n-aria-label="effect.shake.range" type="range" min="0" max="16" step="1" value="7" aria-label="화면 흔들림 강도"><output for="range-shake">7 px</output></div></section>
+          <section class="effect" data-effect="recoil"><div class="effect-head"><label class="effect-label" data-i18n="effect.recoil" for="toggle-recoil">발사 반동</label><button class="solo-button" type="button" data-solo="recoil" aria-label="발사 반동만 켜기" data-i18n="solo">이것만</button><label class="switch"><input id="toggle-recoil" data-i18n-aria-label="effect.recoil" type="checkbox" checked aria-label="발사 반동"><span aria-hidden="true"></span></label></div><p data-i18n="effect.recoil.description">쏘는 순간 무기가 뒤로 움직이기</p><div class="range-row"><input id="range-recoil" data-i18n-aria-label="effect.recoil.range" type="range" min="0" max="24" step="1" value="12" aria-label="발사 반동 크기"><output for="range-recoil">12 px</output></div></section>
+          <section class="effect" data-effect="knockback"><div class="effect-head"><label class="effect-label" data-i18n="effect.knockback" for="toggle-knockback">피격 반응</label><button class="solo-button" type="button" data-solo="knockback" aria-label="피격 반응만 켜기" data-i18n="solo">이것만</button><label class="switch"><input id="toggle-knockback" data-i18n-aria-label="effect.knockback" type="checkbox" checked aria-label="피격 반응"><span aria-hidden="true"></span></label></div><p data-i18n="effect.knockback.description">맞은 표적이 밀렸다가 돌아오기</p><div class="range-row"><input id="range-knockback" data-i18n-aria-label="effect.knockback.range" type="range" min="0" max="70" step="5" value="35" aria-label="피격 반응 크기"><output for="range-knockback">35 px</output></div></section>
+          <section class="effect" data-effect="particles"><div class="effect-head"><label class="effect-label" data-i18n="effect.particles" for="toggle-particles">타격 입자</label><button class="solo-button" type="button" data-solo="particles" aria-label="타격 입자만 켜기" data-i18n="solo">이것만</button><label class="switch"><input id="toggle-particles" data-i18n-aria-label="effect.particles" type="checkbox" checked aria-label="타격 입자"><span aria-hidden="true"></span></label></div><p data-i18n="effect.particles.description">맞은 위치에서 빛 조각이 퍼지기</p><div class="range-row"><input id="range-particles" data-i18n-aria-label="effect.particles.range" type="range" min="0" max="50" step="5" value="25" aria-label="타격 입자 수"><output for="range-particles">25개</output></div></section>
+          <section class="effect" data-effect="flash"><div class="effect-head"><label class="effect-label" data-i18n="effect.flash" for="toggle-flash">피격 점멸</label><button class="solo-button" type="button" data-solo="flash" aria-label="피격 점멸만 켜기" data-i18n="solo">이것만</button><label class="switch"><input id="toggle-flash" data-i18n-aria-label="effect.flash" type="checkbox" checked aria-label="피격 점멸"><span aria-hidden="true"></span></label></div><p data-i18n="effect.flash.description">맞은 표적을 잠깐 밝게 보여주기</p><div class="range-row"><input id="range-flash" data-i18n-aria-label="effect.flash.range" type="range" min="0" max="180" step="10" value="80" aria-label="피격 점멸 시간"><output for="range-flash">80 ms</output></div></section>
+          <section class="effect" data-effect="sound"><div class="effect-head"><label class="effect-label" data-i18n="effect.sound" for="toggle-sound">타격 소리</label><button class="solo-button" type="button" data-solo="sound" aria-label="타격 소리만 켜기" data-i18n="solo">이것만</button><label class="switch"><input id="toggle-sound" data-i18n-aria-label="effect.sound" type="checkbox" checked aria-label="타격 소리"><span aria-hidden="true"></span></label></div><p data-i18n="effect.sound.description">발사와 충돌 순간에 소리 맞추기</p><div class="range-row"><input id="range-sound" data-i18n-aria-label="effect.sound.range" type="range" min="0" max="100" step="5" value="35" aria-label="타격 소리 음량"><output for="range-sound">35%</output></div></section>
         </div>
 
-        <div class="panel-foot"><label class="reduced-control"><input id="reduced-toggle" type="checkbox"><span>움직임 줄이기</span></label><p>공격력과 탄속은 그대로.<br>히트 스톱은 동작을 잠시 멈춰요.</p></div>
+        <div class="panel-foot"><label class="reduced-control"><input id="reduced-toggle" type="checkbox"><span data-i18n="reduced">움직임 줄이기</span></label><p><span data-i18n="note.damage">공격력과 탄속은 그대로.</span><br><span data-i18n="note.hitstop">히트 스톱은 동작을 잠시 멈춰요.</span></p></div>
       </aside>
     </main>
     <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
