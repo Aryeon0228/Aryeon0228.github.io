@@ -404,7 +404,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=a69e4295f1db">
 <link rel="stylesheet" href="home-theme-toggle.css?v=b42d0637f217">
-<link rel="stylesheet" href="home-theme.css?v=0bd4f6f5aa9c">
+<link rel="stylesheet" href="home-theme.css?v=2ed4c3264ba6">
 <link rel="stylesheet" href="home-lab.css?v=1f443f219e4f">
 <script src="home-theme.js?v=d6aa499d7f4c" defer></script>
 <style>
@@ -1120,9 +1120,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     "  float earthshine=.0035*(.65+.35*cloud)*pow(mu,.6);",
     "  float lum=surface*transmission+scattered+earthshine;",
     "  if(uDay>0.5){",
-    "    vec3 silver=mix(vec3(.72,.76,.80),vec3(.94,.96,.98),smoothstep(.38,.88,albedo));",
-    "    vec3 lit=silver*(.78+.22*daylight*incident)*transmission;",
-    "    lit+=vec3(.62,.68,.74)*scattered+vec3(.14,.16,.18)*(1.-transmission);",
+    "    vec3 silver=mix(vec3(.95,.94,.89),vec3(.995,.998,1.),smoothstep(.38,.88,albedo));",
+    "    vec3 lit=silver*(.94+.06*daylight*incident)*mix(1.,transmission,.32);",
+    "    lit+=vec3(.62,.68,.74)*scattered*.3;",
     "    gl_FragColor=vec4(lit,1.);",
     "  }else{ gl_FragColor=vec4(vec3(max(lum,0.)),1.); }",
     "}"
@@ -1830,12 +1830,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       'void main(){',
       '  vec3 base = texture2D(tScene, vUv).rgb;',
       '  vec3 c = uDay > .5 ? vec3(0.) : base + texture2D(tBloom, vUv).rgb * uStr;',
-      // The sun shows only where nothing stands in front of it; its scattered rays are added on top.
-      // The tent softens the half-resolution mask's stair-steps where the glow meets the limb,
-      // and the grain the march leaves in the rays.
+      // Sample the full-resolution silhouette directly so thin grains remain in front of the sun.
+      // Blur only the low-resolution scattered rays, not their foreground occlusion.
       '  if(uEclipse > 0.0){',
-      '    float open = tent(tOcc, uOccTexel).r;',
-      '    c += ((sunDisc(vUv) + sunLight(vUv) * .02) * open + tent(tRays, uRaysTexel) * uBacklit) * uEclipse;',
+      '    float open = texture2D(tOcc, vUv).r;',
+      '    c += (vec3(sunDisc(vUv) + sunLight(vUv) * .02) + tent(tRays, uRaysTexel) * uBacklit) * open * uEclipse;',
       // A soft, uneven corona remains visible at totality, outside the opaque silhouette.
       '    vec2 pd=vUv-uPlanet.xy; pd.x*=uAspect; float pr=length(pd); vec2 pn=pd/max(pr,.0001);',
       '    float limb=pr-uPlanet.z, tufts=lightBundle(pn);',
@@ -1925,7 +1924,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       '      float bloom = (exp(-r / .05) * 1.5 + exp(-r / .15) * .45) * uFlash;',
 
       '      vec3 lens = vec3(glow + bloom) + rays * .9 + spike * .8 + streak + vec3(.45, .75, 1.0) * fan + halo;',
-      '      c += (vec3(core) + lens * k + ghosts * .12 * (.25 + .5 * uBurst + 1.6 * uFlash)) * flare;',
+      '      c += ((vec3(core) + lens * k) * open + ghosts * .12 * (.25 + .5 * uBurst + 1.6 * uFlash)) * flare;',
       '    }',
       '  }',
       // 은빛 하이라이트를 잘라내지 않고 완만하게 압축한다.
@@ -2245,9 +2244,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     });
   }
   var occluderMaterial = new THREE.MeshBasicMaterial({ color:0x000000 });
-  // In the half-resolution eclipse mask each grain blocks the sun over as much of its pixel as it covers.
-  var dustOccluder = dustMaterial('  gl_FragColor = vec4(0.0, 0.0, 0.0, vBlock * step(length(gl_PointCoord - 0.5), 0.5));',
-    { pixel:.5, material:{ transparent:true, depthWrite:false, depthTest:true } });
+  // Match the visible grains at full resolution; downsampling loses fine ring crossings.
+  var dustOccluder = dustMaterial('  gl_FragColor = vec4(0.0, 0.0, 0.0, vBlock * grainShape());',
+    { pixel:1, material:{ transparent:true, depthWrite:false, depthTest:true } });
   var rtOcc = new THREE.WebGLRenderTarget(2, 2, RT);
   var rtRays = new THREE.WebGLRenderTarget(2, 2, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat, depthBuffer:false });
 
@@ -2611,7 +2610,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       var bw = Math.max(2, pw>>2), bh = Math.max(2, ph>>2);
       rtA.setSize(bw, bh); rtB.setSize(bw, bh);
       blurMat.uniforms.uDir.value.set(1/bw, 1/bh);
-      rtOcc.setSize(Math.max(2, pw>>1), Math.max(2, ph>>1));
+      rtOcc.setSize(pw, ph);
       compMat.uniforms.uOccTexel.value.set(1 / rtOcc.width, 1 / rtOcc.height);
       nameMaskDirty = lettersDirty = true;
       sizeRays();

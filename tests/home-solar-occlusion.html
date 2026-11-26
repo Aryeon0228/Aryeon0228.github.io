@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Solar occlusion GPU regression</title>
+<style>body{background:#202020;color:#eee;font:14px monospace}canvas{width:256px;height:256px}pre{white-space:pre-wrap}</style>
+<h1>Solar occlusion GPU regression</h1>
+<p>Uses the homepage compositor. A three-pixel foreground strand must cut through the solar core in both themes.</p>
+<pre id="result">Running…</pre>
+<script type="module">
+import * as THREE from '../vendor/three/build/three.module.js';
+const source=await (await fetch('../index.html')).text();
+const vertex=source.slice(source.indexOf('  var POST_VERT = ['),source.indexOf('  var cutMat ='));
+const composite=source.slice(source.indexOf('  var SUN_GLSL = ['),source.indexOf('  // Light scattering (GPU Gems'));
+const create=new Function('THREE','uDay','bodyUniforms',vertex+composite+';return compMat;');
+const size=256,renderer=new THREE.WebGLRenderer({antialias:false,preserveDrawingBuffer:true});
+renderer.setSize(size,size);document.body.append(renderer.domElement);
+const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2));scene.add(quad);
+const target=new THREE.WebGLRenderTarget(size,size);
+function texture(value,stripe=false){
+  const data=new Uint8Array(size*size*4);
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    const i=(y*size+x)*4,v=stripe&&Math.abs(x-128)<=1?0:value;
+    data[i]=data[i+1]=data[i+2]=v;data[i+3]=255;
+  }
+  const t=new THREE.DataTexture(data,size,size,THREE.RGBAFormat);
+  t.minFilter=t.magFilter=THREE.LinearFilter;t.needsUpdate=true;return t;
+}
+const clear=texture(255),blocked=texture(0),strand=texture(255,true),black=texture(0),rays=texture(25),gray=texture(90);
+const results=[];
+for(const day of [0,1]){
+  const mat=create(THREE,{value:day},{uTime:{value:0}}),u=mat.uniforms;
+  u.tScene.value=day?gray:black;u.tBloom.value=black;u.tRays.value=rays;
+  u.uEclipse.value=1;u.uDisc.value=.025;u.uSunR.value=.22;
+  u.uSun.value.set(128.25/size,128.25/size);u.uOccTexel.value.set(1/size,1/size);u.uRaysTexel.value.set(1/size,1/size);
+  quad.material=mat;
+  function render(mask){
+    u.tOcc.value=mask;mat.uniformsNeedUpdate=true;renderer.setRenderTarget(target);renderer.render(scene,camera);
+    const pixel=new Uint8Array(4);renderer.readRenderTargetPixels(target,128,128,1,1,pixel);
+    return Math.max(...pixel.slice(0,3));
+  }
+  const base=render(blocked),open=render(clear),crossing=render(strand);
+  const pass=open>base+80&&crossing<base+20;
+  results.push({theme:day?'day':'night',base,open,crossing,pass});
+  renderer.setRenderTarget(null);renderer.render(scene,camera);
+  const preview=document.createElement('img');preview.src=renderer.domElement.toDataURL();preview.alt=`${day?'Day':'Night'}: thin strand crossing the sun`;document.body.append(preview);
+  mat.dispose();
+}
+document.querySelector('#result').textContent=JSON.stringify({pass:results.every(r=>r.pass),results},null,2);
+renderer.domElement.remove();renderer.dispose();target.dispose();
+</script>
