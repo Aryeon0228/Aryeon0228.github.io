@@ -1,5 +1,5 @@
 import {createDemo} from './uv-demo.mjs?v=9fad2b96a670';
-import {createPreview,makeAtlas,islandColor,metricColor} from './uv-preview.mjs?v=61e4d1bb67fd';
+import {createPreview,makeAtlas,islandColor,metricColor} from './uv-preview.mjs?v=d4ef17444b1a';
 import {boundaryDeviation} from './uv-grid.mjs?v=04f82c311841';
 import {pickAtlasIsland} from './uv-color-atlas.mjs?v=536a719a5512';
 
@@ -140,7 +140,7 @@ function drawUV(){
   }
   if($('pixel-grid').checked&&side/state.resolution>=4){context.strokeStyle='#ffffff20';context.lineWidth=.5/side;context.beginPath();for(let i=0;i<=state.resolution;i++){const t=i/state.resolution;context.moveTo(t,0);context.lineTo(t,1);context.moveTo(0,t);context.lineTo(1,t);}context.stroke();}
   context.strokeStyle='#b3b9b3';context.lineWidth=1/side;context.strokeRect(0,0,1,1);context.restore();
-  context.fillStyle='#949b97';context.font='10px monospace';context.fillText('0',ox-13,oy+side+14);context.fillText('1',ox+side+5,oy+side+14);context.fillText('1',ox-13,oy+4);
+  context.fillStyle='#949b97';context.font='12px "IBM Plex Mono", "IBM Plex Sans KR", monospace' ;context.fillText('0',ox-13,oy+side+14);context.fillText('1',ox+side+5,oy+side+14);context.fillText('1',ox-13,oy+4);
   context.fillStyle='#9aaa9f';context.fillText(state.resolution+' × '+state.resolution+' PX',16,h-12);
 }
 function select(id){if(!state.analysis)return;state.selected=id>=0&&state.analysis?.islands[id]?id:-1;preview?.setAppearance({selected:state.selected});drawUV();renderList();renderSelection();}

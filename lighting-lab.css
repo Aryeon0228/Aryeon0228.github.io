@@ -53,14 +53,14 @@
 .lightview { position: relative; min-width: 0; margin: 0; overflow: hidden; border-radius: var(--lk-radius); background: var(--k1); }
 .lightview.drop-ready { outline: 1.5px dashed var(--k5); outline-offset: -6px; }
 .lightview.drag-over { outline: 2px solid var(--k10); outline-offset: -6px; background: var(--k2); }
-.drop-label { display: flex; justify-content: space-between; gap: 12px; padding: 16px 20px 0; color: var(--k5); font: 12px var(--f-mono); letter-spacing: .06em; }
+.drop-label { display: flex; justify-content: space-between; gap: 12px; padding: 16px 20px 0; color: var(--k5); font: 12px var(--f-ko); letter-spacing: 0; }
 .drop-label span { color: var(--k4); }
 .lightview figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 20px 14px; }
 .source-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .source-art { flex-shrink: 0; width: 36px; height: 36px; object-fit: contain; }
 .source-heading select { max-width: 150px; font-size: 16px; }
 .reading { color: var(--k5); font: 12px var(--f-mono); white-space: nowrap; }
-.reading strong { color: var(--k10); font: 300 28px/1 var(--f-mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.reading strong { color: var(--k10); font: 400 28px/1 var(--f-mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .lightview canvas {
   display: block; width: calc(100% - 24px); height: clamp(300px, calc(100svh - 360px), 760px); margin: 0 12px;
   border-radius: var(--lk-radius-m); background: var(--k0); object-fit: contain;
@@ -147,7 +147,7 @@
 .distance-value { fill: var(--k10); font-variant-numeric: tabular-nums; }
 .distance-ruler { fill: var(--k5); text-anchor: middle; }
 .distance-ruler path { stroke: var(--k4); }
-.distance-comparison { margin-top: 8px; color: var(--k8); font: 14px var(--f-mono); font-variant-numeric: tabular-nums; }
+.distance-comparison { margin-top: 8px; color: var(--k8); font: 14px var(--f-ko); font-variant-numeric: tabular-nums; }
 .distance-guide figcaption { display: block; padding: 4px 0 0; color: var(--k5); font-size: 12px; line-height: 1.7; }
 
 /* Daylight presets: tiles sunk into the card; the chosen one turns white. */
@@ -205,7 +205,7 @@
 .room-views { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
 .room-views figure { min-width: 0; margin: 0; padding-bottom: 12px; overflow: hidden; border-radius: var(--lk-radius); background: var(--k1); }
 .room-views figcaption { display: flex; justify-content: space-between; gap: 12px; padding: 16px 20px 12px; color: var(--k6); font-size: 14px; }
-.room-views strong { color: var(--k10); font: 400 16px var(--f-mono); }
+.room-views strong { color: var(--k10); font: 400 16px var(--f-ko); }
 .room-views canvas { display: block; width: calc(100% - 24px); height: auto; margin: 0 12px; aspect-ratio: 3 / 2; border-radius: var(--lk-radius-m); background: var(--k0); object-fit: contain; cursor: grab; touch-action: none; user-select: none; }
 .room-views canvas.is-orbiting { cursor: grabbing; }
 .room-views canvas:focus-visible { outline: 2px solid var(--k10); outline-offset: 2px; }
@@ -253,7 +253,7 @@
 .moon-keypoint { padding: 12px 16px; border-radius: var(--lk-radius-m); background: var(--k0); color: var(--k9) !important; }
 .lessons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
 .lessons h3 { margin-top: 8px; }
-.formula { margin-top: 12px; padding: 12px 16px; border-radius: var(--lk-radius-m); background: var(--k0); color: var(--k8); font: 14px/1.8 var(--f-mono); }
+.formula { margin-top: 12px; padding: 12px 16px; border-radius: var(--lk-radius-m); background: var(--k0); color: var(--k8); font: 14px/1.8 var(--f-ko); }
 .guide details { margin: 16px 0 0; padding: 4px 20px 16px; border-radius: var(--lk-radius); background: var(--k1); }
 .guide summary { min-height: 48px; }
 .guide table { margin-top: 12px; }

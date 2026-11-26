@@ -27,7 +27,7 @@
 .music-pause,.music-toggle[data-state="on"] .music-play { opacity:0; }
 .music-toggle[data-state="on"] .music-pause { opacity:1; }
 [data-music-label] { min-width:3.8em; text-align:left; }
-#lab img[data-preview-state] { transition:opacity .3s; }
+#lab img[data-preview-state] { transition:opacity 240ms ease,filter 240ms ease; }
 #lab img[data-preview-state="loading"] { opacity:0; }
 html[data-motion="off"] .career-timeline::after { display:none; }
 @media(prefers-reduced-motion:reduce) {

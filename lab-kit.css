@@ -72,7 +72,7 @@ body[data-lab] .lab-heading p { max-width: 560px; color: var(--k6); font: 300 14
 /* Text and number fields: sunken pills. */
 :where(body[data-lab] main, body[data-lab] > .lab-sheet) :is(input[type=text], input[type=number], input[type=search], input:not([type])) {
   min-width: 0; height: 40px; padding: 0 16px; border: 0; border-radius: 999px;
-  background: var(--k0); color: var(--k9); font: 14px var(--f-mono);
+  background: var(--k0); color: var(--k9); font: 400 14px var(--f-ko);
 }
 
 /* Collapsible explanations: a chevron, not a triangle. */
@@ -99,7 +99,7 @@ body[data-lab] .lab-heading p { max-width: 560px; color: var(--k6); font: 300 14
 /* ---------- components ---------- */
 .lk-card { min-width: 0; padding: 20px; border: 0; border-radius: var(--lk-radius); background: var(--k1); }
 .lk-sunken { border: 0; border-radius: var(--lk-radius-m); background: var(--k0); }
-.lk-label { color: var(--k5); font: 500 12px/1.4 var(--f-ko); letter-spacing: .08em; text-transform: uppercase; }
+.lk-label { color: var(--k5); font: 500 14px/1.4 var(--f-ko); letter-spacing: 0; }
 .lk-title { color: var(--k9); font: 500 16px/1.4 var(--f-ko); }
 .lk-note { color: var(--k5); font-size: 12px; line-height: 1.65; }
 .lk-divider { height: 1px; border: 0; background: var(--k2); }
@@ -173,7 +173,7 @@ body[data-lab] .lab-heading p { max-width: 560px; color: var(--k6); font: 300 14
 .lk-readout { display: grid; margin: 0; }
 .lk-readout > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-height: 40px; padding: 8px 0; border-top: 1px solid var(--k2); }
 .lk-readout dt { color: var(--k5); font-size: 12px; }
-.lk-readout dd { margin: 0; color: var(--k9); font: 14px var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.lk-readout dd { margin: 0; color: var(--k9); font: 400 14px var(--f-ko); font-variant-numeric: tabular-nums; text-align: right; }
 
 /* A floating chip over an image or a canvas. */
 .lk-chip {

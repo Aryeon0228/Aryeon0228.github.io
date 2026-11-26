@@ -1,0 +1,12 @@
+body, #boot, .hint, button, input, select, textarea { font-family:'IBM Plex Sans KR','IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif; }
+#boot, .hint { font-size:14px; line-height:1.65; font-weight:400; }
+.boot-progress { font-size:13px; }
+/* Leva renders its own panel outside the scene root. Override its font tokens,
+   including Korean labels, without editing the generated vendor bundle. */
+body [class*="leva-"] {
+  --leva-fonts-mono:'IBM Plex Sans KR',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --leva-fonts-sans:'IBM Plex Sans KR',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --leva-fontSizes-root:13px;
+  --leva-fontSizes-toolTip:13px;
+  --leva-fontWeights-folder:500;
+}

@@ -32,9 +32,9 @@ body[data-lab="uiux"] .uiux-heading { display: flex; align-items: flex-end; just
 .experiment-page { min-width: 0; }
 .experiment-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
 .experiment-title-group { display: flex; gap: 16px; min-width: 0; }
-.experiment-number { flex-shrink: 0; padding-top: 2px; color: var(--k4); font: 300 28px/1.2 var(--f-mono); }
+.experiment-number { flex-shrink: 0; padding-top: 2px; color: var(--k4); font: 400 28px/1.2 var(--f-mono); }
 .experiment-title-copy { min-width: 0; }
-.mini-label { color: var(--k5); font: 400 12px/1.7 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+.mini-label { color: var(--k5); font: 400 12px/1.7 var(--f-ko); letter-spacing: 0; text-transform: uppercase; }
 .experiment-heading h2 { margin: 2px 0 4px; color: var(--k9); font-size: 20px; font-weight: 400; line-height: 1.35; letter-spacing: -.02em; scroll-margin-top: 12px; }
 #experiment-summary { max-width: 750px; color: var(--k6); font-size: 14px; line-height: 1.8; }
 .experiment-heading > .lab-button { flex-shrink: 0; margin-top: 8px; }
@@ -42,7 +42,7 @@ body[data-lab="uiux"] .uiux-heading { display: flex; align-items: flex-end; just
 .experiment-frame-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 56px; padding: 8px; }
 .frame-label { display: flex; align-items: center; gap: 8px; color: var(--k6); font-size: 12px; }
 .frame-label svg { width: 16px; height: 16px; color: var(--k5); }
-.frame-position { color: var(--k5); font: 12px var(--f-mono); letter-spacing: .05em; }
+.frame-position { color: var(--k5); font: 12px var(--f-ko); letter-spacing: 0; }
 .frame-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .notes-export-scope { margin: 12px 0 0; color: var(--k5); font-size: 12px; line-height: 1.7; }
 .experiment-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; gap: 12px; }
@@ -99,7 +99,7 @@ body[data-lab="uiux"] .uiux-heading { display: flex; align-items: flex-end; just
 .experiment-pager a { max-width: 40%; padding: 8px 0; color: var(--k7); text-decoration: none; }
 .experiment-pager a:hover { color: var(--k10); }
 .experiment-pager a[aria-disabled="true"] { visibility: hidden; }
-.experiment-pager span { color: var(--k5); font: 12px var(--f-mono); white-space: nowrap; }
+.experiment-pager span { color: var(--k5); font: 12px var(--f-ko); white-space: nowrap; }
 .lab-toast { position: fixed; bottom: 24px; left: 50%; z-index: 99; max-width: calc(100% - 32px); padding: 12px 20px; transform: translateX(-50%); border-radius: 999px; background: var(--k10); color: var(--k0); font-size: 14px; line-height: 1.6; box-shadow: 0 12px 32px rgb(0 0 0 / .5); }
 .lab-toast:empty { display: none; }
 .lab-error { margin: 20px 0; padding: 20px 24px; border-radius: var(--lk-radius-m); background: var(--k2); color: var(--k10); }

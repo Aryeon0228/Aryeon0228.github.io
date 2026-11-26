@@ -286,3 +286,26 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 #lab .lab-feature-copy .content-actions{width:100%;margin-top:16px}
 
 .lab-feature-description,.lab-feature-context{max-width:68ch}
+
+/* Preview color belongs to the artwork, never the surrounding copy or controls. */
+#lab :is(.lab-mini-preview img,.lab-mini-swatches,.diorama-stage>img) {
+  filter:grayscale(1);
+  transition:filter 240ms ease,opacity 240ms ease;
+}
+@media(hover:hover) and (pointer:fine) {
+  #lab .work-card:hover :is(.lab-mini-preview img,.lab-mini-swatches,.diorama-stage>img) { filter:grayscale(0); }
+}
+#lab .work-card:focus-within :is(.lab-mini-preview img,.lab-mini-swatches,.diorama-stage>img),
+html[data-theme="day"] #lab :is(.lab-mini-preview img,.lab-mini-swatches,.diorama-stage>img) { filter:grayscale(0); }
+html[data-theme="day"] #lab .diorama-stage>img { opacity:1; }
+/* Touch has no hover: show the previews in color so no interaction is hidden. */
+@media(hover:none), (pointer:coarse) {
+  #lab :is(.lab-mini-preview img,.lab-mini-swatches,.diorama-stage>img) { filter:grayscale(0); }
+}
+@media(prefers-reduced-motion:reduce) {
+  #lab :is(.lab-mini-preview img,.lab-mini-swatches,.diorama-stage>img) { transition:none; }
+}
+html[data-motion="off"] #lab :is(.lab-mini-preview img,.lab-mini-swatches,.diorama-stage>img) { transition:none; }
+/* The image changes color; the card outline stays quiet. */
+#lab .work-card--mini-preview:is(:hover,:focus-within),
+html[data-theme="day"] #lab .work-card--mini-preview:is(:hover,:focus-within) { border-color:var(--ln); }

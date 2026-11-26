@@ -26,8 +26,8 @@ export function makeAtlas(model,resolution,target=document.createElement('canvas
       c.strokeStyle='#3e4446';c.lineWidth=.014;c.strokeRect(.035,.035,.93,.93);
       c.fillStyle='#303739';c.fillRect(.08,.1,.84,.12);
       for(let k=0;k<16;k++) {c.fillStyle=k%2?'#c1c5bf':'#3c4446';c.fillRect(.08+k*.0525,.7,.0525,.18);}
-      c.fillStyle='#252c2e';c.textAlign='left';c.font='bold .25px sans-serif';c.fillText('P / '+String(i+1).padStart(2,'0'),.08,.53);
-      c.font='.055px monospace';c.fillText(chart.label+' · PENUMBRA',.08,.62);
+      c.fillStyle='#252c2e';c.textAlign='left';c.font='500 .25px "IBM Plex Sans", "IBM Plex Sans KR", sans-serif';c.fillText('P / '+String(i+1).padStart(2,'0'),.08,.53);
+      c.font='.055px "IBM Plex Mono", "IBM Plex Sans KR", monospace';c.fillText(chart.label+' · PENUMBRA',.08,.62);
       c.fillStyle='#d4d6cf';for(const [x,y] of [[.05,.05],[.95,.05],[.05,.95],[.95,.95]]) {c.beginPath();c.arc(x,y,.012,0,Math.PI*2);c.fill();}
       c.restore();
     }
@@ -35,7 +35,7 @@ export function makeAtlas(model,resolution,target=document.createElement('canvas
     const n=16,s=2048/n;
     for(let y=0;y<n;y++) for(let x=0;x<n;x++) {
       c.fillStyle=(x+y)%2?'#384248':'#c4c7bf';c.fillRect(x*s,y*s,s,s);
-      c.fillStyle=(x+y)%2?'#c4c7bf':'#384248';c.font='24px monospace';c.textAlign='center';c.fillText(String.fromCharCode(65+y)+(x+1),x*s+s/2,y*s+s*.59);
+      c.fillStyle=(x+y)%2?'#c4c7bf':'#384248';c.font='24px "IBM Plex Mono", "IBM Plex Sans KR", monospace';c.textAlign='center';c.fillText(String.fromCharCode(65+y)+(x+1),x*s+s/2,y*s+s*.59);
     }
   }
   target.width=target.height=resolution;
