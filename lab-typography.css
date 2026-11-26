@@ -13,18 +13,18 @@ body[data-lab] :is(button,input,select,textarea,summary) { font-family:var(--f-k
 body[data-lab] :is(input[type=number],code,pre,kbd,samp,output,.lab-exact-input) { font-family:var(--f-mono); font-variant-numeric:tabular-nums; }
 body[data-lab] :is(textarea,input[type=text],input[type=search]) { font-size:16px; line-height:1.6; }
 body[data-lab] :is(h2,h3,h4) { font-family:var(--f-ko); font-weight:500; line-height:1.4; letter-spacing:0; }
-body[data-lab] .lab-heading h1 { font:400 28px/1.3 var(--f-lat); letter-spacing:-.02em; }
+body[data-lab] .lab-heading h1 { font:400 30px/1.3 var(--f-lat); letter-spacing:-.02em; }
 body[data-lab] :is(.lab-heading p,.control-note,.panel-note,.layout-note,.room-note,.fl-note,.view-legend,.experiment-caption,.source-details,.notes) { font:400 14px/1.7 var(--f-ko); }
-body[data-lab] :is(.lk-note,.lk-readout dt,.reading-label,.section-label,.mini-label,.preset-total,.upload-field span,.source-heading p,.source-status,.panel-title span,.nav-footnote,.notes-footer,.notes-export-scope,.observation-notes summary span,.fl-compare figcaption,.drop-label,.caption,.budget-note,.guide-grid article>span,.lab-status,.effect-state,.compare-scrub p,.lighting-controls p) { font-family:var(--f-ko); font-size:13px; font-weight:400; line-height:1.65; letter-spacing:0; }
+body[data-lab] :is(.lk-note,.lk-readout dt,.reading-label,.section-label,.mini-label,.preset-total,.upload-field span,.source-heading p,.source-status,.panel-title span,.nav-footnote,.notes-footer,.notes-export-scope,.observation-notes summary span,.fl-compare figcaption,.drop-label,.caption,.budget-note,.guide-grid article>span,.lab-status,.effect-state,.compare-scrub p,.lighting-controls p) { font-family:var(--f-ko); font-size:14px; font-weight:400; line-height:1.65; letter-spacing:0; }
 body[data-lab] :is(.lk-label,.section-label,.mini-label) { font-weight:500; }
-body[data-lab] :is(.fl-frame-btn span,.fl-tag,.fl-marker,.tour-toggle) { font-family:var(--f-ko); font-size:13px; letter-spacing:0; }
+body[data-lab] :is(.fl-frame-btn span,.fl-tag,.fl-marker,.tour-toggle) { font-family:var(--f-ko); font-size:14px; letter-spacing:0; }
 body[data-lab] :is(.experiment-heading h2,.comparison-heading h2,.room-heading h2,.guide-intro h2,.moon-guide-intro h2) { font-size:20px; }
 body[data-lab] :is(.panel-title h2,.source-heading h2,.section-heading h2,.sectionline h2,.settings-heading h2,.fl-guide h2,.experiment-controls h3,.application-heading h3,.learning-notes h2,.observation h2) { font-size:16px; }
 body[data-lab] .observation-prompt > .mini-label { font-size:16px; }
 body[data-lab] :is(.control label,.toggle-row) { font-weight:400; }
 body[data-lab] .lab-exact > span { font-family:var(--f-ko); }
 body[data-lab] .fl-table :is(td:not(:first-child),th:not(:first-child)) { font-family:var(--f-mono); }
-body[data-lab] .brand h1 { font:400 28px/1.3 var(--f-lat); }
+body[data-lab] .brand h1 { font:400 30px/1.3 var(--f-lat); }
 body[data-lab] .panel-heading h2 { font-size:20px; }
 body[data-lab] :is(.effect-info p,.panel-foot) { font-size:14px; line-height:1.65; }
 @media(max-width:759px) {

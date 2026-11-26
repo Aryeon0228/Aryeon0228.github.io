@@ -1,7 +1,7 @@
 /* Lab kit: the look every lab shares, taken from Color Lab.
    The frame stays in the 11-step gray wedge, so the only color on screen is the thing being
-   studied. One type scale (12 · 14 · 16 · 20 · 28), one radius family (pills, round buttons,
-   20px cards), and surfaces rather than nested borders carry the hierarchy.
+   studied. One type scale (12 · 14 · 16 · 20 · 24 · 30), with 8px controls and
+   10px panels in lab-interface.css, and surfaces rather than nested borders carry the hierarchy.
    Element defaults are wrapped in :where() so each lab's own stylesheet, loaded after this one,
    can still adjust them; the lk- classes are the shared components. */
 
@@ -9,8 +9,8 @@ body[data-lab] {
   --k0: #000; --k1: #1a1a1a; --k2: #333; --k3: #4d4d4d; --k4: #666; --k5: #8f8f8f;
   --k6: #a6a6a6; --k7: #bfbfbf; --k8: #d9d9d9; --k9: #ececec; --k10: #fff;
   --lk-edge: rgb(255 255 255 / .1);
-  --lk-radius: 20px;
-  --lk-radius-m: 14px;
+  --lk-radius: 10px;
+  --lk-radius-m: 8px;
   --lk-sticky: var(--lab-header-height, 52px);
   --lk-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23a6a6a6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }

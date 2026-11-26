@@ -163,7 +163,7 @@ function renderList(){
 function renderSelection(){
   const island=state.analysis.islands[state.selected];$('selection-values').hidden=!island;
   $('clear-view-selection').hidden=!island;
-  $('selection-title').textContent=island?`아일랜드 ${String(island.id+1).padStart(2,'0')}`:'조각 하나를 골라보세요.';
+  $('selection-title').textContent=island?`아일랜드 ${String(island.id+1).padStart(2,'0')}`:'선택한 UV 조각';
   if(!island){$('selection-description').textContent='UV, 3D 또는 목록을 누르면 같은 부위가 함께 표시됩니다.';$('view-selection').textContent=state.mode==='bleed'?'색이 작은 맵에서 어떻게 섞이는지 보세요. 조각을 누르면 실제 텍셀 수도 표시됩니다.':'아일랜드를 누르면 두 화면에서 같은 부위를 확인할 수 있어요.';return;}
   const b=island.bounds;
   $('selected-size').textContent=`${number((b.maxU-b.minU)*state.resolution)} × ${number((b.maxV-b.minV)*state.resolution)} px`;

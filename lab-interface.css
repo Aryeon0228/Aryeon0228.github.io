@@ -1,0 +1,23 @@
+/* Interface dimensions from design-guidelines-v2. Experimental geometry is excluded. */
+body[data-lab] { background-color:#101112; }
+body[data-lab] .lab-heading { padding:32px 0 24px; gap:8px 24px; }
+body[data-lab] :is(.lk-btn,.lab-button,.wide-button,.material-guide-trigger,.quiet,.fl-quiet,.tour-toggle,.reference-links a) { min-height:44px; border-radius:8px; padding-inline:16px; }
+body[data-lab] :is(.lk-seg,.fl-seg,.inspector-tabs,.preset-categories,.button-group,.context-switch,.light-choices) { border-radius:10px; gap:4px; padding:4px; }
+body[data-lab] :is(.lk-seg,.fl-seg,.inspector-tabs,.preset-categories,.button-group,.context-switch,.light-choices) > button { min-height:40px; border-radius:8px; }
+body[data-lab] :is(.settings-panel,.fl-controls,.control-section,.experiment-controls) :is(select,input[type=text],input[type=number]) { min-height:44px; border-radius:8px; }
+body[data-lab] :is(.fl-photo,.fl-strip-block,.fl-side,.fl-compare figure,.fl-exposure-controls,.fl-guide article) { border-radius:10px; }
+body[data-lab] :is(.panel-note,.control-note,.fl-note,.fine-print,.notes-footer,.notes-export-scope) { color:var(--k6); }
+body[data-lab] :is(.fl-guide article,.learning-notes article,.guide-grid article) { display:flex; flex-direction:column; gap:12px; }
+body[data-lab] :is(.fl-guide article,.learning-notes article,.guide-grid article) p { margin-top:0; }
+body[data-lab] :is(.fl-guide h2,.learning-notes h2,.guide-grid h3) { font-size:20px; }
+body[data-lab] :is(.guide-intro,.moon-guide-intro) p { max-width:64ch; }
+body[data-lab] :is(.lk-icon,.mini-controls button) { min-width:44px; min-height:44px; }
+@media(max-width:639px) {
+ body[data-lab] .lab-heading { padding:24px 0 16px; }
+ body[data-lab] :is(.lk-seg,.fl-seg,.inspector-tabs,.preset-categories,.button-group,.context-switch,.light-choices) > button { min-height:44px; }
+}
+
+body[data-lab] :is(.specimen-column,.material-inspector,.stage,.quick-controls,.shell > details) { border-radius:10px; }
+body[data-lab] :is(.shape-bar select,.settings-panel select,.stage-bottom button) { min-height:44px; border-radius:8px; }
+body[data-lab] .fl-readout > div:first-child { grid-column:1 / -1; }
+body[data-lab] .fl-readout dd { white-space:nowrap; }
