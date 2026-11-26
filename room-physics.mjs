@@ -1,6 +1,7 @@
+import {lampPosition,blockedBetween,RECEIVER} from './room-geometry.mjs?v=5748b1b55a40';
 import {SOURCES} from './light-sources.mjs';
-export const roomDefaults=()=>({outside:'sun',outdoorLux:100000,reach:.00003,windowOn:true,lamp:'candle',count:1,distance:1,lampOn:true,exposure:Math.log2(25000),bloom:true,color:true,viewYaw:0,viewPitch:Math.atan(.12)*180/Math.PI});
-export const roomSchema={type:'object',properties:{bloom:{type:'boolean'},viewYaw:{type:'number',minimum:-180,maximum:180},viewPitch:{type:'number',minimum:2,maximum:75},outside:{type:'string',enum:['sun','moon']},outdoorLux:{type:'number',minimum:.01,maximum:100000},reach:{type:'number',minimum:.00001,maximum:1},windowOn:{type:'boolean'},lamp:{type:'string',enum:['candle','incandescent','fluorescent']},count:{type:'integer',minimum:1,maximum:100},distance:{type:'number',minimum:.1,maximum:10},lampOn:{type:'boolean'},exposure:{type:'number',minimum:-6,maximum:42},color:{type:'boolean'}},additionalProperties:false};
+export const roomDefaults=()=>({outside:'sun',outdoorLux:100000,reach:.00003,windowOn:true,lamp:'candle',count:1,distance:1,lampOn:true,exposure:Math.log2(25000),bloom:true,color:true,lampAzimuth:0,lampElevation:90,viewYaw:24,viewPitch:28});
+export const roomSchema={type:'object',properties:{lampAzimuth:{type:'number',minimum:-180,maximum:180},lampElevation:{type:'number',minimum:2,maximum:90},bloom:{type:'boolean'},viewYaw:{type:'number',minimum:-180,maximum:180},viewPitch:{type:'number',minimum:2,maximum:75},outside:{type:'string',enum:['sun','moon']},outdoorLux:{type:'number',minimum:.01,maximum:100000},reach:{type:'number',minimum:.00001,maximum:1},windowOn:{type:'boolean'},lamp:{type:'string',enum:['candle','incandescent','fluorescent']},count:{type:'integer',minimum:1,maximum:100},distance:{type:'number',minimum:.1,maximum:10},lampOn:{type:'boolean'},exposure:{type:'number',minimum:-6,maximum:42},color:{type:'boolean'}},additionalProperties:false};
 export function configureRoom(state,input){
  if(!input||typeof input!=='object'||Array.isArray(input))throw new Error('Expected room settings');
  for(const [key,value] of Object.entries(input)){
@@ -14,7 +15,9 @@ export function configureRoom(state,input){
 }
 export function roomContributions(s){
  const windowLux=s.windowOn?s.outdoorLux*s.reach:0;
- const lampLux=s.lampOn?SOURCES[s.lamp].intensity*s.count/s.distance**2:0;
+ const lampBlocked=blockedBetween(RECEIVER,lampPosition(s));
+ const incidenceCosine=Math.sin((s.lampElevation??90)*Math.PI/180);
+ const lampLux=s.lampOn&&!lampBlocked?SOURCES[s.lamp].intensity*s.count/s.distance**2*incidenceCosine:0;
  const totalLux=windowLux+lampLux;
- return {windowLux,lampLux,totalLux,increasePercent:windowLux>0?lampLux/windowLux*100:null,stopsAdded:windowLux>0?Math.log2(totalLux/windowLux):null,lampShare:totalLux>0?lampLux/totalLux:0};
+ return {windowLux,lampLux,totalLux,lampBlocked,incidenceCosine,increasePercent:windowLux>0?lampLux/windowLux*100:null,stopsAdded:windowLux>0?Math.log2(totalLux/windowLux):null,lampShare:totalLux>0?lampLux/totalLux:0};
 }

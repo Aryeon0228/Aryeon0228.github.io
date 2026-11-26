@@ -342,3 +342,19 @@ body:has(noscript):not(:has(script)) .guide { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .study-shell * { transition: none !important; }
 }
+
+/* Shared-camera room: DOM labels retain the lab's typography and keyboard access. */
+.room-stage { position: relative; margin: 0 12px; aspect-ratio: 3 / 2; isolation: isolate; }
+.room-stage canvas { width: 100%; height: 100%; margin: 0; }
+.room-stage .room-lamp-handle { position: absolute; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; min-height: 44px; padding: 0; transform: translate(-50%, -50%); border: 0; border-radius: 50%; background: transparent; color: #fff; cursor: grab; touch-action: none; }
+.room-lamp-handle > span { width: 24px; height: 24px; border: 2px solid #fff; border-radius: 50%; background: #f5ddae; box-shadow: 0 0 0 2px #1118; }
+.room-lamp-handle.is-off > span { background: #16191cb3; border-style: dashed; }
+.room-lamp-handle small { position: absolute; top: 42px; padding: 2px 6px; border-radius: 4px; background: #101216d9; color: #f4f4f4; font: 500 11px/1.5 var(--f-ko); white-space: nowrap; }
+.room-lamp-handle:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.room-lamp-handle.is-orbiting { cursor: grabbing; }
+.room-sensor-label { position: absolute; z-index: 1; transform: translate(-50%, 14px); padding: 2px 6px; border-radius: 4px; background: #101216cc; color: #e8e8e8; font: 400 11px/1.6 var(--f-ko); white-space: nowrap; pointer-events: none; }
+.room-stage [hidden] { display: none; }
+.room-drag-help { margin: 14px 0 0; color: var(--k8); font-size: 14px; line-height: 1.7; }
+.room-orbit-toolbar { flex-wrap: wrap; }
+#room-lamp-reset { margin-top: 12px; }
+@media (max-width: 700px) { .room-stage { margin: 0 8px; } .room-stage canvas { width: 100%; margin: 0; } }
