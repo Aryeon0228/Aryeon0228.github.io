@@ -243,6 +243,7 @@
     observatory.rotation.z = 0;
     const isDay = document.documentElement.dataset.theme === 'day';
     day.value = isDay ? 1 : 0;
+    atmosphere.visible = true;
     atmosphere.material.blending = isDay ? T.NormalBlending : T.AdditiveBlending;
     canvas.style.opacity = String(smooth(progress / .2));
     const now = performance.now();

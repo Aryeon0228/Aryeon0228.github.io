@@ -16,7 +16,7 @@
   }));
 
   const starCount = () => Math.min(stars.length, Math.max(28, Math.round(width * height / 9000)));
-  const canTwinkle = () => enabled && !document.hidden && document.documentElement.dataset.theme !== 'day';
+  const canTwinkle = () => enabled && !document.hidden;
   function queueTwinkle() {
     if (twinkleTimer || twinkles.length || !canTwinkle()) return;
     twinkleTimer = setTimeout(() => {
@@ -47,7 +47,7 @@
     if (document.hidden) return;
     context.clearRect(0, 0, width, height);
     const day = document.documentElement.dataset.theme === 'day';
-    const baseColor = day ? '#777777' : '#dedede';
+    const baseColor = day ? '#9c7834' : '#dedede';
     // Keep small screens as quiet as the desktop; density stays roughly constant.
     const count = starCount();
     const now = performance.now();
@@ -59,8 +59,8 @@
       const pulse = Math.pow(Math.sin(Math.PI * progress), 2);
       const x = star.x * width;
       const y = ((star.y * height - offset * star.speed) % height + height) % height;
-      context.fillStyle = pulse > .15 ? '#ffffff' : baseColor;
-      context.globalAlpha = Math.min(1, star.opacity * (day ? .6 : 1) + pulse * .8);
+      context.fillStyle = pulse > .15 ? (day ? '#bd8523' : '#ffffff') : baseColor;
+      context.globalAlpha = Math.min(1, star.opacity * (day ? .85 : 1) + pulse * .8);
       context.beginPath();
       context.arc(x, y, star.radius + pulse * .7, 0, Math.PI * 2);
       context.fill();

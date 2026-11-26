@@ -358,3 +358,9 @@ body:has(noscript):not(:has(script)) .guide { display: block; }
 .room-orbit-toolbar { flex-wrap: wrap; }
 #room-lamp-reset { margin-top: 12px; }
 @media (max-width: 700px) { .room-stage { margin: 0 8px; } .room-stage canvas { width: 100%; margin: 0; } }
+.room-light-options { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin: 0 0 14px; }
+.room-light-options .check { flex-shrink: 0; color: var(--k9); }
+.room-light-options p { margin: 0; color: var(--k6); font-size: 13px; line-height: 1.7; }
+#room-indirect-details { margin: 10px 0 0; }
+#room-indirect-details b { font-weight: 500; color: var(--k8); }
+.room-equation b, #room-indirect-details b { white-space: nowrap; }

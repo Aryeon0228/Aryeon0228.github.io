@@ -23,16 +23,11 @@
 .copy-check,.email-copy[data-state="copied"] .copy-symbol { opacity:0; }
 .email-copy[data-state="copied"] .copy-check { opacity:1; }
 .email-copy-status { position:absolute; bottom:0; left:0; color:var(--g2); font:400 12px/1.6 var(--f-ko); }
-.music-play,.music-pause { transition:opacity .18s; transform-origin:center; }
-.music-pause,.music-toggle[data-state="on"] .music-play { opacity:0; }
-.music-toggle[data-state="on"] .music-pause { opacity:1; }
-[data-music-label] { min-width:3.8em; text-align:left; }
 #lab img[data-preview-state] { transition:opacity 240ms ease,filter 240ms ease; }
 #lab img[data-preview-state="loading"] { opacity:0; }
 html[data-motion="off"] .career-timeline::after { display:none; }
 @media(prefers-reduced-motion:reduce) {
   html:not([data-motion="on"]) .career-timeline::after { display:none; }
-  html:not([data-motion="on"]) :is(.career-entry,.copy-symbol,.copy-check,.music-play,.music-pause,img[data-preview-state]) { transition:none; }
 }
 
 @media(max-width:360px) {

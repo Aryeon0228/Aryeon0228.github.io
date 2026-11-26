@@ -80,7 +80,7 @@ test('a narrow viewport limits overlapping glints to two stars', () => {
   const peak=h.flush();
   assert.equal(peak.filter((p,i)=>p[2]>base[i][2]).length,2);
 });
-test('hidden, motion-off and day mode cancel glints and timers', () => {
+test('hidden and motion-off cancel glints; day and night both twinkle', () => {
   const h=harness(); h.flush(); h.startTwinkle(); h.flush();
   h.motion(false); h.flush();
   assert.equal(h.frames.size,0); assert.equal(h.timers.size,0); assert.equal(h.spikes(),0);
@@ -89,6 +89,7 @@ test('hidden, motion-off and day mode cancel glints and timers', () => {
   assert.equal(h.frames.size,0); assert.equal(h.timers.size,0);
   h.document.hidden=false; h.document.dispatchEvent(new Event('visibilitychange')); h.flush();
   assert.equal(h.timers.size,1);
-  h.theme('day'); h.flush(); assert.equal(h.timers.size,0);
+  h.theme('day'); h.flush(); assert.equal(h.timers.size,1);
+  h.startTwinkle(); h.advance(750); h.flush(); assert.ok(h.spikes()>0);
   h.theme('night'); h.flush(); assert.equal(h.timers.size,1);
 });

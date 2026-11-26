@@ -23,6 +23,7 @@
     button.setAttribute('role', 'switch');
     button.setAttribute('aria-label', 'Animation');
     button.setAttribute('aria-checked', String(enabled));
+    button.title = enabled ? 'Pause animation' : 'Play animation';
     button.dataset.state = enabled ? 'on' : 'off';
     const label = button.querySelector('[data-motion-label]');
     if (label) label.textContent = enabled ? 'On' : 'Off';

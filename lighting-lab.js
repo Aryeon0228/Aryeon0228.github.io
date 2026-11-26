@@ -1,4 +1,4 @@
-import {initRoomLab} from './room-lab.mjs?v=a053114c8b6c';
+import {initRoomLab} from './room-lab.mjs?v=1c1a2b63f90d';
 import {fitExposure,linearDisplay,srgb} from './lighting-physics.mjs';
 import {SOURCES,preset,illuminance,comparison,validateSettings,comparisonColors,daylightPreset} from './light-sources.mjs';
 import {explain} from './lighting-why.mjs';

@@ -12,10 +12,10 @@ function harness() {
   const ringDust = new THREE.Points(), ringDustNear = new THREE.Points(), stars = new THREE.Points(), atmo = new THREE.Mesh();
   ring.material.visible = false;
   ring.add(ringDust, ringDustNear, moon); scene.add(ring, body, stars, atmo);
-  const draws = [];
-  const state = {ringDust, ringDustNear, scene, ring, atmo, camera:{},
+  const draws = [], clears = [];
+  const state = {isDay:false, ringDust, ringDustNear, scene, ring, atmo, camera:{},
     renderer:{
-      setClearColor() {}, setRenderTarget() {},
+      setClearColor(color) { clears.push(color); }, setRenderTarget() {},
       render(renderedScene) {
         const visible = [];
         renderedScene.traverseVisible(object => { if(object !== renderedScene) visible.push({object, material:object.material}); });
@@ -24,7 +24,7 @@ function harness() {
     }
   };
   vm.createContext(state); vm.runInContext(passSource, state);
-  return {state, ring, moon, body, ringDust, ringDustNear, stars, atmo, draws};
+  return {state, ring, moon, body, ringDust, ringDustNear, stars, atmo, draws, clears};
 }
 
 test('the eclipse pass draws the full ring and restores both visible halves without hiding moons', () => {
@@ -41,5 +41,16 @@ test('the eclipse pass draws the full ring and restores both visible halves with
     assert.equal(h.ringDust.visible, true); assert.equal(h.ringDustNear.visible, true);
     assert.equal(h.ringDust.material, originalDust); assert.equal(h.moon.material, originalMoon);
     assert.equal(h.moon.visible, true); assert.equal(h.stars.visible, true); assert.equal(h.atmo.visible, true);
+  }
+});
+
+
+test('solar masks restore the active sky color and preserve any hidden atmosphere state', () => {
+  for (const isDay of [false,true]) {
+    const h=harness(); h.state.isDay=isDay; h.atmo.visible=false;
+    h.state.renderPass({}, {}, {}, 0xffffff);
+    assert.equal(h.clears.at(-1),isDay ? 0xe8eef4 : 0x000000);
+    assert.equal(h.atmo.visible,false);
+    assert.equal(h.draws.at(-1).some(entry=>entry.object===h.atmo),false);
   }
 });

@@ -43,8 +43,8 @@
 .career-star.is-twinkling::after { animation:career-star-crossray 1050ms ease-out var(--glint-delay) both; }
 @keyframes career-star-glint {
   0%,12% { transform:scale(1); color:var(--career-accent); }
-  26% { transform:scale(1.35); color:#fff; }
-  48% { transform:scale(1.05); color:#eee; }
+  26% { transform:scale(1.35); color:var(--star-flash,#fff); }
+  48% { transform:scale(1.05); color:var(--star-fade,#eee); }
   100% { transform:scale(1); color:var(--career-accent); }
 }
 @keyframes career-star-ray {

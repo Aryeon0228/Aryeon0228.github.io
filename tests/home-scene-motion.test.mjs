@@ -24,8 +24,7 @@ function harness({ reduced = false } = {}) {
   const win = new EventTarget(), document = new EventTarget(), hero = new EventTarget(), system = new EventTarget();
   document.documentElement = { dataset: {} };
   document.hidden = false; document.readyState = 'complete'; document.fonts = new EventTarget();
-  const hint = { hidden: false };
-  document.getElementById = id => id === 'sun-hint' ? hint : null;
+  document.getElementById = () => null; // The obsolete sun-hint control was removed.
   system.matches = reduced;
   win.matchMedia = () => system;
   class IntersectionObserver {
@@ -42,7 +41,7 @@ function harness({ reduced = false } = {}) {
   vm.createContext(state);
   vm.runInContext(preferenceSource + '\n' + controlsSource + '\n' + frameSource, state);
   return {
-    state, hint, win, document, hero, motion: win.penumbraMotion,
+    state, win, document, hero, motion: win.penumbraMotion,
     get now() { return now; },
     get clears() { return clears; }, get resizes() { return resizes; }, get scheduled() { return scheduled; },
     tick(ms = 16) { now += ms; state.frame(now); },
@@ -57,7 +56,6 @@ test('pausing keeps the current orbit, renders once, then stops GPU work until n
   const time = h.state.sceneTime;
   assert.ok(time > 0);
   h.motion.setEnabled(false);
-  assert.equal(h.hint.hidden, true);
   assert.equal(h.clears, 1);
   assert.equal(h.state.ringHeld, false);
   assert.equal(h.state.ringScatter.value, 0);
@@ -76,7 +74,6 @@ test('resume starts from the paused time without adding time spent paused', () =
   const before = h.state.sceneTime;
   h.elapse(60000); h.motion.setEnabled(true); h.tick(16);
   assert.ok(Math.abs(h.state.sceneTime - before - .016) < 1e-10);
-  assert.equal(h.hint.hidden, false);
   h.tick(16); assert.ok(Math.abs(h.state.sceneTime - before - .032) < 1e-10);
 });
 

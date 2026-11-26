@@ -47,16 +47,17 @@ test('the veil stays open through the late flash and closes as the sun is fully 
   h.update(1, -2); assert.equal(h.writes.length, count, 'full concealment does not repaint a closed veil');
 });
 
-test('day and a sun behind the viewer restore the original veil', () => {
-  for (const mode of [{isDay:true}, {isDay:false, amount:0}]) {
+test('both themes update solar light; only a sun behind the viewer restores the original veil', () => {
+  for (const isDay of [false,true]) for (const amount of [0,1]) {
     const h = harness(); h.update();
     let updates = 0;
-    Object.assign(h.state, mode, {dt:.016, uFwd:{value:1}, aimSun() {}, clearName() {}, resetCamera() {},
-      updateSun() { updates++; h.update(mode.amount ?? 1); return mode.amount ?? 1; }});
+    Object.assign(h.state, {isDay,dt:.016, uFwd:{value:1}, aimSun() {}, clearName() {}, resetCamera() {},
+      updateSun() { updates++; h.update(amount); return amount; }});
     vm.runInContext(frameSource, h.state);
-    assert.equal(h.style.maskImage, '', JSON.stringify(mode));
-    assert.equal(h.style.webkitMaskImage, '');
-    assert.equal(updates, !mode.isDay ? 1 : 0);
+    if(amount) assert.equal(maskParts(h.style.maskImage).alpha,0);
+    else assert.equal(h.style.maskImage,'');
+    assert.equal(h.style.webkitMaskImage,h.style.maskImage);
+    assert.equal(updates,1);
   }
 });
 
