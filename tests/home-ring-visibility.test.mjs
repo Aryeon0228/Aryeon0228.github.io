@@ -49,7 +49,7 @@ test('solar masks restore the active sky color and preserve any hidden atmospher
   for (const isDay of [false,true]) {
     const h=harness(); h.state.isDay=isDay; h.atmo.visible=false;
     h.state.renderPass({}, {}, {}, 0xffffff);
-    assert.equal(h.clears.at(-1),isDay ? 0xe9eef8 : 0x000000);
+    assert.equal(h.clears.at(-1),isDay ? 0xdce5f3 : 0x000000);
     assert.equal(h.atmo.visible,false);
     assert.equal(h.draws.at(-1).some(entry=>entry.object===h.atmo),false);
   }

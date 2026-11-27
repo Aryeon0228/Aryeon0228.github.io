@@ -4,8 +4,8 @@
   min-width:0; padding:0;
 }
 .motion-toggle,.music-toggle {
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  width:44px; min-width:44px; height:44px; padding:9px;
+  position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  width:36px; min-width:36px; height:36px; padding:7px;
   border:1px solid var(--ln2); border-radius:0;
   background:transparent; color:var(--w);
   font:400 13px/1.4 var(--f-ko);
@@ -15,7 +15,7 @@
 .motion-toggle:hover,.music-toggle:hover { border-color:var(--g2); background:var(--ln); }
 .motion-toggle[aria-checked="true"],.music-toggle[data-state="on"] { border-color:var(--g2); background:var(--ln); }
 .motion-toggle:focus-visible,.music-toggle:focus-visible { outline:2px solid var(--w); outline-offset:3px; }
-.playback-icon,.music-icon { display:flex; flex:0 0 24px; align-items:center; justify-content:center; width:24px; height:24px; }
+.playback-icon,.music-icon { display:flex; flex:0 0 20px; align-items:center; justify-content:center; width:20px; height:20px; }
 
 .motion-toggle[aria-checked="true"] .playback-play,
 .motion-toggle[aria-checked="false"] .playback-pause { display:none; }
@@ -31,3 +31,16 @@ html[data-motion="off"] .music-toggle { transition:none; }
   html:not([data-motion="on"]) .motion-toggle,
   html:not([data-motion="on"]) .music-toggle { transition:none; }
 }
+
+/* Keep the compact controls easy to tap without enlarging their visible boxes. */
+.motion-toggle::after,.music-toggle::after { content:""; position:absolute; inset:-4px; }
+.console .rack { padding:6px; }
+html[data-theme="day"] .console .rack { background:rgb(211 223 242 / .94); border-color:#a9bddc; }
+html[data-theme="day"] .motion-toggle,
+html[data-theme="day"] .music-toggle { color:#49638c; border-color:#91a8d0; background:rgb(233 240 250 / .55); }
+html[data-theme="day"] .motion-toggle:hover,
+html[data-theme="day"] .music-toggle:hover,
+html[data-theme="day"] .motion-toggle[aria-checked="true"],
+html[data-theme="day"] .music-toggle[data-state="on"] { background:#bccde7; border-color:#7c98c4; color:#344f79; }
+html[data-theme="day"] .motion-toggle:focus-visible,
+html[data-theme="day"] .music-toggle:focus-visible { outline-color:#49638c; }

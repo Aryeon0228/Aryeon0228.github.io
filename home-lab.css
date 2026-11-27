@@ -259,9 +259,9 @@ html[data-motion="off"] .career-star.is-twinkling::after { animation:none; }
 
 /* AI practice is introduced through one featured project, with a single entry point. */
 .hero-mark .lbl { color:var(--g2); }
-.hero-role { max-width:480px; isolation:isolate; }
+.hero-role { width:fit-content; max-width:min(480px,100%); isolation:isolate; }
 /* Feather only the copy area; the planet and draggable scene stay visible. */
-.hero-role::before { content:""; position:absolute; z-index:-1; inset:-24px -40px; background:var(--k0); opacity:.78; mask-image:radial-gradient(ellipse at center,#000 42%,transparent 72%); pointer-events:none; }
+.hero-role::before { content:""; position:absolute; z-index:-1; inset:-12px -14px; background:var(--k0); opacity:.78; mask-image:radial-gradient(ellipse at center,#000 42%,transparent 72%); pointer-events:none; }
 .hero-specialty { color:var(--w); font:500 18px/1.5 var(--f-lat); margin:0 0 12px; text-wrap:balance; }
 .hero-intro { margin:0; color:var(--copy); font:400 15px/1.8 var(--f-ko); word-break:keep-all; overflow-wrap:break-word; }
 #prompt-lab { scroll-margin-top:100px; }
@@ -309,3 +309,7 @@ html[data-motion="off"] #lab :is(.lab-mini-preview img,.lab-mini-swatches,.diora
 /* The image changes color; the card outline stays quiet. */
 #lab .work-card--mini-preview:is(:hover,:focus-within),
 html[data-theme="day"] #lab .work-card--mini-preview:is(:hover,:focus-within) { border-color:var(--ln); }
+
+/* Project destinations stay secondary to the role and responsibilities. */
+.career-project-link { display:inline-flex; align-items:center; gap:6px; min-height:44px; margin-top:4px; color:var(--w); font:500 13px/1.5 var(--f-lat); text-decoration:underline; text-underline-offset:4px; }
+.career-project-link:focus-visible { outline:2px solid currentColor; outline-offset:3px; }

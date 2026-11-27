@@ -1,7 +1,7 @@
 /* Dark is the default; Light uses a pale blue-gray sky and full-color previews. */
 html[data-theme="day"] {
   color-scheme: light;
-  --k0:#e9eef8;
+  --k0:#dce5f3;
   --k1:#f5f7fc;
   --k2:#dce4f2;
   --w:#26334b;
@@ -22,7 +22,7 @@ html[data-theme="night"] { color-scheme:dark; }
 .site-links { order:1; margin-left:auto; gap:clamp(14px,1.5vw,22px); }
 .theme-switch { order:2; display:flex; flex-shrink:0; gap:2px; padding:2px; border:1px solid var(--ln2); }
 .menu-toggle { order:3; margin-left:auto; }
-html[data-theme="day"] .site-header { background:rgb(233 238 248 / .94); }
+html[data-theme="day"] .site-header { background:rgb(220 229 243 / .94); }
 html[data-theme="day"] .wordmark small,
 html[data-theme="day"] .site-links>a,
 html[data-theme="day"] .content-kicker,
@@ -50,7 +50,7 @@ html[data-theme="day"] .site-links>a[aria-current] .nav-number { color:var(--w);
 html[data-theme="day"] .brand-orbit circle { fill:var(--k0); stroke:#7189b2; }
 html[data-theme="day"] .brand-orbit path { stroke:#506b97; }
 html[data-theme="day"] .brand-orbit ellipse { stroke:#8c84ad; }
-html[data-theme="day"] .hero-veil { background:linear-gradient(94deg, rgb(233 238 248 / .9) 0%,rgb(233 238 248 / .32) 28%,rgb(233 238 248 / 0) 51%); }
+html[data-theme="day"] .hero-veil { background:linear-gradient(94deg, rgb(220 229 243 / .9) 0%,rgb(220 229 243 / .32) 28%,rgb(220 229 243 / 0) 51%); }
 html[data-theme="day"] .hero-fb { background:var(--k0); }
 html[data-theme="day"] .hero-fb::before { background:radial-gradient(circle at 65% 53%,#f0f5fc 0%,#d9e3f7 42%,#b3c4e3 76%,#8fa3c4 92%);box-shadow:-10px -6px 28px -18px #8d9bb5; }
 html[data-theme="day"] .frame { opacity:.55; }
@@ -72,7 +72,7 @@ html[data-theme="day"] .contact-links .cv-link { border-color:#8c9cb9; }
 html[data-theme="day"] :is(a,button,summary):focus-visible { outline-color:var(--w); }
 html[data-theme="day"] .skip-link { background:#26334b;color:#fff; }
 html[data-theme="day"] .game-preview { background:#e2e9f4; }
-html[data-theme="day"] .game-preview-hint { color:#304568;background:rgb(233 238 248 / .9);padding:4px 7px; }
+html[data-theme="day"] .game-preview-hint { color:#304568;background:rgb(220 229 243 / .9);padding:4px 7px; }
 @media (min-width:641px) and (hover:hover) and (pointer:fine) {
   html[data-theme="day"] .game-preview img { opacity:.78; }
   html[data-theme="day"] .work-card--game:is(:hover,:focus-within) .game-preview img { opacity:1; }
@@ -82,13 +82,13 @@ html[data-theme="day"] .game-preview-hint { color:#304568;background:rgb(233 238
   .theme-switch { margin-left:auto; }
   html[data-theme="day"] .site-links { background:#f5f7fc;border-bottom-color:var(--ln); }
 }
-@media(max-width:1040px) { html[data-theme="day"] .hero-veil { background:linear-gradient(90deg,rgb(233 238 248 / .85),transparent 64%); } }
+@media(max-width:1040px) { html[data-theme="day"] .hero-veil { background:linear-gradient(90deg,rgb(220 229 243 / .85),transparent 64%); } }
 @media(max-width:600px) {
   .site-nav { gap:10px; }
   .wordmark { gap:10px;font-size:12px; }
   .wordmark small { font-size:8px; }
   .menu-toggle { gap:8px;padding-left:4px; }
-  html[data-theme="day"] .hero-veil { background:linear-gradient(180deg,#e9eef8 0%,rgb(233 238 248 / .6) 27%,transparent 43%); }
+  html[data-theme="day"] .hero-veil { background:linear-gradient(180deg,#dce5f3 0%,rgb(220 229 243 / .6) 27%,transparent 43%); }
 }
 @media(max-width:359px) { .menu-toggle-label { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%); } }
 

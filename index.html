@@ -403,9 +403,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 .legacy-anchor{display:block;scroll-margin-top:96px}
 </style>
 <link rel="stylesheet" href="home-tactile.css?v=8048446d6a6e">
-<link rel="stylesheet" href="home-theme-toggle.css?v=c00973e5f785">
-<link rel="stylesheet" href="home-theme.css?v=292de5cf19ce">
-<link rel="stylesheet" href="home-lab.css?v=976671561678">
+<link rel="stylesheet" href="home-theme-toggle.css?v=1bd380caea60">
+<link rel="stylesheet" href="home-theme.css?v=3eaba0c2fdca">
+<link rel="stylesheet" href="home-lab.css?v=db1f6c6282e2">
 <script src="home-theme.js?v=307a727c8a4c" defer></script>
 <style>
 /* The teaching materials link has its own page; keep it outside section tracking. */
@@ -413,8 +413,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 @media(max-width:1399px){.site-header .site-links{margin-left:0}.site-header .theme-switch{margin-left:auto}html[data-theme="day"] .site-header .site-links{background:#f3f6fa;border-bottom-color:var(--ln)}}
 </style>
 <link rel="stylesheet" href="home-interface.css?v=b137bf361450">
-<link rel="stylesheet" href="home-music.css?v=2ba7d32f33f7">
-<link rel="stylesheet" href="home-space.css?v=5e8137258541">
+<link rel="stylesheet" href="home-music.css?v=5178b8323ca9">
+<link rel="stylesheet" href="home-space.css?v=f1044ffb2d75">
 <link rel="stylesheet" href="home-diorama.css?v=7ea2606dc4b1">
 </head>
 <body>
@@ -549,6 +549,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
 <h4>와일드플랜</h4><p class="career-role">아트팀</p>
 <p class="career-project">레메게톤 (다크 판타지 액션 로그라이크) / Unity</p>
 <p class="career-tasks">배경 모델링 · 레벨 디자인 · 셰이더 · 이펙트 · 애니메이션</p>
+<a class="career-project-link" href="https://store.steampowered.com/app/3728770/Lemegeton/" target="_blank" rel="noopener noreferrer">Steam <span aria-hidden="true">↗</span></a>
 </article>
 <article class="career-entry">
 <span class="career-star" aria-hidden="true"><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><path d="M10 1C8.6 6.8 6.8 8.6 1 10c5.8 1.4 7.6 3.2 9 9 1.4-5.8 3.2-7.6 9-9C13.2 8.6 11.4 6.8 10 1Z"/></svg></span>
@@ -1043,7 +1044,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   }catch(e){ showSceneFallback('3D 화면을 표시할 수 없어 기본 이미지를 보여드려요. 브라우저의 그래픽 가속 설정을 확인해 주세요.'); return; }
   var isDay=document.documentElement.dataset.theme==='day';
   var uDay={value:isDay ? 1 : 0};
-  renderer.setClearColor(isDay ? 0xe9eef8 : 0x000000, 1);
+  renderer.setClearColor(isDay ? 0xdce5f3 : 0x000000, 1);
 
   var scene  = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
@@ -1547,9 +1548,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     'attribute vec3 aKick; attribute vec4 aLook;',
     'uniform float uTime; uniform vec2 uSpin; uniform vec4 uBrush[4]; uniform float uScatter; uniform vec3 uGrab;',
     'uniform vec3 uLight; uniform float uPen; uniform float uPlanetRadius; uniform float uOpa; uniform float uProj; uniform float uPixel;',
-    'uniform float uFwd; uniform float uAtmo; uniform float uHalf;',
+    'uniform float uFwd; uniform float uAtmo; uniform float uHalf; uniform mediump float uDay; uniform float uHalo;',
     'varying float vLum; varying float vAlpha; varying float vCover; varying float vSpark; varying float vSize; varying float vZ;',
-    'varying vec3 vLight; varying float vBlock;',
+    'varying vec3 vLight; varying float vBlock; varying float vGlint; varying float vHalo;',
     'void main(){',
     '  float a = position.x + uTime * uSpin.x * pow(position.y, -uSpin.y);',
     '  vec2 dir = vec2(cos(a), sin(a));',
@@ -1594,6 +1595,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // and glow, unless the planet's shadow takes their light.
     '  float fwd = uFwd * shadow * 0.02 / pow(1.49 - 1.4 * dot(normalize(mv.xyz), L), 1.5);',
     '  vLum = (0.018 + 0.982 * shadow) * toward * 0.90 + bent * 0.09 + fwd;',
+    // Concentrate daylight on a short arc facing the sun, with the planet's shadow intact.
+    '  vec3 ringNormal=normalize(modelViewMatrix[2].xyz);',
+    '  vec3 planarLight=L-ringNormal*dot(L,ringNormal);',
+    '  float alignment=dot(normalize(P),planarLight/max(length(planarLight),.001));',
+    '  vGlint=pow(max(alignment,0.0),18.0)*shadow*(.65+.35*aLook.y);',
+    '  vHalo=0.0;',
+
     // The grain's true size on screen, at most six pixels; under two it keeps two and fades
     // instead, so a moving grain never flickers between one and four pixels.
     '  float px = 2.0 * aLook.x * length(modelViewMatrix[0].xyz) * uProj * uPixel / vZ;',
@@ -1601,7 +1609,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     // Hover changes the grains' position only: no extra glitter or point-size burst.
     '  vSpark = 0.0;',
     '  vSize = clamp(px, 2.0, 6.0 * uPixel);',
-    '  gl_PointSize = vSize * (1.0 + vSpark * 2.6);',
+    '  vHalo=uHalo*uDay*vGlint*(3.0*uPixel/vSize);',
+    '  gl_PointSize = vSize * (1.0 + vSpark * 2.6) * (1.0 + vHalo);',
     '  vAlpha = min(1.0, min(1.0, uOpa * 2.0) * near * front * aLook.y * vCover * (1.0 + fwd));',
     // The passes read these in the fragment shader, where uniforms shared with this one would clash in precision.
     '  vLight = L;',
@@ -1617,7 +1626,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var DUST_SHAPE = [
     'float grainShape(){',
     '  vec2 q = abs(gl_PointCoord - 0.5);',
-    '  float scale = 1.0 + vSpark * 2.6, r = length(q) * scale;',
+    '  float scale = (1.0 + vSpark * 2.6) * (1.0 + vHalo), r = length(q) * scale;',
     '  float disc = vSize < 3.0 ? step(r, 0.5) : 1.0 - smoothstep(0.5 - 1.0 / vSize, 0.5, r);',
     '  float rays = (1.0 - smoothstep(0.025, 0.095, min(q.x, q.y))) * (1.0 - smoothstep(0.08, 0.48, max(q.x, q.y)));',
     '  return max(disc, rays * vSpark * 0.92);',
@@ -1628,7 +1637,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
       uniforms:{
         uTime:bodyUniforms.uTime, uSpin:ringSpin, uBrush:ringBrushes, uScatter:ringScatter, uGrab:ringGrab,
         uLight:bodyUniforms.uLight, uPen:bodyUniforms.uPen, uPlanetRadius:ringPlanetRadius, uOpa:uRing, uDay:uDay,
-        uFwd:uFwd, uAtmo:uDens, uHalf:{ value:options && options.half || 0 },
+        uFwd:uFwd, uAtmo:uDens, uHalf:{ value:options && options.half || 0 }, uHalo:{value:options && options.halo || 0},
         uProj:dustProjection, uPixel:{ value:options && options.pixel || 1 }
       },
       vertexShader:DUST_VERT,
@@ -1636,7 +1645,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
         'precision mediump float;',
         'uniform float uDay;',
         'varying float vLum; varying float vAlpha; varying float vCover; varying float vSpark; varying float vSize; varying float vZ;',
-        'varying vec3 vLight; varying float vBlock;',
+        'varying vec3 vLight; varying float vBlock; varying float vGlint; varying float vHalo;',
         DUST_SHAPE,
         'void main(){', fragment, '}'
       ].join('\n')
@@ -1646,16 +1655,25 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
   var dustProjection = { value:1 };
   var DUST_LOOK = [
     '  float shape = grainShape();',
-    '  if(shape <= 0.0) discard;',
-    '  if(uDay > 0.5) gl_FragColor = vec4(vec3(.40,.43,.60) + vLum * vec3(.34,.31,.37), min(1.0, vAlpha * 1.20) * shape);',
-    '  else gl_FragColor = vec4(vec3(vLum + vSpark * .5), vAlpha * shape);'
+    '  if(uDay > 0.5){',
+    '    float r=length(gl_PointCoord-.5);',
+    '    float halo=exp(-r*r*18.0)*(1.0-smoothstep(.35,.5,r))*vGlint*vAlpha*.16;',
+    '    float core=min(1.0,vAlpha*mix(1.20,1.85,vGlint))*shape;',
+    '    vec3 ink=mix(vec3(.40,.43,.60)+vLum*vec3(.34,.31,.37),vec3(.99,.99,1.),vGlint);',
+    '    float alpha=core+halo*(1.0-core);',
+    '    if(alpha<.001) discard;',
+    '    gl_FragColor=vec4((ink*core+vec3(.94,.96,1.)*halo*(1.0-core))/max(alpha,.001),alpha);',
+    '  }else{',
+    '    if(shape <= 0.0) discard;',
+    '    gl_FragColor=vec4(vec3(vLum+vSpark*.5),vAlpha*shape);',
+    '  }'
   ].join('\n');
   // The far half goes down before the planet's glow and the near half after it, so the ring
   // passes behind the glow and in front of it, and cuts across the lit rim of an eclipse.
-  var ringDust = new THREE.Points(dustGeometry, dustMaterial(DUST_LOOK, { half:1, material:{ transparent:true, depthWrite:false, depthTest:true } }));
+  var ringDust = new THREE.Points(dustGeometry, dustMaterial(DUST_LOOK, { halo:1, half:1, material:{ transparent:true, depthWrite:false, depthTest:true } }));
   ringDust.renderOrder = 1; ringDust.frustumCulled = false;
   ring.add(ringDust);
-  var ringDustNear = new THREE.Points(dustGeometry, dustMaterial(DUST_LOOK, { half:-1, material:{ transparent:true, depthWrite:false, depthTest:true } }));
+  var ringDustNear = new THREE.Points(dustGeometry, dustMaterial(DUST_LOOK, { halo:1, half:-1, material:{ transparent:true, depthWrite:false, depthTest:true } }));
   ringDustNear.renderOrder = 2.5; ringDustNear.frustumCulled = false;
   ring.add(ringDustNear);
 
@@ -2013,7 +2031,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     isDay=document.documentElement.dataset.theme==='day';
     uDay.value=isDay ? 1 : 0;
     atmo.visible=true;
-    renderer.setClearColor(isDay ? 0xe9eef8 : 0x000000,1);
+    renderer.setClearColor(isDay ? 0xdce5f3 : 0x000000,1);
     // Light ink over paper needs normal alpha; Night retains its original additive glow.
     [starMaterial,skyStarMaterial,atmo.material].forEach(function(material){
       material.blending=isDay ? THREE.NormalBlending : THREE.AdditiveBlending;
@@ -2341,7 +2359,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #ee
     renderer.setClearColor(clearHex, 1);
     renderer.setRenderTarget(target);
     renderer.render(scene, camera);
-    renderer.setClearColor(isDay ? 0xe9eef8 : 0x000000, 1);
+    renderer.setClearColor(isDay ? 0xdce5f3 : 0x000000, 1);
     for(var i = 0; i < swapped.length; i += 2) swapped[i].material = swapped[i + 1];
     hidden.forEach(function(object){ object.visible = true; });
   }
