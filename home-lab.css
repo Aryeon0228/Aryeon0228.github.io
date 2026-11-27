@@ -7,13 +7,13 @@
 #career .content-heading { margin-bottom:32px; }
 #career .content-heading p { color:var(--career-copy); }
 .career-order { margin:0 0 40px; font:400 12px/1.6 var(--f-ko); color:var(--career-copy); }
-.career-timeline { position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:112px; }
-.career-timeline::before { content:""; position:absolute; top:0; bottom:0; left:50%; width:1px; background:linear-gradient(transparent,var(--career-accent) 4%,var(--ln2) 90%,transparent); }
-.career-track { min-width:0; }
+.career-timeline { position:relative; isolation:isolate; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:112px; }
+.career-timeline::before { content:""; position:absolute; z-index:0; top:0; bottom:0; left:50%; width:1px; background:linear-gradient(transparent,var(--career-accent) 4%,var(--ln2) 90%,transparent); }
+.career-track { position:relative; z-index:1; min-width:0; }
 .career-track-title { margin:0 0 40px; padding-bottom:20px; border-bottom:1px solid var(--ln); font:500 16px/1.5 var(--f-ko); color:var(--w); }
 .career-entry { position:relative; padding-top:4px; scroll-margin-top:100px; }
 .career-entry + .career-entry { margin-top:56px; }
-.career-star { position:absolute; display:block; top:11px; width:10px; height:10px; color:var(--career-accent); pointer-events:none; }
+.career-star { position:absolute; z-index:2; isolation:isolate; display:block; top:11px; width:10px; height:10px; color:var(--career-accent); pointer-events:none; }
 .career-star > svg { position:relative; z-index:1; display:block; width:100%; height:100%; overflow:visible; }
 .career-star path { fill:currentColor; stroke:currentColor; stroke-width:1.2; stroke-linejoin:round; }
 .star-heading { position:relative; }

@@ -270,6 +270,6 @@ export const english = {
   "음악을 불러오지 못했어요. 잠시 후 다시 눌러 주세요.": "Could not load music. Try again in a moment.",
   "김소연 | Studio Penumbra": "Soyoun Kim | Studio Penumbra",
   "김소연 포트폴리오 · Studio Penumbra — 컴퓨터 그래픽스 연구와 인터랙티브 웹 데모.": "Soyoun Kim’s portfolio · Studio Penumbra — computer graphics research and interactive web experiments.",
-  "옅은 청회색 하늘에 푸른 기가 도는 은빛 행성과 금빛 고리가 떠 있습니다. 작은 위성이 공전하고 금빛 별이 반짝입니다.": "A silver-blue planet and golden rings float in a pale blue-gray sky. A small moon orbits as golden stars twinkle.",
+  "옅은 청회색 하늘에 세레니티빛 행성과 연보랏빛 고리가 떠 있습니다. 작은 위성과 파스텔빛 별이 주변을 채웁니다.": "A serenity-blue planet with pale blue highlights and lavender rings floats in a pale blue-gray sky. A small moon orbits as pastel stars twinkle.",
   "언어": "Language"
 };

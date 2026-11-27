@@ -12,15 +12,15 @@
 }
 
 html[data-theme="day"] {
-  --work-card-top: #fbfbf9;
-  --work-card-bottom: #eceeea;
+  --work-card-top: #f5f7fc;
+  --work-card-bottom: #e4ebf6;
   --work-card-reflection: 255 255 255;
   --work-card-light-strong: .58;
   --work-card-light-soft: .20;
-  --lab-button-bg: #f8f9f6;
-  --lab-button-fg: #252b28;
-  --lab-button-border: #8b928d;
-  --lab-button-active-bg: #252b28;
+  --lab-button-bg: #f1f5fc;
+  --lab-button-fg: #334c75;
+  --lab-button-border: #879bbd;
+  --lab-button-active-bg: #334c75;
   --lab-button-active-fg: #fff;
 }
 

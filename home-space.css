@@ -15,7 +15,7 @@ body { isolation:isolate; }
 .planet-landing-fallback { position:absolute; width:400%; height:220%; left:-150%; top:28%; border-radius:50%; border-top:1px solid #717171; background:radial-gradient(ellipse at 40% 0%,#222 0%,#0b0b0b 32%,#000 65%); }
 .planet-landing.has-planet-renderer .planet-landing-fallback { display:none; }
 html[data-motion="off"] .planet-landing .planet-landing-fallback { display:block; }
-html[data-theme="day"] .planet-landing-fallback { border-color:#aaa; background:radial-gradient(ellipse at 40% 0%,#ddd,#f3f3f1 65%); }
+html[data-theme="day"] .planet-landing-fallback { border-color:#a5b2cb; background:radial-gradient(ellipse at 40% 0%,#c7d4ea,#e9eef8 65%); }
 
 .planet-station-fallback { position:absolute; left:56%; top:-34px; width:84px; height:59px; }
 /* A quiet strip keeps footer links readable over the moving foreground. */

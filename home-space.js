@@ -47,7 +47,7 @@
     if (document.hidden) return;
     context.clearRect(0, 0, width, height);
     const day = document.documentElement.dataset.theme === 'day';
-    const baseColor = day ? '#9c7834' : '#dedede';
+    const baseColor = day ? '#7189b2' : '#dedede';
     // Keep small screens as quiet as the desktop; density stays roughly constant.
     const count = starCount();
     const now = performance.now();
@@ -59,7 +59,7 @@
       const pulse = Math.pow(Math.sin(Math.PI * progress), 2);
       const x = star.x * width;
       const y = ((star.y * height - offset * star.speed) % height + height) % height;
-      context.fillStyle = pulse > .15 ? (day ? '#bd8523' : '#ffffff') : baseColor;
+      context.fillStyle = pulse > .15 ? (day ? ['#7189b2', '#9e95bc', '#b28b9f'][index % 3] : '#ffffff') : baseColor;
       context.globalAlpha = Math.min(1, star.opacity * (day ? .85 : 1) + pulse * .8);
       context.beginPath();
       context.arc(x, y, star.radius + pulse * .7, 0, Math.PI * 2);
