@@ -313,3 +313,12 @@ html[data-theme="day"] #lab .work-card--mini-preview:is(:hover,:focus-within) { 
 /* Project destinations stay secondary to the role and responsibilities. */
 .career-project-link { display:inline-flex; align-items:center; gap:6px; min-height:44px; margin-top:4px; color:var(--w); font:500 13px/1.5 var(--f-lat); text-decoration:underline; text-underline-offset:4px; }
 .career-project-link:focus-visible { outline:2px solid currentColor; outline-offset:3px; }
+
+/* A small, non-interactive preview follows the cursor on hover-capable devices. */
+.career-preview-card { width:280px; max-width:100%; margin:4px 0 0; padding:0; overflow:hidden; border:1px solid var(--ln2); border-radius:4px; background:var(--k0); color:var(--w); }
+.career-preview-card img { display:block; width:100%; height:auto; }
+.career-preview-card figcaption { padding:9px 12px; font:400 12px/1.5 var(--f-ko); }
+.career-preview-floating { position:fixed; z-index:100; margin:0; max-width:calc(100vw - 24px); pointer-events:none; opacity:0; visibility:hidden; transition:opacity .14s ease,visibility .14s; box-shadow:0 8px 24px rgb(0 0 0 / .16); }
+.career-preview-floating.is-visible { opacity:1; visibility:visible; }
+html[data-motion="off"] .career-preview-floating { transition:none; }
+@media(prefers-reduced-motion:reduce) { .career-preview-floating { transition:none; } }

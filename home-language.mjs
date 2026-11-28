@@ -1,4 +1,4 @@
-import { english } from './home-translations.mjs?v=4fcbdf333883';
+import { english } from './home-translations.mjs?v=dea7ed5808e2';
 
 const root = document.documentElement;
 const key = 'penumbra-language';

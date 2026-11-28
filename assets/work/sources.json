@@ -94,5 +94,61 @@
     "source": "UI/UX Lab 실제 실험 화면 캡처 · 간격을 벌려 세 묶음으로 보이는 같은 점 24개",
     "width": 365,
     "height": 190
+  },
+  {
+    "file": "eyasoft-career-preview.jpg",
+    "source": "User-provided career presentation, slide 4",
+    "sourceUrl": "https://docs.google.com/presentation/d/1pZepgaqZek0Z5NG1J4hstJGhOxIEmWMm/edit",
+    "embeddedImage": "image3.jpg",
+    "width": 960,
+    "height": 640
+  },
+  {
+    "file": "webzen-career-preview.jpg",
+    "source": "User-provided career presentation, slide 5",
+    "sourceUrl": "https://docs.google.com/presentation/d/1pZepgaqZek0Z5NG1J4hstJGhOxIEmWMm/edit",
+    "embeddedImage": "image10.jpg",
+    "width": 960,
+    "height": 640
+  },
+  {
+    "file": "neowiz-career-preview.png",
+    "source": "User-provided career presentation, slide 6",
+    "sourceUrl": "https://docs.google.com/presentation/d/1pZepgaqZek0Z5NG1J4hstJGhOxIEmWMm/edit",
+    "embeddedImage": "image13.png",
+    "width": 797,
+    "height": 448
+  },
+  {
+    "file": "lineplay-career-preview.png",
+    "source": "User-provided career presentation, slide 7",
+    "sourceUrl": "https://docs.google.com/presentation/d/1pZepgaqZek0Z5NG1J4hstJGhOxIEmWMm/edit",
+    "embeddedImage": "image20.png",
+    "width": 806,
+    "height": 409
+  },
+  {
+    "file": "darong-career-preview.png",
+    "source": "User-provided career presentation, slide 8",
+    "sourceUrl": "https://docs.google.com/presentation/d/1pZepgaqZek0Z5NG1J4hstJGhOxIEmWMm/edit",
+    "embeddedImage": "image98.png",
+    "width": 2048,
+    "height": 1152
+  },
+  {
+    "file": "ihan-career-preview.png",
+    "source": "User-provided career presentation, slide 9",
+    "sourceUrl": "https://docs.google.com/presentation/d/1pZepgaqZek0Z5NG1J4hstJGhOxIEmWMm/edit",
+    "embeddedImage": "image32.png",
+    "width": 768,
+    "height": 416
+  },
+  {
+    "file": "animoca-3d-preview.png",
+    "source": "User-provided career presentation, slide 11",
+    "sourceUrl": "https://docs.google.com/presentation/d/1pZepgaqZek0Z5NG1J4hstJGhOxIEmWMm/edit",
+    "embeddedImage": "image29.png",
+    "width": 539,
+    "height": 293
   }
 ]
